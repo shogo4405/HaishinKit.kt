@@ -1,6 +1,12 @@
 package com.haishinkit.rtmp.message;
 
-public class RTMPMessage {
+import com.haishinkit.rtmp.RTMPConnection;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.nio.ByteBuffer;
+
+public abstract class RTMPMessage {
 
     public enum Type {
         CHUNK_SIZE((short) 1),
@@ -16,6 +22,7 @@ public class RTMPMessage {
         AMF3_COMMAND((short) 17),
         AMF0_DATA((short) 18),
         AMF0_SHARED((short) 19),
+        AMF0_COMMAND((short) 20),
         AGGREGATE((short) 22),
         UNKNOWN((short) 255);
 
@@ -28,16 +35,16 @@ public class RTMPMessage {
         }
     }
 
-    private Type type = Type.UNKNOWN;
+    private final Type type;
     private int streamID = 0;
     private int timestamp = 0;
 
-    public Type getType() {
-        return type;
+    public RTMPMessage(Type type) {
+        this.type = type;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public Type getType() {
+        return type;
     }
 
     public int getStreamID() {
@@ -54,5 +61,11 @@ public class RTMPMessage {
 
     public void setTimestamp(int timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public abstract ByteBuffer encode(RTMPConnection connection);
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

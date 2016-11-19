@@ -16,6 +16,7 @@ public final class RTMPSocket extends Socket {
         Closed
     }
 
+    private int chunkSizeC = 0;
     private RTMPHandshake handshake = new RTMPHandshake();
     private ReadyState readyState = ReadyState.Uninitialized;
     private RTMPConnection connection = null;
@@ -25,7 +26,7 @@ public final class RTMPSocket extends Socket {
     }
 
     public void doOutput(RTMPMessage message) {
-
+        ByteBuffer payload = message.encode(connection);
     }
 
     @Override

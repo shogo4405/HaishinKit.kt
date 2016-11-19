@@ -1,16 +1,25 @@
 package com.haishinkit.rtmp;
 
-public enum RTMPObjectEncoding {
-    AMF0((short) 0),
-    AMF3((short) 3);
+import com.haishinkit.rtmp.message.RTMPCommandMessage;
+import com.haishinkit.rtmp.message.RTMPMessage;
 
-    private short value = 0;
+public enum RTMPObjectEncoding {
+    AMF0((short) 0, RTMPMessage.Type.AMF0_COMMAND),
+    AMF3((short) 3, RTMPMessage.Type.AMF3_COMMAND);
+
+    private final short value;
+    private final RTMPMessage.Type messageType;
+
+    RTMPObjectEncoding(short value, RTMPMessage.Type messageType) {
+        this.value = value;
+        this.messageType = messageType;
+    }
 
     public short valueOf() {
         return value;
     }
 
-    RTMPObjectEncoding(short value) {
-        this.value = value;
+    public RTMPMessage.Type getMessageType() {
+        return messageType;
     }
 }

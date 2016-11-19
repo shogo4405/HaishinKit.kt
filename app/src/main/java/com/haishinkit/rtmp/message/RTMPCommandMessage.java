@@ -1,22 +1,26 @@
 package com.haishinkit.rtmp.message;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.List;
+
+import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPObjectEncoding;
 
 public final class RTMPCommandMessage extends RTMPMessage {
-    private RTMPObjectEncoding objectEncoding = RTMPObjectEncoding.AMF0;
+    private final RTMPObjectEncoding objectEncoding;
     private String commandName = null;
     private int transactionID = 0;
     private Map<String, Object> commandObject = null;
     private List<Object> arguments = null;
 
-    public RTMPObjectEncoding getObjectEncoding() {
-        return objectEncoding;
+    public RTMPCommandMessage(final RTMPObjectEncoding objectEncoding) {
+        super(objectEncoding.getMessageType());
+        this.objectEncoding = objectEncoding;
     }
 
-    public void setObjectEncoding(RTMPObjectEncoding objectEncoding) {
-        this.objectEncoding = objectEncoding;
+    public RTMPObjectEncoding getObjectEncoding() {
+        return objectEncoding;
     }
 
     public String getCommandName() {
@@ -45,6 +49,11 @@ public final class RTMPCommandMessage extends RTMPMessage {
 
     public List<Object> getArguments() {
         return arguments;
+    }
+
+    public ByteBuffer encode(RTMPConnection connection) {
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        return buffer;
     }
 
     public void setArguments(List<Object> arguments) {
