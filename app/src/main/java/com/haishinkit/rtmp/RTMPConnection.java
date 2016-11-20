@@ -81,7 +81,6 @@ public class RTMPConnection {
         }
     }
 
-    boolean connected = false;
     private URI uri = null;
     private String swfUrl = null;
     private String pageUrl = null;
@@ -99,7 +98,7 @@ public class RTMPConnection {
     }
 
     public boolean isConnected() {
-        return connected;
+        return socket.isConnected();
     }
 
     public String getSwfUrl() {
@@ -127,7 +126,7 @@ public class RTMPConnection {
     }
 
     public void connect(final String command, Object... arguments) {
-        if (connected) {
+        if (isConnected()) {
             return;
         }
         uri = URI.create(command);
@@ -136,7 +135,7 @@ public class RTMPConnection {
     }
 
     public void close() {
-        if (!connected) {
+        if (!isConnected()) {
             return;
         }
         socket.close();

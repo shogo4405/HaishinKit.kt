@@ -16,7 +16,8 @@ public final class RTMPSocket extends Socket {
         Closed
     }
 
-    private int chunkSizeC = 0;
+    private int chunkSizeC = RTMPChunk.DEFAULT_SIZE;
+    private boolean connected = false;
     private RTMPHandshake handshake = new RTMPHandshake();
     private ReadyState readyState = ReadyState.Uninitialized;
     private RTMPConnection connection = null;
@@ -25,8 +26,20 @@ public final class RTMPSocket extends Socket {
         this.connection = connection;
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public int getChunkSizeC() {
+        return chunkSizeC;
+    }
+
+    public void setChunkSizeC(int chunkSizeC) {
+        this.chunkSizeC = chunkSizeC;
+    }
+
     public void doOutput(RTMPMessage message) {
-        ByteBuffer payload = message.encode(connection);
+
     }
 
     @Override

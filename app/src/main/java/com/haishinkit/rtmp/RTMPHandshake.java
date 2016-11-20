@@ -1,9 +1,5 @@
 package com.haishinkit.rtmp;
 
-import android.util.Log;
-
-import com.haishinkit.util.ByteBufferUtils;
-
 import java.nio.ByteBuffer;
 import java.util.Random;
 
