@@ -1,6 +1,9 @@
 package com.haishinkit.net;
 
-import android.util.Log;
+import com.haishinkit.util.Log;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -72,6 +75,7 @@ public abstract class Socket {
         while (socket != null && socket.isConnected()) {
             for (ByteBuffer buffer : outputQueue) {
                 try {
+                    buffer.flip();
                     outputStream.write(buffer.array());
                     outputStream.flush();
                     outputQueue.remove(buffer);
@@ -104,6 +108,10 @@ public abstract class Socket {
         } catch (Exception e) {
             Log.v(getClass().getName(), e.toString());
         }
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
 

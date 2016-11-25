@@ -1,7 +1,5 @@
 package com.haishinkit.rtmp;
 
-import android.util.Log;
-
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -11,6 +9,7 @@ import java.util.List;
 
 import com.haishinkit.rtmp.message.RTMPCommandMessage;
 import com.haishinkit.rtmp.message.RTMPMessage;
+import com.haishinkit.util.Log;
 
 public class RTMPConnection {
     public static final int DEFAULT_PORT = 1935;
@@ -126,12 +125,13 @@ public class RTMPConnection {
     }
 
     public void connect(final String command, Object... arguments) {
-        if (isConnected()) {
+        uri = URI.create(command);
+        if (isConnected() || !uri.getScheme().equals("rtmp")) {
             return;
         }
-        uri = URI.create(command);
+        int port = uri.getPort();
         this.arguments = arguments;
-        socket.connect(command, 1935);
+        socket.connect(uri.getHost(), port == -1 ? RTMPConnection.DEFAULT_PORT : port);
     }
 
     public void close() {
@@ -142,13 +142,14 @@ public class RTMPConnection {
     }
 
     void listen(ByteBuffer buffer) {
-        Log.e(getClass().getName(), buffer.toString());
+
     }
 
     RTMPMessage createConnectionMessage() {
+        String[] paths = uri.getPath().split("/", 0);
         RTMPCommandMessage message = new RTMPCommandMessage(RTMPObjectEncoding.AMF0);
         Map<String, Object> commandObject = new HashMap<String, Object>();
-        commandObject.put("app", "");
+        commandObject.put("app", paths[1]);
         commandObject.put("flashVer", flashVer);
         commandObject.put("swfUrl", swfUrl);
         commandObject.put("tcUrl", uri.toString());
@@ -159,8 +160,10 @@ public class RTMPConnection {
         commandObject.put("videoFunction", VideoFunction.CLIENT_SEEK.valueOf());
         commandObject.put("pageUrl", pageUrl);
         commandObject.put("objectEncoding", objectEncoding.valueOf());
+        message.setChunkStreamID(RTMPChunk.COMMAND);
+        message.setStreamID(0);
         message.setCommandName("connect");
-        message.setTransactionID(transactionID++);
+        message.setTransactionID(++transactionID);
         message.setCommandObject(commandObject);
         if (arguments != null) {
             List<Object> args = new ArrayList<Object>(arguments.length);

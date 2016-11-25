@@ -14,6 +14,10 @@ public enum RTMPChunk {
     TWO((byte) 2),
     THREE((byte) 3);
 
+    public static final short CONTROL = 0x02;
+    public static final short COMMAND = 0x03;
+    public static final short AUDIO = 0x04;
+    public static final short VIDEO = 0x05;
     public static final int DEFAULT_SIZE = 128;
 
     private final byte value;
@@ -31,11 +35,14 @@ public enum RTMPChunk {
             throw new IllegalArgumentException();
         }
 
-        List<ByteBuffer> list = new ArrayList<ByteBuffer>();
         ByteBuffer payload = message.encode(socket);
+        payload.flip();
+
+        List<ByteBuffer> list = new ArrayList<ByteBuffer>();
         int length = payload.limit();
         int timestamp = message.getTimestamp();
-        ByteBuffer buffer = ByteBuffer.allocate(length(message.getChunkStreamID()) + length);
+        int chunkSize = socket.getChunkSizeC();
+        ByteBuffer buffer = ByteBuffer.allocate(length(message.getChunkStreamID()) + (length < chunkSize ? length : chunkSize));
         message.setLength(length);
 
         buffer.put(header(message.getChunkStreamID()));
@@ -57,9 +64,26 @@ public enum RTMPChunk {
                 break;
         }
 
-        payload.flip();
-        buffer.put(payload);
-        buffer.flip();
+        if (length < chunkSize) {
+            buffer.put(payload.array(), 0, length);
+            buffer.flip();
+            list.add(buffer);
+            return list;
+        }
+
+        int mod = length % chunkSize;
+        byte[] three = RTMPChunk.THREE.header(message.getChunkStreamID());
+        buffer.put(payload.array(), 0, chunkSize);
+        list.add(buffer);
+        for (int i = 1; i < (length - mod) / chunkSize; ++i) {
+            buffer = ByteBuffer.allocate(three.length + chunkSize);
+            buffer.put(three);
+            buffer.put(payload.array(), chunkSize * i, chunkSize);
+            list.add(buffer);
+        }
+        buffer = ByteBuffer.allocate(three.length + mod);
+        buffer.put(three);
+        buffer.put(payload.array(), length - mod, mod);
         list.add(buffer);
 
         return list;

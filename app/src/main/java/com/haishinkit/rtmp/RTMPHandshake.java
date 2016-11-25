@@ -1,5 +1,7 @@
 package com.haishinkit.rtmp;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.nio.ByteBuffer;
 import java.util.Random;
 
@@ -65,5 +67,9 @@ public final class RTMPHandshake {
         S0S1Packet = null;
         C2Packet = null;
         S2Packet = null;
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

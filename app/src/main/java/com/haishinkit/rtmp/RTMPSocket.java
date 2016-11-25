@@ -1,10 +1,11 @@
 package com.haishinkit.rtmp;
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 import com.haishinkit.net.Socket;
+import com.haishinkit.util.Log;
 import com.haishinkit.rtmp.message.RTMPMessage;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public final class RTMPSocket extends Socket {
     enum ReadyState {
@@ -38,13 +39,15 @@ public final class RTMPSocket extends Socket {
         this.chunkSizeC = chunkSizeC;
     }
 
-    public void doOutput(RTMPMessage message) {
-
+    public void doOutput(RTMPChunk chunk, RTMPMessage message) {
+        for (ByteBuffer buffer : chunk.encode(this, message)) {
+            doOutput(buffer);
+        }
     }
 
     @Override
     protected void onConnect() {
-        Log.v(getClass().getName(), "onConnect");
+        Log.v(getClass().getName() + "#onConnect", "");
         handshake.clear();
         readyState = ReadyState.VersionSent;
         doOutput(handshake.getC0C1Packet());
@@ -52,10 +55,10 @@ public final class RTMPSocket extends Socket {
 
     @Override
     protected void listen(ByteBuffer buffer) {
-        Log.v(getClass().getName(), "readyState:" + readyState + ":" + buffer.toString());
+        Log.v(getClass().getName() + "#listen", "readyState:" + readyState + ":" + buffer.toString());
         switch (readyState) {
             case VersionSent:
-                if (buffer.limit() <= RTMPHandshake.SIGNAL_SIZE + 1) {
+                if (buffer.limit() < RTMPHandshake.SIGNAL_SIZE + 1) {
                     break;
                 }
                 handshake.setS0S1Packet(buffer);
@@ -67,12 +70,13 @@ public final class RTMPSocket extends Socket {
                 }
                 break;
             case AckSent:
-                if (buffer.limit() <= RTMPHandshake.SIGNAL_SIZE) {
+                if (buffer.limit() < RTMPHandshake.SIGNAL_SIZE) {
                     break;
                 }
                 handshake.setS2Packet(buffer);
                 buffer.position(RTMPHandshake.SIGNAL_SIZE);
                 readyState = ReadyState.HandshakeDone;
+                doOutput(RTMPChunk.ZERO, connection.createConnectionMessage());
                 break;
             case HandshakeDone:
                 connection.listen(buffer);
@@ -80,5 +84,9 @@ public final class RTMPSocket extends Socket {
             default:
                 break;
         }
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

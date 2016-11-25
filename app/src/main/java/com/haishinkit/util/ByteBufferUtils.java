@@ -10,7 +10,7 @@ public final class ByteBufferUtils {
         StringBuilder builder = new StringBuilder();
         byte[] bytes = buffer.array();
         for (byte b : bytes) {
-            builder.append(String.format("%x", b));
+            builder.append(String.format("0x%02x,", b & 0xff));
         }
         return builder.toString();
     }

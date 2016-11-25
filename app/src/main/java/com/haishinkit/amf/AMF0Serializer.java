@@ -46,7 +46,7 @@ public final class AMF0Serializer {
         for (Map.Entry<String, Object> entry: value.entrySet()) {
             putString(entry.getKey(), true).putObject(entry.getValue());
         }
-        putString("", false);
+        putString("", true);
         buffer.put(AMF0Marker.OBJECTEND.valueOf());
         return this;
     }
