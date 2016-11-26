@@ -67,7 +67,7 @@ public final class AMF0Serializer {
             buffer.put(AMF0Marker.NULL.valueOf());
             return this;
         }
-        buffer.put(AMF0Marker.STRICTARRAY.valueOf());
+        buffer.put(AMF0Marker.ECMAARRAY.valueOf());
         if (value.isEmpty()) {
             buffer.put(new byte[]{0x00, 0x00, 0x00, 0x00});
             return this;

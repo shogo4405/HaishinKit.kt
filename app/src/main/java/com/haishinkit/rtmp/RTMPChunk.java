@@ -20,6 +20,20 @@ public enum RTMPChunk {
     public static final short VIDEO = 0x05;
     public static final int DEFAULT_SIZE = 128;
 
+    public static RTMPChunk rawValue(byte value) {
+        switch (value) {
+            case 0:
+                return RTMPChunk.ZERO;
+            case 1:
+                return RTMPChunk.ONE;
+            case 2:
+                return RTMPChunk.TWO;
+            case 3:
+                return RTMPChunk.THREE;
+        }
+        return null;
+    }
+
     private final byte value;
 
     RTMPChunk(final byte value) {
@@ -51,14 +65,14 @@ public enum RTMPChunk {
         switch (this) {
             case ZERO:
                 buffer.put(new byte[]{(byte)(length >> 16), (byte)(length >> 8), (byte) length});
-                buffer.put(message.getType().valueOf());
+                buffer.put(message.getType().rawValue());
                 int streamID = message.getStreamID();
                 // message streamID is a litleEndian
                 buffer.put(new byte[]{(byte) streamID, (byte)(streamID >> 8), (byte)(streamID >> 16), (byte)(streamID >> 24)});
                 break;
             case ONE:
                 buffer.put(new byte[]{(byte)(length >> 16), (byte)(length >> 8), (byte)length});
-                buffer.put(message.getType().valueOf());
+                buffer.put(message.getType().rawValue());
                 break;
             default:
                 break;
@@ -87,6 +101,40 @@ public enum RTMPChunk {
         list.add(buffer);
 
         return list;
+    }
+
+    public RTMPMessage decode(RTMPSocket socket, ByteBuffer buffer) {
+        if (socket == null || buffer == null) {
+            throw new IllegalArgumentException();
+        }
+
+        int timestamp = 0;
+        int length = 0;
+        byte type = 0;
+        int streamID = 0;
+
+        switch (this) {
+            case ZERO:
+                timestamp = getInt(buffer);
+                length = getInt(buffer);
+                type = buffer.get();
+                streamID = buffer.getInt();
+                break;
+            case ONE:
+                timestamp = getInt(buffer);
+                length = getInt(buffer);
+                type = buffer.get();
+                break;
+            default:
+                break;
+        }
+
+        return RTMPMessage
+                .create(type)
+                .setStreamID(streamID)
+                .setTimestamp(timestamp)
+                .setLength(length)
+                .decode(socket, buffer);
     }
 
     public int length(short streamID) {
@@ -118,5 +166,28 @@ public enum RTMPChunk {
             return new byte[]{(byte) (value << 6 | 0b0000000), (byte) (streamID - 64)};
         }
         return new byte[]{(byte) (value << 6 | 0b00111111), (byte) ((streamID - 64) >> 8), (byte) (streamID - 64)};
+    }
+
+    public int getInt(final ByteBuffer buffer) {
+        byte[] bytes = new byte[3];
+        buffer.get(bytes);
+        return (int) bytes[0] << 16 | (int) bytes[1] << 8 | (int) bytes[2];
+    }
+
+    public short getStreamID(final ByteBuffer buffer) {
+        byte first = buffer.get();
+        byte[] bytes = null;
+        switch (first & 0b00111111) {
+            case 0:
+                bytes = new byte[2];
+                buffer.get(bytes);
+                return (short)(bytes[1] + 64);
+            case 1:
+                bytes = new byte[3];
+                buffer.get(bytes);
+                return (short) ((short)(bytes[1]) << 8 | (short) (bytes[2]) | (short) 64);
+            default:
+                return (short) (first & 0b00111111);
+        }
     }
 }

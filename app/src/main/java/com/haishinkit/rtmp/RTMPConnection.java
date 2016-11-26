@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.haishinkit.rtmp.message.RTMPCommandMessage;
 import com.haishinkit.rtmp.message.RTMPMessage;
+import com.haishinkit.util.ByteBufferUtils;
 import com.haishinkit.util.Log;
 
 public class RTMPConnection {
@@ -88,8 +89,13 @@ public class RTMPConnection {
     private int transactionID = 0;
     private Object[] arguments = null;
     private RTMPSocket socket = new RTMPSocket(this);
+    private Map<Short, ByteBuffer> messages = new HashMap<Short, ByteBuffer>();
 
     public RTMPConnection() {
+    }
+
+    public RTMPSocket getSocket() {
+        return socket;
     }
 
     public URI getUri() {
@@ -104,24 +110,27 @@ public class RTMPConnection {
         return swfUrl;
     }
 
-    public void setSwfUrl(String swfUrl) {
+    public RTMPConnection setSwfUrl(String swfUrl) {
         this.swfUrl = swfUrl;
+        return this;
     }
 
     public String getPageUrl() {
         return pageUrl;
     }
 
-    public void setPageUrl(String pageUrl) {
+    public RTMPConnection setPageUrl(String pageUrl) {
         this.pageUrl = pageUrl;
+        return this;
     }
 
     public String getFlashVer() {
         return this.flashVer;
     }
 
-    public void setFlashVer(String flashVer) {
+    public RTMPConnection setFlashVer(String flashVer) {
         this.flashVer = flashVer;
+        return this;
     }
 
     public void connect(final String command, Object... arguments) {
@@ -141,8 +150,20 @@ public class RTMPConnection {
         socket.close();
     }
 
-    void listen(ByteBuffer buffer) {
+    void listen(final ByteBuffer buffer) {
+        if (!buffer.hasRemaining()) {
+            return;
+        }
+        byte first = buffer.get();
+        RTMPChunk chunk = RTMPChunk.rawValue((byte) (first >> 6));
+        buffer.position(buffer.position() - 1);
+        short streamID = chunk.getStreamID(buffer);
+        if (messages.containsKey(streamID)) {
 
+        } else {
+            chunk.decode(socket, buffer).execute(this);
+            listen(buffer);
+        }
     }
 
     RTMPMessage createConnectionMessage() {
@@ -150,15 +171,15 @@ public class RTMPConnection {
         RTMPCommandMessage message = new RTMPCommandMessage(RTMPObjectEncoding.AMF0);
         Map<String, Object> commandObject = new HashMap<String, Object>();
         commandObject.put("app", paths[1]);
-        commandObject.put("flashVer", flashVer);
-        commandObject.put("swfUrl", swfUrl);
+        commandObject.put("flashVer", getFlashVer());
+        commandObject.put("swfUrl", getSwfUrl());
         commandObject.put("tcUrl", uri.toString());
         commandObject.put("fpad", false);
         commandObject.put("capabilities", RTMPConnection.DEFAULT_CAPABILITIES);
         commandObject.put("audioCodecs", SupportSound.AAC.valueOf());
         commandObject.put("videoCodecs", SupportVideo.H264.valueOf());
         commandObject.put("videoFunction", VideoFunction.CLIENT_SEEK.valueOf());
-        commandObject.put("pageUrl", pageUrl);
+        commandObject.put("pageUrl", getPageUrl());
         commandObject.put("objectEncoding", objectEncoding.valueOf());
         message.setChunkStreamID(RTMPChunk.COMMAND);
         message.setStreamID(0);

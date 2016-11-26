@@ -3,10 +3,10 @@ package com.haishinkit.amf;
 import android.util.Log;
 
 import com.haishinkit.as3.ASUndefined;
-import com.haishinkit.as3.XMLDocument;
+import com.haishinkit.as3.ASXMLDocument;
+import com.haishinkit.as3.ASArray;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,12 +44,12 @@ public final class AMF0Deserializer {
             case 0x07: // reference
                 throw new UnsupportedOperationException();
             case 0x08: // ecmaarray
-                throw new UnsupportedOperationException();
+                buffer.position(buffer.position() - 1);
+                return getList();
             case 0x09: // objectend
                 throw new UnsupportedOperationException();
             case 0x0a: // strictarray
-                buffer.position(buffer.position() - 1);
-                return getList();
+                throw new UnsupportedOperationException();
             case 0x0b: // date
                 buffer.position(buffer.position() - 1);
                 return getDate();
@@ -127,15 +127,21 @@ public final class AMF0Deserializer {
         if (marker == AMF0Marker.NULL.valueOf()) {
             return null;
         }
-        if (marker != AMF0Marker.STRICTARRAY.valueOf()) {
+        if (marker != AMF0Marker.ECMAARRAY.valueOf()) {
             throw new IllegalFormatFlagsException(new Byte(marker).toString());
         }
         int count = buffer.getInt();
-        List<Object> list = new ArrayList<Object>(count);
-        for (int i = 0; i < count; ++i) {
-            list.add(getObject());
+        ASArray array = new ASArray(count);
+        while (true) {
+            String key = getString(true);
+            System.out.println(key);
+            if (key.equals("")) {
+                buffer.get();
+                break;
+            }
+            array.put(key, getObject());
         }
-        return list;
+        return array;
     }
 
     public Date getDate() {
@@ -150,12 +156,12 @@ public final class AMF0Deserializer {
         return date;
     }
 
-    public XMLDocument getXMLDocument() {
+    public ASXMLDocument getXMLDocument() {
         byte marker = buffer.get();
         if (marker != AMF0Marker.XMLDOCUMENT.valueOf()) {
             throw new IllegalFormatFlagsException(new Byte(marker).toString());
         }
-        return new XMLDocument(getString(false));
+        return new ASXMLDocument(getString(false));
     }
 
     private String getString(final boolean asShort) {

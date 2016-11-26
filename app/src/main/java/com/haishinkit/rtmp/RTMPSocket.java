@@ -18,6 +18,7 @@ public final class RTMPSocket extends Socket {
     }
 
     private int chunkSizeC = RTMPChunk.DEFAULT_SIZE;
+    private int bandwidth = 0;
     private boolean connected = false;
     private RTMPHandshake handshake = new RTMPHandshake();
     private ReadyState readyState = ReadyState.Uninitialized;
@@ -29,6 +30,15 @@ public final class RTMPSocket extends Socket {
 
     public boolean isConnected() {
         return connected;
+    }
+
+    public int getBandWidth() {
+        return bandwidth;
+    }
+
+    public RTMPSocket setBandwidth(final int bandwidth) {
+        this.bandwidth = bandwidth;
+        return this;
     }
 
     public int getChunkSizeC() {
@@ -67,6 +77,7 @@ public final class RTMPSocket extends Socket {
                 readyState = ReadyState.AckSent;
                 if (buffer.limit() - buffer.position() == RTMPHandshake.SIGNAL_SIZE) {
                     listen(buffer.slice());
+                    buffer.position(3073);
                 }
                 break;
             case AckSent:

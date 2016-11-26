@@ -1,15 +1,18 @@
 package com.haishinkit.rtmp.message;
 
+import com.haishinkit.lang.IRawValue;
+import com.haishinkit.util.Log;
 import com.haishinkit.rtmp.RTMPConnection;
+import com.haishinkit.rtmp.RTMPObjectEncoding;
 import com.haishinkit.rtmp.RTMPSocket;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.nio.ByteBuffer;
 
-public abstract class RTMPMessage {
+public class RTMPMessage {
 
-    public enum Type {
+    public enum Type implements IRawValue<Byte> {
         CHUNK_SIZE((byte) 1),
         ABORT((byte) 2),
         ACK((byte) 3),
@@ -27,14 +30,32 @@ public abstract class RTMPMessage {
         AGGREGATE((byte) 22),
         UNKNOWN((byte) 255);
 
-        private final byte value;
+        private final byte rawValue;
 
-        Type(final byte value) {
-            this.value = value;
+        Type(final byte rawValue) {
+            this.rawValue = rawValue;
         }
 
-        public byte valueOf() {
-            return value;
+        public Byte rawValue() {
+            return rawValue;
+        }
+    }
+
+    public static RTMPMessage create(final byte value) {
+        Log.i(RTMPMessage.class.getName(), new Byte(value).toString());
+        switch (value) {
+            case 0x01:
+                return new RTMPSetChunkSizeMessage();
+            case 0x04:
+                return new RTMPUserControlMessage();
+            case 0x05:
+                return new RTMPWindowAcknowledgementSizeMessage();
+            case 0x06:
+                return new RTMPSetPeerBandwidthMessage();
+            case 20:
+                return new RTMPCommandMessage(RTMPObjectEncoding.AMF0);
+            default:
+                return new RTMPMessage(Type.UNKNOWN);
         }
     }
 
@@ -56,35 +77,49 @@ public abstract class RTMPMessage {
         return streamID;
     }
 
-    public void setStreamID(int streamID) {
+    public RTMPMessage setStreamID(int streamID) {
         this.streamID = streamID;
-    }
-
-    public int getTimestamp() {
-        return timestamp;
+        return this;
     }
 
     public short getChunkStreamID() {
         return this.chunkStreamID;
     }
 
-    public void setChunkStreamID(short chunkStreamID) {
+    public RTMPMessage setChunkStreamID(final short chunkStreamID) {
         this.chunkStreamID = chunkStreamID;
+        return this;
     }
 
-    public void setTimestamp(int timestamp) {
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public RTMPMessage setTimestamp(final int timestamp) {
         this.timestamp = timestamp;
+        return this;
     }
 
     public int getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public RTMPMessage setLength(final int length) {
         this.length = length;
+        return this;
     }
 
-    public abstract ByteBuffer encode(RTMPSocket socket);
+    public ByteBuffer encode(final RTMPSocket socket) {
+        throw new NotImplementedException(getClass().getName() + "#encode");
+    }
+
+    public RTMPMessage decode(final RTMPSocket socket, final ByteBuffer buffer) {
+        throw new NotImplementedException(getClass().getName() + "#decode");
+    }
+
+    public RTMPMessage execute(final RTMPConnection connection) {
+        throw new NotImplementedException(getClass().getName() + "#execute");
+    }
 
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
