@@ -52,6 +52,12 @@ public class RTMPMessage {
                 return new RTMPWindowAcknowledgementSizeMessage();
             case 0x06:
                 return new RTMPSetPeerBandwidthMessage();
+            case 0x08:
+                return new RTMPAudioMessage();
+            case 0x09:
+                return new RTMPVideoMessage();
+            case 0x12:
+                return new RTMPDataMessage(RTMPObjectEncoding.AMF0);
             case 20:
                 return new RTMPCommandMessage(RTMPObjectEncoding.AMF0);
             default:

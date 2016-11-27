@@ -22,7 +22,12 @@ public final class AMF0Deserializer {
     }
 
     public Object getObject() {
-        switch (buffer.get()) {
+
+        byte marker = buffer.get();
+
+        // System.out.println(marker);
+
+        switch (marker) {
             case 0x00: // number
                 buffer.position(buffer.position() - 1);
                 return getDouble();
@@ -49,7 +54,8 @@ public final class AMF0Deserializer {
             case 0x09: // objectend
                 throw new UnsupportedOperationException();
             case 0x0a: // strictarray
-                throw new UnsupportedOperationException();
+                buffer.position(buffer.position() - 1);
+                return getObjects();
             case 0x0b: // date
                 buffer.position(buffer.position() - 1);
                 return getDate();
@@ -120,6 +126,24 @@ public final class AMF0Deserializer {
             map.put(key, getObject());
         }
         return map;
+    }
+
+    public Object[] getObjects() {
+        byte marker = buffer.get();
+        if (marker == AMF0Marker.NULL.valueOf()) {
+            return null;
+        }
+        if (marker != AMF0Marker.STRICTARRAY.valueOf()) {
+            throw new IllegalFormatFlagsException(new Byte(marker).toString());
+        }
+
+        int count = buffer.getInt();
+        Object[] objects = new Object[count];
+        for (int i = 0; i < count; ++i) {
+            objects[i] = getObject();
+        }
+
+        return objects;
     }
 
     public List<Object> getList() {

@@ -4,13 +4,20 @@ import com.haishinkit.events.Event;
 import com.haishinkit.events.EventDispatcher;
 import com.haishinkit.events.IEventListener;
 import com.haishinkit.lang.IRawValue;
+import com.haishinkit.rtmp.messages.RTMPCommandMessage;
+import com.haishinkit.rtmp.messages.RTMPMessage;
+import com.haishinkit.util.EventUtils;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.List;
 
 public class RTMPStream extends EventDispatcher {
 
-    class EventListener implements IEventListener {
+    private class EventListener implements IEventListener {
         private final RTMPStream stream;
 
         EventListener(final RTMPStream stream) {
@@ -19,6 +26,14 @@ public class RTMPStream extends EventDispatcher {
 
         @Override
         public void handleEvent(final Event event) {
+            Map<String, Object> data = EventUtils.toMap(event);
+            switch (data.get("code").toString()) {
+                case "NetConnection.Connect.Success":
+                    connection.createStream(stream);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public String toString() {
@@ -46,12 +61,13 @@ public class RTMPStream extends EventDispatcher {
         }
     }
 
-    private double id = 0;
+    private int id = 0;
     private ReadyState readyState = ReadyState.INITIALIZED;
     private RTMPConnection connection = null;
+    private List<RTMPMessage> messages = new ArrayList<RTMPMessage>();
     private final IEventListener listener = new EventListener(this);
 
-    public RTMPStream(RTMPConnection connection) {
+    public RTMPStream(final RTMPConnection connection) {
         super(null);
         this.connection = connection;
         this.connection.addEventListener(Event.RTMP_STATUS, listener);
@@ -60,11 +76,52 @@ public class RTMPStream extends EventDispatcher {
         }
     }
 
-    double getId() {
+    public void play(final Object... arguments) {
+        if (arguments == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Object streamName = arguments[0];
+        RTMPMessage message = new RTMPCommandMessage(connection.getObjectEncoding())
+                .setTransactionID(0)
+                .setCommandName(streamName != null ? "play" : "closeStream")
+                .setArguments(Arrays.asList(arguments))
+                .setChunkStreamID(RTMPChunk.CONTROL)
+                .setStreamID(getId());
+
+        if (streamName == null) {
+            switch (readyState) {
+                case PLAYING:
+                    connection.getSocket().doOutput(RTMPChunk.ZERO, message);
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+
+        switch (readyState) {
+            case INITIALIZED:
+                messages.add(message);
+                break;
+            case OPEN:
+            case PLAYING:
+                connection.getSocket().doOutput(RTMPChunk.ZERO, message);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    int getId() {
         return id;
     }
 
-    RTMPStream setId(final double id) {
+    RTMPStream setId(final int id) {
         this.id = id;
         return this;
     }
@@ -75,10 +132,17 @@ public class RTMPStream extends EventDispatcher {
 
     RTMPStream setReadyState(final ReadyState readyState) {
         this.readyState = readyState;
+        switch (readyState) {
+            case OPEN:
+                for (RTMPMessage message : messages) {
+                    message.setStreamID(getId());
+                    connection.getSocket().doOutput(RTMPChunk.ZERO, message);
+                }
+                messages.clear();
+                break;
+            default:
+                break;
+        }
         return this;
-    }
-
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

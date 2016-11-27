@@ -17,8 +17,9 @@ public final class RTMPSocket extends Socket {
         Closed
     }
 
-    private int chunkSizeC = RTMPChunk.DEFAULT_SIZE;
     private int bandwidth = 0;
+    private int chunkSizeC = RTMPChunk.DEFAULT_SIZE;
+    private int chunkSizeS = RTMPChunk.DEFAULT_SIZE;
     private boolean connected = false;
     private RTMPHandshake handshake = new RTMPHandshake();
     private ReadyState readyState = ReadyState.Uninitialized;
@@ -41,15 +42,28 @@ public final class RTMPSocket extends Socket {
         return this;
     }
 
+    public int getChunkSizeS() {
+        return chunkSizeS;
+    }
+
+    public RTMPSocket setChunkSizeS(final int chunkSizeS) {
+        this.chunkSizeS = chunkSizeS;
+        return this;
+    }
+
     public int getChunkSizeC() {
         return chunkSizeC;
     }
 
-    public void setChunkSizeC(int chunkSizeC) {
+    public RTMPSocket setChunkSizeC(final int chunkSizeC) {
         this.chunkSizeC = chunkSizeC;
+        return this;
     }
 
-    public void doOutput(RTMPChunk chunk, RTMPMessage message) {
+    public void doOutput(final RTMPChunk chunk, final RTMPMessage message) {
+        if (chunk == null || message == null) {
+            throw new IllegalArgumentException();
+        }
         for (ByteBuffer buffer : chunk.encode(this, message)) {
             doOutput(buffer);
         }
@@ -58,13 +72,15 @@ public final class RTMPSocket extends Socket {
     @Override
     protected void onConnect() {
         Log.v(getClass().getName() + "#onConnect", "");
+        chunkSizeC = RTMPChunk.DEFAULT_SIZE;
+        chunkSizeS = RTMPChunk.DEFAULT_SIZE;
         handshake.clear();
         readyState = ReadyState.VersionSent;
         doOutput(handshake.getC0C1Packet());
     }
 
     @Override
-    protected void listen(ByteBuffer buffer) {
+    protected void listen(final ByteBuffer buffer) {
         Log.v(getClass().getName() + "#listen", "readyState:" + readyState + ":" + buffer.toString());
         switch (readyState) {
             case VersionSent:
@@ -87,6 +103,7 @@ public final class RTMPSocket extends Socket {
                 handshake.setS2Packet(buffer);
                 buffer.position(RTMPHandshake.SIGNAL_SIZE);
                 readyState = ReadyState.HandshakeDone;
+                connected = true;
                 doOutput(RTMPChunk.ZERO, connection.createConnectionMessage());
                 break;
             case HandshakeDone:

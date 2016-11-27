@@ -52,7 +52,7 @@ public abstract class Socket {
     }
 
     protected abstract void onConnect();
-    protected abstract void listen(ByteBuffer buffer);
+    protected abstract void listen(final ByteBuffer buffer);
 
     private void doInput() {
         try {
@@ -67,7 +67,7 @@ public abstract class Socket {
             listen(buffer);
             inputBuffer = buffer.slice();
         } catch (IOException e) {
-            Log.e(getClass().getName(), e.toString());
+            Log.w(getClass().getName(), e.toString());
         }
     }
 

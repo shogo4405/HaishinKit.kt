@@ -40,7 +40,7 @@ public final class RTMPSetChunkSizeMessage extends RTMPMessage {
 
     @Override
     public RTMPMessage execute(final RTMPConnection connection) {
-        connection.getSocket().setChunkSizeC(getSize());
+        connection.getSocket().setChunkSizeC(size);
         return this;
     }
 }

@@ -1,15 +1,20 @@
 package com.haishinkit.rtmp;
 
+import java.nio.BufferOverflowException;
 import java.util.List;
 import java.util.ArrayList;
 import java.nio.ByteBuffer;
-import com.haishinkit.rtmp.messages.RTMPMessage;
 
-public enum RTMPChunk {
-    ZERO((byte) 0),
-    ONE((byte) 1),
-    TWO((byte) 2),
-    THREE((byte) 3);
+import com.haishinkit.lang.IRawValue;
+import com.haishinkit.rtmp.messages.RTMPMessage;
+import com.haishinkit.util.ByteBufferUtils;
+import com.haishinkit.util.Log;
+
+public enum RTMPChunk implements IRawValue<Byte> {
+    ZERO((byte) 0x00),
+    ONE((byte) 0x01),
+    TWO((byte) 0x02),
+    THREE((byte) 0x03);
 
     public static final short CONTROL = 0x02;
     public static final short COMMAND = 0x03;
@@ -17,28 +22,28 @@ public enum RTMPChunk {
     public static final short VIDEO = 0x05;
     public static final int DEFAULT_SIZE = 128;
 
-    public static RTMPChunk rawValue(byte value) {
-        switch (value) {
-            case 0:
+    public static RTMPChunk rawValue(final byte rawValue) {
+        switch (rawValue) {
+            case 0x00:
                 return RTMPChunk.ZERO;
-            case 1:
+            case 0x01:
                 return RTMPChunk.ONE;
-            case 2:
+            case 0x02:
                 return RTMPChunk.TWO;
-            case 3:
+            case 0x03:
                 return RTMPChunk.THREE;
         }
         return null;
     }
 
-    private final byte value;
+    private final byte rawValue;
 
-    RTMPChunk(final byte value) {
-        this.value = value;
+    RTMPChunk(final byte rawValue) {
+        this.rawValue = rawValue;
     }
 
-    public byte valueOf() {
-        return value;
+    public Byte rawValue() {
+        return rawValue;
     }
 
     public List<ByteBuffer> encode(RTMPSocket socket, RTMPMessage message) {
@@ -100,8 +105,8 @@ public enum RTMPChunk {
         return list;
     }
 
-    public RTMPMessage decode(RTMPSocket socket, ByteBuffer buffer) {
-        if (socket == null || buffer == null) {
+    public RTMPMessage decode(final short chunkStreamID, final RTMPConnection connection, final ByteBuffer buffer) {
+        if (connection == null || buffer == null) {
             throw new IllegalArgumentException();
         }
 
@@ -115,23 +120,26 @@ public enum RTMPChunk {
                 timestamp = getInt(buffer);
                 length = getInt(buffer);
                 type = buffer.get();
-                streamID = buffer.getInt();
+                streamID = Integer.reverseBytes(buffer.getInt());
                 break;
             case ONE:
                 timestamp = getInt(buffer);
                 length = getInt(buffer);
                 type = buffer.get();
                 break;
+            case TWO:
+                timestamp = getInt(buffer);
+                return connection.getMessages().get(chunkStreamID).setTimestamp(timestamp);
             default:
                 break;
         }
 
         return RTMPMessage
                 .create(type)
+                .setChunkStreamID(chunkStreamID)
                 .setStreamID(streamID)
                 .setTimestamp(timestamp)
-                .setLength(length)
-                .decode(socket, buffer);
+                .setLength(length);
     }
 
     public int length(short streamID) {
@@ -157,21 +165,22 @@ public enum RTMPChunk {
 
     public byte[] header(short streamID) {
         if (streamID <= 63) {
-            return new byte[]{(byte) (value << 6 | (short) streamID)};
+            return new byte[]{(byte) (rawValue << 6 | (short) streamID)};
         }
         if (streamID <= 319) {
-            return new byte[]{(byte) (value << 6 | 0b0000000), (byte) (streamID - 64)};
+            return new byte[]{(byte) (rawValue << 6 | 0b0000000), (byte) (streamID - 64)};
         }
-        return new byte[]{(byte) (value << 6 | 0b00111111), (byte) ((streamID - 64) >> 8), (byte) (streamID - 64)};
+        return new byte[]{(byte) (rawValue << 6 | 0b00111111), (byte) ((streamID - 64) >> 8), (byte) (streamID - 64)};
     }
 
     public int getInt(final ByteBuffer buffer) {
         byte[] bytes = new byte[3];
         buffer.get(bytes);
-        return (int) bytes[0] << 16 | (int) bytes[1] << 8 | (int) bytes[2];
+        return (int) (bytes[0] & 0XFF) << 16 | (int) (bytes[1] & 0xFF) << 8 | (int) (bytes[2] & 0xFF);
     }
 
     public short getStreamID(final ByteBuffer buffer) {
+        buffer.position(buffer.position() - 1);
         byte first = buffer.get();
         byte[] bytes = null;
         switch (first & 0b00111111) {

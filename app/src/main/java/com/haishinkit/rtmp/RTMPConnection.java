@@ -1,8 +1,10 @@
 package com.haishinkit.rtmp;
 
 import java.net.URI;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,8 @@ import com.haishinkit.lang.IRawValue;
 import com.haishinkit.net.IResponder;
 import com.haishinkit.rtmp.messages.RTMPCommandMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
+import com.haishinkit.rtmp.messages.RTMPSetPeerBandwidthMessage;
+import com.haishinkit.util.ByteBufferUtils;
 import com.haishinkit.util.EventUtils;
 import com.haishinkit.util.Log;
 
@@ -23,7 +27,7 @@ public class RTMPConnection extends EventDispatcher {
     public static final String DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)";
     public static final RTMPObjectEncoding DEFAULT_OBJECT_ENCODING = RTMPObjectEncoding.AMF0;
 
-    private static final int DEFAULT_CHUNK_SIZE = 1024 * 8;
+    private static final int DEFAULT_CHUNK_SIZE_S = 1024 * 8;
     private static final int DEFAULT_CAPABILITIES = 239;
 
     public enum Codes implements IRawValue<String> {
@@ -117,23 +121,61 @@ public class RTMPConnection extends EventDispatcher {
         }
     }
 
+    private final class EventListener implements IEventListener {
+
+        private final RTMPConnection connection;
+
+        private EventListener(final RTMPConnection connection) {
+            this.connection = connection;
+        }
+
+        @Override
+        public void handleEvent(final Event event) {
+            Map<String, Object> data = EventUtils.toMap(event);
+            switch (data.get("code").toString()) {
+                case "NetConnection.Connect.Success":
+                    connection.getSocket().setChunkSizeS(RTMPConnection.DEFAULT_CHUNK_SIZE_S);
+                    connection.getSocket().doOutput(RTMPChunk.ONE,
+                            new RTMPSetPeerBandwidthMessage()
+                                    .setSize(RTMPConnection.DEFAULT_CHUNK_SIZE_S)
+                                    .setChunkStreamID(RTMPChunk.CONTROL)
+                    );
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     private URI uri = null;
+    private int chunkSizeC = 0;
     private String swfUrl = null;
     private String pageUrl = null;
     private String flashVer = RTMPConnection.DEFAULT_FLASH_VER;
     private RTMPObjectEncoding objectEncoding = RTMPConnection.DEFAULT_OBJECT_ENCODING;
     private int transactionID = 0;
     private Object[] arguments = null;
-    private Map<Short, ByteBuffer> messages = new HashMap<Short, ByteBuffer>();
+    private Map<Short, ByteBuffer> payloads = new ConcurrentHashMap<Short, ByteBuffer>();
+    private Map<Short, RTMPMessage> messages = new ConcurrentHashMap<Short, RTMPMessage>();
     private Map<Integer, IResponder> responders = new ConcurrentHashMap<Integer, IResponder>();
     private RTMPSocket socket = new RTMPSocket(this);
 
     public RTMPConnection() {
         super(null);
+        addEventListener(Event.RTMP_STATUS, new EventListener(this));
     }
 
     public RTMPSocket getSocket() {
         return socket;
+    }
+
+    public RTMPObjectEncoding getObjectEncoding() {
+        return objectEncoding;
+    }
+
+    public RTMPConnection setObjectEncoding(final RTMPObjectEncoding objectEncoding) {
+        this.objectEncoding = objectEncoding;
+        return this;
     }
 
     public URI getUri() {
@@ -184,6 +226,7 @@ public class RTMPConnection extends EventDispatcher {
             listArguments.add(object);
         }
         RTMPCommandMessage message = new RTMPCommandMessage(objectEncoding);
+        message.setChunkStreamID(RTMPChunk.COMMAND);
         message.setStreamID(0);
         message.setTransactionID(++transactionID);
         message.setCommandName(commandName);
@@ -192,14 +235,6 @@ public class RTMPConnection extends EventDispatcher {
             getResponders().put(transactionID, responder);
         }
         getSocket().doOutput(RTMPChunk.ZERO, message);
-    }
-
-    public void call(final String commandName, final IResponder responder) {
-        call(commandName, responder);
-    }
-
-    public void call(final String commandName) {
-        call(commandName, null);
     }
 
     public void connect(final String command, final Object... arguments) {
@@ -219,26 +254,54 @@ public class RTMPConnection extends EventDispatcher {
         socket.close();
     }
 
-    void listen(final ByteBuffer buffer) {
-        if (!buffer.hasRemaining()) {
-            return;
-        }
-        byte first = buffer.get();
-        RTMPChunk chunk = RTMPChunk.rawValue((byte) (first >> 6));
-        buffer.position(buffer.position() - 1);
-        short streamID = chunk.getStreamID(buffer);
-        if (messages.containsKey(streamID)) {
+    Map<Short, RTMPMessage> getMessages() {
+        return messages;
+    }
 
+    void listen(final ByteBuffer buffer) {
+        byte first = buffer.get();
+        RTMPChunk chunk = RTMPChunk.rawValue((byte) ((first & 0xff) >> 6));
+        short streamID = chunk.getStreamID(buffer);
+
+        ByteBuffer payload;
+        RTMPMessage message;
+        if (chunk == RTMPChunk.THREE) {
+            payload = payloads.get(streamID);
+            message = messages.get(streamID);
+            int remaining = payload.remaining();
+            if (socket.getChunkSizeC() < remaining) {
+                remaining = socket.getChunkSizeC();
+            }
+            payload.put(buffer.array(), buffer.position(), remaining);
+            buffer.position(buffer.position() + remaining);
+            if (!payload.hasRemaining()) {
+                payload.flip();
+                message.decode(socket, payload).execute(this);
+                payloads.remove(payload);
+            }
         } else {
-            chunk.decode(socket, buffer).execute(this);
+            message = chunk.decode(streamID, this, buffer);
+            if (message.getLength() <= socket.getChunkSizeC()) {
+                message.decode(socket, buffer).execute(this);
+            } else {
+                payload = ByteBuffer.allocate(message.getLength());
+                payload.put(buffer.array(), buffer.position(), socket.getChunkSizeC());
+                buffer.position(buffer.position() + socket.getChunkSizeC());
+                payloads.put(streamID, payload);
+            }
+            messages.put(streamID, message);
+        }
+
+        if (buffer.hasRemaining()) {
             listen(buffer);
         }
     }
 
     void createStream(final RTMPStream stream) {
-        call("commandName", new IResponder() {
+        call("createStream", new IResponder() {
             @Override
             public void onResult(List<Object> arguments) {
+                stream.setId(new Double((double) arguments.get(0)).intValue());
                 stream.setReadyState(RTMPStream.ReadyState.OPEN);
             }
             @Override
@@ -269,11 +332,7 @@ public class RTMPConnection extends EventDispatcher {
         message.setTransactionID(++transactionID);
         message.setCommandObject(commandObject);
         if (arguments != null) {
-            List<Object> args = new ArrayList<Object>(arguments.length);
-            for (Object object : arguments) {
-                args.add(object);
-            }
-            message.setArguments(args);
+            message.setArguments(Arrays.asList(arguments));
         }
         return message;
     }
