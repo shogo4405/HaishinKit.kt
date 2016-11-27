@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EventDispatcher implements IEventDispatcher {
     private final IEventDispatcher target;
-    private Map<String, List<IEventListener>> listeners = new ConcurrentHashMap<String, List<IEventListener>>();
+    private ConcurrentHashMap<String, List<IEventListener>> listeners = new ConcurrentHashMap<String, List<IEventListener>>();
 
     public EventDispatcher(final IEventDispatcher target) {
         this.target = target;
@@ -18,13 +18,8 @@ public class EventDispatcher implements IEventDispatcher {
 
     public void addEventListener(final String type, final IEventListener listener, final boolean useCapture) {
         String key = type + "/" + new Boolean(useCapture).toString();
-        List<IEventListener> list = null;
-        if (listeners.containsKey(key)) {
-            list = listeners.get(key);
-        } else {
-            list = Collections.synchronizedList(new ArrayList<IEventListener>());
-            listeners.put(key, list);
-        }
+        listeners.putIfAbsent(key, Collections.synchronizedList(new ArrayList<IEventListener>()));
+        List<IEventListener> list = listeners.get(key);
         list.add(listener);
     }
 
@@ -84,6 +79,16 @@ public class EventDispatcher implements IEventDispatcher {
 
     public void removeEventListener(final String type, final IEventListener listener, final boolean useCapture) {
         String key = type + "/" + new Boolean(useCapture).toString();
+        if (!listeners.containsKey(key)) {
+            return;
+        }
+        List<IEventListener> list = listeners.get(key);
+        for (int i = list.size() - 1; 0 <= i; --i) {
+            if (list.get(i) == listener) {
+                list.remove(i);
+                return;
+            }
+        }
     }
 
     public void removeEventListener(final String type, final IEventListener listener) {

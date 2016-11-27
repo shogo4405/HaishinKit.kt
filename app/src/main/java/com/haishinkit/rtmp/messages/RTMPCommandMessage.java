@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import com.haishinkit.amf.AMF0Deserializer;
 import com.haishinkit.amf.AMF0Serializer;
 import com.haishinkit.events.Event;
+import com.haishinkit.net.IResponder;
 import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPObjectEncoding;
 import com.haishinkit.rtmp.RTMPSocket;
@@ -104,6 +105,22 @@ public final class RTMPCommandMessage extends RTMPMessage {
 
     public RTMPMessage execute(final RTMPConnection connection) {
         String commandName = getCommandName();
+        Map<Integer, IResponder> responders = connection.getResponders();
+
+        if (responders.containsKey(getTransactionID())) {
+            IResponder responder = responders.get(getTransactionID());
+            switch (commandName) {
+                case "_result":
+                    responder.onResult(getArguments());
+                    return this;
+                case "_error":
+                    responder.onStatus(getArguments());
+                    return this;
+            }
+            responders.remove(responder);
+            return this;
+        }
+
         switch (commandName) {
             case "close":
                 connection.close();
@@ -112,6 +129,7 @@ public final class RTMPCommandMessage extends RTMPMessage {
                 connection.dispatchEventWith(Event.RTMP_STATUS, false, arguments.isEmpty() ? null : arguments.get(0));
                 break;
         }
+
         return this;
     }
 }
