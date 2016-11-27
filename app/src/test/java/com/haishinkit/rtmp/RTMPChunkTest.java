@@ -1,7 +1,7 @@
 package com.haishinkit.rtmp;
 
-import com.haishinkit.rtmp.message.RTMPCommandMessage;
-import com.haishinkit.rtmp.message.RTMPSetChunkSizeMessage;
+import com.haishinkit.rtmp.messages.RTMPCommandMessage;
+import com.haishinkit.rtmp.messages.RTMPSetChunkSizeMessage;
 import com.haishinkit.util.ByteBufferUtils;
 
 import org.junit.Test;

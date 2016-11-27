@@ -1,6 +1,6 @@
 package com.haishinkit.rtmp;
 
-import com.haishinkit.rtmp.message.RTMPMessage;
+import com.haishinkit.rtmp.messages.RTMPMessage;
 
 public enum RTMPObjectEncoding {
     AMF0((short) 0, RTMPMessage.Type.AMF0_DATA, RTMPMessage.Type.AMF0_SHARED, RTMPMessage.Type.AMF0_COMMAND),

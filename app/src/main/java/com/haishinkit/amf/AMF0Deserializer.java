@@ -2,9 +2,8 @@ package com.haishinkit.amf;
 
 import android.util.Log;
 
-import com.haishinkit.as3.ASUndefined;
-import com.haishinkit.as3.ASXMLDocument;
-import com.haishinkit.as3.ASArray;
+import com.haishinkit.amf.data.ASXMLDocument;
+import com.haishinkit.amf.data.ASArray;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -40,7 +39,7 @@ public final class AMF0Deserializer {
             case 0x05: // null
                 return null;
             case 0x06: // undefined
-                return ASUndefined.getInstance();
+                return ASArray.ASUndefined.getInstance();
             case 0x07: // reference
                 throw new UnsupportedOperationException();
             case 0x08: // ecmaarray

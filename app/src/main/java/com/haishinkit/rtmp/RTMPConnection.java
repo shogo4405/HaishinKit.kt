@@ -7,10 +7,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
-import com.haishinkit.rtmp.message.RTMPCommandMessage;
-import com.haishinkit.rtmp.message.RTMPMessage;
-import com.haishinkit.util.ByteBufferUtils;
-import com.haishinkit.util.Log;
+import com.haishinkit.rtmp.messages.RTMPCommandMessage;
+import com.haishinkit.rtmp.messages.RTMPMessage;
 
 public class RTMPConnection {
     public static final int DEFAULT_PORT = 1935;

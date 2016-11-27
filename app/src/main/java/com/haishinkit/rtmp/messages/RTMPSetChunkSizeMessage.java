@@ -1,4 +1,4 @@
-package com.haishinkit.rtmp.message;
+package com.haishinkit.rtmp.messages;
 
 import java.nio.ByteBuffer;
 

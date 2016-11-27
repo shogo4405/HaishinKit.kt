@@ -1,4 +1,4 @@
-package com.haishinkit.as3;
+package com.haishinkit.amf.data;
 
 import java.util.ArrayList;
 import java.util.Map;

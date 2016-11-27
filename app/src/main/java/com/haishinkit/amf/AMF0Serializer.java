@@ -1,6 +1,6 @@
 package com.haishinkit.amf;
 
-import com.haishinkit.as3.ASUndefined;
+import com.haishinkit.amf.data.ASArray;
 
 import java.util.Map;
 import java.util.List;
@@ -105,7 +105,7 @@ public final class AMF0Serializer {
         if (value instanceof List) {
             return putList((List<Object>) value);
         }
-        if (value instanceof ASUndefined) {
+        if (value instanceof ASArray.ASUndefined) {
             buffer.put(AMF0Marker.UNDEFINED.valueOf());
             return this;
         }

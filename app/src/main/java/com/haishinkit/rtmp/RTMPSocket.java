@@ -3,7 +3,7 @@ package com.haishinkit.rtmp;
 import java.nio.ByteBuffer;
 import com.haishinkit.net.Socket;
 import com.haishinkit.util.Log;
-import com.haishinkit.rtmp.message.RTMPMessage;
+import com.haishinkit.rtmp.messages.RTMPMessage;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

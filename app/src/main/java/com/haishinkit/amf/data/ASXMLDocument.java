@@ -1,4 +1,4 @@
-package com.haishinkit.as3;
+package com.haishinkit.amf.data;
 
 public final class ASXMLDocument {
     private final String document;

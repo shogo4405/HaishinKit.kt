@@ -1,4 +1,4 @@
-package com.haishinkit.rtmp.message;
+package com.haishinkit.rtmp.messages;
 
 import com.haishinkit.lang.IRawValue;
 import com.haishinkit.util.Log;

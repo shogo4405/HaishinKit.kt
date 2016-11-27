@@ -1,4 +1,4 @@
-package com.haishinkit.rtmp.message;
+package com.haishinkit.rtmp.messages;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -7,13 +7,9 @@ import java.nio.ByteBuffer;
 
 import com.haishinkit.amf.AMF0Deserializer;
 import com.haishinkit.amf.AMF0Serializer;
-import com.haishinkit.rtmp.RTMPChunk;
 import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPObjectEncoding;
 import com.haishinkit.rtmp.RTMPSocket;
-import com.haishinkit.util.ByteBufferUtils;
-
-import org.apache.commons.lang3.NotImplementedException;
 
 public final class RTMPCommandMessage extends RTMPMessage {
     private static final int CAPACITY = 1024;
@@ -103,8 +99,6 @@ public final class RTMPCommandMessage extends RTMPMessage {
             arguments.add(deserializer.getObject());
         }
         setArguments(arguments);
-
-        System.out.println(this);
 
         return this;
     }
