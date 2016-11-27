@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 
 import com.haishinkit.amf.AMF0Deserializer;
 import com.haishinkit.amf.AMF0Serializer;
+import com.haishinkit.events.Event;
 import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPObjectEncoding;
 import com.haishinkit.rtmp.RTMPSocket;
@@ -88,7 +89,6 @@ public final class RTMPCommandMessage extends RTMPMessage {
         if (socket == null || buffer == null) {
             throw new IllegalArgumentException();
         }
-
         int position = buffer.position();
         AMF0Deserializer deserializer = new AMF0Deserializer(buffer);
         setCommandName(deserializer.getString());
@@ -99,17 +99,18 @@ public final class RTMPCommandMessage extends RTMPMessage {
             arguments.add(deserializer.getObject());
         }
         setArguments(arguments);
-
         return this;
     }
 
     public RTMPMessage execute(final RTMPConnection connection) {
         String commandName = getCommandName();
-        if (commandName.equals("_result")) {
-            return this;
-        }
-        if (commandName.equals("_error")) {
-            return this;
+        switch (commandName) {
+            case "close":
+                connection.close();
+                break;
+            default:
+                connection.dispatchEventWith(Event.RTMP_STATUS, false, arguments.isEmpty() ? null : arguments.get(0));
+                break;
         }
         return this;
     }

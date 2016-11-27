@@ -7,10 +7,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
+import com.haishinkit.events.Event;
+import com.haishinkit.events.EventDispatcher;
+import com.haishinkit.events.IEventListener;
 import com.haishinkit.rtmp.messages.RTMPCommandMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
+import com.haishinkit.util.EventUtils;
 
-public class RTMPConnection {
+public class RTMPConnection extends EventDispatcher {
     public static final int DEFAULT_PORT = 1935;
     public static final String DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)";
     public static final RTMPObjectEncoding DEFAULT_OBJECT_ENCODING = RTMPObjectEncoding.AMF0;
@@ -90,6 +94,13 @@ public class RTMPConnection {
     private Map<Short, ByteBuffer> messages = new HashMap<Short, ByteBuffer>();
 
     public RTMPConnection() {
+        super(null);
+        addEventListener(Event.RTMP_STATUS, new IEventListener() {
+            @Override
+            public void handleEvent(final Event event) {
+                Map<String, Object> map = EventUtils.toMap(event);
+            }
+        });
     }
 
     public RTMPSocket getSocket() {

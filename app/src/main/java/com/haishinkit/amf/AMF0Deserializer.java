@@ -3,6 +3,7 @@ package com.haishinkit.amf;
 import android.util.Log;
 
 import com.haishinkit.amf.data.ASXMLDocument;
+import com.haishinkit.amf.data.ASUndefined;
 import com.haishinkit.amf.data.ASArray;
 
 import java.io.UnsupportedEncodingException;
@@ -39,7 +40,7 @@ public final class AMF0Deserializer {
             case 0x05: // null
                 return null;
             case 0x06: // undefined
-                return ASArray.ASUndefined.getInstance();
+                return ASUndefined.getInstance();
             case 0x07: // reference
                 throw new UnsupportedOperationException();
             case 0x08: // ecmaarray
@@ -133,7 +134,6 @@ public final class AMF0Deserializer {
         ASArray array = new ASArray(count);
         while (true) {
             String key = getString(true);
-            System.out.println(key);
             if (key.equals("")) {
                 buffer.get();
                 break;
