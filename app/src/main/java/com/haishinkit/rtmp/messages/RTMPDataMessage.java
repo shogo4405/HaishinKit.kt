@@ -42,7 +42,7 @@ public final class RTMPDataMessage extends RTMPMessage {
     }
 
     @Override
-    public RTMPMessage decode(final RTMPSocket socket, final ByteBuffer buffer) {
+    public RTMPMessage decode(final ByteBuffer buffer) {
         int eom = buffer.position() + getLength();
         AMF0Deserializer deserializer = new AMF0Deserializer(buffer);
         setHandlerName(deserializer.getString());

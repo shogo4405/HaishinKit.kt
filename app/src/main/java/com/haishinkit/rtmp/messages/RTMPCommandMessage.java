@@ -86,8 +86,8 @@ public final class RTMPCommandMessage extends RTMPMessage {
     }
 
     @Override
-    public RTMPMessage decode(final RTMPSocket socket, final ByteBuffer buffer) {
-        if (socket == null || buffer == null) {
+    public RTMPMessage decode(final ByteBuffer buffer) {
+        if (buffer == null) {
             throw new IllegalArgumentException();
         }
         int position = buffer.position();

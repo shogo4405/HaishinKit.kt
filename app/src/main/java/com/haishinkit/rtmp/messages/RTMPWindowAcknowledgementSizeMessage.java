@@ -32,12 +32,18 @@ public final class RTMPWindowAcknowledgementSizeMessage extends RTMPMessage {
     }
 
     @Override
-    public RTMPMessage decode(final RTMPSocket socket, final ByteBuffer buffer) {
+    public RTMPMessage decode(final ByteBuffer buffer) {
+        if (buffer == null) {
+            throw new IllegalArgumentException();
+        }
         return setSize(buffer.getInt());
     }
 
     @Override
     public RTMPMessage execute(final RTMPConnection connection) {
+        if (connection == null) {
+            throw new IllegalArgumentException();
+        }
         connection.getSocket().doOutput(
                 RTMPChunk.ZERO,
                 new RTMPWindowAcknowledgementSizeMessage()

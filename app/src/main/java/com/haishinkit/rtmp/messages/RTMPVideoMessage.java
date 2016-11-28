@@ -11,13 +11,19 @@ public final class RTMPVideoMessage extends RTMPMessage {
     }
 
     @Override
-    public RTMPMessage decode(final RTMPSocket socket, final ByteBuffer buffer) {
+    public RTMPMessage decode(final ByteBuffer buffer) {
+        if (buffer == null) {
+            throw new IllegalArgumentException();
+        }
         buffer.position(buffer.position() + getLength());
         return this;
     }
 
     @Override
     public RTMPMessage execute(final RTMPConnection connection) {
+        if (connection == null) {
+            throw new IllegalArgumentException();
+        }
         return this;
     }
 }

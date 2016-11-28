@@ -81,7 +81,6 @@ public final class RTMPSocket extends Socket {
 
     @Override
     protected void listen(final ByteBuffer buffer) {
-        Log.v(getClass().getName() + "#listen", "readyState:" + readyState + ":" + buffer.toString());
         switch (readyState) {
             case VersionSent:
                 if (buffer.limit() < RTMPHandshake.SIGNAL_SIZE + 1) {
@@ -107,7 +106,14 @@ public final class RTMPSocket extends Socket {
                 doOutput(RTMPChunk.ZERO, connection.createConnectionMessage());
                 break;
             case HandshakeDone:
-                connection.listen(buffer);
+                try {
+                    connection.listen(buffer);
+                } catch (IndexOutOfBoundsException e) {
+
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                    throw e;
+                }
                 break;
             default:
                 break;

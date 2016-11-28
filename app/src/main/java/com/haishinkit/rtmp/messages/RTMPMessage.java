@@ -42,7 +42,6 @@ public class RTMPMessage {
     }
 
     public static RTMPMessage create(final byte value) {
-        Log.i(RTMPMessage.class.getName(), new Byte(value).toString());
         switch (value) {
             case 0x01:
                 return new RTMPSetChunkSizeMessage();
@@ -119,7 +118,7 @@ public class RTMPMessage {
         throw new NotImplementedException(getClass().getName() + "#encode");
     }
 
-    public RTMPMessage decode(final RTMPSocket socket, final ByteBuffer buffer) {
+    public RTMPMessage decode(final ByteBuffer buffer) {
         throw new NotImplementedException(getClass().getName() + "#decode");
     }
 

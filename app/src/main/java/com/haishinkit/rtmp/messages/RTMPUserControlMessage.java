@@ -83,6 +83,9 @@ public final class RTMPUserControlMessage extends RTMPMessage {
 
     @Override
     public ByteBuffer encode(final RTMPSocket socket) {
+        if (socket == null) {
+            throw new IllegalArgumentException();
+        }
         ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
         buffer.putShort(getEvent().rawValue());
         buffer.putInt(value);
@@ -90,12 +93,18 @@ public final class RTMPUserControlMessage extends RTMPMessage {
     }
 
     @Override
-    public RTMPMessage decode(final RTMPSocket socket, final ByteBuffer buffer) {
+    public RTMPMessage decode(final ByteBuffer buffer) {
+        if (buffer == null) {
+            throw new IllegalArgumentException();
+        }
         return setEvent(Event.rawValue(buffer.getShort())).setValue(buffer.getInt());
     }
 
     @Override
     public RTMPMessage execute(final RTMPConnection connection) {
+        if (connection == null) {
+            throw new IllegalArgumentException();
+        }
         return this;
     }
 }

@@ -12,7 +12,7 @@ public final class RTMPConnectionTests {
         connection.connect("rtmp://localhost/vod");
         stream.play("sample.mp4");
         try {
-            Thread.sleep(1000 * 10);
+            Thread.sleep(1000 * 20);
         } catch (InterruptedException e) {
             Log.i("RTMPConnection#connect", e.toString());
         }

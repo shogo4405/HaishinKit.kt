@@ -1,7 +1,6 @@
 package com.haishinkit.rtmp;
 
 import java.net.URI;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +17,6 @@ import com.haishinkit.net.IResponder;
 import com.haishinkit.rtmp.messages.RTMPCommandMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
 import com.haishinkit.rtmp.messages.RTMPSetPeerBandwidthMessage;
-import com.haishinkit.util.ByteBufferUtils;
 import com.haishinkit.util.EventUtils;
 import com.haishinkit.util.Log;
 
@@ -259,37 +257,46 @@ public class RTMPConnection extends EventDispatcher {
     }
 
     void listen(final ByteBuffer buffer) {
-        byte first = buffer.get();
-        RTMPChunk chunk = RTMPChunk.rawValue((byte) ((first & 0xff) >> 6));
-        short streamID = chunk.getStreamID(buffer);
 
-        ByteBuffer payload;
-        RTMPMessage message;
-        if (chunk == RTMPChunk.THREE) {
-            payload = payloads.get(streamID);
-            message = messages.get(streamID);
-            int remaining = payload.remaining();
-            if (socket.getChunkSizeC() < remaining) {
-                remaining = socket.getChunkSizeC();
-            }
-            payload.put(buffer.array(), buffer.position(), remaining);
-            buffer.position(buffer.position() + remaining);
-            if (!payload.hasRemaining()) {
-                payload.flip();
-                message.decode(socket, payload).execute(this);
-                payloads.remove(payload);
-            }
-        } else {
-            message = chunk.decode(streamID, this, buffer);
-            if (message.getLength() <= socket.getChunkSizeC()) {
-                message.decode(socket, buffer).execute(this);
+        int rollback = buffer.position();
+
+        try {
+            byte first = buffer.get();
+            int chunkSizeC = socket.getChunkSizeC();
+            RTMPChunk chunk = RTMPChunk.rawValue((byte) ((first & 0xff) >> 6));
+            short streamID = chunk.getStreamID(buffer);
+
+            ByteBuffer payload;
+            RTMPMessage message;
+            if (chunk == RTMPChunk.THREE) {
+                payload = payloads.get(streamID);
+                message = messages.get(streamID);
+                int remaining = payload.remaining();
+                if (chunkSizeC < remaining) {
+                    remaining = chunkSizeC;
+                }
+                payload.put(buffer.array(), buffer.position(), remaining);
+                buffer.position(buffer.position() + remaining);
+                if (!payload.hasRemaining()) {
+                    payload.flip();
+                    message.decode(payload).execute(this);
+                    payloads.remove(payload);
+                }
             } else {
-                payload = ByteBuffer.allocate(message.getLength());
-                payload.put(buffer.array(), buffer.position(), socket.getChunkSizeC());
-                buffer.position(buffer.position() + socket.getChunkSizeC());
-                payloads.put(streamID, payload);
+                message = chunk.decode(streamID, this, buffer);
+                if (message.getLength() <= chunkSizeC) {
+                    message.decode(buffer).execute(this);
+                } else {
+                    payload = ByteBuffer.allocate(message.getLength());
+                    payload.put(buffer.array(), buffer.position(), chunkSizeC);
+                    buffer.position(buffer.position() + chunkSizeC);
+                    payloads.put(streamID, payload);
+                }
+                messages.put(streamID, message);
             }
-            messages.put(streamID, message);
+        } catch (IndexOutOfBoundsException e) {
+            buffer.position(rollback);
+            throw e;
         }
 
         if (buffer.hasRemaining()) {
