@@ -1,27 +1,29 @@
 package com.haishinkit.media;
 
 import android.media.MediaCodec;
+
+import com.haishinkit.iso.AVCConfigurationRecord;
+
 import java.nio.ByteBuffer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import com.haishinkit.lang.IRunnable;
 
-public abstract class EncoderBase implements IRunnable {
+public abstract class EncoderBase implements IEncoder {
     private final String mime;
     private MediaCodec codec = null;
     private AtomicBoolean running = new AtomicBoolean(false);
-    private IEncoderDelegate delegate = null;
+    private IEncoderListener listener = null;
 
     public EncoderBase(final String mime) {
         this.mime = mime;
     }
 
-    public IEncoderDelegate getDelegate() {
-        return delegate;
+    public IEncoderListener getListener() {
+        return listener;
     }
 
-    public EncoderBase setDelegate(final IEncoderDelegate delegate) {
-        this.delegate = delegate;
+    public EncoderBase setListener(final IEncoderListener listener) {
+        this.listener = listener;
         return this;
     }
 
@@ -47,6 +49,7 @@ public abstract class EncoderBase implements IRunnable {
             return;
         }
         codec.stop();
+        codec.release();
         codec = null;
         running.set(false);
     }
@@ -64,19 +67,35 @@ public abstract class EncoderBase implements IRunnable {
                 codec.queueInputBuffer(inputBufferIndex, 0, data.length, 0, 0);
             }
 
-            MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-            int outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, 0);
-            while (0 <= outputBufferIndex) {
-                byte[] outData = new byte[bufferInfo.size];
-                ByteBuffer outputBuffer = outputBuffers[outputBufferIndex];
-                outputBuffer.get(outData);
-                outputBuffer.flip();
-                if (delegate != null) {
-                    delegate.sampleOutput(mime, bufferInfo, outputBuffer);
-                }
-                codec.releaseOutputBuffer(outputBufferIndex, false);
+            int outputBufferIndex = 0;
+            do {
+                MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
                 outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, 0);
-            }
+                switch (outputBufferIndex) {
+                    case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
+                        if (listener != null) {
+                            listener.onFormatChanged(mime, codec.getOutputFormat());
+                        }
+                        break;
+                    case MediaCodec.INFO_TRY_AGAIN_LATER:
+                        break;
+                    case MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED:
+                        break;
+                    default:
+                        if (0 <= outputBufferIndex) {
+                            byte[] outData = new byte[bufferInfo.size];
+                            ByteBuffer outputBuffer = outputBuffers[outputBufferIndex];
+                            outputBuffer.get(outData);
+                            outputBuffer.flip();
+                            if (listener != null) {
+                                listener.onSampleOutput(mime, bufferInfo, outputBuffer);
+                            }
+                            codec.releaseOutputBuffer(outputBufferIndex, false);
+                            outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, 0);
+                        }
+                        break;
+                }
+            } while (0 <= outputBufferIndex);
         } catch (Exception e) {
             e.printStackTrace();
         }

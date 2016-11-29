@@ -1,10 +1,14 @@
 package com.haishinkit.rtmp.messages;
 
 import com.haishinkit.lang.IRawValue;
+import com.haishinkit.rtmp.RTMPChunk;
 import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPSocket;
+import com.haishinkit.rtmp.RTMPStream;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.HashMap;
 
 public final class RTMPUserControlMessage extends RTMPMessage {
     private static int CAPACITY = 6;
@@ -102,8 +106,27 @@ public final class RTMPUserControlMessage extends RTMPMessage {
 
     @Override
     public RTMPMessage execute(final RTMPConnection connection) {
-        if (connection == null) {
-            throw new IllegalArgumentException();
+        switch (getEvent()) {
+            case PING:
+                connection.getSocket().doOutput(
+                        RTMPChunk.ZERO,
+                        new RTMPUserControlMessage()
+                            .setEvent(Event.PONG)
+                            .setChunkStreamID(RTMPChunk.CONTROL)
+                );
+                break;
+            case BUFFER_FULL:
+            case BUFFER_EMPTY:
+                RTMPStream stream = connection.getStreams().get(getValue());
+                if (stream != null) {
+                    Map<String, Object> data = (getEvent() == Event.BUFFER_FULL) ?
+                            RTMPStream.Codes.BUFFER_FLUSH.data(null) :
+                            RTMPStream.Codes.BUFFER_EMPTY.data(null);
+                    stream.dispatchEventWith(com.haishinkit.events.Event.RTMP_STATUS, false, data);
+                }
+                break;
+            default:
+                break;
         }
         return this;
     }

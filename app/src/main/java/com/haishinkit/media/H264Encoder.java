@@ -4,6 +4,10 @@ import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaCodecInfo;
 
+import com.haishinkit.iso.AVCConfigurationRecord;
+import com.haishinkit.util.ByteBufferUtils;
+import com.haishinkit.util.Log;
+
 import java.io.IOException;
 
 public final class H264Encoder extends EncoderBase {

@@ -20,6 +20,8 @@ import com.haishinkit.rtmp.messages.RTMPSetPeerBandwidthMessage;
 import com.haishinkit.util.EventUtils;
 import com.haishinkit.util.Log;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class RTMPConnection extends EventDispatcher {
     public static final int DEFAULT_PORT = 1935;
     public static final String DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)";
@@ -47,6 +49,16 @@ public class RTMPConnection extends EventDispatcher {
         Codes(final String rawValue, final String level) {
             this.rawValue = rawValue;
             this.level = level;
+        }
+
+        public Map<String, Object> data(final String description) {
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("code", rawValue);
+            data.put("level", level);
+            if (StringUtils.isNoneEmpty(description)) {
+                data.put("description", description);
+            }
+            return data;
         }
 
         public String getLevel() {
@@ -155,12 +167,17 @@ public class RTMPConnection extends EventDispatcher {
     private Object[] arguments = null;
     private Map<Short, ByteBuffer> payloads = new ConcurrentHashMap<Short, ByteBuffer>();
     private Map<Short, RTMPMessage> messages = new ConcurrentHashMap<Short, RTMPMessage>();
+    private Map<Integer, RTMPStream> streams = new ConcurrentHashMap<Integer, RTMPStream>();
     private Map<Integer, IResponder> responders = new ConcurrentHashMap<Integer, IResponder>();
     private RTMPSocket socket = new RTMPSocket(this);
 
     public RTMPConnection() {
         super(null);
         addEventListener(Event.RTMP_STATUS, new EventListener(this));
+    }
+
+    public Map<Integer, RTMPStream> getStreams() {
+        return streams;
     }
 
     public RTMPSocket getSocket() {
@@ -308,7 +325,9 @@ public class RTMPConnection extends EventDispatcher {
         call("createStream", new IResponder() {
             @Override
             public void onResult(List<Object> arguments) {
-                stream.setId(new Double((double) arguments.get(0)).intValue());
+                int id = new Double((double) arguments.get(0)).intValue();
+                stream.setId(id);
+                streams.put(id, stream);
                 stream.setReadyState(RTMPStream.ReadyState.OPEN);
             }
             @Override

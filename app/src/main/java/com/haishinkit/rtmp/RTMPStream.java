@@ -8,11 +8,12 @@ import com.haishinkit.events.EventDispatcher;
 import com.haishinkit.events.IEventListener;
 import com.haishinkit.lang.IRawValue;
 import com.haishinkit.media.H264Encoder;
-import com.haishinkit.media.IEncoderDelegate;
+import com.haishinkit.media.IEncoder;
 import com.haishinkit.rtmp.messages.RTMPCommandMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
 import com.haishinkit.util.EventUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.nio.ByteBuffer;
@@ -21,8 +22,58 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RTMPStream extends EventDispatcher {
+
+    public enum HowToPublish implements IRawValue<String> {
+        RECORD("record"),
+        APPEND("append"),
+        APPEND_WITH_GAP("appendWithGap"),
+        LIVE("live");
+
+        private final String valueOf;
+
+        HowToPublish(final String valueOf) {
+            this.valueOf = valueOf;
+        }
+
+        public String rawValue() {
+            return valueOf;
+        }
+    }
+
+    public enum Codes implements IRawValue<String> {
+        BUFFER_EMPTY("NetStream.Buffer.Empty", "status"),
+        BUFFER_FLUSH("NetStream.Buffer.Flush", "status"),
+        BUFFER_FULL("NetStream.Buffer.Full", "status");
+
+        private final String rawValue;
+        private final String level;
+
+        Codes(final String rawValue, final String level) {
+            this.rawValue = rawValue;
+            this.level = level;
+        }
+
+        public Map<String, Object> data(final String description) {
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("code", rawValue);
+            data.put("level", level);
+            if (StringUtils.isNoneEmpty(description)) {
+                data.put("description", description);
+            }
+            return data;
+        }
+
+        public String getLevel() {
+            return level;
+        }
+
+        public String rawValue() {
+            return rawValue;
+        }
+    }
 
     private class EventListener implements IEventListener {
         private final RTMPStream stream;
@@ -48,23 +99,6 @@ public class RTMPStream extends EventDispatcher {
         }
     }
 
-    public enum HowToPublish implements IRawValue<String> {
-        RECORD("record"),
-        APPEND("append"),
-        APPEND_WITH_GAP("appendWithGap"),
-        LIVE("live");
-
-        private final String valueOf;
-
-        HowToPublish(final String valueOf) {
-            this.valueOf = valueOf;
-        }
-
-        public String rawValue() {
-            return valueOf;
-        }
-    }
-
     enum ReadyState implements IRawValue<Byte> {
         INITIALIZED((byte) 0x00),
         OPEN((byte) 0x01),
@@ -86,7 +120,8 @@ public class RTMPStream extends EventDispatcher {
     }
 
     private int id = 0;
-    private H264Encoder encoder = new H264Encoder();
+    private RTMPMuxer muxer = null;
+    private Map<String, IEncoder> encoders = new ConcurrentHashMap<String, IEncoder>();
     private ReadyState readyState = ReadyState.INITIALIZED;
     private RTMPConnection connection = null;
     private List<RTMPMessage> messages = new ArrayList<RTMPMessage>();
@@ -112,10 +147,11 @@ public class RTMPStream extends EventDispatcher {
         camera.setPreviewCallback(new Camera.PreviewCallback() {
             @Override
             public void onPreviewFrame(byte[] bytes, Camera camera) {
-                encoder.encodeBytes(bytes);
+                getEncoderByName("video/avc").encodeBytes(bytes);
             }
         });
-        encoder.startRunning();
+        // TODO: For debugging
+        getEncoderByName("video/avc").startRunning();
     }
 
     public void publish(final String name) {
@@ -225,9 +261,34 @@ public class RTMPStream extends EventDispatcher {
                 }
                 messages.clear();
                 break;
+            case PUBLISHING:
+                for (IEncoder encoder : encoders.values()) {
+                    encoder.setDelegate(getMuxer());
+                    encoder.startRunning();
+                }
             default:
                 break;
         }
         return this;
+    }
+
+    protected RTMPMuxer getMuxer() {
+        if (muxer == null) {
+            muxer = new RTMPMuxer(this);
+        }
+        return muxer;
+    }
+
+    protected IEncoder getEncoderByName(final String mime) {
+        if (!encoders.containsKey(mime)) {
+            switch (mime) {
+                case "video/avc":
+                    encoders.put(mime, new H264Encoder());
+                    break;
+                default:
+                    break;
+            }
+        }
+        return encoders.get(mime);
     }
 }
