@@ -75,7 +75,7 @@ public class RTMPStream extends EventDispatcher {
         }
     }
 
-    private class EventListener implements IEventListener {
+    private final class EventListener implements IEventListener {
         private final RTMPStream stream;
 
         EventListener(final RTMPStream stream) {
@@ -88,6 +88,9 @@ public class RTMPStream extends EventDispatcher {
             switch (data.get("code").toString()) {
                 case "NetConnection.Connect.Success":
                     connection.createStream(stream);
+                    break;
+                case "NetStream.Publish.Start":
+                    stream.setReadyState(ReadyState.PUBLISHING);
                     break;
                 default:
                     break;
@@ -119,16 +122,17 @@ public class RTMPStream extends EventDispatcher {
         }
     }
 
+    RTMPConnection connection = null;
     private int id = 0;
     private RTMPMuxer muxer = null;
     private Map<String, IEncoder> encoders = new ConcurrentHashMap<String, IEncoder>();
     private ReadyState readyState = ReadyState.INITIALIZED;
-    private RTMPConnection connection = null;
     private List<RTMPMessage> messages = new ArrayList<RTMPMessage>();
     private final IEventListener listener = new EventListener(this);
 
     public RTMPStream(final RTMPConnection connection) {
         super(null);
+        addEventListener(Event.RTMP_STATUS, listener);
         this.connection = connection;
         this.connection.addEventListener(Event.RTMP_STATUS, listener);
         if (this.connection.isConnected()) {
@@ -151,7 +155,7 @@ public class RTMPStream extends EventDispatcher {
             }
         });
         // TODO: For debugging
-        getEncoderByName("video/avc").startRunning();
+        //getEncoderByName("video/avc").startRunning();
     }
 
     public void publish(final String name) {
@@ -191,6 +195,7 @@ public class RTMPStream extends EventDispatcher {
                 break;
             case OPEN:
                 connection.getSocket().doOutput(RTMPChunk.ZERO, message);
+                setReadyState(ReadyState.PUBLISH);
                 break;
             default:
                 break;
@@ -263,7 +268,7 @@ public class RTMPStream extends EventDispatcher {
                 break;
             case PUBLISHING:
                 for (IEncoder encoder : encoders.values()) {
-                    encoder.setDelegate(getMuxer());
+                    encoder.setListener(getMuxer());
                     encoder.startRunning();
                 }
             default:

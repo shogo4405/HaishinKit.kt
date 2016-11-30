@@ -12,6 +12,8 @@ import com.haishinkit.net.IResponder;
 import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPObjectEncoding;
 import com.haishinkit.rtmp.RTMPSocket;
+import com.haishinkit.rtmp.RTMPStream;
+import com.haishinkit.util.EventUtils;
 
 public final class RTMPCommandMessage extends RTMPMessage {
     private static final int CAPACITY = 1024;
@@ -124,6 +126,14 @@ public final class RTMPCommandMessage extends RTMPMessage {
         switch (commandName) {
             case "close":
                 connection.close();
+                break;
+            case "onStatus":
+                RTMPStream stream = connection.getStreams().get(getStreamID());
+                if (stream != null) {
+                    stream.dispatchEventWith(
+                            Event.RTMP_STATUS, false, arguments.isEmpty() ? null : arguments.get(0)
+                    );
+                }
                 break;
             default:
                 connection.dispatchEventWith(Event.RTMP_STATUS, false, arguments.isEmpty() ? null : arguments.get(0));

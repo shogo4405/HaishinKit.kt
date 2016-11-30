@@ -9,8 +9,8 @@ public final class RTMPConnectionTests {
     public void connect() {
         RTMPConnection connection = new RTMPConnection();
         RTMPStream stream = new RTMPStream(connection);
-        connection.connect("rtmp://localhost/vod");
-        stream.play("sample.mp4");
+        connection.connect("rtmp://localhost/live");
+        stream.publish("sample");
         try {
             Thread.sleep(1000 * 20);
         } catch (InterruptedException e) {

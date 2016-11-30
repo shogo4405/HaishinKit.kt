@@ -53,6 +53,10 @@ public abstract class EncoderBase implements IEncoder {
     }
 
     public synchronized final void encodeBytes(byte[] data) {
+        if (!running.get()) {
+            return;
+        }
+
         try {
             ByteBuffer[] inputBuffers = codec.getInputBuffers();
             ByteBuffer[] outputBuffers = codec.getOutputBuffers();

@@ -297,12 +297,14 @@ public class RTMPConnection extends EventDispatcher {
                 if (!payload.hasRemaining()) {
                     payload.flip();
                     message.decode(payload).execute(this);
+                    Log.v(getClass().getName(), message.toString());
                     payloads.remove(payload);
                 }
             } else {
                 message = chunk.decode(streamID, this, buffer);
                 if (message.getLength() <= chunkSizeC) {
                     message.decode(buffer).execute(this);
+                    Log.v(getClass().getName(), message.toString());
                 } else {
                     payload = ByteBuffer.allocate(message.getLength());
                     payload.put(buffer.array(), buffer.position(), chunkSizeC);

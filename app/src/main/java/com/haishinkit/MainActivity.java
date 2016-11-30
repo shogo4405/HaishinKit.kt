@@ -21,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
         cameraView = new CameraView(this);
         setContentView(cameraView);
-        // connection.connect("rtmp://192.168.179.3/live");
-        stream.attachCamera(cameraView.getCamera());
+        connection.connect("rtmp://192.168.179.3/live");
+        //stream.attachCamera(cameraView.getCamera());
+        stream.publish("live");
     }
 }
