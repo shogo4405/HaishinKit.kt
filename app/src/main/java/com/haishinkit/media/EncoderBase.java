@@ -2,8 +2,6 @@ package com.haishinkit.media;
 
 import android.media.MediaCodec;
 
-import com.haishinkit.iso.AVCConfigurationRecord;
-
 import java.nio.ByteBuffer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -91,7 +89,6 @@ public abstract class EncoderBase implements IEncoder {
                                 listener.onSampleOutput(mime, bufferInfo, outputBuffer);
                             }
                             codec.releaseOutputBuffer(outputBufferIndex, false);
-                            outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, 0);
                         }
                         break;
                 }

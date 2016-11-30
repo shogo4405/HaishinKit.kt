@@ -46,7 +46,6 @@ public final class AVCConfigurationRecord {
         if (spsBuffer == null || ppsBuffer == null) {
             throw new IllegalStateException();
         }
-        Log.i(getClass().getName(), "SPS:" + ByteBufferUtils.toHexString(spsBuffer) +",PPS:"+ ByteBufferUtils.toHexString(ppsBuffer));
 
         /**
          * SPS layout
@@ -61,6 +60,7 @@ public final class AVCConfigurationRecord {
          level_idc (8)
          ...
          */
+        spsBuffer.position(5);
         byte[] spsBytes = new byte[spsBuffer.remaining()];
         spsBuffer.get(spsBytes);
         setConfigurationVersion((byte) 0x01);
@@ -76,12 +76,11 @@ public final class AVCConfigurationRecord {
         setSequenceParameterSets(spsList);
 
         // PPS
+        ppsBuffer.position(5);
         byte[] ppsBytes = new byte[ppsBuffer.remaining()];
         List<byte[]> ppsList = new ArrayList<byte[]>(1);
         ppsList.add(ppsBytes);
         setPictureParameterSets(ppsList);
-
-        Log.w(getClass().getName(), this.toString());
     }
 
     public byte getConfigurationVersion() {
