@@ -1,14 +1,11 @@
 package com.haishinkit.rtmp;
 
-import java.nio.BufferOverflowException;
 import java.util.List;
 import java.util.ArrayList;
 import java.nio.ByteBuffer;
 
 import com.haishinkit.lang.IRawValue;
 import com.haishinkit.rtmp.messages.RTMPMessage;
-import com.haishinkit.util.ByteBufferUtils;
-import com.haishinkit.util.Log;
 
 public enum RTMPChunk implements IRawValue<Byte> {
     ZERO((byte) 0x00),
@@ -51,13 +48,13 @@ public enum RTMPChunk implements IRawValue<Byte> {
             throw new IllegalArgumentException();
         }
 
-        ByteBuffer payload = message.encode(socket);
+        final ByteBuffer payload = message.encode(socket);
         payload.flip();
 
-        List<ByteBuffer> list = new ArrayList<ByteBuffer>();
-        int length = payload.limit();
-        int timestamp = message.getTimestamp();
-        int chunkSize = socket.getChunkSizeC();
+        final List<ByteBuffer> list = new ArrayList<ByteBuffer>();
+        final int length = payload.limit();
+        final int timestamp = message.getTimestamp();
+        final int chunkSize = socket.getChunkSizeS();
         ByteBuffer buffer = ByteBuffer.allocate(length(message.getChunkStreamID()) + (length < chunkSize ? length : chunkSize));
         message.setLength(length);
 

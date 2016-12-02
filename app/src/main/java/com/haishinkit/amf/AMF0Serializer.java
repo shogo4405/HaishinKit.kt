@@ -95,6 +95,9 @@ public final class AMF0Serializer {
         if (value instanceof Integer) {
             return putDouble(((Integer) value).doubleValue());
         }
+        if (value instanceof Short) {
+            return putDouble(((Short) value).doubleValue());
+        }
         if (value instanceof Boolean) {
             return putBoolean((Boolean) value);
         }

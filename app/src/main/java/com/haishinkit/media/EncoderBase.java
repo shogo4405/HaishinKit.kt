@@ -2,6 +2,10 @@ package com.haishinkit.media;
 
 import android.media.MediaCodec;
 
+import com.haishinkit.util.Log;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.nio.ByteBuffer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,7 +56,7 @@ public abstract class EncoderBase implements IEncoder {
         running.set(false);
     }
 
-    public synchronized final void encodeBytes(byte[] data) {
+    public synchronized final void encodeBytes(byte[] data, long presentationTimeUs) {
         if (!running.get()) {
             return;
         }
@@ -66,7 +70,7 @@ public abstract class EncoderBase implements IEncoder {
                 ByteBuffer inputBuffer = inputBuffers[inputBufferIndex];
                 inputBuffer.clear();
                 inputBuffer.put(data);
-                codec.queueInputBuffer(inputBufferIndex, 0, data.length, 0, 0);
+                codec.queueInputBuffer(inputBufferIndex, 0, data.length, presentationTimeUs, 0);
             }
 
             int outputBufferIndex = 0;
@@ -98,7 +102,7 @@ public abstract class EncoderBase implements IEncoder {
                 }
             } while (0 <= outputBufferIndex);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.w(getClass().getName(), e.toString());
         }
     }
 

@@ -20,9 +20,10 @@ public class MainActivity extends AppCompatActivity {
         stream = new RTMPStream(connection);
 
         cameraView = new CameraView(this);
+        stream.attachCamera(cameraView.getCamera());
         setContentView(cameraView);
+
         connection.connect("rtmp://192.168.179.3/live");
-        //stream.attachCamera(cameraView.getCamera());
         stream.publish("live");
     }
 }

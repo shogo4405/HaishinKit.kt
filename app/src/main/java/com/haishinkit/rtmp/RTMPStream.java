@@ -10,8 +10,10 @@ import com.haishinkit.lang.IRawValue;
 import com.haishinkit.media.H264Encoder;
 import com.haishinkit.media.IEncoder;
 import com.haishinkit.rtmp.messages.RTMPCommandMessage;
+import com.haishinkit.rtmp.messages.RTMPDataMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
 import com.haishinkit.util.EventUtils;
+import com.haishinkit.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -129,15 +131,29 @@ public class RTMPStream extends EventDispatcher {
     private ReadyState readyState = ReadyState.INITIALIZED;
     private List<RTMPMessage> messages = new ArrayList<RTMPMessage>();
     private final IEventListener listener = new EventListener(this);
+    private final Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+        @Override
+        public void onPreviewFrame(byte[] bytes, Camera camera) {
+            switch (readyState) {
+                case PUBLISHING:
+                    getEncoderByName("video/avc").setListener(getMuxer());
+                    getEncoderByName("video/avc").startRunning();
+                    break;
+                default:
+                    break;
+            }
+            getEncoderByName("video/avc").encodeBytes(bytes, System.currentTimeMillis());
+        }
+    };
 
     public RTMPStream(final RTMPConnection connection) {
         super(null);
-        addEventListener(Event.RTMP_STATUS, listener);
         this.connection = connection;
         this.connection.addEventListener(Event.RTMP_STATUS, listener);
         if (this.connection.isConnected()) {
             this.connection.createStream(this);
         }
+        addEventListener(Event.RTMP_STATUS, listener);
     }
 
     public void attachCamera(final Camera camera) {
@@ -148,14 +164,7 @@ public class RTMPStream extends EventDispatcher {
         parameters.setPreviewFormat(ImageFormat.NV21);
         parameters.setPreviewSize(320, 240);
         camera.setParameters(parameters);
-        camera.setPreviewCallback(new Camera.PreviewCallback() {
-            @Override
-            public void onPreviewFrame(byte[] bytes, Camera camera) {
-                getEncoderByName("video/avc").encodeBytes(bytes);
-            }
-        });
-        // TODO: For debugging
-        //getEncoderByName("video/avc").startRunning();
+        camera.setPreviewCallback(previewCallback);
     }
 
     public void publish(final String name) {
@@ -239,6 +248,17 @@ public class RTMPStream extends EventDispatcher {
         }
     }
 
+    public void send(final String handlerName, final Object... arguments) {
+        if (readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED) {
+            return;
+        }
+        connection.getSocket().doOutput(RTMPChunk.ZERO, new RTMPDataMessage(connection.getObjectEncoding())
+                .setHandlerName(handlerName)
+                .setArguments(arguments == null ? null : Arrays.asList(arguments))
+                .setStreamID(getId())
+        );
+    }
+
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
@@ -267,6 +287,7 @@ public class RTMPStream extends EventDispatcher {
                 messages.clear();
                 break;
             case PUBLISHING:
+                // send("@setDataFrame", "onMetaData", createMetaData());
                 for (IEncoder encoder : encoders.values()) {
                     encoder.setListener(getMuxer());
                     encoder.startRunning();
@@ -282,6 +303,11 @@ public class RTMPStream extends EventDispatcher {
             muxer = new RTMPMuxer(this);
         }
         return muxer;
+    }
+
+    protected Map<String, Object> createMetaData() {
+        Map<String, Object> data = new HashMap<String, Object>();
+        return data;
     }
 
     protected IEncoder getEncoderByName(final String mime) {

@@ -2,6 +2,7 @@ package com.haishinkit.net;
 
 import com.haishinkit.util.Log;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.IOException;
@@ -35,11 +36,12 @@ public abstract class Socket {
         network.start();
     }
 
-    public final void close() {
+    public void close(final boolean disconnected) {
+        IOUtils.closeQuietly(socket);
         try {
-            socket.close();
-        } catch (IOException e) {
-            Log.e(getClass().getName(), e.toString());
+            network.join();
+        } catch (InterruptedException e) {
+            Log.w(getClass().getName() + "#close", e.toString());
         }
     }
 
@@ -67,7 +69,7 @@ public abstract class Socket {
             listen(buffer);
             inputBuffer = buffer.slice();
         } catch (IOException e) {
-            Log.w(getClass().getName(), e.toString());
+            close(true);
         }
     }
 
@@ -80,14 +82,14 @@ public abstract class Socket {
                     outputStream.flush();
                     outputQueue.remove(buffer);
                 } catch (IOException e) {
-                    Log.e(getClass().getName(), e.toString());
+                    //IOUtils.closeQuietly(socket);
+                    Log.e(getClass().getName() + "#doOutput", e.toString());
                 }
             }
         }
     }
 
     private void doConnection(final String dstName, final int dstPort) {
-        Log.v(getClass().getName(), dstName + ":" + dstPort);
         try {
             socket = new java.net.Socket(dstName, dstPort);
             if (socket.isConnected()) {
@@ -106,7 +108,8 @@ public abstract class Socket {
                 doInput();
             }
         } catch (Exception e) {
-            Log.v(getClass().getName(), e.toString());
+            Log.e(getClass().getName() + "#doOutput", e.toString());
+            close(true);
         }
     }
 

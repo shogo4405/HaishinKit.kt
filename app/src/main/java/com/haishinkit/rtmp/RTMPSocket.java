@@ -2,9 +2,11 @@ package com.haishinkit.rtmp;
 
 import java.nio.ByteBuffer;
 import com.haishinkit.net.Socket;
+import com.haishinkit.util.ByteBufferUtils;
 import com.haishinkit.util.Log;
 import com.haishinkit.rtmp.messages.RTMPMessage;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public final class RTMPSocket extends Socket {
@@ -64,14 +66,15 @@ public final class RTMPSocket extends Socket {
         if (chunk == null || message == null) {
             throw new IllegalArgumentException();
         }
+        Log.w(getClass().getName() + "#doOutput", message.toString());
         for (ByteBuffer buffer : chunk.encode(this, message)) {
+            Log.w(getClass().getName() + "#doOutput", ByteBufferUtils.toHexString(buffer));
             doOutput(buffer);
         }
     }
 
     @Override
     protected void onConnect() {
-        Log.v(getClass().getName() + "#onConnect", "");
         chunkSizeC = RTMPChunk.DEFAULT_SIZE;
         chunkSizeS = RTMPChunk.DEFAULT_SIZE;
         handshake.clear();

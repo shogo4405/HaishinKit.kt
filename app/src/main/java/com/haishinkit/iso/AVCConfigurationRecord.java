@@ -1,10 +1,6 @@
 package com.haishinkit.iso;
 
 import android.media.MediaFormat;
-
-import com.haishinkit.util.ByteBufferUtils;
-import com.haishinkit.util.Log;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.nio.ByteBuffer;
@@ -160,15 +156,15 @@ public final class AVCConfigurationRecord {
     }
 
     public ByteBuffer toByteBuffer() {
-        int capacity = 5 + 2;
+        int capacity = 5;
         List<byte[]> sequenceParameterSets = getSequenceParameterSets();
         List<byte[]> pictureParameterSets = getPictureParameterSets();
 
-        for (int i = 0; i < sequenceParameterSets.size(); ++i) {
-            capacity += 3;
+        for (byte[] sps : sequenceParameterSets) {
+            capacity += 3 + sps.length;
         }
-        for (int i = 0; i < pictureParameterSets.size(); ++i) {
-            capacity += 3;
+        for (byte[] psp : pictureParameterSets) {
+            capacity += 3 + psp.length;
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(capacity);
@@ -193,6 +189,8 @@ public final class AVCConfigurationRecord {
             buffer.putShort((short) pps.length);
             buffer.put(pps);
         }
+
+        buffer.flip();
 
         return buffer;
     }

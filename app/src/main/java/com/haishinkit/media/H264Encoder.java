@@ -24,7 +24,7 @@ public final class H264Encoder extends EncoderBase {
         mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 125000);
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 15);
         mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar);
-        mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 5);
+        mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 2);
         codec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         return codec;
     }

@@ -16,7 +16,7 @@ import com.haishinkit.lang.IRawValue;
 import com.haishinkit.net.IResponder;
 import com.haishinkit.rtmp.messages.RTMPCommandMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
-import com.haishinkit.rtmp.messages.RTMPSetPeerBandwidthMessage;
+import com.haishinkit.rtmp.messages.RTMPSetChunkSizeMessage;
 import com.haishinkit.util.EventUtils;
 import com.haishinkit.util.Log;
 
@@ -145,8 +145,8 @@ public class RTMPConnection extends EventDispatcher {
             switch (data.get("code").toString()) {
                 case "NetConnection.Connect.Success":
                     connection.getSocket().setChunkSizeS(RTMPConnection.DEFAULT_CHUNK_SIZE_S);
-                    connection.getSocket().doOutput(RTMPChunk.ONE,
-                            new RTMPSetPeerBandwidthMessage()
+                    connection.getSocket().doOutput(RTMPChunk.ZERO,
+                            new RTMPSetChunkSizeMessage()
                                     .setSize(RTMPConnection.DEFAULT_CHUNK_SIZE_S)
                                     .setChunkStreamID(RTMPChunk.CONTROL)
                     );
@@ -266,7 +266,7 @@ public class RTMPConnection extends EventDispatcher {
         if (!isConnected()) {
             return;
         }
-        socket.close();
+        socket.close(false);
     }
 
     Map<Short, RTMPMessage> getMessages() {
@@ -297,14 +297,14 @@ public class RTMPConnection extends EventDispatcher {
                 if (!payload.hasRemaining()) {
                     payload.flip();
                     message.decode(payload).execute(this);
-                    Log.v(getClass().getName(), message.toString());
+                    Log.w(getClass().getName(), message.toString());
                     payloads.remove(payload);
                 }
             } else {
                 message = chunk.decode(streamID, this, buffer);
                 if (message.getLength() <= chunkSizeC) {
                     message.decode(buffer).execute(this);
-                    Log.v(getClass().getName(), message.toString());
+                    Log.w(getClass().getName(), message.toString());
                 } else {
                     payload = ByteBuffer.allocate(message.getLength());
                     payload.put(buffer.array(), buffer.position(), chunkSizeC);
