@@ -84,8 +84,8 @@ public enum RTMPChunk implements IRawValue<Byte> {
             return list;
         }
 
-        int mod = length % chunkSize;
-        byte[] three = RTMPChunk.THREE.header(message.getChunkStreamID());
+        final int mod = length % chunkSize;
+        final byte[] three = RTMPChunk.THREE.header(message.getChunkStreamID());
         buffer.put(payload.array(), 0, chunkSize);
         list.add(buffer);
         for (int i = 1; i < (length - mod) / chunkSize; ++i) {

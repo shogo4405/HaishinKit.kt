@@ -3,15 +3,14 @@ package com.haishinkit.media;
 import android.media.MediaCodec;
 
 import com.haishinkit.util.Log;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.nio.ByteBuffer;
 import java.io.IOException;
+import java.lang.Runnable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class EncoderBase implements IEncoder {
+public abstract class EncoderBase implements IEncoder, Runnable {
     private final String mime;
+    private Thread dequeue = null;
     private MediaCodec codec = null;
     private AtomicBoolean running = new AtomicBoolean(false);
     private IEncoderListener listener = null;
@@ -20,89 +19,99 @@ public abstract class EncoderBase implements IEncoder {
         this.mime = mime;
     }
 
-    public IEncoderListener getListener() {
+    public final IEncoderListener getListener() {
         return listener;
     }
 
-    public EncoderBase setListener(final IEncoderListener listener) {
+    public final EncoderBase setListener(final IEncoderListener listener) {
         this.listener = listener;
         return this;
     }
 
-    public boolean isRunning() {
+    public final boolean isRunning() {
         return running.get();
     }
 
     public final void startRunning() {
-        if (running.get()) {
-            return;
-        }
-        try {
-            codec = createMediaCodec();
-            codec.start();
-            running.set(true);
-        } catch (IOException e) {
-            e.printStackTrace();
+        synchronized (this) {
+            if (running.get()) {
+                return;
+            }
+            try {
+                dequeue = new Thread(this);
+                codec = createMediaCodec();
+                codec.start();
+                running.set(true);
+                dequeue.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public final void stopRunning() {
-        if (!running.get()) {
-            return;
+        synchronized (this) {
+            if (!running.get()) {
+                return;
+            }
+            codec.stop();
+            codec.release();
+            codec = null;
+            running.set(false);
+            dequeue = null;
         }
-        codec.stop();
-        codec.release();
-        codec = null;
-        running.set(false);
     }
 
     public synchronized final void encodeBytes(byte[] data, long presentationTimeUs) {
         if (!running.get()) {
             return;
         }
-
         try {
-            ByteBuffer[] inputBuffers = codec.getInputBuffers();
-            ByteBuffer[] outputBuffers = codec.getOutputBuffers();
-
-            int inputBufferIndex = codec.dequeueInputBuffer(-1);
+            final ByteBuffer[] inputBuffers = codec.getInputBuffers();
+            final int inputBufferIndex = codec.dequeueInputBuffer(-1);
             if (0 <= inputBufferIndex) {
                 ByteBuffer inputBuffer = inputBuffers[inputBufferIndex];
                 inputBuffer.clear();
                 inputBuffer.put(data);
                 codec.queueInputBuffer(inputBufferIndex, 0, data.length, presentationTimeUs, 0);
             }
-
-            int outputBufferIndex = 0;
-            do {
-                MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-                outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, 0);
-                switch (outputBufferIndex) {
-                    case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
-                        if (listener != null) {
-                            listener.onFormatChanged(mime, codec.getOutputFormat());
-                        }
-                        break;
-                    case MediaCodec.INFO_TRY_AGAIN_LATER:
-                        break;
-                    case MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED:
-                        break;
-                    default:
-                        if (0 <= outputBufferIndex) {
-                            byte[] outData = new byte[bufferInfo.size];
-                            ByteBuffer outputBuffer = outputBuffers[outputBufferIndex];
-                            outputBuffer.get(outData);
-                            outputBuffer.flip();
-                            if (listener != null) {
-                                listener.onSampleOutput(mime, bufferInfo, outputBuffer);
-                            }
-                            codec.releaseOutputBuffer(outputBufferIndex, false);
-                        }
-                        break;
-                }
-            } while (0 <= outputBufferIndex);
         } catch (Exception e) {
             Log.w(getClass().getName(), e.toString());
+        }
+    }
+
+    public void run() {
+        ByteBuffer[] outputBuffers = codec.getOutputBuffers();
+        while (running.get()) {
+            final MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+            final int outputBufferIndex = codec.dequeueOutputBuffer(bufferInfo, -1);
+            switch (outputBufferIndex) {
+                case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
+                    Log.d(getClass().getName(), "INFO_OUTPUT_FORMAT_CHANGED");
+                    if (listener != null) {
+                        listener.onFormatChanged(mime, codec.getOutputFormat());
+                    }
+                    break;
+                case MediaCodec.INFO_TRY_AGAIN_LATER:
+                    Log.d(getClass().getName(), "INFO_TRY_AGAIN_LATER");
+                    break;
+                case MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED:
+                    Log.d(getClass().getName(), "OUTPUT_BUFFERS_CHANGED");
+                    outputBuffers = codec.getOutputBuffers();
+                    break;
+                default:
+                    if (0 <= outputBufferIndex) {
+                        byte[] outData = new byte[bufferInfo.size];
+                        ByteBuffer outputBuffer = outputBuffers[outputBufferIndex];
+                        outputBuffer.get(outData);
+                        outputBuffer.flip();
+                        if (listener != null) {
+                            listener.onSampleOutput(mime, bufferInfo, outputBuffer);
+                        }
+                        codec.releaseOutputBuffer(outputBufferIndex, false);
+                    }
+                    break;
+            }
         }
     }
 

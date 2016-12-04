@@ -13,12 +13,10 @@ import com.haishinkit.rtmp.messages.RTMPCommandMessage;
 import com.haishinkit.rtmp.messages.RTMPDataMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
 import com.haishinkit.util.EventUtils;
-import com.haishinkit.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -142,7 +140,7 @@ public class RTMPStream extends EventDispatcher {
                 default:
                     break;
             }
-            getEncoderByName("video/avc").encodeBytes(bytes, System.currentTimeMillis());
+            getEncoderByName("video/avc").encodeBytes(bytes, System.nanoTime());
         }
     };
 
@@ -161,13 +159,14 @@ public class RTMPStream extends EventDispatcher {
             return;
         }
         Camera.Parameters parameters = camera.getParameters();
-        parameters.setPreviewFormat(ImageFormat.NV21);
+        parameters.setPreviewFormat(ImageFormat.YV12);
         parameters.setPreviewSize(320, 240);
+        parameters.setPreviewFrameRate(30);
         camera.setParameters(parameters);
         camera.setPreviewCallback(previewCallback);
     }
 
-    public void publish(final String name) {
+    public final void publish(final String name) {
         publish(name, HowToPublish.LIVE);
     }
 
@@ -184,7 +183,7 @@ public class RTMPStream extends EventDispatcher {
                 .setTransactionID(0)
                 .setCommandName(name != null ? "publish" : "closeStream")
                 .setArguments(arguments)
-                .setChunkStreamID(RTMPChunk.CONTROL)
+                .setChunkStreamID(RTMPChunk.AUDIO)
                 .setStreamID(getId());
 
         if (name == null) {
@@ -252,10 +251,12 @@ public class RTMPStream extends EventDispatcher {
         if (readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED) {
             return;
         }
-        connection.getSocket().doOutput(RTMPChunk.ZERO, new RTMPDataMessage(connection.getObjectEncoding())
-                .setHandlerName(handlerName)
-                .setArguments(arguments == null ? null : Arrays.asList(arguments))
-                .setStreamID(getId())
+        connection.getSocket().doOutput(RTMPChunk.ZERO,
+                new RTMPDataMessage(connection.getObjectEncoding())
+                    .setHandlerName(handlerName)
+                    .setArguments(arguments == null ? null : Arrays.asList(arguments))
+                    .setStreamID(getId())
+                    .setChunkStreamID(RTMPChunk.COMMAND)
         );
     }
 
@@ -287,7 +288,7 @@ public class RTMPStream extends EventDispatcher {
                 messages.clear();
                 break;
             case PUBLISHING:
-                // send("@setDataFrame", "onMetaData", createMetaData());
+                send("@setDataFrame", "onMetaData", createMetaData());
                 for (IEncoder encoder : encoders.values()) {
                     encoder.setListener(getMuxer());
                     encoder.startRunning();
@@ -307,6 +308,7 @@ public class RTMPStream extends EventDispatcher {
 
     protected Map<String, Object> createMetaData() {
         Map<String, Object> data = new HashMap<String, Object>();
+        data.put("fps", 30);
         return data;
     }
 

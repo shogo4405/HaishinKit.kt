@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AVCConfigurationRecord {
-    public static final byte reserveLengthSizeMinusOne = (byte) 0x3F;
-    public static final byte reserveNumOfSequenceParameterSets = (byte) 0xE0;
-    public static final byte reserveChromaFormat = (byte) 0xFC;
-    public static final byte reserveBitDepthLumaMinus8 = (byte) 0xF8;
-    public static final byte reserveBitDepthChromaMinus8 = (byte) 0xF8;
+    public static final byte RESERVE_LENGTH_SIZE_MINUS_ONE = (byte) 0x3F;
+    public static final byte RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS = (byte) 0xE0;
+    public static final byte RESERVE_CHROME_FORMAT = (byte) 0xFC;
+    public static final byte RESERVE_BIT_DEPTH_LUMA_MINUS8 = (byte) 0xF8;
+    public static final byte RESERVE_BIT_DEPTH_CHROME_MINUS8 = (byte) 0xF8;
 
-    private byte configurationVersion = 0;
+    private byte configurationVersion = 1;
     private byte AVCProfileIndication = 0;
     private byte profileCompatibility = 0;
     private byte AVCLevelIndication = 0;
@@ -56,13 +56,13 @@ public final class AVCConfigurationRecord {
          level_idc (8)
          ...
          */
-        spsBuffer.position(5);
+        spsBuffer.position(4);
         byte[] spsBytes = new byte[spsBuffer.remaining()];
         spsBuffer.get(spsBytes);
         setConfigurationVersion((byte) 0x01);
-        setAVCProfileIndication(spsBytes[0]);
-        setProfileCompatibility(spsBytes[1]);
-        setAVCLevelIndication(spsBytes[2]);
+        setAVCProfileIndication(spsBytes[1]);
+        setProfileCompatibility(spsBytes[2]);
+        setAVCLevelIndication(spsBytes[3]);
         setLengthSizeMinusOneWithReserved((byte) 0xFF);
 
         // SPS
@@ -72,8 +72,9 @@ public final class AVCConfigurationRecord {
         setSequenceParameterSets(spsList);
 
         // PPS
-        ppsBuffer.position(5);
+        ppsBuffer.position(4);
         byte[] ppsBytes = new byte[ppsBuffer.remaining()];
+        ppsBuffer.get(ppsBytes);
         List<byte[]> ppsList = new ArrayList<byte[]>(1);
         ppsList.add(ppsBytes);
         setPictureParameterSets(ppsList);
@@ -157,35 +158,33 @@ public final class AVCConfigurationRecord {
 
     public ByteBuffer toByteBuffer() {
         int capacity = 5;
-        List<byte[]> sequenceParameterSets = getSequenceParameterSets();
-        List<byte[]> pictureParameterSets = getPictureParameterSets();
+        final List<byte[]> sequenceParameterSets = getSequenceParameterSets();
+        final List<byte[]> pictureParameterSets = getPictureParameterSets();
 
         for (byte[] sps : sequenceParameterSets) {
             capacity += 3 + sps.length;
         }
-        for (byte[] psp : pictureParameterSets) {
-            capacity += 3 + psp.length;
+        for (byte[] pps : pictureParameterSets) {
+            capacity += 3 + pps.length;
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(capacity);
         buffer.put(getConfigurationVersion());
-        buffer.put(getAVCLevelIndication());
+        buffer.put(getAVCProfileIndication());
         buffer.put(getProfileCompatibility());
         buffer.put(getAVCLevelIndication());
         buffer.put(getLengthSizeMinusOneWithReserved());
 
         // SPS
         buffer.put(getNumOfSequenceParameterSetsWithReserved());
-        for (int i = 0; i < sequenceParameterSets.size(); ++i) {
-            byte[] sps = sequenceParameterSets.get(i);
+        for (byte[] sps : sequenceParameterSets) {
             buffer.putShort((short) sps.length);
             buffer.put(sps);
         }
 
         // PPS
         buffer.put((byte) pictureParameterSets.size());
-        for (int i = 0; i < pictureParameterSets.size(); ++i) {
-            byte[] pps = pictureParameterSets.get(i);
+        for (byte[] pps : pictureParameterSets) {
             buffer.putShort((short) pps.length);
             buffer.put(pps);
         }

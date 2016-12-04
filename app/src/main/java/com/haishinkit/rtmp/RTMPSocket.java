@@ -62,7 +62,7 @@ public final class RTMPSocket extends Socket {
         return this;
     }
 
-    public void doOutput(final RTMPChunk chunk, final RTMPMessage message) {
+    public synchronized void doOutput(final RTMPChunk chunk, final RTMPMessage message) {
         if (chunk == null || message == null) {
             throw new IllegalArgumentException();
         }

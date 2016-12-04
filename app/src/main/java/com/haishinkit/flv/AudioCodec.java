@@ -23,7 +23,7 @@ public enum AudioCodec implements IRawValue<Byte> {
         this.rawValue = rawValue;
     }
 
-    public Byte rawValue() {
+    public final Byte rawValue() {
         return rawValue;
     }
 }

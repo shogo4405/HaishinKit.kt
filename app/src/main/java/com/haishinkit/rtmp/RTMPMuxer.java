@@ -1,6 +1,7 @@
 package com.haishinkit.rtmp;
 
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
 import com.haishinkit.flv.AVCPacketType;
@@ -13,6 +14,8 @@ import com.haishinkit.rtmp.messages.RTMPAVCVideoMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
 import com.haishinkit.util.ByteBufferUtils;
 import com.haishinkit.util.Log;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -50,10 +53,13 @@ public final class RTMPMuxer implements IEncoderListener {
 
     @Override
     public final void onSampleOutput(final String mime, final MediaCodec.BufferInfo info, final ByteBuffer buffer) {
+        if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+            return;
+        }
         int timestamp = 0;
         RTMPMessage message = null;
         if (timestamps.containsKey(mime)) {
-            timestamp = new Double(info.presentationTimeUs - timestamps.get(mime).doubleValue()).intValue();
+            timestamp = new Double((info.presentationTimeUs - timestamps.get(mime).doubleValue())).intValue() / 1000000;
         }
         switch (mime) {
             case "video/avc":

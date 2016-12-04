@@ -37,11 +37,11 @@ public final class RTMPAVCVideoMessage extends RTMPVideoMessage {
         if (socket == null) {
             throw new IllegalArgumentException();
         }
-        int length = getPayload() == null ? 0 : getPayload().limit();
-        ByteBuffer buffer = ByteBuffer.allocate(5 + length);
+        final int length = getPayload() == null ? 0 : getPayload().limit();
+        final ByteBuffer buffer = ByteBuffer.allocate(5 + length);
         buffer.put((byte)(getFrame() << 4 | getCodec()));
         buffer.put(getPacketType());
-        buffer.put(new byte[]{0x00, 0x00, 0x00});
+        buffer.put(new byte[]{(byte)(compositeTime >> 16), (byte)(compositeTime >> 8), (byte) compositeTime});
         if (0 < length) {
             buffer.put(getPayload());
         }
