@@ -19,8 +19,8 @@ public final class RTMPUserControlMessage extends RTMPMessage {
         STREAM_DRY((short) 0x02),
         SET_BUFFER((short) 0x03),
         RECORDED((short) 0x04),
-        PING((short) 0x05),
-        PONG((short) 0x06),
+        PING((short) 0x06),
+        PONG((short) 0x07),
         BUFFER_EMPTY((short) 0x1F),
         BUFFER_FULL((short) 0x20),
         UNKNOWN((short) 0xFF);
@@ -37,9 +37,9 @@ public final class RTMPUserControlMessage extends RTMPMessage {
                     return SET_BUFFER;
                 case 0x04:
                     return RECORDED;
-                case 0x05:
-                    return PING;
                 case 0x06:
+                    return PING;
+                case 0x07:
                     return PONG;
                 case 0x1F:
                     return BUFFER_EMPTY;

@@ -1,7 +1,6 @@
 package com.haishinkit.rtmp.messages;
 
 import com.haishinkit.lang.IRawValue;
-import com.haishinkit.util.Log;
 import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPObjectEncoding;
 import com.haishinkit.rtmp.RTMPSocket;
@@ -13,22 +12,22 @@ import java.nio.ByteBuffer;
 public class RTMPMessage {
 
     public enum Type implements IRawValue<Byte> {
-        CHUNK_SIZE((byte) 1),
-        ABORT((byte) 2),
-        ACK((byte) 3),
-        USER((byte) 4),
-        WINDOW_ACK((byte) 5),
-        BANDWIDTH((byte) 6),
-        AUDIO((byte) 8),
-        VIDEO((byte) 9),
-        AMF3_DATA((byte) 15),
-        AMF3_SHARED((byte) 16),
-        AMF3_COMMAND((byte) 17),
-        AMF0_DATA((byte) 18),
-        AMF0_SHARED((byte) 19),
-        AMF0_COMMAND((byte) 20),
-        AGGREGATE((byte) 22),
-        UNKNOWN((byte) 255);
+        CHUNK_SIZE((byte) 0x01),
+        ABORT((byte) 0x02),
+        ACK((byte) 0x03),
+        USER((byte) 0x04),
+        WINDOW_ACK((byte) 0x05),
+        BANDWIDTH((byte) 0x06),
+        AUDIO((byte) 0x08),
+        VIDEO((byte) 0x09),
+        AMF3_DATA((byte) 0x0F),
+        AMF3_SHARED((byte) 0x10),
+        AMF3_COMMAND((byte) 0x11),
+        AMF0_DATA((byte) 0x12),
+        AMF0_SHARED((byte) 0x13),
+        AMF0_COMMAND((byte) 0x14),
+        AGGREGATE((byte) 0x16),
+        UNKNOWN((byte) 0xFF);
 
         private final byte rawValue;
 
@@ -41,10 +40,14 @@ public class RTMPMessage {
         }
     }
 
-    public static RTMPMessage create(final byte value) {
+    public final static RTMPMessage create(final byte value) {
         switch (value) {
             case 0x01:
                 return new RTMPSetChunkSizeMessage();
+            case 0x02:
+                return new RTMPAbortMessage();
+            case 0x03:
+                return new RTMPAcknowledgementMessage();
             case 0x04:
                 return new RTMPUserControlMessage();
             case 0x05:
@@ -57,7 +60,7 @@ public class RTMPMessage {
                 return new RTMPVideoMessage();
             case 0x12:
                 return new RTMPDataMessage(RTMPObjectEncoding.AMF0);
-            case 20:
+            case 0x14:
                 return new RTMPCommandMessage(RTMPObjectEncoding.AMF0);
             default:
                 return new RTMPMessage(Type.UNKNOWN);

@@ -83,7 +83,7 @@ public abstract class Socket {
                     outputQueue.remove(buffer);
                 } catch (IOException e) {
                     //IOUtils.closeQuietly(socket);
-                    Log.e(getClass().getName() + "#doOutput", e.toString());
+                    Log.e(getClass().getName() + "#doOutput()", e.toString());
                 }
             }
         }
@@ -108,7 +108,7 @@ public abstract class Socket {
                 doInput();
             }
         } catch (Exception e) {
-            Log.e(getClass().getName() + "#doOutput", e.toString());
+            Log.e(getClass().getName() + "#doConnection", e.toString());
             close(true);
         }
     }
