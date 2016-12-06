@@ -2,11 +2,14 @@ package com.haishinkit.rtmp;
 
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.media.AudioRecord;
 
 import com.haishinkit.events.Event;
 import com.haishinkit.events.EventDispatcher;
 import com.haishinkit.events.IEventListener;
 import com.haishinkit.lang.IRawValue;
+import com.haishinkit.media.AACEncoder;
+import com.haishinkit.media.AudioInfo;
 import com.haishinkit.media.H264Encoder;
 import com.haishinkit.media.IEncoder;
 import com.haishinkit.rtmp.messages.RTMPCommandMessage;
@@ -38,7 +41,7 @@ public class RTMPStream extends EventDispatcher {
             this.valueOf = valueOf;
         }
 
-        public String rawValue() {
+        public final String rawValue() {
             return valueOf;
         }
     }
@@ -66,11 +69,11 @@ public class RTMPStream extends EventDispatcher {
             return data;
         }
 
-        public String getLevel() {
+        public final String getLevel() {
             return level;
         }
 
-        public String rawValue() {
+        public final String rawValue() {
             return rawValue;
         }
     }
@@ -125,24 +128,13 @@ public class RTMPStream extends EventDispatcher {
     RTMPConnection connection = null;
     private int id = 0;
     private RTMPMuxer muxer = null;
+    private Camera camera = null;
+    private AudioInfo audio = null;
+    private short[] audioBuffer = null;
     private Map<String, IEncoder> encoders = new ConcurrentHashMap<String, IEncoder>();
     private ReadyState readyState = ReadyState.INITIALIZED;
     private List<RTMPMessage> messages = new ArrayList<RTMPMessage>();
     private final IEventListener listener = new EventListener(this);
-    private final Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
-        @Override
-        public void onPreviewFrame(byte[] bytes, Camera camera) {
-            switch (readyState) {
-                case PUBLISHING:
-                    getEncoderByName("video/avc").setListener(getMuxer());
-                    getEncoderByName("video/avc").startRunning();
-                    break;
-                default:
-                    break;
-            }
-            getEncoderByName("video/avc").encodeBytes(bytes, System.nanoTime());
-        }
-    };
 
     public RTMPStream(final RTMPConnection connection) {
         super(null);
@@ -154,16 +146,45 @@ public class RTMPStream extends EventDispatcher {
         addEventListener(Event.RTMP_STATUS, listener);
     }
 
+    public void attachAudio(final AudioInfo audio) {
+        if (audio == null) {
+            return;
+        }
+        getEncoderByName("audio/mp4a-latm");
+        final AudioRecord record = audio.getAudioRecord();
+        final int frameBufferSize = audio.getMinBufferSize();
+        record.setPositionNotificationPeriod(frameBufferSize / 2);
+        record.setRecordPositionUpdateListener(new AudioRecord.OnRecordPositionUpdateListener() {
+            @Override
+            public void onMarkerReached(AudioRecord audioRecord) {
+            }
+            @Override
+            public void onPeriodicNotification(AudioRecord audioRecord) {
+                final byte[] buffer = audio.getBuffer();
+                record.read(buffer, 0, frameBufferSize);
+                getEncoderByName("audio/mp4a-latm").encodeBytes(buffer, System.nanoTime());
+            }
+        });
+        record.startRecording();
+        record.read(audio.getBuffer(), 0, frameBufferSize);
+    }
+
     public void attachCamera(final Camera camera) {
         if (camera == null) {
             return;
         }
+        getEncoderByName("video/avc");
         Camera.Parameters parameters = camera.getParameters();
         parameters.setPreviewFormat(ImageFormat.YV12);
         parameters.setPreviewSize(320, 240);
         parameters.setPreviewFrameRate(30);
         camera.setParameters(parameters);
-        camera.setPreviewCallback(previewCallback);
+        camera.setPreviewCallback(new Camera.PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] bytes, Camera camera) {
+                getEncoderByName("video/avc").encodeBytes(bytes, System.nanoTime());
+            }
+        });
     }
 
     public final void publish(final String name) {
@@ -288,7 +309,7 @@ public class RTMPStream extends EventDispatcher {
                 messages.clear();
                 break;
             case PUBLISHING:
-                send("@setDataFrame", "onMetaData", createMetaData());
+                send("@setDataFrame", "onMetaData", toMetaData());
                 for (IEncoder encoder : encoders.values()) {
                     encoder.setListener(getMuxer());
                     encoder.startRunning();
@@ -306,9 +327,8 @@ public class RTMPStream extends EventDispatcher {
         return muxer;
     }
 
-    protected Map<String, Object> createMetaData() {
+    protected Map<String, Object> toMetaData() {
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("fps", 30);
         return data;
     }
 
@@ -317,6 +337,9 @@ public class RTMPStream extends EventDispatcher {
             switch (mime) {
                 case "video/avc":
                     encoders.put(mime, new H264Encoder());
+                    break;
+                case "audio/mp4a-latm":
+                    encoders.put(mime, new AACEncoder());
                     break;
                 default:
                     break;

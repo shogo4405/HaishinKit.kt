@@ -3,6 +3,7 @@ package com.haishinkit;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.haishinkit.media.AudioInfo;
 import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPStream;
 import com.haishinkit.view.CameraView;
@@ -20,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
         stream = new RTMPStream(connection);
 
         cameraView = new CameraView(this);
-        stream.attachCamera(cameraView.getCamera());
+        stream.attachAudio(new AudioInfo());
+        //stream.attachCamera(cameraView.getCamera());
         setContentView(cameraView);
 
         connection.connect("rtmp://192.168.179.3/live");

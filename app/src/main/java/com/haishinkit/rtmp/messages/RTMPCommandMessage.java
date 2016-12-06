@@ -13,7 +13,6 @@ import com.haishinkit.rtmp.RTMPConnection;
 import com.haishinkit.rtmp.RTMPObjectEncoding;
 import com.haishinkit.rtmp.RTMPSocket;
 import com.haishinkit.rtmp.RTMPStream;
-import com.haishinkit.util.EventUtils;
 
 public final class RTMPCommandMessage extends RTMPMessage {
     private static final int CAPACITY = 1024;

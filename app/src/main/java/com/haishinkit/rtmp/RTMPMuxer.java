@@ -1,21 +1,19 @@
 package com.haishinkit.rtmp;
 
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
+import com.haishinkit.flv.AACPacketType;
 import com.haishinkit.flv.AVCPacketType;
 import com.haishinkit.flv.FlameType;
 import com.haishinkit.flv.VideoCodec;
 import com.haishinkit.iso.AVCConfigurationRecord;
 import com.haishinkit.iso.AVCFormatUtils;
+import com.haishinkit.iso.AudioSpecificConfig;
 import com.haishinkit.media.IEncoderListener;
+import com.haishinkit.rtmp.messages.RTMPAACAudioMessage;
 import com.haishinkit.rtmp.messages.RTMPAVCVideoMessage;
 import com.haishinkit.rtmp.messages.RTMPMessage;
-import com.haishinkit.util.ByteBufferUtils;
-import com.haishinkit.util.Log;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -24,6 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class RTMPMuxer implements IEncoderListener {
     private final RTMPStream stream;
     private Map<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
+    private AudioSpecificConfig audioConfig = null;
+    private AVCConfigurationRecord videoConfig = null;
 
     public RTMPMuxer(final RTMPStream stream) {
         this.stream = stream;
@@ -34,13 +34,23 @@ public final class RTMPMuxer implements IEncoderListener {
         RTMPMessage message = null;
         switch (mime) {
             case "video/avc":
-                AVCConfigurationRecord config = new AVCConfigurationRecord(mediaFormat);
+                videoConfig = new AVCConfigurationRecord(mediaFormat);
                 message = new RTMPAVCVideoMessage()
                         .setPacketType(AVCPacketType.SEQ.rawValue())
                         .setFrame(FlameType.KEY.rawValue())
                         .setCodec(VideoCodec.AVC.rawValue())
-                        .setPayload(config.toByteBuffer())
+                        .setPayload(videoConfig.toByteBuffer())
                         .setChunkStreamID(RTMPChunk.VIDEO)
+                        .setStreamID(stream.getId());
+                break;
+            case "audio/mp4a-latm":
+                ByteBuffer buffer = mediaFormat.getByteBuffer("csd-0");
+                audioConfig = new AudioSpecificConfig(buffer);
+                message = new RTMPAACAudioMessage()
+                        .setConfig(audioConfig)
+                        .setAACPacketType(AACPacketType.SEQ.rawValue())
+                        .setPayload(buffer)
+                        .setChunkStreamID(RTMPChunk.AUDIO)
                         .setStreamID(stream.getId());
                 break;
             default:
@@ -70,6 +80,15 @@ public final class RTMPMuxer implements IEncoderListener {
                         .setCodec(VideoCodec.AVC.rawValue())
                         .setPayload(AVCFormatUtils.toNALFileFormat(buffer))
                         .setChunkStreamID(RTMPChunk.VIDEO)
+                        .setTimestamp(timestamp)
+                        .setStreamID(stream.getId());
+                break;
+            case "audio/mp4a-latm":
+                message = new RTMPAACAudioMessage()
+                        .setAACPacketType(AACPacketType.RAW.rawValue())
+                        .setConfig(audioConfig)
+                        .setPayload(buffer)
+                        .setChunkStreamID(RTMPChunk.AUDIO)
                         .setTimestamp(timestamp)
                         .setStreamID(stream.getId());
                 break;
