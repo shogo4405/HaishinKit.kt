@@ -49,24 +49,11 @@ public final class RTMPAACAudioMessage extends RTMPAudioMessage {
 
         ByteBuffer buffer = null;
         final int length = getPayload() == null ? 0 : getPayload().limit();
-        switch (aacPacketType) {
-            case 0x00:
-                buffer = ByteBuffer.allocate(2 + length);
-                buffer.put(AAC);
-                buffer.put(getAACPacketType());
-                if (0 < length) {
-                    buffer.put(getPayload());
-                }
-                break;
-            case 0x01:
-                buffer = ByteBuffer.allocate(2 + AudioSpecificConfig.ADTS_HEADER_SIZE + length);
-                buffer.put(AAC);
-                buffer.put(getAACPacketType());
-                if (0 < length) {
-                    buffer.put(config.toADTS(length));
-                    buffer.put(getPayload());
-                }
-                break;
+        buffer = ByteBuffer.allocate(2 + length);
+        buffer.put(AAC);
+        buffer.put(getAACPacketType());
+        if (0 < length) {
+            buffer.put(getPayload());
         }
 
         return buffer;

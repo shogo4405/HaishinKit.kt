@@ -69,7 +69,7 @@ public final class RTMPMuxer implements IEncoderListener {
         int timestamp = 0;
         RTMPMessage message = null;
         if (timestamps.containsKey(mime)) {
-            timestamp = new Double((info.presentationTimeUs - timestamps.get(mime).doubleValue())).intValue() / 1000000;
+            timestamp = new Double((info.presentationTimeUs - timestamps.get(mime).doubleValue())).intValue();
         }
         switch (mime) {
             case "video/avc":

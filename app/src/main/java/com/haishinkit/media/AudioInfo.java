@@ -4,6 +4,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
+import com.haishinkit.util.Log;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public final class AudioInfo {
@@ -17,6 +19,7 @@ public final class AudioInfo {
     private int samplingRate = DEFAULT_SAMPLING_RATE;
     private int minBufferSize = -1;
     private AudioRecord audioRecord = null;
+    private int currentPresentationTimestamp = 0;
 
     public AudioInfo() {
     }
@@ -67,6 +70,11 @@ public final class AudioInfo {
             audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, getSamplingRate(), getChannel(), getEncoding(), getMinBufferSize());
         }
         return audioRecord;
+    }
+
+    public long getPresentationTimestamp(long bufferSamplesNum) {
+        currentPresentationTimestamp += (1000 * bufferSamplesNum) / getSamplingRate();
+        return currentPresentationTimestamp;
     }
 
     public String toString() {

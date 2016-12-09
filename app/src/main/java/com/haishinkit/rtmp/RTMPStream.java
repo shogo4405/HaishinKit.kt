@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.haishinkit.util.Log;
+
 public class RTMPStream extends EventDispatcher {
 
     public enum HowToPublish implements IRawValue<String> {
@@ -162,7 +164,7 @@ public class RTMPStream extends EventDispatcher {
             public void onPeriodicNotification(AudioRecord audioRecord) {
                 final byte[] buffer = audio.getBuffer();
                 record.read(buffer, 0, frameBufferSize);
-                getEncoderByName("audio/mp4a-latm").encodeBytes(buffer, System.nanoTime());
+                getEncoderByName("audio/mp4a-latm").encodeBytes(buffer, audio.getPresentationTimestamp(frameBufferSize / 2));
             }
         });
         record.startRecording();
@@ -175,14 +177,12 @@ public class RTMPStream extends EventDispatcher {
         }
         getEncoderByName("video/avc");
         Camera.Parameters parameters = camera.getParameters();
-        parameters.setPreviewFormat(ImageFormat.YV12);
-        parameters.setPreviewSize(320, 240);
-        parameters.setPreviewFrameRate(30);
+        parameters.setPreviewFormat(ImageFormat.NV21);
         camera.setParameters(parameters);
         camera.setPreviewCallback(new Camera.PreviewCallback() {
             @Override
             public void onPreviewFrame(byte[] bytes, Camera camera) {
-                getEncoderByName("video/avc").encodeBytes(bytes, System.nanoTime());
+                getEncoderByName("video/avc").encodeBytes(bytes, System.nanoTime() / 1000000);
             }
         });
     }

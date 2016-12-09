@@ -58,7 +58,7 @@ public final class AudioSpecificConfig {
             this.rawValue = rawValue;
         }
 
-        public Byte rawValue() {
+        public final Byte rawValue() {
             return rawValue;
         }
     }
@@ -116,7 +116,7 @@ public final class AudioSpecificConfig {
             this.rawValue = rawValue;
         }
 
-        public Byte rawValue() {
+        public final Byte rawValue() {
             return rawValue;
         }
     }
@@ -161,7 +161,7 @@ public final class AudioSpecificConfig {
             this.rawValue = rawValue;
         }
 
-        public Byte rawValue() {
+        public final Byte rawValue() {
             return rawValue;
         }
     }
@@ -203,7 +203,7 @@ public final class AudioSpecificConfig {
         adts[0] = (byte) 0xFF;
         adts[1] = (byte) 0xF9;
         adts[2] = (byte) (((type.rawValue() - 1) << 6) | (frequency.rawValue() << 2) | (channel.rawValue() >> 2));
-        adts[3] = (byte) ((channel.rawValue() & 3) | fullSize >> 11);
+        adts[3] = (byte) (((channel.rawValue() & 3) << 6) | (fullSize >> 11));
         adts[4] = (byte) ((fullSize & 0x7FF) >> 3);
         adts[5] = (byte) (((fullSize & 7) << 5) | 0x1F);
         adts[6] = (byte) 0xFC;
