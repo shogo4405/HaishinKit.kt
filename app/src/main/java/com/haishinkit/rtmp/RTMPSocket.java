@@ -66,9 +66,7 @@ public final class RTMPSocket extends Socket {
         if (chunk == null || message == null) {
             throw new IllegalArgumentException();
         }
-        Log.w(getClass().getName() + "#doOutput", message.toString());
         for (ByteBuffer buffer : chunk.encode(this, message)) {
-            Log.w(getClass().getName() + "#doOutput", ByteBufferUtils.toHexString(buffer));
             doOutput(buffer);
         }
     }
