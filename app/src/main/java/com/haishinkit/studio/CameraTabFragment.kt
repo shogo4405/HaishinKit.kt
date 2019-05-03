@@ -1,5 +1,6 @@
 package com.haishinkit.studio
 
+import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,10 @@ import com.haishinkit.media.Audio
 import com.haishinkit.events.Event
 import com.haishinkit.util.EventUtils
 import com.haishinkit.view.CameraView
+import android.Manifest.permission
+import android.support.v4.app.ActivityCompat
+import android.content.pm.PackageManager
+import android.support.v4.content.ContextCompat
 
 class CameraTabFragment: Fragment(), IEventListener {
     private var connection: RTMPConnection? = null
@@ -22,10 +27,17 @@ class CameraTabFragment: Fragment(), IEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), 1)
+        }
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
+        }
         connection = RTMPConnection()
         stream = RTMPStream(connection!!)
-        stream?.attachCamera(Camera(android.hardware.Camera.open()))
         stream?.attachAudio(Audio())
+        stream?.attachCamera(Camera(android.hardware.Camera.open()))
         connection?.addEventListener("rtmpStatus", this)
     }
 
@@ -33,7 +45,7 @@ class CameraTabFragment: Fragment(), IEventListener {
         val v = inflater!!.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            connection?.connect("rtmp://192.168.11.15/live")
+            connection?.connect("rtmp://192.168.11.15:1935/live")
         }
         cameraView = v.findViewById<CameraView>(R.id.camera)
         cameraView?.attachStream(stream!!)
@@ -44,7 +56,7 @@ class CameraTabFragment: Fragment(), IEventListener {
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RTMPConnection.Code.CONNECT_SUCCESS.rawValue) {
-            stream!!.publish("live")
+            stream?.publish("live")
         }
     }
 

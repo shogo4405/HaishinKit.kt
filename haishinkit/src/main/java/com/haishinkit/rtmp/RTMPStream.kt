@@ -11,6 +11,7 @@ import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPDataMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
 import com.haishinkit.util.EventUtils
+import com.haishinkit.util.Log
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
@@ -123,6 +124,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
     internal var camera: com.haishinkit.media.Camera? = null
     internal var readyState = ReadyState.INITIALIZED
         set(value: ReadyState) {
+            Log.w(javaClass.name, value.toString())
             field = value
             when (value) {
                 RTMPStream.ReadyState.OPEN -> {
@@ -131,7 +133,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
                         if (message is RTMPCommandMessage) {
                             message.transactionID = ++connection!!.transactionID
                         }
-                        connection!!.socket.doOutput(RTMPChunk.ZERO, message)
+                        connection?.socket?.doOutput(RTMPChunk.ZERO, message)
                     }
                     messages.clear()
                 }
@@ -152,9 +154,9 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
 
     init {
         this.connection = connection
-        this.connection!!.addEventListener(Event.RTMP_STATUS, listener)
-        if (this.connection!!.isConnected) {
-            this.connection!!.createStream(this)
+        this.connection?.addEventListener(Event.RTMP_STATUS, listener)
+        if (this.connection?.isConnected == true) {
+            this.connection?.createStream(this)
         }
         addEventListener(Event.RTMP_STATUS, listener)
     }
@@ -185,7 +187,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         encoder?.height = camera.actualSize.height
     }
 
-    @JvmOverloads fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
+    fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
         val message = RTMPCommandMessage(connection!!.objectEncoding)
         message.transactionID = 0
         message.commandName = if (name != null) "publish" else "closeStream"
@@ -194,7 +196,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
 
         if (name == null) {
             when (readyState) {
-                RTMPStream.ReadyState.PUBLISHING -> connection!!.socket.doOutput(RTMPChunk.ZERO, message)
+                RTMPStream.ReadyState.PUBLISHING -> connection?.socket?.doOutput(RTMPChunk.ZERO, message)
                 else -> {}
             }
             return
@@ -210,7 +212,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
                 messages.add(message)
             }
             RTMPStream.ReadyState.OPEN -> {
-                connection!!.socket.doOutput(RTMPChunk.ZERO, message)
+                connection?.socket?.doOutput(RTMPChunk.ZERO, message)
                 readyState = ReadyState.PUBLISH
             }
             else -> {}
@@ -228,7 +230,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
 
         if (streamName == null) {
             when (readyState) {
-                RTMPStream.ReadyState.PLAYING -> connection!!.socket.doOutput(RTMPChunk.ZERO, message)
+                RTMPStream.ReadyState.PLAYING -> connection?.socket?.doOutput(RTMPChunk.ZERO, message)
                 else -> {}
             }
             return
@@ -239,7 +241,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
                 messages.add(message)
             }
             RTMPStream.ReadyState.OPEN, RTMPStream.ReadyState.PLAYING -> {
-                connection!!.socket.doOutput(RTMPChunk.ZERO, message)
+                connection?.socket?.doOutput(RTMPChunk.ZERO, message)
             }
             else -> {
             }
@@ -257,7 +259,7 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         }
         message.streamID = id
         message.chunkStreamID = RTMPChunk.COMMAND
-        connection!!.socket.doOutput(RTMPChunk.ZERO, message)
+        connection?.socket?.doOutput(RTMPChunk.ZERO, message)
     }
 
     fun appendBytes(bytes: ByteArray?, presentationTimeUs: Long, type: BufferType) {
