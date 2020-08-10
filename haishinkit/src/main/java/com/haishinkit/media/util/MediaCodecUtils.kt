@@ -112,13 +112,13 @@ object MediaCodecUtils {
     }
 
     private fun isSupportedFormat(colorFormat: Int):Boolean {
-        when (colorFormat) {
-            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar -> return false
-            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedPlanar -> return false
-            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar -> return true
-            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedSemiPlanar -> return true
-            MediaCodecInfo.CodecCapabilities.COLOR_TI_FormatYUV420PackedSemiPlanar -> return true
-            else -> return false
+        return when (colorFormat) {
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar -> false
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedPlanar -> false
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar -> true
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedSemiPlanar -> true
+            MediaCodecInfo.CodecCapabilities.COLOR_TI_FormatYUV420PackedSemiPlanar -> true
+            else -> false
         }
     }
 }

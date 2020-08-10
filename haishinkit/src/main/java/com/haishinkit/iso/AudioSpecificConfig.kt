@@ -87,6 +87,6 @@ internal class AudioSpecificConfig {
     }
 
     companion object {
-        val ADTS_HEADER_SIZE = 7
+        const val ADTS_HEADER_SIZE = 7
     }
 }

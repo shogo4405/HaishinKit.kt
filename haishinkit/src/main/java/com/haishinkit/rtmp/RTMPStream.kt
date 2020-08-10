@@ -230,7 +230,9 @@ open class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
 
         if (streamName == null) {
             when (readyState) {
-                RTMPStream.ReadyState.PLAYING -> connection?.socket?.doOutput(RTMPChunk.ZERO, message)
+                RTMPStream.ReadyState.PLAYING -> {
+                    connection?.socket?.doOutput(RTMPChunk.ZERO, message)
+                }
                 else -> {}
             }
             return

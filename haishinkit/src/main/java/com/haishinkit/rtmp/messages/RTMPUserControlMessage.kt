@@ -69,7 +69,7 @@ internal class RTMPUserControlMessage : RTMPMessage(RTMPMessage.Type.USER) {
     }
 
     companion object {
-        private val CAPACITY = 6
+        private const val CAPACITY = 6
     }
 }
 

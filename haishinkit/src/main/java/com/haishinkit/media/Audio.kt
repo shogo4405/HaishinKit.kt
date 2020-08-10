@@ -79,7 +79,7 @@ class Audio: AudioRecord.OnRecordPositionUpdateListener, IDevice {
         currentPresentationTimestamp += timestamp()
     }
 
-    fun timestamp():Double {
+    private fun timestamp():Double {
         return 1000000 * (minBufferSize.toDouble() / 2 / samplingRate.toDouble())
     }
 
@@ -88,8 +88,8 @@ class Audio: AudioRecord.OnRecordPositionUpdateListener, IDevice {
     }
 
     companion object {
-        val DEFAULT_CHANNEL = AudioFormat.CHANNEL_IN_MONO
-        val DEFAULT_ENCODING = AudioFormat.ENCODING_PCM_16BIT
-        val DEFAULT_SAMPLING_RATE = 44100
+        const val DEFAULT_CHANNEL = AudioFormat.CHANNEL_IN_MONO
+        const val DEFAULT_ENCODING = AudioFormat.ENCODING_PCM_16BIT
+        const val DEFAULT_SAMPLING_RATE = 44100
     }
 }

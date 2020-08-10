@@ -28,6 +28,6 @@ internal class RTMPSetChunkSizeMessage : RTMPMessage(RTMPMessage.Type.CHUNK_SIZE
     }
 
     companion object {
-        private val CAPACITY = 4
+        private const val CAPACITY = 4
     }
 }

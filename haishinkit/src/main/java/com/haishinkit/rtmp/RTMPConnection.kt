@@ -216,17 +216,17 @@ open class RTMPConnection : EventDispatcher(null) {
         val paths = uri!!.path.split("/".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
         val message = RTMPCommandMessage(RTMPObjectEncoding.AMF0)
         val commandObject = HashMap<String, Any?>()
-        commandObject.put("app", paths[1])
-        commandObject.put("flashVer", flashVer)
-        commandObject.put("swfUrl", swfUrl)
-        commandObject.put("tcUrl", uri!!.toString())
-        commandObject.put("fpad", false)
-        commandObject.put("capabilities", RTMPConnection.DEFAULT_CAPABILITIES)
-        commandObject.put("audioCodecs", SupportSound.AAC.rawValue)
-        commandObject.put("videoCodecs", SupportVideo.H264.rawValue)
-        commandObject.put("videoFunction", VideoFunction.CLIENT_SEEK.rawValue)
-        commandObject.put("pageUrl", pageUrl)
-        commandObject.put("objectEncoding", objectEncoding.rawValue)
+        commandObject["app"] = paths[1]
+        commandObject["flashVer"] = flashVer
+        commandObject["swfUrl"] = swfUrl
+        commandObject["tcUrl"] = uri!!.toString()
+        commandObject["fpad"] = false
+        commandObject["capabilities"] = RTMPConnection.DEFAULT_CAPABILITIES
+        commandObject["audioCodecs"] = SupportSound.AAC.rawValue
+        commandObject["videoCodecs"] = SupportVideo.H264.rawValue
+        commandObject["videoFunction"] = VideoFunction.CLIENT_SEEK.rawValue
+        commandObject["pageUrl"] = pageUrl
+        commandObject["objectEncoding"] = objectEncoding.rawValue
         message.chunkStreamID = RTMPChunk.COMMAND
         message.streamID = 0
         message.commandName = "connect"
@@ -239,11 +239,11 @@ open class RTMPConnection : EventDispatcher(null) {
     }
 
     companion object {
-        val DEFAULT_PORT = 1935
-        val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
+        const val DEFAULT_PORT = 1935
+        const val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
         val DEFAULT_OBJECT_ENCODING = RTMPObjectEncoding.AMF0
 
-        private val DEFAULT_CHUNK_SIZE_S = 1024 * 8
-        private val DEFAULT_CAPABILITIES = 239
+        private const val DEFAULT_CHUNK_SIZE_S = 1024 * 8
+        private const val DEFAULT_CAPABILITIES = 239
     }
 }

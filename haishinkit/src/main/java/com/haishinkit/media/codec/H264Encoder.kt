@@ -40,13 +40,13 @@ internal class H264Encoder : EncoderBase(MIME) {
     }
 
     companion object {
-        val MIME = "video/avc"
-        val DEFAULT_BIT_RATE = 125000
-        val DEFAULT_FRAME_RATE = 15
-        val DEFAULT_I_FRAME_INTERVAL = 2
-        val DEFAULT_WIDTH = 1920
-        val DEFAULT_HEIGHT = 1080
-        val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
-        val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
+        const val MIME = "video/avc"
+        const val DEFAULT_BIT_RATE = 125000
+        const val DEFAULT_FRAME_RATE = 15
+        const val DEFAULT_I_FRAME_INTERVAL = 2
+        const val DEFAULT_WIDTH = 1920
+        const val DEFAULT_HEIGHT = 1080
+        const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
+        const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
     }
 }

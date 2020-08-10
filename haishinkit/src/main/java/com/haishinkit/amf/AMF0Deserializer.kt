@@ -12,7 +12,7 @@ import java.util.HashMap
 import java.util.IllegalFormatFlagsException
 import java.nio.ByteBuffer
 
-final internal class AMF0Deserializer(private val buffer: ByteBuffer) {
+internal class AMF0Deserializer(private val buffer: ByteBuffer) {
     val `object`: Any?
         get() {
             val marker = buffer.get()
@@ -186,13 +186,13 @@ final internal class AMF0Deserializer(private val buffer: ByteBuffer) {
 
     private fun getString(asShort: Boolean): String {
         var length = if (asShort) buffer.short.toInt() else buffer.int
-        try {
+        return try {
             val bytes = ByteArray(length)
             buffer.get(bytes)
-            return String(bytes, charset("UTF-8"))
+            String(bytes, charset("UTF-8"))
         } catch (e: UnsupportedEncodingException) {
             Log.e(javaClass.getName(), e.toString())
-            return ""
+            ""
         }
     }
 }

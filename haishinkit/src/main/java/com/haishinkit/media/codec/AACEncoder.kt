@@ -21,10 +21,10 @@ internal class AACEncoder : EncoderBase(MIME) {
     }
 
     companion object {
-        val MIME = "audio/mp4a-latm"
+        const val MIME = "audio/mp4a-latm"
 
-        val DEFAULT_SAMPLE_RATE:Int = 44100
-        val DEFAULT_CHANNEL_COUNT:Int = 1
-        val DEFAULT_BIT_RATE:Int = 64000
+        const val DEFAULT_SAMPLE_RATE:Int = 44100
+        const val DEFAULT_CHANNEL_COUNT:Int = 1
+        const val DEFAULT_BIT_RATE:Int = 64000
     }
 }

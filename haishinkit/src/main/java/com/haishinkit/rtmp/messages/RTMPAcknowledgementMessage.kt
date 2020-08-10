@@ -31,6 +31,6 @@ internal class RTMPAcknowledgementMessage : RTMPMessage(RTMPMessage.Type.ACK) {
     }
 
     companion object {
-        private val CAPACITY = 4
+        private const val CAPACITY = 4
     }
 }

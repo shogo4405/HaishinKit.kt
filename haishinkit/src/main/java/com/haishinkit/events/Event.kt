@@ -31,7 +31,7 @@ open class Event(type: String, bubbles: Boolean, data: Any?) {
     }
 
     companion object {
-        val RTMP_STATUS = "rtmpStatus"
-        var IO_ERROR = "ioError"
+        const val RTMP_STATUS = "rtmpStatus"
+        const val IO_ERROR = "ioError"
     }
 }

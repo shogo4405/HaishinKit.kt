@@ -4,7 +4,7 @@ import com.haishinkit.amf.data.ASUndefined
 import java.util.Date
 import java.nio.ByteBuffer
 
-final internal class AMF0Serializer(private val buffer: ByteBuffer) {
+internal class AMF0Serializer(private val buffer: ByteBuffer) {
 
     fun putBoolean(value: Boolean): AMF0Serializer {
         buffer.put(AMF0Marker.BOOL.rawValue)

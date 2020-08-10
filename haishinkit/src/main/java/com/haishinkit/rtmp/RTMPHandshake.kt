@@ -48,6 +48,6 @@ internal class RTMPHandshake {
     }
 
     companion object {
-        var SIGNAL_SIZE = 1536
+        const val SIGNAL_SIZE = 1536
     }
 }

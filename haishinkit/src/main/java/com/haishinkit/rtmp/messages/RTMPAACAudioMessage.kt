@@ -42,6 +42,6 @@ internal class RTMPAACAudioMessage : RTMPAudioMessage() {
     }
 
     companion object {
-        private val AAC = (0x0A shl 4 or (0x03 shl 2) or (0x01 shl 1) or 0x01).toByte()
+        private const val AAC = (0x0A shl 4 or (0x03 shl 2) or (0x01 shl 1) or 0x01).toByte()
     }
 }

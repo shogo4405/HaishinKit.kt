@@ -8,7 +8,7 @@ import org.apache.commons.lang3.NotImplementedException
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 
-open internal class RTMPMessage(val type: Type) {
+internal open class RTMPMessage(val type: Type) {
     enum class Type(val rawValue: Byte) {
         CHUNK_SIZE(0x01),
         ABORT(0x02),
@@ -51,18 +51,18 @@ open internal class RTMPMessage(val type: Type) {
 
     companion object {
         fun create(value: Byte): RTMPMessage {
-            when (value) {
-                Type.CHUNK_SIZE.rawValue -> return RTMPSetChunkSizeMessage()
-                Type.ABORT.rawValue -> return RTMPAbortMessage()
-                Type.ACK.rawValue -> return RTMPAcknowledgementMessage()
-                Type.USER.rawValue -> return RTMPUserControlMessage()
-                Type.WINDOW_ACK.rawValue -> return RTMPWindowAcknowledgementSizeMessage()
-                Type.BANDWIDTH.rawValue -> return RTMPSetPeerBandwidthMessage()
-                Type.AUDIO.rawValue -> return RTMPAudioMessage()
-                Type.VIDEO.rawValue -> return RTMPVideoMessage()
-                Type.AMF0_DATA.rawValue -> return RTMPDataMessage(RTMPObjectEncoding.AMF0)
-                Type.AMF0_COMMAND.rawValue -> return RTMPCommandMessage(RTMPObjectEncoding.AMF0)
-                else -> return RTMPMessage(Type.UNKNOWN)
+            return when (value) {
+                Type.CHUNK_SIZE.rawValue -> RTMPSetChunkSizeMessage()
+                Type.ABORT.rawValue -> RTMPAbortMessage()
+                Type.ACK.rawValue -> RTMPAcknowledgementMessage()
+                Type.USER.rawValue -> RTMPUserControlMessage()
+                Type.WINDOW_ACK.rawValue -> RTMPWindowAcknowledgementSizeMessage()
+                Type.BANDWIDTH.rawValue -> RTMPSetPeerBandwidthMessage()
+                Type.AUDIO.rawValue -> RTMPAudioMessage()
+                Type.VIDEO.rawValue -> RTMPVideoMessage()
+                Type.AMF0_DATA.rawValue -> RTMPDataMessage(RTMPObjectEncoding.AMF0)
+                Type.AMF0_COMMAND.rawValue -> RTMPCommandMessage(RTMPObjectEncoding.AMF0)
+                else -> RTMPMessage(Type.UNKNOWN)
             }
         }
     }

@@ -41,6 +41,6 @@ internal class RTMPSetPeerBandwidthMessage : RTMPMessage(RTMPMessage.Type.BANDWI
     }
 
     companion object {
-        private val CAPACITY = 5
+        private const val CAPACITY = 5
     }
 }

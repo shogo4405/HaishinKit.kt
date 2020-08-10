@@ -32,6 +32,6 @@ internal class RTMPWindowAcknowledgementSizeMessage : RTMPMessage(RTMPMessage.Ty
     }
 
     companion object {
-        private val CAPACITY = 4
+        private const val CAPACITY = 4
     }
 }

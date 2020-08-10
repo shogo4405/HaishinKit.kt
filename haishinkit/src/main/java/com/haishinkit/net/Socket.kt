@@ -15,7 +15,7 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 
 abstract class Socket {
-    protected var inputBuffer: ByteBuffer? = null
+    private var inputBuffer: ByteBuffer? = null
     private var socket: java.net.Socket? = null
     private var output: Thread? = null
     private var network: Thread? = null

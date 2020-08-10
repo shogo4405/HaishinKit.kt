@@ -12,7 +12,7 @@ import java.util.ArrayList
 /**
  * 7.1.2. Data Message (18, 15)
  */
-internal class RTMPDataMessage(val objectEncoding: RTMPObjectEncoding) : RTMPMessage(objectEncoding.dataType) {
+internal class RTMPDataMessage(objectEncoding: RTMPObjectEncoding) : RTMPMessage(objectEncoding.dataType) {
     var handlerName: String? = null
     var arguments: ArrayList<Any?> = ArrayList()
 

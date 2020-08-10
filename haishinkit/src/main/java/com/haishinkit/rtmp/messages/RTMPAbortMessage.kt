@@ -28,6 +28,6 @@ internal class RTMPAbortMessage : RTMPMessage(RTMPMessage.Type.ABORT) {
     }
 
     companion object {
-        private val CAPACITY = 4
+        private const val CAPACITY = 4
     }
 }

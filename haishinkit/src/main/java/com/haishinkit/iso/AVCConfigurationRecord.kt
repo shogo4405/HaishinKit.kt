@@ -111,10 +111,10 @@ class AVCConfigurationRecord {
     }
 
     companion object {
-        val RESERVE_LENGTH_SIZE_MINUS_ONE = 0x3F
-        val RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS = 0xE0
-        val RESERVE_CHROME_FORMAT = 0xFC
-        val RESERVE_BIT_DEPTH_LUMA_MINUS8 = 0xF8
-        val RESERVE_BIT_DEPTH_CHROME_MINUS8 = 0xF8
+        const val RESERVE_LENGTH_SIZE_MINUS_ONE = 0x3F
+        const val RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS = 0xE0
+        const val RESERVE_CHROME_FORMAT = 0xFC
+        const val RESERVE_BIT_DEPTH_LUMA_MINUS8 = 0xF8
+        const val RESERVE_BIT_DEPTH_CHROME_MINUS8 = 0xF8
     }
 }

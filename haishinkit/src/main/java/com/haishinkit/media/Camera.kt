@@ -70,8 +70,8 @@ class Camera: SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback, I
     }
 
     companion object {
-        var DEFAULT_WIDTH:Int = 640
-        var DEFAULT_HEIGHT:Int = 480
+        const val DEFAULT_WIDTH:Int = 640
+        const val DEFAULT_HEIGHT:Int = 480
     }
 }
 

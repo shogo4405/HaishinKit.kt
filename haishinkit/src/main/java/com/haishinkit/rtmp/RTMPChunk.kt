@@ -161,10 +161,10 @@ internal enum class RTMPChunk(val rawValue: Byte) {
     }
 
     companion object {
-        val CONTROL: Short = 0x02
-        val COMMAND: Short = 0x03
-        val AUDIO: Short = 0x04
-        val VIDEO: Short = 0x05
-        val DEFAULT_SIZE = 128
+        const val CONTROL: Short = 0x02
+        const val COMMAND: Short = 0x03
+        const val AUDIO: Short = 0x04
+        const val VIDEO: Short = 0x05
+        const val DEFAULT_SIZE = 128
     }
 }
