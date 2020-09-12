@@ -9,7 +9,6 @@ import com.haishinkit.events.Event
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPObjectEncoding
 import com.haishinkit.rtmp.RTMPSocket
-import com.haishinkit.util.Log
 
 /**
  *  7.1.1. Command Message (20, 17)

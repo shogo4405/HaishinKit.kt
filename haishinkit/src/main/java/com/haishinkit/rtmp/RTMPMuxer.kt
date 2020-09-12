@@ -10,7 +10,7 @@ import com.haishinkit.flv.VideoCodec
 import com.haishinkit.iso.AVCConfigurationRecord
 import com.haishinkit.iso.AVCFormatUtils
 import com.haishinkit.iso.AudioSpecificConfig
-import com.haishinkit.media.codec.IEncoderListener
+import com.haishinkit.codec.IEncoderListener
 import com.haishinkit.rtmp.messages.RTMPAACAudioMessage
 import com.haishinkit.rtmp.messages.RTMPAVCVideoMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
@@ -50,7 +50,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
             }
         }
         if (message != null) {
-            stream.connection!!.socket.doOutput(RTMPChunk.ZERO, message)
+            stream.connection.socket.doOutput(RTMPChunk.ZERO, message)
         }
     }
 
@@ -88,7 +88,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
             }
         }
         if (message != null) {
-            stream.connection!!.socket.doOutput(RTMPChunk.ONE, message)
+            stream.connection.socket.doOutput(RTMPChunk.ONE, message)
         }
         timestamps.put(mime, info.presentationTimeUs)
     }

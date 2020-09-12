@@ -1,7 +1,6 @@
 package com.haishinkit.net
 
-import com.haishinkit.util.Log
-
+import android.util.Log
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 

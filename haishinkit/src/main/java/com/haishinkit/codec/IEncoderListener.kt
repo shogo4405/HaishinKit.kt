@@ -1,4 +1,4 @@
-package com.haishinkit.media.codec
+package com.haishinkit.codec
 
 import java.nio.ByteBuffer
 

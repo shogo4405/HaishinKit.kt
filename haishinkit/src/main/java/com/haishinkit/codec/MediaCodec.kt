@@ -1,4 +1,4 @@
-package com.haishinkit.media.codec
+package com.haishinkit.codec
 
 enum class MediaCodec(val rawValue: String) {
     VIDEO_VP8("video/x-vnd.on2.vp8"),

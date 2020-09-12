@@ -5,8 +5,6 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var fragment: Fragment? = null
@@ -15,7 +13,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val navigation = findViewById(R.id.navigation) as BottomNavigationView
+        val navigation = findViewById<BottomNavigationView>(R.id.navigation)
         navigation.setOnNavigationItemSelectedListener(this)
 
         fragment = CameraTabFragment.newInstance()
@@ -24,15 +22,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.getItemId()) {
+        when (item.itemId) {
             R.id.navigation_home -> {
                 fragment = CameraTabFragment.newInstance()
             }
+            R.id.navigation_mediaprojection -> {
+                fragment = MediaProjectionTabFragment.newInstance()
+            }
             R.id.navigation_dashboard -> {
-                fragment = PreferenceFragment.newInstance()
+                fragment = PreferenceTagFragment.newInstance()
             }
             else -> {
-
             }
         }
         val transaction = supportFragmentManager?.beginTransaction()

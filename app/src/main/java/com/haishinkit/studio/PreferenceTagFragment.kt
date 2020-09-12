@@ -1,13 +1,12 @@
 package com.haishinkit.studio
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.support.v4.app.Fragment
 
-class PreferenceFragment : Fragment() {
+class PreferenceTagFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -18,8 +17,8 @@ class PreferenceFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(): PreferenceFragment {
-            return PreferenceFragment()
+        fun newInstance(): PreferenceTagFragment {
+            return PreferenceTagFragment()
         }
     }
 }

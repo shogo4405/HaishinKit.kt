@@ -10,12 +10,11 @@ import android.widget.Button
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.events.IEventListener
-import com.haishinkit.media.Camera
-import com.haishinkit.media.Audio
+import com.haishinkit.media.CameraSource
+import com.haishinkit.media.AudioSource
 import com.haishinkit.events.Event
 import com.haishinkit.util.EventUtils
 import com.haishinkit.view.CameraView
-import android.Manifest.permission
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat
@@ -36,8 +35,8 @@ class CameraTabFragment: Fragment(), IEventListener {
         }
         connection = RTMPConnection()
         stream = RTMPStream(connection!!)
-        stream?.attachAudio(Audio())
-        stream?.attachCamera(Camera(android.hardware.Camera.open()))
+        stream?.attachAudio(AudioSource())
+        stream?.attachCamera(CameraSource(android.hardware.Camera.open()))
         connection?.addEventListener("rtmpStatus", this)
     }
 
@@ -45,18 +44,23 @@ class CameraTabFragment: Fragment(), IEventListener {
         val v = inflater!!.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            connection?.connect("rtmp://192.168.11.15:1935/live")
+            connection?.connect(Preference.shared.rtmpURL)
         }
         cameraView = v.findViewById<CameraView>(R.id.camera)
         cameraView?.attachStream(stream!!)
         return v
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connection?.dispose()
+    }
+
     override fun handleEvent(event: Event) {
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RTMPConnection.Code.CONNECT_SUCCESS.rawValue) {
-            stream?.publish("live")
+            stream?.publish(Preference.shared.streamName)
         }
     }
 

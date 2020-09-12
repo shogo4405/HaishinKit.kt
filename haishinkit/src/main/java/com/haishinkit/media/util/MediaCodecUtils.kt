@@ -1,9 +1,9 @@
 package com.haishinkit.media.util
 
+import android.util.Log
 import android.graphics.ImageFormat
 import android.media.MediaCodecInfo
 import android.media.MediaCodecList
-import com.haishinkit.util.Log
 
 object MediaCodecUtils {
     fun getCodecInfo(mimeType: String):MediaCodecInfo? {

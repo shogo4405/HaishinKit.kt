@@ -6,12 +6,13 @@ import android.media.MediaRecorder
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 
-class Audio: AudioRecord.OnRecordPositionUpdateListener, IDevice {
+class AudioSource() : IAudioSource, AudioRecord.OnRecordPositionUpdateListener {
     var channel = DEFAULT_CHANNEL
-    internal var stream: RTMPStream? = null
+    override var stream: RTMPStream? = null
+    override var isRunning: Boolean = false
     private var encoding = DEFAULT_ENCODING
 
-    private  var _buffer: ByteArray? = null
+    private var _buffer: ByteArray? = null
     var buffer: ByteArray?
         get() {
             if (_buffer == null) {
@@ -55,19 +56,26 @@ class Audio: AudioRecord.OnRecordPositionUpdateListener, IDevice {
             _audioRecord = value
         }
 
-    var currentPresentationTimestamp:Double = 0.0
-
-    fun startRecording() {
-        audioRecord?.startRecording()
-        audioRecord?.read(buffer, 0, minBufferSize)
-    }
+    private var currentPresentationTimestamp:Double = 0.0
 
     override fun setUp() {
+        stream?.getEncoderByName("audio/mp4a-latm")
         audioRecord?.positionNotificationPeriod = minBufferSize / 2
         audioRecord?.setRecordPositionUpdateListener(this)
     }
 
     override fun tearDown() {
+        audioRecord?.setRecordPositionUpdateListener(null)
+    }
+
+    override fun startRunning() {
+        currentPresentationTimestamp = 0.0
+        audioRecord?.startRecording()
+        audioRecord?.read(buffer, 0, minBufferSize)
+    }
+
+    override fun stopRunning() {
+        audioRecord?.stop()
     }
 
     override fun onMarkerReached(audio: AudioRecord?) {

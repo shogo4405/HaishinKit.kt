@@ -1,10 +1,10 @@
-package com.haishinkit.media.codec
+package com.haishinkit.codec
 
+import android.util.Log
 import android.media.MediaCodec
-
-import com.haishinkit.util.Log
 import java.io.IOException
 import java.lang.Runnable
+import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
@@ -32,7 +32,6 @@ abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-
         }
     }
 
@@ -57,14 +56,17 @@ abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
             val inputBuffers = codec!!.inputBuffers
             val inputBufferIndex = codec!!.dequeueInputBuffer(-1)
             if (0 <= inputBufferIndex) {
-                val inputBuffer = inputBuffers[inputBufferIndex]
+                var size = data.size
+                var inputBuffer = inputBuffers[inputBufferIndex]
                 inputBuffer.clear()
                 if (byteConverter == null) {
                     inputBuffer.put(data)
                 } else {
-                    inputBuffer.put(byteConverter!!.convert(data))
+                    val buffer = byteConverter!!.convert(data)
+                    size = buffer.size
+                    inputBuffer.put(buffer)
                 }
-                codec!!.queueInputBuffer(inputBufferIndex, 0, data.size, presentationTimeUs, 0)
+                codec!!.queueInputBuffer(inputBufferIndex, 0, size, presentationTimeUs, 0)
             }
         } catch (e: Exception) {
             Log.w(javaClass.name, "", e)

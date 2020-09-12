@@ -1,10 +1,10 @@
 package com.haishinkit.rtmp
 
+import android.util.Log
 import com.haishinkit.events.Event
 import java.nio.ByteBuffer
 import com.haishinkit.net.Socket
 import com.haishinkit.rtmp.messages.RTMPMessage
-import com.haishinkit.util.Log
 import org.apache.commons.lang3.builder.ToStringBuilder
 
 internal class RTMPSocket(val connection: RTMPConnection) : Socket() {

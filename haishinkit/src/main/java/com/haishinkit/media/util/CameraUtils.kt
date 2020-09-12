@@ -1,7 +1,7 @@
 package com.haishinkit.media.util
 
+import android.util.Log
 import android.hardware.Camera
-import com.haishinkit.util.Log
 import com.haishinkit.util.Size
 
 object CameraUtils {

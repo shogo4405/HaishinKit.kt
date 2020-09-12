@@ -5,6 +5,7 @@ import java.nio.ByteBuffer
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
+import android.util.Log
 
 import com.haishinkit.events.Event
 import com.haishinkit.events.EventDispatcher
@@ -14,7 +15,6 @@ import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
 import com.haishinkit.rtmp.messages.RTMPSetChunkSizeMessage
 import com.haishinkit.util.EventUtils
-import com.haishinkit.util.Log
 
 import org.apache.commons.lang3.StringUtils
 
@@ -151,6 +151,13 @@ open class RTMPConnection : EventDispatcher(null) {
         socket.close(false)
     }
 
+    fun dispose() {
+        streams.forEach {
+            it.value.dispose()
+        }
+        streams.clear()
+    }
+
     internal fun listen(buffer: ByteBuffer) {
         val rollback = buffer.position()
         try {
@@ -203,7 +210,7 @@ open class RTMPConnection : EventDispatcher(null) {
             override fun onResult(arguments: List<Any?>) {
                 val id = (arguments[0] as Double).toInt()
                 stream.id = id
-                streams.put(id, stream)
+                streams[id] = stream
                 stream.readyState = RTMPStream.ReadyState.OPEN
             }
             override fun onStatus(arguments: List<Any?>) {
