@@ -2,7 +2,7 @@ package com.haishinkit.rtmp
 
 import android.media.MediaCodec
 import android.media.MediaFormat
-
+import com.haishinkit.codec.IEncoderListener
 import com.haishinkit.flv.AACPacketType
 import com.haishinkit.flv.AVCPacketType
 import com.haishinkit.flv.FlameType
@@ -10,11 +10,9 @@ import com.haishinkit.flv.VideoCodec
 import com.haishinkit.iso.AVCConfigurationRecord
 import com.haishinkit.iso.AVCFormatUtils
 import com.haishinkit.iso.AudioSpecificConfig
-import com.haishinkit.codec.IEncoderListener
 import com.haishinkit.rtmp.messages.RTMPAACAudioMessage
 import com.haishinkit.rtmp.messages.RTMPAVCVideoMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
-
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentHashMap
 

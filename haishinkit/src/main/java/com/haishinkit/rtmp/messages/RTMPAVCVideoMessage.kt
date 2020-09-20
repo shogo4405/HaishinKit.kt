@@ -2,7 +2,6 @@ package com.haishinkit.rtmp.messages
 
 import com.haishinkit.flv.VideoCodec
 import com.haishinkit.rtmp.RTMPSocket
-
 import java.nio.ByteBuffer
 
 internal class RTMPAVCVideoMessage : RTMPVideoMessage() {

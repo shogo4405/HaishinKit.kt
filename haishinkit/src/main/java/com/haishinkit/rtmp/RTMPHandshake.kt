@@ -1,7 +1,6 @@
 package com.haishinkit.rtmp
 
 import org.apache.commons.lang3.builder.ToStringBuilder
-
 import java.nio.ByteBuffer
 import java.util.Random
 
@@ -12,7 +11,7 @@ internal class RTMPHandshake {
                 val random = Random()
                 field.put(0x03)
                 field.position(1 + 8)
-                for (i in 0 .. SIGNAL_SIZE - 9) {
+                for (i in 0..SIGNAL_SIZE - 9) {
                     field.put(random.nextInt().toByte())
                 }
                 field.flip()

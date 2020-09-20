@@ -30,7 +30,7 @@ class AudioSource() : IAudioSource, AudioRecord.OnRecordPositionUpdateListener {
     var minBufferSize: Int
         get() {
             if (_minBufferSize == -1) {
-                _minBufferSize = AudioRecord.getMinBufferSize(samplingRate, channel, encoding);
+                _minBufferSize = AudioRecord.getMinBufferSize(samplingRate, channel, encoding)
             }
             return _minBufferSize
         }
@@ -43,11 +43,11 @@ class AudioSource() : IAudioSource, AudioRecord.OnRecordPositionUpdateListener {
         get() {
             if (_audioRecord == null) {
                 _audioRecord = AudioRecord(
-                        MediaRecorder.AudioSource.MIC,
-                        samplingRate,
-                        channel,
-                        encoding,
-                        minBufferSize
+                    MediaRecorder.AudioSource.MIC,
+                    samplingRate,
+                    channel,
+                    encoding,
+                    minBufferSize
                 )
             }
             return _audioRecord
@@ -56,7 +56,7 @@ class AudioSource() : IAudioSource, AudioRecord.OnRecordPositionUpdateListener {
             _audioRecord = value
         }
 
-    private var currentPresentationTimestamp:Double = 0.0
+    private var currentPresentationTimestamp: Double = 0.0
 
     override fun setUp() {
         stream?.getEncoderByName("audio/mp4a-latm")
@@ -87,7 +87,7 @@ class AudioSource() : IAudioSource, AudioRecord.OnRecordPositionUpdateListener {
         currentPresentationTimestamp += timestamp()
     }
 
-    private fun timestamp():Double {
+    private fun timestamp(): Double {
         return 1000000 * (minBufferSize.toDouble() / 2 / samplingRate.toDouble())
     }
 

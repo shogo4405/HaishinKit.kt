@@ -14,9 +14,8 @@ import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.yuv.ARGB8888toYUV420SemiPlanarConverter
 import org.apache.commons.lang3.builder.ToStringBuilder
 
-
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class MediaProjectionSource(private var mediaProjection: MediaProjection, private val metrics: DisplayMetrics): IVideoSource, ImageReader.OnImageAvailableListener {
+class MediaProjectionSource(private var mediaProjection: MediaProjection, private val metrics: DisplayMetrics) : IVideoSource, ImageReader.OnImageAvailableListener {
     override var stream: RTMPStream? = null
     override var isRunning: Boolean = false
     private var virtualDisplay: VirtualDisplay? = null
@@ -29,14 +28,14 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
         }
         if (reader != null) {
             virtualDisplay = mediaProjection?.createVirtualDisplay(
-                    MediaProjectionSource.DEFAULT_DISPLAY_NAME,
-                    width,
-                    height,
-                    metrics.densityDpi,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                    reader.surface,
-                    null,
-                    null
+                MediaProjectionSource.DEFAULT_DISPLAY_NAME,
+                width,
+                height,
+                metrics.densityDpi,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                reader.surface,
+                null,
+                null
             )
         }
         val encoder = stream?.getEncoderByName("video/avc") as? H264Encoder

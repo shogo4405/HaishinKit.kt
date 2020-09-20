@@ -1,8 +1,8 @@
 package com.haishinkit.amf
 
 import com.haishinkit.amf.data.ASUndefined
-import java.util.Date
 import java.nio.ByteBuffer
+import java.util.Date
 
 internal class AMF0Serializer(private val buffer: ByteBuffer) {
 

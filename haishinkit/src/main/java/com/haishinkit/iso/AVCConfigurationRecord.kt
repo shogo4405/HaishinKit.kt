@@ -2,7 +2,6 @@ package com.haishinkit.iso
 
 import android.media.MediaFormat
 import org.apache.commons.lang3.builder.ToStringBuilder
-
 import java.nio.ByteBuffer
 import java.util.ArrayList
 

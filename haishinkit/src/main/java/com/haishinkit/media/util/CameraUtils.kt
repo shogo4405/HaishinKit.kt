@@ -1,11 +1,11 @@
 package com.haishinkit.media.util
 
-import android.util.Log
 import android.hardware.Camera
+import android.util.Log
 import com.haishinkit.util.Size
 
 object CameraUtils {
-    fun getActualSize(size: Size, supportedPreviewSizes:List<Camera.Size>): Size {
+    fun getActualSize(size: Size, supportedPreviewSizes: List<Camera.Size>): Size {
         val rate = size.width.toDouble() / size.height.toDouble()
         for (s in supportedPreviewSizes) {
             Log.v(javaClass.name + "#supportedPreviewSizes", s.width.toString() + ":" + s.height.toString())

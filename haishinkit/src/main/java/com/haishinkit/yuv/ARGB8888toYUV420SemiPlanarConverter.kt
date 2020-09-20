@@ -3,15 +3,14 @@ package com.haishinkit.yuv
 import android.util.Log
 import com.haishinkit.codec.ByteConverter
 import com.haishinkit.media.CameraSource
-import kotlin.experimental.and
 
-internal class ARGB8888toYUV420SemiPlanarConverter: ByteConverter {
-    var width:Int = CameraSource.DEFAULT_WIDTH
-    var height:Int = CameraSource.DEFAULT_HEIGHT
-    var rotation:Int = 0
+internal class ARGB8888toYUV420SemiPlanarConverter : ByteConverter {
+    var width: Int = CameraSource.DEFAULT_WIDTH
+    var height: Int = CameraSource.DEFAULT_HEIGHT
+    var rotation: Int = 0
 
     override fun convert(input: ByteArray): ByteArray {
-        Log.d(javaClass.name, "${width}, ${height}, ${input.size}")
+        Log.d(javaClass.name, "$width, $height, ${input.size}")
         var output: ByteArray = ByteArray((width * height * 3) / 2)
 
         var yIndex = 0

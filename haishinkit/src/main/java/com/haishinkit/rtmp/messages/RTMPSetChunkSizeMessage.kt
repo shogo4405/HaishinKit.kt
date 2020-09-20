@@ -1,9 +1,8 @@
 package com.haishinkit.rtmp.messages
 
-import java.nio.ByteBuffer
-
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPSocket
+import java.nio.ByteBuffer
 
 /**
  * 5.4.1. Set Chunk Size (1)

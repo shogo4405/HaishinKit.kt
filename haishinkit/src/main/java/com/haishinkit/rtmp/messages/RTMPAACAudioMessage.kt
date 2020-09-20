@@ -7,7 +7,6 @@ import com.haishinkit.flv.SoundType
 import com.haishinkit.iso.AudioSpecificConfig
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPSocket
-
 import java.nio.ByteBuffer
 
 internal class RTMPAACAudioMessage : RTMPAudioMessage() {

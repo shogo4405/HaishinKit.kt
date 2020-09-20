@@ -3,7 +3,6 @@ package com.haishinkit.net
 import android.util.Log
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
-
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream

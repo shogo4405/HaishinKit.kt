@@ -3,7 +3,6 @@ package com.haishinkit.rtmp.messages
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPObjectEncoding
 import com.haishinkit.rtmp.RTMPSocket
-
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer

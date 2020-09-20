@@ -1,12 +1,6 @@
 package com.haishinkit.rtmp
 
-import java.net.URI
-import java.nio.ByteBuffer
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.concurrent.ConcurrentHashMap
 import android.util.Log
-
 import com.haishinkit.events.Event
 import com.haishinkit.events.EventDispatcher
 import com.haishinkit.events.IEventListener
@@ -15,8 +9,12 @@ import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
 import com.haishinkit.rtmp.messages.RTMPSetChunkSizeMessage
 import com.haishinkit.util.EventUtils
-
 import org.apache.commons.lang3.StringUtils
+import java.net.URI
+import java.nio.ByteBuffer
+import java.util.ArrayList
+import java.util.HashMap
+import java.util.concurrent.ConcurrentHashMap
 
 open class RTMPConnection : EventDispatcher(null) {
 
@@ -186,7 +184,7 @@ open class RTMPConnection : EventDispatcher(null) {
                 message = chunk.decode(streamID, this, buffer)
                 if (message.length <= chunkSizeC) {
                     message.decode(buffer).execute(this)
-                    Log.v(javaClass.name  + "#listen", message.toString())
+                    Log.v(javaClass.name + "#listen", message.toString())
                 } else {
                     payload = ByteBuffer.allocate(message.length)
                     payload.put(buffer.array(), buffer.position(), chunkSizeC)
@@ -206,17 +204,20 @@ open class RTMPConnection : EventDispatcher(null) {
     }
 
     internal fun createStream(stream: RTMPStream) {
-        call("createStream", object : IResponder {
-            override fun onResult(arguments: List<Any?>) {
-                val id = (arguments[0] as Double).toInt()
-                stream.id = id
-                streams[id] = stream
-                stream.readyState = RTMPStream.ReadyState.OPEN
+        call(
+            "createStream",
+            object : IResponder {
+                override fun onResult(arguments: List<Any?>) {
+                    val id = (arguments[0] as Double).toInt()
+                    stream.id = id
+                    streams[id] = stream
+                    stream.readyState = RTMPStream.ReadyState.OPEN
+                }
+                override fun onStatus(arguments: List<Any?>) {
+                    Log.w(javaClass.name + "#onStatus", arguments.toString())
+                }
             }
-            override fun onStatus(arguments: List<Any?>) {
-                Log.w(javaClass.name + "#onStatus", arguments.toString())
-            }
-        })
+        )
     }
 
     internal fun createConnectionMessage(): RTMPMessage {

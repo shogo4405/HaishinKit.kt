@@ -1,4 +1,3 @@
 package com.haishinkit.media
 
-interface IVideoSource: IDeviceSource {
-}
+interface IVideoSource : IDeviceSource

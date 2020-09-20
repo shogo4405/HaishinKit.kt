@@ -1,9 +1,7 @@
 package com.haishinkit.util
 
-import java.util.HashMap
-import java.util.Objects
-
 import com.haishinkit.events.Event
+import java.util.HashMap
 
 object EventUtils {
     fun toMap(event: Event): Map<String, Any> {

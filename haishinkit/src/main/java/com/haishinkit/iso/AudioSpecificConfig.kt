@@ -63,7 +63,7 @@ internal class AudioSpecificConfig {
     constructor(buffer: ByteBuffer) {
         val bytes = ByteArray(2)
         buffer.get(bytes)
-        type = AudioObjectType.values().filter { n -> n.rawValue.toInt() == bytes[0].toInt() shr 3  }.first()
+        type = AudioObjectType.values().filter { n -> n.rawValue.toInt() == bytes[0].toInt() shr 3 }.first()
         frequency = SamplingFrequency.values().filter { n -> n.rawValue.toInt() == (bytes[0].toInt() and 7 shl 1 or (bytes[1].toInt() and 0xFF shr 7)) }.first()
         channel = ChannelConfiguration.values().filter { n -> n.rawValue.toInt() == bytes[1].toInt() and 120 shr 3 }.first()
         buffer.flip()

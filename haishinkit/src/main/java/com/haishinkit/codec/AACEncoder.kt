@@ -6,9 +6,9 @@ import android.media.MediaFormat
 import java.io.IOException
 
 internal class AACEncoder : EncoderBase(MIME) {
-    var sampleRate:Int = DEFAULT_SAMPLE_RATE
-    var channelCount:Int = DEFAULT_CHANNEL_COUNT
-    var bitRate:Int = DEFAULT_BIT_RATE
+    var sampleRate: Int = DEFAULT_SAMPLE_RATE
+    var channelCount: Int = DEFAULT_CHANNEL_COUNT
+    var bitRate: Int = DEFAULT_BIT_RATE
 
     @Throws(IOException::class)
     override fun createMediaCodec(): MediaCodec {
@@ -23,8 +23,8 @@ internal class AACEncoder : EncoderBase(MIME) {
     companion object {
         const val MIME = "audio/mp4a-latm"
 
-        const val DEFAULT_SAMPLE_RATE:Int = 44100
-        const val DEFAULT_CHANNEL_COUNT:Int = 1
-        const val DEFAULT_BIT_RATE:Int = 64000
+        const val DEFAULT_SAMPLE_RATE: Int = 44100
+        const val DEFAULT_CHANNEL_COUNT: Int = 1
+        const val DEFAULT_BIT_RATE: Int = 64000
     }
 }

@@ -1,12 +1,12 @@
 package com.haishinkit.media.util
 
-import android.util.Log
 import android.graphics.ImageFormat
 import android.media.MediaCodecInfo
 import android.media.MediaCodecList
+import android.util.Log
 
 object MediaCodecUtils {
-    fun getCodecInfo(mimeType: String):MediaCodecInfo? {
+    fun getCodecInfo(mimeType: String): MediaCodecInfo? {
         val numCodecs = MediaCodecList.getCodecCount()
         for (i in 0 until numCodecs) {
             val info = MediaCodecList.getCodecInfoAt(i)
@@ -23,7 +23,7 @@ object MediaCodecUtils {
         return null
     }
 
-    fun getColorFormat(codecInfo:MediaCodecInfo, mimeType:String):Int? {
+    fun getColorFormat(codecInfo: MediaCodecInfo, mimeType: String): Int? {
         var capabilities = codecInfo.getCapabilitiesForType(mimeType)
         for (colorFormat in capabilities.colorFormats) {
             Log.i(javaClass.name, colorFormatToString(colorFormat))
@@ -36,7 +36,7 @@ object MediaCodecUtils {
         return null
     }
 
-    fun imageFormatToString(imageFormat:Int):String {
+    fun imageFormatToString(imageFormat: Int): String {
         when (imageFormat) {
             ImageFormat.DEPTH16 -> return "DEPTH16"
             ImageFormat.DEPTH_POINT_CLOUD -> return "DEPTH_POINT_CLOUD"
@@ -61,7 +61,7 @@ object MediaCodecUtils {
         }
     }
 
-    fun colorFormatToString(colorFormat:Int):String {
+    fun colorFormatToString(colorFormat: Int): String {
         when (colorFormat) {
             MediaCodecInfo.CodecCapabilities.COLOR_Format12bitRGB444 -> return "COLOR_Format12bitRGB444"
             MediaCodecInfo.CodecCapabilities.COLOR_Format16bitARGB1555 -> return "COLOR_Format16bitARGB1555"
@@ -104,14 +104,14 @@ object MediaCodecUtils {
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV422PackedPlanar -> return "COLOR_FormatYUV422PackedPlanar"
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV422PackedSemiPlanar -> return "COLOR_FormatYUV422PackedSemiPlanar"
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV422Planar -> return "COLOR_FormatYUV422Planar"
-            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV422SemiPlanar -> return "COLOR_FormatYUV422SemiPlanar";
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV422SemiPlanar -> return "COLOR_FormatYUV422SemiPlanar"
             MediaCodecInfo.CodecCapabilities.COLOR_QCOM_FormatYUV420SemiPlanar -> return "COLOR_QCOM_FormatYUV420SemiPlanar"
             MediaCodecInfo.CodecCapabilities.COLOR_TI_FormatYUV420PackedSemiPlanar -> return "COLOR_TI_FormatYUV420PackedSemiPlanar"
             else -> return ""
         }
     }
 
-    private fun isSupportedFormat(colorFormat: Int):Boolean {
+    private fun isSupportedFormat(colorFormat: Int): Boolean {
         return when (colorFormat) {
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar -> false
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedPlanar -> false

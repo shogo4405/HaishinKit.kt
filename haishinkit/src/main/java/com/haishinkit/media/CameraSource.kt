@@ -2,16 +2,16 @@ package com.haishinkit.media
 
 import android.graphics.ImageFormat
 import android.hardware.Camera
-import android.view.SurfaceHolder
 import android.util.Log
-import com.haishinkit.yuv.NV21toYUV420SemiPlanarConverter
+import android.view.SurfaceHolder
+import com.haishinkit.codec.H264Encoder
 import com.haishinkit.media.util.CameraUtils
 import com.haishinkit.media.util.MediaCodecUtils
 import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.util.Size
-import com.haishinkit.codec.H264Encoder
+import com.haishinkit.yuv.NV21toYUV420SemiPlanarConverter
 
-class CameraSource: IVideoSource, SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
+class CameraSource : IVideoSource, SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
     var camera: android.hardware.Camera?
 
     override var stream: RTMPStream? = null
@@ -21,7 +21,7 @@ class CameraSource: IVideoSource, SurfaceHolder.Callback, android.hardware.Camer
             encoder?.width = actualSize.width
             encoder?.height = actualSize.height
         }
-    internal var displayOrientation:Int = 0
+    internal var displayOrientation: Int = 0
     override val isRunning: Boolean = false
 
     var size: Size = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
@@ -60,7 +60,7 @@ class CameraSource: IVideoSource, SurfaceHolder.Callback, android.hardware.Camer
         try {
             camera?.setPreviewCallback(this)
             camera?.setPreviewDisplay(holder)
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             Log.w(javaClass.name, "", e)
         }
     }
@@ -85,8 +85,7 @@ class CameraSource: IVideoSource, SurfaceHolder.Callback, android.hardware.Camer
     }
 
     companion object {
-        const val DEFAULT_WIDTH:Int = 640
-        const val DEFAULT_HEIGHT:Int = 480
+        const val DEFAULT_WIDTH: Int = 640
+        const val DEFAULT_HEIGHT: Int = 480
     }
 }
-

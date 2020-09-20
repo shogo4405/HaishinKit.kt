@@ -4,7 +4,6 @@ import com.haishinkit.rtmp.RTMPChunk
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPSocket
 import com.haishinkit.rtmp.RTMPStream
-
 import java.nio.ByteBuffer
 
 /**
@@ -72,4 +71,3 @@ internal class RTMPUserControlMessage : RTMPMessage(RTMPMessage.Type.USER) {
         private const val CAPACITY = 6
     }
 }
-

@@ -1,9 +1,8 @@
 package com.haishinkit.codec
 
-import java.nio.ByteBuffer
-
 import android.media.MediaCodec.BufferInfo
 import android.media.MediaFormat
+import java.nio.ByteBuffer
 
 interface IEncoderListener {
     fun onFormatChanged(mime: String, mediaFormat: MediaFormat)

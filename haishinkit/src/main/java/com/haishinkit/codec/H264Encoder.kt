@@ -1,11 +1,11 @@
 package com.haishinkit.codec
 
-import java.io.IOException
 import android.media.MediaCodec
-import android.media.MediaFormat
 import android.media.MediaCodecInfo
-import com.haishinkit.yuv.NV21toYUV420SemiPlanarConverter
+import android.media.MediaFormat
 import com.haishinkit.media.util.MediaCodecUtils
+import com.haishinkit.yuv.NV21toYUV420SemiPlanarConverter
+import java.io.IOException
 
 internal class H264Encoder : EncoderBase(MIME) {
     var bitRate = DEFAULT_BIT_RATE

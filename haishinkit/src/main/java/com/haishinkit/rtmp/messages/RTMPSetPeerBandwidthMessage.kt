@@ -2,7 +2,6 @@ package com.haishinkit.rtmp.messages
 
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPSocket
-
 import java.nio.ByteBuffer
 
 /**

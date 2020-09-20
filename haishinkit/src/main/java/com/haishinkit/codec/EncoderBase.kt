@@ -1,10 +1,9 @@
 package com.haishinkit.codec
 
-import android.util.Log
 import android.media.MediaCodec
+import android.util.Log
 import java.io.IOException
 import java.lang.Runnable
-import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
@@ -105,4 +104,3 @@ abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
     @Throws(IOException::class)
     protected abstract fun createMediaCodec(): MediaCodec
 }
-

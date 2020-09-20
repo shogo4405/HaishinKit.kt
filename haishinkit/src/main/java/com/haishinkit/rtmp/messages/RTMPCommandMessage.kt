@@ -1,14 +1,13 @@
 package com.haishinkit.rtmp.messages
 
-import java.util.ArrayList
-import java.nio.ByteBuffer
-
 import com.haishinkit.amf.AMF0Deserializer
 import com.haishinkit.amf.AMF0Serializer
 import com.haishinkit.events.Event
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPObjectEncoding
 import com.haishinkit.rtmp.RTMPSocket
+import java.nio.ByteBuffer
+import java.util.ArrayList
 
 /**
  *  7.1.1. Command Message (20, 17)

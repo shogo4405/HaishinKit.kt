@@ -1,9 +1,8 @@
 package com.haishinkit.rtmp
 
-import java.util.ArrayList
-import java.nio.ByteBuffer
-
 import com.haishinkit.rtmp.messages.RTMPMessage
+import java.nio.ByteBuffer
+import java.util.ArrayList
 
 internal enum class RTMPChunk(val rawValue: Byte) {
     ZERO(0x00),

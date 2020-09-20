@@ -2,10 +2,10 @@ package com.haishinkit.rtmp
 
 import android.util.Log
 import com.haishinkit.events.Event
-import java.nio.ByteBuffer
 import com.haishinkit.net.Socket
 import com.haishinkit.rtmp.messages.RTMPMessage
 import org.apache.commons.lang3.builder.ToStringBuilder
+import java.nio.ByteBuffer
 
 internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
     enum class ReadyState {
@@ -47,7 +47,7 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
     }
 
     override fun close(disconnected: Boolean) {
-        var data:Any? = null
+        var data: Any? = null
         if (disconnected) {
             if (readyState == RTMPSocket.ReadyState.HandshakeDone) {
                 data = RTMPConnection.Code.CONNECT_CLOSED.data("")
@@ -88,14 +88,15 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
                 isConnected = true
                 doOutput(RTMPChunk.ZERO, connection.createConnectionMessage())
             }
-            RTMPSocket.ReadyState.HandshakeDone -> try {
-                connection.listen(buffer)
-            } catch (e: IndexOutOfBoundsException) {
-                Log.w(javaClass.name + "#listen", "", e)
-            } catch (e: IllegalArgumentException) {
-                Log.w(javaClass.name + "#listen", "", e)
-                throw e
-            }
+            RTMPSocket.ReadyState.HandshakeDone ->
+                try {
+                    connection.listen(buffer)
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.w(javaClass.name + "#listen", "", e)
+                } catch (e: IllegalArgumentException) {
+                    Log.w(javaClass.name + "#listen", "", e)
+                    throw e
+                }
             else -> {}
         }
     }

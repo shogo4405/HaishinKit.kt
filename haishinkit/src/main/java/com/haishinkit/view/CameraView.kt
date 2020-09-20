@@ -3,14 +3,14 @@ package com.haishinkit.view
 import android.content.Context
 import android.hardware.Camera
 import android.util.AttributeSet
+import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.Surface
 import android.view.WindowManager
 import com.haishinkit.media.CameraSource
 import com.haishinkit.rtmp.RTMPStream
 
-class CameraView: SurfaceView, SurfaceHolder.Callback {
+class CameraView : SurfaceView, SurfaceHolder.Callback {
     private var camera: CameraSource? = null
     private var displayOrientation: Int = 0
         get() {
@@ -36,7 +36,7 @@ class CameraView: SurfaceView, SurfaceHolder.Callback {
             return (info.orientation - degrees + 360) % 360
         }
 
-    constructor(context: Context, attributes: AttributeSet): super(context, attributes) {
+    constructor(context: Context, attributes: AttributeSet) : super(context, attributes) {
         holder.addCallback(this)
     }
 

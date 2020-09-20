@@ -1,16 +1,14 @@
 package com.haishinkit.amf
 
 import android.util.Log
-
-import com.haishinkit.amf.data.ASXMLDocument
-import com.haishinkit.amf.data.ASUndefined
 import com.haishinkit.amf.data.ASArray
-
+import com.haishinkit.amf.data.ASUndefined
+import com.haishinkit.amf.data.ASXMLDocument
 import java.io.UnsupportedEncodingException
+import java.nio.ByteBuffer
 import java.util.Date
 import java.util.HashMap
 import java.util.IllegalFormatFlagsException
-import java.nio.ByteBuffer
 
 internal class AMF0Deserializer(private val buffer: ByteBuffer) {
     val `object`: Any?

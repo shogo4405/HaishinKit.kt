@@ -1,24 +1,22 @@
 package com.haishinkit.rtmp
 
 import android.util.Log
+import com.haishinkit.codec.AACEncoder
+import com.haishinkit.codec.H264Encoder
+import com.haishinkit.codec.IEncoder
 import com.haishinkit.events.Event
 import com.haishinkit.events.EventDispatcher
 import com.haishinkit.events.IEventListener
 import com.haishinkit.media.AudioSetting
-import com.haishinkit.codec.AACEncoder
 import com.haishinkit.media.IAudioSource
 import com.haishinkit.media.IVideoSource
 import com.haishinkit.media.VideoSetting
-import com.haishinkit.codec.H264Encoder
-import com.haishinkit.codec.IEncoder
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPDataMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
 import com.haishinkit.util.EventUtils
-
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
-
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
