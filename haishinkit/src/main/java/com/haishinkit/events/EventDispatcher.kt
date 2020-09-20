@@ -1,17 +1,20 @@
 package com.haishinkit.events
 
+import android.support.v4.util.Pools
+import android.util.Log
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
 open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispatcher {
+    private val pool = Pools.SynchronizedPool<Event>(EventDispatcher.MAX_POOL_SIZE)
     private val listeners = ConcurrentHashMap<String, MutableList<IEventListener>>()
 
     override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
-        val key: String = type + "/" + useCapture.toString()
+        val key: String = "$type/$useCapture"
         listeners.putIfAbsent(key, Collections.synchronizedList(mutableListOf<IEventListener>()))
-        listeners.get(key)?.add(listener)
+        listeners[key]?.add(listener)
     }
 
     override fun addEventListener(type: String, listener: IEventListener) {
@@ -35,7 +38,7 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
             }
 
             val isCapturingPhase = (event.eventPhase == EventPhase.CAPTURING).toString()
-            val listeners = this.listeners[event.type + "/" + isCapturingPhase]
+            val listeners = this.listeners["${event.type}/${isCapturingPhase}"]
             if (listeners != null) {
                 for (listener in listeners) {
                     listener.handleEvent(event)
@@ -57,7 +60,12 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
     }
 
     override fun dispatchEventWith(type: String, bubbles: Boolean, data: Any?) {
-        dispatchEvent(Event(type, bubbles, data))
+        val event = pool.acquire() ?: Event(type, bubbles, data)
+        event.type = type
+        event.isBubbles = bubbles
+        event.data = data
+        dispatchEvent(event)
+        pool.release(event)
     }
 
     override fun dispatchEventWith(type: String, bubbles: Boolean) {
@@ -69,14 +77,14 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
     }
 
     override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
-        val key = type + "/" + useCapture.toString()
+        val key = "$type/$useCapture"
         if (!listeners.containsKey(key)) {
             return
         }
-        val list = listeners.get(key)!!
+        val list = listeners[key]!!
         var i = list.size - 1
         while (0 <= i) {
-            if (list.get(i) === listener) {
+            if (list[i] === listener) {
                 list.removeAt(i)
                 return
             }
@@ -90,5 +98,9 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
+    }
+
+    companion object {
+        const val MAX_POOL_SIZE = 16
     }
 }

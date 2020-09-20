@@ -20,8 +20,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
-class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
+open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher(null) {
     enum class BufferType {
         VIDEO,
         AUDIO
@@ -91,7 +92,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
             val data = EventUtils.toMap(event)
             when (data["code"].toString()) {
                 RTMPConnection.Code.CONNECT_SUCCESS.rawValue -> {
-                    connection?.createStream(stream)
+                    connection.createStream(stream)
                 }
                 RTMPStream.Code.PUBLISH_START.rawValue -> {
                     stream.readyState = ReadyState.PUBLISHING
@@ -124,6 +125,8 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
             encoder?.height = videoSetting.height
         }
     var audioSetting: AudioSetting = AudioSetting(0)
+    @Volatile var currentFPS: Int = 0
+        private set
 
     internal var id = 0
     internal var video: IVideoSource? = null
@@ -138,7 +141,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
                         if (message is RTMPCommandMessage) {
                             message.transactionID = ++connection.transactionID
                         }
-                        connection.socket.doOutput(RTMPChunk.ZERO, message)
+                        connection.doOutput(RTMPChunk.ZERO, message)
                     }
                     messages.clear()
                 }
@@ -156,7 +159,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
             }
         }
     internal val messages = ArrayList<RTMPMessage>()
-    internal lateinit var connection: RTMPConnection
+    internal var frameCount = AtomicInteger(0)
     private var muxer: RTMPMuxer = RTMPMuxer(this)
     private val encoders = ConcurrentHashMap<String, IEncoder>()
     private var audio: IAudioSource? = null
@@ -173,7 +176,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         addEventListener(Event.RTMP_STATUS, listener)
     }
 
-    fun attachAudio(audio: IAudioSource?) {
+    open fun attachAudio(audio: IAudioSource?) {
         if (audio == null) {
             this.audio?.tearDown()
             this.audio = null
@@ -184,7 +187,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         this.audio?.setUp()
     }
 
-    fun attachCamera(video: IVideoSource?) {
+    open fun attachCamera(video: IVideoSource?) {
         if (video == null) {
             this.video?.tearDown()
             this.video = null
@@ -195,7 +198,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         this.video?.setUp()
     }
 
-    fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
+    open fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
         val message = RTMPCommandMessage(connection.objectEncoding)
         message.transactionID = 0
         message.commandName = if (name != null) "publish" else "closeStream"
@@ -204,7 +207,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
 
         if (name == null) {
             when (readyState) {
-                RTMPStream.ReadyState.PUBLISHING -> connection.socket.doOutput(RTMPChunk.ZERO, message)
+                RTMPStream.ReadyState.PUBLISHING -> connection.doOutput(RTMPChunk.ZERO, message)
                 else -> {}
             }
             return
@@ -220,14 +223,14 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
                 messages.add(message)
             }
             RTMPStream.ReadyState.OPEN -> {
-                connection.socket.doOutput(RTMPChunk.ZERO, message)
+                connection.doOutput(RTMPChunk.ZERO, message)
                 readyState = ReadyState.PUBLISH
             }
             else -> {}
         }
     }
 
-    fun play(vararg arguments: Any) {
+    open fun play(vararg arguments: Any) {
         val streamName = if (arguments.isEmpty()) null else arguments[0]
         val message = RTMPCommandMessage(connection.objectEncoding)
         message.transactionID = 0
@@ -239,7 +242,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         if (streamName == null) {
             when (readyState) {
                 RTMPStream.ReadyState.PLAYING -> {
-                    connection.socket.doOutput(RTMPChunk.ZERO, message)
+                    connection.doOutput(RTMPChunk.ZERO, message)
                 }
                 else -> {}
             }
@@ -251,14 +254,14 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
                 messages.add(message)
             }
             RTMPStream.ReadyState.OPEN, RTMPStream.ReadyState.PLAYING -> {
-                connection.socket.doOutput(RTMPChunk.ZERO, message)
+                connection.doOutput(RTMPChunk.ZERO, message)
             }
             else -> {
             }
         }
     }
 
-    fun send(handlerName: String, vararg arguments: Any) {
+    open fun send(handlerName: String, vararg arguments: Any) {
         readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED ?: return
         var message = RTMPDataMessage(connection.objectEncoding)
         message.handlerName = handlerName
@@ -267,10 +270,10 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         }
         message.streamID = id
         message.chunkStreamID = RTMPChunk.COMMAND
-        connection.socket.doOutput(RTMPChunk.ZERO, message)
+        connection.doOutput(RTMPChunk.ZERO, message)
     }
 
-    fun appendBytes(bytes: ByteArray?, presentationTimeUs: Long, type: BufferType) {
+    open fun appendBytes(bytes: ByteArray?, presentationTimeUs: Long, type: BufferType) {
         bytes ?: return
         if (readyState != ReadyState.PUBLISHING) {
             return
@@ -285,7 +288,7 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
         }
     }
 
-    fun dispose() {
+    open fun dispose() {
         connection.removeEventListener(Event.RTMP_STATUS, listener)
         audio?.tearDown()
         video?.tearDown()
@@ -293,6 +296,12 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
+    }
+
+    internal fun on() {
+        currentFPS = frameCount.get()
+        frameCount.set(0)
+        Log.d(javaClass.name + "#on", currentFPS.toString())
     }
 
     internal fun getEncoderByName(mime: String): IEncoder {
@@ -306,7 +315,6 @@ class RTMPStream(connection: RTMPConnection) : EventDispatcher(null) {
     }
 
     private fun toMetaData(): Map<String, Any> {
-        val data = HashMap<String, Any>()
-        return data
+        return HashMap<String, Any>()
     }
 }

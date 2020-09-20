@@ -26,12 +26,6 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
     private val handshake = RTMPHandshake()
     private var readyState = ReadyState.Uninitialized
 
-    @Synchronized fun doOutput(chunk: RTMPChunk, message: RTMPMessage) {
-        for (buffer in chunk.encode(this, message)) {
-            doOutput(buffer)
-        }
-    }
-
     override fun onTimeout() {
         close(false)
         connection?.dispatchEventWith(Event.IO_ERROR, false)
@@ -86,7 +80,7 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
                 buffer.position(RTMPHandshake.SIGNAL_SIZE)
                 readyState = ReadyState.HandshakeDone
                 isConnected = true
-                doOutput(RTMPChunk.ZERO, connection.createConnectionMessage())
+                connection.doOutput(RTMPChunk.ZERO, connection.createConnectionMessage())
             }
             RTMPSocket.ReadyState.HandshakeDone ->
                 try {

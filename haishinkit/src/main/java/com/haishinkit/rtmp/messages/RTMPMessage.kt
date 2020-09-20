@@ -47,22 +47,4 @@ internal open class RTMPMessage(val type: Type) {
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
     }
-
-    companion object {
-        fun create(value: Byte): RTMPMessage {
-            return when (value) {
-                Type.CHUNK_SIZE.rawValue -> RTMPSetChunkSizeMessage()
-                Type.ABORT.rawValue -> RTMPAbortMessage()
-                Type.ACK.rawValue -> RTMPAcknowledgementMessage()
-                Type.USER.rawValue -> RTMPUserControlMessage()
-                Type.WINDOW_ACK.rawValue -> RTMPWindowAcknowledgementSizeMessage()
-                Type.BANDWIDTH.rawValue -> RTMPSetPeerBandwidthMessage()
-                Type.AUDIO.rawValue -> RTMPAudioMessage()
-                Type.VIDEO.rawValue -> RTMPVideoMessage()
-                Type.AMF0_DATA.rawValue -> RTMPDataMessage(RTMPObjectEncoding.AMF0)
-                Type.AMF0_COMMAND.rawValue -> RTMPCommandMessage(RTMPObjectEncoding.AMF0)
-                else -> RTMPMessage(Type.UNKNOWN)
-            }
-        }
-    }
 }

@@ -7,14 +7,15 @@ import com.haishinkit.events.IEventListener
 import com.haishinkit.net.IResponder
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
+import com.haishinkit.rtmp.messages.RTMPMessageFactory
 import com.haishinkit.rtmp.messages.RTMPSetChunkSizeMessage
 import com.haishinkit.util.EventUtils
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
 import java.nio.ByteBuffer
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.concurrent.schedule
 
 open class RTMPConnection : EventDispatcher(null) {
 
@@ -78,11 +79,14 @@ open class RTMPConnection : EventDispatcher(null) {
             val data = EventUtils.toMap(event)
             when (data["code"].toString()) {
                 RTMPConnection.Code.CONNECT_SUCCESS.rawValue -> {
-                    var message = RTMPSetChunkSizeMessage()
+                    timerTask = Timer().schedule(0,1000) {
+                        for (stream in streams) stream.value.on()
+                    }
+                    var message = messageFactory.createRTMPSetChunkSizeMessage()
                     message.size = RTMPConnection.DEFAULT_CHUNK_SIZE_S
                     message.chunkStreamID = RTMPChunk.CONTROL
                     connection.socket.chunkSizeS = RTMPConnection.DEFAULT_CHUNK_SIZE_S
-                    connection.socket.doOutput(RTMPChunk.ZERO, message)
+                    connection.doOutput(RTMPChunk.ZERO, message)
                 }
             }
         }
@@ -99,6 +103,12 @@ open class RTMPConnection : EventDispatcher(null) {
     internal val responders = ConcurrentHashMap<Int, IResponder>()
     internal val socket = RTMPSocket(this)
     internal var transactionID = 0
+    internal val messageFactory = RTMPMessageFactory(4)
+    private var timerTask: TimerTask? = null
+        set(value) {
+            timerTask?.cancel()
+            field = value
+        }
     private var arguments: MutableList<Any?> = mutableListOf()
     private val payloads = ConcurrentHashMap<Short, ByteBuffer>()
 
@@ -124,9 +134,9 @@ open class RTMPConnection : EventDispatcher(null) {
         message.commandName = commandName
         message.arguments = listArguments
         if (responder != null) {
-            responders.put(transactionID, responder)
+            responders[transactionID] = responder
         }
-        socket.doOutput(RTMPChunk.ZERO, message)
+        doOutput(RTMPChunk.ZERO, message)
     }
 
     fun connect(command: String, vararg arguments: Any?) {
@@ -146,14 +156,23 @@ open class RTMPConnection : EventDispatcher(null) {
         if (!isConnected) {
             return
         }
+        timerTask = null
         socket.close(false)
     }
 
     fun dispose() {
+        timerTask = null
         streams.forEach {
             it.value.dispose()
         }
         streams.clear()
+    }
+
+    internal fun doOutput(chunk: RTMPChunk, message: RTMPMessage) {
+        for (buffer in chunk.encode(socket, message)) {
+            socket.doOutput(buffer)
+        }
+        messageFactory.release(message)
     }
 
     internal fun listen(buffer: ByteBuffer) {
@@ -161,7 +180,7 @@ open class RTMPConnection : EventDispatcher(null) {
         try {
             val first = buffer.get()
             val chunkSizeC = socket.chunkSizeC
-            var chunk = RTMPChunk.values().filter { v -> v.rawValue.toInt() == ((first.toInt() and 0xff) shr 6) }.first()
+            var chunk = RTMPChunk.values().first { v -> v.rawValue.toInt() == ((first.toInt() and 0xff) shr 6) }
             val streamID = chunk.getStreamID(buffer)
             val payload: ByteBuffer
             val message: RTMPMessage
@@ -177,6 +196,7 @@ open class RTMPConnection : EventDispatcher(null) {
                 if (!payload.hasRemaining()) {
                     payload.flip()
                     message.decode(payload).execute(this)
+                    messageFactory.release(message)
                     Log.v(javaClass.name + "#listen", message.toString())
                     payloads.remove(streamID)
                 }
@@ -184,14 +204,15 @@ open class RTMPConnection : EventDispatcher(null) {
                 message = chunk.decode(streamID, this, buffer)
                 if (message.length <= chunkSizeC) {
                     message.decode(buffer).execute(this)
+                    messageFactory.release(message)
                     Log.v(javaClass.name + "#listen", message.toString())
                 } else {
                     payload = ByteBuffer.allocate(message.length)
                     payload.put(buffer.array(), buffer.position(), chunkSizeC)
                     buffer.position(buffer.position() + chunkSizeC)
-                    payloads.put(streamID, payload)
+                    payloads[streamID] = payload
                 }
-                messages.put(streamID, message)
+                messages[streamID] = message
             }
         } catch (e: IndexOutOfBoundsException) {
             buffer.position(rollback)
@@ -208,6 +229,12 @@ open class RTMPConnection : EventDispatcher(null) {
             "createStream",
             object : IResponder {
                 override fun onResult(arguments: List<Any?>) {
+                    for (s in streams) {
+                        if (s.value == stream) {
+                            streams.remove(s.key)
+                            break
+                        }
+                    }
                     val id = (arguments[0] as Double).toInt()
                     stream.id = id
                     streams[id] = stream
@@ -221,7 +248,7 @@ open class RTMPConnection : EventDispatcher(null) {
     }
 
     internal fun createConnectionMessage(): RTMPMessage {
-        val paths = uri!!.path.split("/".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+        val paths = uri!!.path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val message = RTMPCommandMessage(RTMPObjectEncoding.AMF0)
         val commandObject = HashMap<String, Any?>()
         commandObject["app"] = paths[1]

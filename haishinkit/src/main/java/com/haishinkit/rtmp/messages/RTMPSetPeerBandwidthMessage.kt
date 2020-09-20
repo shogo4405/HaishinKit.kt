@@ -30,7 +30,7 @@ internal class RTMPSetPeerBandwidthMessage : RTMPMessage(RTMPMessage.Type.BANDWI
     override fun decode(buffer: ByteBuffer): RTMPMessage {
         size = buffer.int
         var limit = buffer.get()
-        this.limit = Limit.values().filter { n -> n.rawValue == limit }.first()
+        this.limit = Limit.values().first { n -> n.rawValue == limit }
         return this
     }
 

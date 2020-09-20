@@ -18,6 +18,7 @@ import com.haishinkit.view.CameraView
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat
+import android.util.Log
 
 class CameraTabFragment: Fragment(), IEventListener {
     private var connection: RTMPConnection? = null
@@ -57,6 +58,7 @@ class CameraTabFragment: Fragment(), IEventListener {
     }
 
     override fun handleEvent(event: Event) {
+        Log.i(javaClass.name + "#handleEvent", event.toString())
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RTMPConnection.Code.CONNECT_SUCCESS.rawValue) {

@@ -10,11 +10,7 @@ internal enum class RTMPChunk(val rawValue: Byte) {
     TWO(0x02),
     THREE(0x03);
 
-    fun encode(socket: RTMPSocket?, message: RTMPMessage?): List<ByteBuffer> {
-        if (socket == null || message == null) {
-            throw IllegalArgumentException()
-        }
-
+    fun encode(socket: RTMPSocket, message: RTMPMessage): List<ByteBuffer> {
         val payload = message.encode(socket)
         payload.flip()
 
@@ -69,11 +65,7 @@ internal enum class RTMPChunk(val rawValue: Byte) {
         return list
     }
 
-    fun decode(chunkStreamID: Short, connection: RTMPConnection?, buffer: ByteBuffer?): RTMPMessage {
-        if (connection == null || buffer == null) {
-            throw IllegalArgumentException()
-        }
-
+    fun decode(chunkStreamID: Short, connection: RTMPConnection, buffer: ByteBuffer): RTMPMessage {
         var timestamp = 0
         var length = 0
         var type: Byte = 0
@@ -100,7 +92,7 @@ internal enum class RTMPChunk(val rawValue: Byte) {
             }
         }
 
-        var message = RTMPMessage.create(type)
+        var message = connection.messageFactory.create(type)
         message.chunkStreamID = chunkStreamID
         message.streamID = streamID
         message.timestamp = timestamp
@@ -116,16 +108,34 @@ internal enum class RTMPChunk(val rawValue: Byte) {
         } else if (streamID <= 319) {
             basic = 2
         }
-        when (this) {
-            ZERO -> return basic + 11
-            ONE -> return basic + 7
-            TWO -> return basic + 3
-            THREE -> return basic + 0
-            else -> return 0
+        return when (this) {
+            ZERO -> basic + 11
+            ONE -> basic + 7
+            TWO -> basic + 3
+            THREE -> basic + 0
+            else -> 0
         }
     }
 
-    fun header(streamID: Short): ByteArray {
+    fun getStreamID(buffer: ByteBuffer): Short {
+        buffer.position(buffer.position() - 1)
+        val first = buffer.get()
+        return when (first.toInt() and 63) {
+            0 -> {
+                var bytes = ByteArray(2)
+                buffer.get(bytes)
+                (bytes[1] + 64).toShort()
+            }
+            1 -> {
+                var bytes = ByteArray(3)
+                buffer.get(bytes)
+                (bytes[1].toInt() shl 8 or bytes[2].toInt() or 64.toInt()).toShort()
+            }
+            else -> (first.toInt() and 63).toShort()
+        }
+    }
+
+    private fun header(streamID: Short): ByteArray {
         if (streamID <= 63) {
             return byteArrayOf((rawValue.toInt() shl 6 or streamID.toInt()).toByte())
         }
@@ -135,28 +145,10 @@ internal enum class RTMPChunk(val rawValue: Byte) {
         return byteArrayOf((rawValue.toInt() shl 6 or 1).toByte(), (streamID - 64 shr 8).toByte(), (streamID - 64).toByte())
     }
 
-    fun getInt(buffer: ByteBuffer): Int {
+    private fun getInt(buffer: ByteBuffer): Int {
         val bytes = ByteArray(3)
         buffer.get(bytes)
         return (bytes[0].toInt() and 0xFF).toInt() shl 16 or ((bytes[1].toInt() and 0xFF).toInt() shl 8) or (bytes[2].toInt() and 0xFF).toInt()
-    }
-
-    fun getStreamID(buffer: ByteBuffer): Short {
-        buffer.position(buffer.position() - 1)
-        val first = buffer.get()
-        when (first.toInt() and 63) {
-            0 -> {
-                var bytes = ByteArray(2)
-                buffer.get(bytes)
-                return (bytes[1] + 64).toShort()
-            }
-            1 -> {
-                var bytes = ByteArray(3)
-                buffer.get(bytes)
-                return (bytes[1].toInt() shl 8 or bytes[2].toInt() or 64.toInt()).toShort()
-            }
-            else -> return (first.toInt() and 63).toShort()
-        }
     }
 
     companion object {

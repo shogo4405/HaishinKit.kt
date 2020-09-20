@@ -2,6 +2,7 @@ package com.haishinkit.rtmp
 
 import android.media.MediaCodec
 import android.media.MediaFormat
+import android.util.Log
 import com.haishinkit.codec.IEncoderListener
 import com.haishinkit.flv.AACPacketType
 import com.haishinkit.flv.AVCPacketType
@@ -26,7 +27,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
         when (mime) {
             "video/avc" -> {
                 videoConfig = AVCConfigurationRecord(mediaFormat)
-                var video = RTMPAVCVideoMessage()
+                var video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.SEQ.rawValue
                 video.frame = FlameType.KEY.rawValue
                 video.codec = VideoCodec.AVC.rawValue
@@ -38,7 +39,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
             "audio/mp4a-latm" -> {
                 val buffer = mediaFormat.getByteBuffer("csd-0")
                 audioConfig = AudioSpecificConfig(buffer)
-                var audio = RTMPAACAudioMessage()
+                var audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
                 audio.config = audioConfig
                 audio.aacPacketType = AACPacketType.SEQ.rawValue
                 audio.payload = buffer
@@ -48,7 +49,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
             }
         }
         if (message != null) {
-            stream.connection.socket.doOutput(RTMPChunk.ZERO, message)
+            stream.connection.doOutput(RTMPChunk.ZERO, message)
         }
     }
 
@@ -64,7 +65,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
         when (mime) {
             "video/avc" -> {
                 val keyframe = info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
-                var video = RTMPAVCVideoMessage()
+                var video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.NAL.rawValue
                 video.frame = if (keyframe) FlameType.KEY.rawValue else FlameType.INTER.rawValue
                 video.codec = VideoCodec.AVC.rawValue
@@ -73,9 +74,10 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
                 video.timestamp = timestamp
                 video.streamID = stream.id
                 message = video
+                stream.frameCount.incrementAndGet()
             }
             "audio/mp4a-latm" -> {
-                var audio = RTMPAACAudioMessage()
+                var audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
                 audio.aacPacketType = AACPacketType.RAW.rawValue
                 audio.config = audioConfig
                 audio.payload = buffer
@@ -86,9 +88,9 @@ internal class RTMPMuxer(private val stream: RTMPStream) : IEncoderListener {
             }
         }
         if (message != null) {
-            stream.connection.socket.doOutput(RTMPChunk.ONE, message)
+            stream.connection.doOutput(RTMPChunk.ONE, message)
         }
-        timestamps.put(mime, info.presentationTimeUs)
+        timestamps["mime"] = info.presentationTimeUs
     }
 
     fun clear() {

@@ -37,7 +37,7 @@ internal class RTMPUserControlMessage : RTMPMessage(RTMPMessage.Type.USER) {
 
     override fun decode(buffer: ByteBuffer): RTMPMessage {
         val e = buffer.short
-        event = Event.values().filter { n -> n.rawValue == e }.first()
+        event = Event.values().first { n -> n.rawValue == e }
         value = buffer.int
         return this
     }
@@ -45,10 +45,10 @@ internal class RTMPUserControlMessage : RTMPMessage(RTMPMessage.Type.USER) {
     override fun execute(connection: RTMPConnection): RTMPMessage {
         when (event) {
             RTMPUserControlMessage.Event.PING -> {
-                var message = RTMPUserControlMessage()
+                var message = connection.messageFactory.createRTMPUserControlMessage()
                 message.event = Event.PONG
                 message.chunkStreamID = RTMPChunk.CONTROL
-                connection.socket.doOutput(RTMPChunk.ZERO, message)
+                connection.doOutput(RTMPChunk.ZERO, message)
             }
             RTMPUserControlMessage.Event.BUFFER_FULL,
             RTMPUserControlMessage.Event.BUFFER_EMPTY -> {
