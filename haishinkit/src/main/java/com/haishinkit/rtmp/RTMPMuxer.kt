@@ -2,7 +2,6 @@ package com.haishinkit.rtmp
 
 import android.media.MediaCodec
 import android.media.MediaFormat
-import android.util.Log
 import com.haishinkit.codec.IEncoderListener
 import com.haishinkit.flv.AACPacketType
 import com.haishinkit.flv.AVCPacketType

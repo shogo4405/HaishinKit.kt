@@ -2,15 +2,15 @@ package com.haishinkit.rtmp
 
 import android.util.Log
 import com.haishinkit.codec.AACEncoder
+import com.haishinkit.codec.BufferInfo
+import com.haishinkit.codec.BufferType
 import com.haishinkit.codec.H264Encoder
 import com.haishinkit.codec.IEncoder
 import com.haishinkit.events.Event
 import com.haishinkit.events.EventDispatcher
 import com.haishinkit.events.IEventListener
-import com.haishinkit.media.AudioSetting
-import com.haishinkit.media.IAudioSource
-import com.haishinkit.media.IVideoSource
-import com.haishinkit.media.VideoSetting
+import com.haishinkit.media.AudioSource
+import com.haishinkit.media.VideoSource
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPDataMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
@@ -21,13 +21,9 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.properties.Delegates
 
 open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher(null) {
-    enum class BufferType {
-        VIDEO,
-        AUDIO
-    }
-
     enum class HowToPublish(val rawValue: String) {
         RECORD("record"),
         APPEND("append"),
@@ -87,6 +83,45 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     }
 
+    class AudioSettings(private var stream: RTMPStream?) {
+        var bitrate: Int by Delegates.observable(0) { property, oldValue, newValue ->
+            val encoder = stream?.getEncoderByName("audio/mp4a-latm") as AACEncoder
+            encoder.bitRate = newValue
+        }
+
+        fun dispose() {
+            stream = null
+        }
+
+        override fun toString(): String {
+            return ToStringBuilder.reflectionToString(this)
+        }
+    }
+
+    class VideoSettings(private var stream: RTMPStream?) {
+        var width: Int by Delegates.observable(-1) { property, oldValue, newValue ->
+            val encoder = stream?.getEncoderByName("video/avc") as H264Encoder
+            encoder.width = newValue
+        }
+        var height: Int by Delegates.observable(-1) { property, oldValue, newValue ->
+            val encoder = stream?.getEncoderByName("video/avc") as H264Encoder
+            encoder.height = newValue
+            Log.w(javaClass.name + "#height", newValue.toString())
+        }
+        var bitrate: Int by Delegates.observable(0) { property, oldValue, newValue ->
+            val encoder = stream?.getEncoderByName("video/avc") as H264Encoder
+            encoder.bitRate = newValue
+        }
+
+        fun dispose() {
+            stream = null
+        }
+
+        override fun toString(): String {
+            return ToStringBuilder.reflectionToString(this)
+        }
+    }
+
     inner class EventListener internal constructor(private val stream: RTMPStream) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
@@ -116,20 +151,17 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         PUBLISHING(0x05),
         CLOSED(0x06);
     }
-
-    var videoSetting: VideoSetting = VideoSetting(160, 90, 0)
-        set(value) {
-            field = value
-            val encoder = getEncoderByName("video/avc") as? H264Encoder
-            encoder?.width = videoSetting.width
-            encoder?.height = videoSetting.height
-        }
-    var audioSetting: AudioSetting = AudioSetting(0)
+    val videoSetting: VideoSettings by lazy {
+        VideoSettings(this)
+    }
+    val audioSetting: AudioSettings by lazy {
+        AudioSettings(this)
+    }
     @Volatile var currentFPS: Int = 0
         private set
 
     internal var id = 0
-    internal var video: IVideoSource? = null
+    internal var video: VideoSource? = null
     internal var readyState = ReadyState.INITIALIZED
         set(value: ReadyState) {
             Log.w(javaClass.name, value.toString())
@@ -162,7 +194,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     internal var frameCount = AtomicInteger(0)
     private var muxer: RTMPMuxer = RTMPMuxer(this)
     private val encoders = ConcurrentHashMap<String, IEncoder>()
-    private var audio: IAudioSource? = null
+    private var audio: AudioSource? = null
     private val listener = EventListener(this)
 
     init {
@@ -176,7 +208,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         addEventListener(Event.RTMP_STATUS, listener)
     }
 
-    open fun attachAudio(audio: IAudioSource?) {
+    open fun attachAudio(audio: AudioSource?) {
         if (audio == null) {
             this.audio?.tearDown()
             this.audio = null
@@ -187,7 +219,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         this.audio?.setUp()
     }
 
-    open fun attachCamera(video: IVideoSource?) {
+    open fun attachCamera(video: VideoSource?) {
         if (video == null) {
             this.video?.tearDown()
             this.video = null
@@ -273,17 +305,15 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         connection.doOutput(RTMPChunk.ZERO, message)
     }
 
-    open fun appendBytes(bytes: ByteArray?, presentationTimeUs: Long, type: BufferType) {
+    open fun appendBytes(bytes: ByteArray?, info: BufferInfo) {
         bytes ?: return
-        if (readyState != ReadyState.PUBLISHING) {
-            return
-        }
-        when (type) {
+        if (readyState != ReadyState.PUBLISHING) { return }
+        when (info.type) {
             BufferType.AUDIO -> {
-                getEncoderByName("audio/mp4a-latm").encodeBytes(bytes, presentationTimeUs)
+                getEncoderByName("audio/mp4a-latm").encodeBytes(bytes, info)
             }
             BufferType.VIDEO -> {
-                getEncoderByName("video/avc").encodeBytes(bytes, presentationTimeUs)
+                getEncoderByName("video/avc").encodeBytes(bytes, info)
             }
         }
     }
@@ -292,6 +322,8 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         connection.removeEventListener(Event.RTMP_STATUS, listener)
         audio?.tearDown()
         video?.tearDown()
+        audioSetting.dispose()
+        videoSetting.dispose()
     }
 
     override fun toString(): String {

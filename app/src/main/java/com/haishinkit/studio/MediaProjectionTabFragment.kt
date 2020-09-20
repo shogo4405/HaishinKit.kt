@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.haishinkit.events.Event
 import com.haishinkit.events.IEventListener
+import com.haishinkit.media.AudioRecordAudioSource
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.MediaProjectionSource
 import com.haishinkit.rtmp.RTMPConnection
@@ -32,7 +33,7 @@ class MediaProjectionTabFragment : Fragment(), IEventListener {
             connection = RTMPConnection()
             connection.addEventListener(Event.RTMP_STATUS, this)
             stream = RTMPStream(connection)
-            stream.attachAudio(AudioSource())
+            stream.attachAudio(AudioRecordAudioSource())
             mediaProjectionManager = activity.getSystemService(Service.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CAPTURE)
         }

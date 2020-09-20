@@ -1,27 +1,23 @@
 package com.haishinkit.yuv
 
+import com.haishinkit.codec.BufferInfo
 import com.haishinkit.codec.ByteConverter
-import com.haishinkit.media.CameraSource
 
 // https://stackoverflow.com/questions/23107057/rotate-yuv420-nv21-image-in-android
 internal class NV21toYUV420SemiPlanarConverter : ByteConverter {
-    var width: Int = CameraSource.DEFAULT_WIDTH
-    var height: Int = CameraSource.DEFAULT_HEIGHT
-    var rotation: Int = 0
-
-    override fun convert(input: ByteArray): ByteArray {
+    override fun convert(input: ByteArray, info: BufferInfo): ByteArray {
         var output: ByteArray = ByteArray(input.size)
 
-        val swap = rotation == 90 || rotation == 270
-        val yflip = rotation == 90 || rotation == 180
-        val xflip = rotation == 270 || rotation == 180
+        val swap = info.rotation == 90 || info.rotation == 270
+        val yflip = info.rotation == 90 || info.rotation == 180
+        val xflip = info.rotation == 270 || info.rotation == 180
 
-        for (x in 0 until width) {
-            for (y in 0 until height) {
+        for (x in 0 until info.width) {
+            for (y in 0 until info.height) {
                 var xo = x
                 var yo = y
-                var w = width
-                var h = height
+                var w = info.width
+                var h = info.height
                 var xi = xo
                 var yi = yo
                 if (swap) {

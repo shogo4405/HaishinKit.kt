@@ -4,16 +4,16 @@ import android.util.Log
 import com.haishinkit.events.Event
 import com.haishinkit.events.EventDispatcher
 import com.haishinkit.events.IEventListener
-import com.haishinkit.net.IResponder
+import com.haishinkit.net.Responder
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
 import com.haishinkit.rtmp.messages.RTMPMessageFactory
-import com.haishinkit.rtmp.messages.RTMPSetChunkSizeMessage
 import com.haishinkit.util.EventUtils
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.schedule
 
@@ -79,7 +79,7 @@ open class RTMPConnection : EventDispatcher(null) {
             val data = EventUtils.toMap(event)
             when (data["code"].toString()) {
                 RTMPConnection.Code.CONNECT_SUCCESS.rawValue -> {
-                    timerTask = Timer().schedule(0,1000) {
+                    timerTask = Timer().schedule(0, 1000) {
                         for (stream in streams) stream.value.on()
                     }
                     var message = messageFactory.createRTMPSetChunkSizeMessage()
@@ -100,7 +100,7 @@ open class RTMPConnection : EventDispatcher(null) {
     var objectEncoding = RTMPConnection.DEFAULT_OBJECT_ENCODING
     internal val messages = ConcurrentHashMap<Short, RTMPMessage>()
     internal val streams = ConcurrentHashMap<Int, RTMPStream>()
-    internal val responders = ConcurrentHashMap<Int, IResponder>()
+    internal val responders = ConcurrentHashMap<Int, Responder>()
     internal val socket = RTMPSocket(this)
     internal var transactionID = 0
     internal val messageFactory = RTMPMessageFactory(4)
@@ -119,7 +119,7 @@ open class RTMPConnection : EventDispatcher(null) {
     val isConnected: Boolean
         get() = socket.isConnected
 
-    fun call(commandName: String, responder: IResponder?, vararg arguments: Any) {
+    fun call(commandName: String, responder: Responder?, vararg arguments: Any) {
         if (!isConnected) {
             return
         }
@@ -227,7 +227,7 @@ open class RTMPConnection : EventDispatcher(null) {
     internal fun createStream(stream: RTMPStream) {
         call(
             "createStream",
-            object : IResponder {
+            object : Responder {
                 override fun onResult(arguments: List<Any?>) {
                     for (s in streams) {
                         if (s.value == stream) {

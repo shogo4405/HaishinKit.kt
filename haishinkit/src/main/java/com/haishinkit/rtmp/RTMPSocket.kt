@@ -3,7 +3,6 @@ package com.haishinkit.rtmp
 import android.util.Log
 import com.haishinkit.events.Event
 import com.haishinkit.net.Socket
-import com.haishinkit.rtmp.messages.RTMPMessage
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 

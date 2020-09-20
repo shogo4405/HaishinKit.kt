@@ -4,14 +4,15 @@ import android.graphics.ImageFormat
 import android.hardware.Camera
 import android.util.Log
 import android.view.SurfaceHolder
+import com.haishinkit.codec.BufferInfo
+import com.haishinkit.codec.BufferType
 import com.haishinkit.codec.H264Encoder
 import com.haishinkit.media.util.CameraUtils
 import com.haishinkit.media.util.MediaCodecUtils
 import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.util.Size
-import com.haishinkit.yuv.NV21toYUV420SemiPlanarConverter
 
-class CameraSource : IVideoSource, SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
+class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
     var camera: android.hardware.Camera?
 
     override var stream: RTMPStream? = null
@@ -21,12 +22,12 @@ class CameraSource : IVideoSource, SurfaceHolder.Callback, android.hardware.Came
             encoder?.width = actualSize.width
             encoder?.height = actualSize.height
         }
-    internal var displayOrientation: Int = 0
-    override val isRunning: Boolean = false
+    override var isRunning: Boolean = false
 
     var size: Size = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     var actualSize: Size = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         private set
+    internal var displayOrientation: Int = 0
 
     constructor(camera: android.hardware.Camera) {
         this.camera = camera
@@ -51,9 +52,11 @@ class CameraSource : IVideoSource, SurfaceHolder.Callback, android.hardware.Came
     }
 
     override fun startRunning() {
+        isRunning = true
     }
 
     override fun stopRunning() {
+        isRunning = false
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
@@ -69,10 +72,6 @@ class CameraSource : IVideoSource, SurfaceHolder.Callback, android.hardware.Came
         camera?.stopPreview()
         if (-1 < displayOrientation) {
             camera?.setDisplayOrientation(displayOrientation)
-            val byteConverter = stream?.getEncoderByName("video/avc")?.byteConverter
-            if (byteConverter is NV21toYUV420SemiPlanarConverter) {
-                byteConverter.rotation = displayOrientation
-            }
         }
         camera?.startPreview()
     }
@@ -81,7 +80,16 @@ class CameraSource : IVideoSource, SurfaceHolder.Callback, android.hardware.Came
     }
 
     override fun onPreviewFrame(bytes: ByteArray?, camera: Camera?) {
-        stream?.appendBytes(bytes, System.nanoTime() / 1000000L, RTMPStream.BufferType.VIDEO)
+        stream?.appendBytes(
+            bytes,
+            BufferInfo(
+                type = BufferType.VIDEO,
+                presentationTimeUs = System.nanoTime() / 1000000L,
+                width = actualSize.width,
+                height = actualSize.height,
+                rotation = displayOrientation
+            )
+        )
     }
 
     companion object {

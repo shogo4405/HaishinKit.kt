@@ -1,24 +1,20 @@
 package com.haishinkit.yuv
 
 import android.util.Log
+import com.haishinkit.codec.BufferInfo
 import com.haishinkit.codec.ByteConverter
-import com.haishinkit.media.CameraSource
 
 internal class ARGB8888toYUV420SemiPlanarConverter : ByteConverter {
-    var width: Int = CameraSource.DEFAULT_WIDTH
-    var height: Int = CameraSource.DEFAULT_HEIGHT
-    var rotation: Int = 0
-
-    override fun convert(input: ByteArray): ByteArray {
-        Log.d(javaClass.name, "$width, $height, ${input.size}")
-        var output: ByteArray = ByteArray((width * height * 3) / 2)
+    override fun convert(input: ByteArray, info: BufferInfo): ByteArray {
+        Log.d(javaClass.name + "#convert", "$info, ${input.size}")
+        var output: ByteArray = ByteArray((info.width * info.height * 3) / 2)
 
         var yIndex = 0
-        var uvIndex = width * height
+        var uvIndex = info.width * info.height
         var index = 0
 
-        for (j in 0 until height) {
-            for (i in 0 until width) {
+        for (j in 0 until info.height) {
+            for (i in 0 until info.width) {
                 val r = input[index * 4 + 1].toUByte().toShort()
                 val g = input[index * 4 + 2].toUByte().toShort()
                 val b = input[index * 4 + 3].toUByte().toShort()

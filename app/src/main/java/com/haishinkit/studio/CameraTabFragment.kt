@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat
 import android.util.Log
+import com.haishinkit.media.AudioRecordAudioSource
 
 class CameraTabFragment: Fragment(), IEventListener {
     private var connection: RTMPConnection? = null
@@ -36,9 +37,11 @@ class CameraTabFragment: Fragment(), IEventListener {
         }
         connection = RTMPConnection()
         stream = RTMPStream(connection!!)
-        stream?.attachAudio(AudioSource())
+        stream?.attachAudio(AudioRecordAudioSource())
         stream?.attachCamera(CameraSource(android.hardware.Camera.open()))
         connection?.addEventListener("rtmpStatus", this)
+
+        stream?.audioSetting?.bitrate = 10000
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

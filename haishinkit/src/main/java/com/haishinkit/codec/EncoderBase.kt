@@ -2,6 +2,7 @@ package com.haishinkit.codec
 
 import android.media.MediaCodec
 import android.util.Log
+import com.haishinkit.yuv.NullByteConverter
 import java.io.IOException
 import java.lang.Runnable
 import java.util.concurrent.atomic.AtomicBoolean
@@ -11,7 +12,7 @@ abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
     private var codec: MediaCodec? = null
     private val running = AtomicBoolean(false)
 
-    override var byteConverter: ByteConverter? = null
+    override var byteConverter: ByteConverter = NullByteConverter.instance
     override var listener: IEncoderListener? = null
 
     override val isRunning: Boolean
@@ -47,7 +48,7 @@ abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
         }
     }
 
-    @Synchronized override fun encodeBytes(data: ByteArray, presentationTimeUs: Long) {
+    @Synchronized override fun encodeBytes(data: ByteArray, info: BufferInfo) {
         if (!running.get()) {
             return
         }
@@ -55,20 +56,14 @@ abstract class EncoderBase(private val mime: String) : IEncoder, Runnable {
             val inputBuffers = codec!!.inputBuffers
             val inputBufferIndex = codec!!.dequeueInputBuffer(-1)
             if (0 <= inputBufferIndex) {
-                var size = data.size
                 var inputBuffer = inputBuffers[inputBufferIndex]
                 inputBuffer.clear()
-                if (byteConverter == null) {
-                    inputBuffer.put(data)
-                } else {
-                    val buffer = byteConverter!!.convert(data)
-                    size = buffer.size
-                    inputBuffer.put(buffer)
-                }
-                codec!!.queueInputBuffer(inputBufferIndex, 0, size, presentationTimeUs, 0)
+                val buffer = byteConverter.convert(data, info)
+                inputBuffer.put(buffer)
+                codec!!.queueInputBuffer(inputBufferIndex, 0, buffer.size, info.presentationTimeUs, 0)
             }
         } catch (e: Exception) {
-            Log.w(javaClass.name, "", e)
+            Log.w(javaClass.name + "#encodeBytes", "", e)
         }
     }
 

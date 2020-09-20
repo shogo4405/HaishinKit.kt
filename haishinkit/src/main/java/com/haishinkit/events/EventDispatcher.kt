@@ -1,7 +1,6 @@
 package com.haishinkit.events
 
 import android.support.v4.util.Pools
-import android.util.Log
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
 import java.util.Collections
@@ -38,7 +37,7 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
             }
 
             val isCapturingPhase = (event.eventPhase == EventPhase.CAPTURING).toString()
-            val listeners = this.listeners["${event.type}/${isCapturingPhase}"]
+            val listeners = this.listeners["${event.type}/$isCapturingPhase"]
             if (listeners != null) {
                 for (listener in listeners) {
                     listener.handleEvent(event)

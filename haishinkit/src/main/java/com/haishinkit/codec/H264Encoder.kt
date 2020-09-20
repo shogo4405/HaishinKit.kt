@@ -16,7 +16,7 @@ internal class H264Encoder : EncoderBase(MIME) {
     var profile = DEFAULT_PROFILE
     var level = DEFAULT_LEVEL
 
-    override var byteConverter: ByteConverter? = NV21toYUV420SemiPlanarConverter()
+    override var byteConverter: ByteConverter = NV21toYUV420SemiPlanarConverter()
 
     @Throws(IOException::class)
     override fun createMediaCodec(): MediaCodec {
@@ -31,11 +31,6 @@ internal class H264Encoder : EncoderBase(MIME) {
         mediaFormat.setInteger(MediaFormat.KEY_AAC_ENCODED_TARGET_LEVEL, level)
         val codec = MediaCodec.createByCodecName(info.name)
         codec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-
-        val converter: NV21toYUV420SemiPlanarConverter? = byteConverter as? NV21toYUV420SemiPlanarConverter
-        converter?.width = width
-        converter?.height = height
-
         return codec
     }
 

@@ -1,6 +1,6 @@
 package com.haishinkit.net
 
-interface IResponder {
+interface Responder {
     fun onResult(arguments: List<Any?>)
     fun onStatus(arguments: List<Any?>)
 }
