@@ -11,7 +11,6 @@ import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.events.IEventListener
 import com.haishinkit.media.CameraSource
-import com.haishinkit.media.AudioSource
 import com.haishinkit.events.Event
 import com.haishinkit.util.EventUtils
 import com.haishinkit.view.CameraView
@@ -19,7 +18,7 @@ import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import com.haishinkit.media.AudioRecordAudioSource
+import com.haishinkit.media.AudioRecordSource
 
 class CameraTabFragment: Fragment(), IEventListener {
     private var connection: RTMPConnection? = null
@@ -37,7 +36,7 @@ class CameraTabFragment: Fragment(), IEventListener {
         }
         connection = RTMPConnection()
         stream = RTMPStream(connection!!)
-        stream?.attachAudio(AudioRecordAudioSource())
+        stream?.attachAudio(AudioRecordSource())
         stream?.attachCamera(CameraSource(android.hardware.Camera.open()))
         connection?.addEventListener("rtmpStatus", this)
 

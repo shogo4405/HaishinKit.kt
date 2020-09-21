@@ -3,12 +3,11 @@ package com.haishinkit.rtmp.messages
 import android.support.v4.util.Pools
 import com.haishinkit.rtmp.RTMPObjectEncoding
 
-internal final class RTMPMessageFactory(
-    private val maxPoolSize: Int,
-    private val user: Pools.SimplePool<RTMPUserControlMessage> = Pools.SimplePool<RTMPUserControlMessage>(maxPoolSize),
-    private val audio: Pools.SimplePool<RTMPAudioMessage> = Pools.SimplePool<RTMPAudioMessage>(maxPoolSize),
-    private val video: Pools.SimplePool<RTMPVideoMessage> = Pools.SimplePool<RTMPVideoMessage>(maxPoolSize)
-) {
+internal final class RTMPMessageFactory(private val maxPoolSize: Int) {
+    private val user = Pools.SimplePool<RTMPUserControlMessage>(maxPoolSize)
+    private val audio = Pools.SimplePool<RTMPAudioMessage>(maxPoolSize)
+    private val video = Pools.SimplePool<RTMPVideoMessage>(maxPoolSize)
+
     fun create(value: Byte): RTMPMessage {
         return when (value) {
             RTMPMessage.Type.CHUNK_SIZE.rawValue -> RTMPSetChunkSizeMessage()

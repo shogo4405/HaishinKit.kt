@@ -1,32 +1,29 @@
 package com.haishinkit.media
 
-import android.annotation.TargetApi
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
-import android.os.Build
 import android.util.DisplayMetrics
-import com.haishinkit.media.mediaprojection.ISurfaceStrategy
-import com.haishinkit.media.mediaprojection.ImageReaderSurfaceStrategy
+import com.haishinkit.media.mediaprojection.MediaCodecSurfaceStrategy
+import com.haishinkit.media.mediaprojection.SurfaceStrategy
 import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.yuv.ARGB8888toYUV420SemiPlanarConverter
 import org.apache.commons.lang3.builder.ToStringBuilder
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class MediaProjectionSource(private var mediaProjection: MediaProjection, private val metrics: DisplayMetrics) : VideoSource {
     override var stream: RTMPStream? = null
-    override var isRunning: Boolean = false
+    override val isRunning: Boolean
         get() = surfaceStrategy.isRunning
     private var byteConverter = ARGB8888toYUV420SemiPlanarConverter()
     private var virtualDisplay: VirtualDisplay? = null
-    private var surfaceStrategy: ISurfaceStrategy = ImageReaderSurfaceStrategy(metrics)
+    private var surfaceStrategy: SurfaceStrategy = MediaCodecSurfaceStrategy(metrics)
 
     override fun setUp() {
         surfaceStrategy.stream = stream
         surfaceStrategy.setUp()
-        this.stream?.getEncoderByName("video/avc")?.byteConverter = byteConverter
-        this.stream?.videoSetting?.width = (metrics.widthPixels).toInt()
-        this.stream?.videoSetting?.height = (metrics.heightPixels).toInt()
+        stream?.videoCodec?.byteConverter = byteConverter
+        stream?.videoSetting?.width = (metrics.widthPixels).toInt()
+        stream?.videoSetting?.height = (metrics.heightPixels).toInt()
     }
 
     override fun tearDown() {
@@ -36,7 +33,7 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
     override fun startRunning() {
         if (isRunning) return
         surfaceStrategy.startRunning()
-        virtualDisplay = mediaProjection?.createVirtualDisplay(
+        virtualDisplay = mediaProjection.createVirtualDisplay(
             MediaProjectionSource.DEFAULT_DISPLAY_NAME,
             (metrics.widthPixels).toInt(),
             (metrics.heightPixels).toInt(),
@@ -51,7 +48,7 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
     override fun stopRunning() {
         if (!isRunning) return
         virtualDisplay?.release()
-        mediaProjection?.stop()
+        mediaProjection.stop()
         surfaceStrategy.stopRunning()
     }
 

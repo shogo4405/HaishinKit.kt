@@ -1,18 +1,13 @@
 package com.haishinkit.media.mediaprojection
 
-import android.annotation.TargetApi
 import android.graphics.PixelFormat
 import android.media.ImageReader
-import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
-import com.haishinkit.codec.BufferInfo
-import com.haishinkit.codec.BufferType
 import com.haishinkit.rtmp.RTMPStream
 
-@TargetApi(Build.VERSION_CODES.KITKAT)
-internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) : ISurfaceStrategy, ImageReader.OnImageAvailableListener {
+internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) : SurfaceStrategy, ImageReader.OnImageAvailableListener {
     override var isRunning: Boolean = false
     override var surface: Surface? = null
         get() = reader?.surface
@@ -55,6 +50,7 @@ internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) 
                 val byteArray = ByteArray(plane.buffer.remaining()).apply {
                     plane.buffer.get(this)
                 }
+                /*
                 stream?.appendBytes(
                     byteArray,
                     BufferInfo(
@@ -66,6 +62,7 @@ internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) 
                         pixelStride = plane.pixelStride
                     )
                 )
+                 */
             }.exceptionOrNull()?.also {
                 Log.w(javaClass.name, it)
             }

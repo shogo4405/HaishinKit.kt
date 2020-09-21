@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.SurfaceHolder
 import com.haishinkit.codec.BufferInfo
 import com.haishinkit.codec.BufferType
-import com.haishinkit.codec.H264Encoder
 import com.haishinkit.media.util.CameraUtils
 import com.haishinkit.media.util.MediaCodecUtils
 import com.haishinkit.rtmp.RTMPStream
@@ -18,9 +17,8 @@ class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camer
     override var stream: RTMPStream? = null
         set(value) {
             field = value
-            val encoder = stream?.getEncoderByName("video/avc") as? H264Encoder
-            encoder?.width = actualSize.width
-            encoder?.height = actualSize.height
+            stream?.videoCodec?.width = actualSize.width
+            stream?.videoCodec?.height = actualSize.height
         }
     override var isRunning: Boolean = false
 
