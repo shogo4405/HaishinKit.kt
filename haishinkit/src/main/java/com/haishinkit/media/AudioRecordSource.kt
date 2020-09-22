@@ -2,21 +2,17 @@ package com.haishinkit.media
 
 import android.media.AudioFormat
 import android.media.AudioRecord
-import android.media.MediaCodec
 import android.media.MediaRecorder
 import android.os.Build
-import android.support.annotation.RequiresApi
-import android.util.Log
-import com.haishinkit.codec.Codec
+import com.haishinkit.codec.MediaCodec
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
 class AudioRecordSource() : AudioSource {
-    internal class Callback(private val src: AudioRecordSource) : Codec.Callback(Codec.MIME.AUDIO_MP4A) {
-        override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
+    internal class Callback(private val src: AudioRecordSource) : MediaCodec.Callback(MediaCodec.MIME.AUDIO_MP4A) {
+        override fun onInputBufferAvailable(codec: android.media.MediaCodec, index: Int) {
             val result = src.read()
-            Log.d(javaClass.name, result.toString())
             val inputBuffer = codec.getInputBuffer(index)
             inputBuffer.clear()
             inputBuffer.put(src.buffer)
@@ -61,11 +57,12 @@ class AudioRecordSource() : AudioSource {
                 if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
                     _audioRecord = AudioRecord.Builder()
                         .setAudioSource(audioSource)
-                        .setAudioFormat(AudioFormat.Builder()
-                            .setEncoding(encoding)
-                            .setSampleRate(sampleRate)
-                            .setChannelIndexMask(channel)
-                            .build()
+                        .setAudioFormat(
+                            AudioFormat.Builder()
+                                .setEncoding(encoding)
+                                .setSampleRate(sampleRate)
+                                .setChannelIndexMask(channel)
+                                .build()
                         )
                         .setBufferSizeInBytes(minBufferSize * 2)
                         .build()
@@ -98,7 +95,6 @@ class AudioRecordSource() : AudioSource {
     }
 
     override fun startRunning() {
-        Log.i(javaClass.name + "#startRunning()", minBufferSize.toString())
         currentPresentationTimestamp = 0
         audioRecord.startRecording()
     }

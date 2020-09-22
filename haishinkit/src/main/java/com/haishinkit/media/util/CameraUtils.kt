@@ -2,20 +2,20 @@ package com.haishinkit.media.util
 
 import android.hardware.Camera
 import android.util.Log
-import com.haishinkit.util.Size
+import com.haishinkit.data.VideoResolution
 
 object CameraUtils {
-    fun getActualSize(size: Size, supportedPreviewSizes: List<Camera.Size>): Size {
-        val rate = size.width.toDouble() / size.height.toDouble()
+    fun getActualSize(videoResolution: VideoResolution, supportedPreviewSizes: List<Camera.Size>): VideoResolution {
+        val rate = videoResolution.width.toDouble() / videoResolution.height.toDouble()
         for (s in supportedPreviewSizes) {
             Log.v(javaClass.name + "#supportedPreviewSizes", s.width.toString() + ":" + s.height.toString())
         }
         for (s in supportedPreviewSizes) {
-            val r = size.width.toDouble() / size.height.toDouble()
-            if (r == rate && s.width <= size.width && s.height <= size.width) {
-                return Size(s.width, s.height)
+            val r = videoResolution.width.toDouble() / videoResolution.height.toDouble()
+            if (r == rate && s.width <= videoResolution.width && s.height <= videoResolution.width) {
+                return VideoResolution(s.width, s.height)
             }
         }
-        return Size(supportedPreviewSizes.last().width, supportedPreviewSizes.last().height)
+        return VideoResolution(supportedPreviewSizes.last().width, supportedPreviewSizes.last().height)
     }
 }

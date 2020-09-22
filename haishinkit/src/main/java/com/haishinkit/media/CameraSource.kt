@@ -6,10 +6,10 @@ import android.util.Log
 import android.view.SurfaceHolder
 import com.haishinkit.codec.BufferInfo
 import com.haishinkit.codec.BufferType
+import com.haishinkit.data.VideoResolution
 import com.haishinkit.media.util.CameraUtils
 import com.haishinkit.media.util.MediaCodecUtils
 import com.haishinkit.rtmp.RTMPStream
-import com.haishinkit.util.Size
 import java.util.concurrent.atomic.AtomicBoolean
 
 class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
@@ -18,13 +18,13 @@ class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camer
     override var stream: RTMPStream? = null
         set(value) {
             field = value
-            stream?.videoCodec?.width = actualSize.width
-            stream?.videoCodec?.height = actualSize.height
+            stream?.videoCodec?.width = actualResolution.width
+            stream?.videoCodec?.height = actualResolution.height
         }
     override val isRunning = AtomicBoolean(false)
 
-    var size: Size = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    var actualSize: Size = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    override var resolution: VideoResolution = VideoResolution(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    var actualResolution: VideoResolution = VideoResolution(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         private set
     internal var displayOrientation: Int = 0
 
@@ -36,9 +36,9 @@ class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camer
         if (camera == null) {
             return
         }
-        actualSize = CameraUtils.getActualSize(size, camera!!.parameters.supportedPreviewSizes)
+        actualResolution = CameraUtils.getActualSize(resolution, camera!!.parameters.supportedPreviewSizes)
         val parameters = camera!!.parameters
-        parameters.setPreviewSize(actualSize.width, actualSize.height)
+        parameters.setPreviewSize(actualResolution.width, actualResolution.height)
         parameters.setPreviewFpsRange(30000, 30000)
         for (format in camera!!.parameters.supportedPreviewFormats) {
             Log.v(javaClass.name, MediaCodecUtils.imageFormatToString(format))
@@ -84,8 +84,8 @@ class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camer
             BufferInfo(
                 type = BufferType.VIDEO,
                 presentationTimeUs = System.nanoTime() / 1000000L,
-                width = actualSize.width,
-                height = actualSize.height,
+                width = actualResolution.width,
+                height = actualResolution.height,
                 rotation = displayOrientation
             )
         )

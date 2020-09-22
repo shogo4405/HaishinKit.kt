@@ -9,7 +9,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal abstract class Codec(private val mime: MIME) : Running {
+internal abstract class MediaCodec(private val mime: MIME) : Running {
     internal enum class MIME(val rawValue: String) {
         VIDEO_VP8("video/x-vnd.on2.vp8"),
         VIDEO_VP9("video/x-vnd.on2.vp9"),
@@ -33,19 +33,19 @@ internal abstract class Codec(private val mime: MIME) : Running {
 
     internal open class Callback(
         private val mime: MIME
-    ) : MediaCodec.Callback() {
+    ) : android.media.MediaCodec.Callback() {
         var listener: Listener? = null
 
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
         }
 
-        override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
+        override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
             val buffer = codec.getOutputBuffer(index)
             listener?.onSampleOutput(mime, info, buffer)
             codec.releaseOutputBuffer(index, false)
         }
 
-        override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
+        override fun onError(codec: MediaCodec, e: android.media.MediaCodec.CodecException) {
             Log.w(javaClass.name, e.toString())
         }
 
@@ -66,7 +66,7 @@ internal abstract class Codec(private val mime: MIME) : Running {
         get() {
             if (_codec == null) {
                 _codec = MediaCodec.createEncoderByType(mime.rawValue).apply {
-                    this.configure(this@Codec.createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+                    this.configure(this@MediaCodec.createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
                     if (callback != null) {
                         callback?.listener = listener
                         this.setCallback(callback)

@@ -3,10 +3,10 @@ package com.haishinkit.codec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 
-internal class AudioCodec : Codec(MIME) {
-    var sampleRate: Int = DEFAULT_SAMPLE_RATE
-    var channelCount: Int = DEFAULT_CHANNEL_COUNT
-    var bitRate: Int = DEFAULT_BIT_RATE
+internal class AudioCodec : MediaCodec(MIME) {
+    var sampleRate = DEFAULT_SAMPLE_RATE
+    var channelCount = DEFAULT_CHANNEL_COUNT
+    var bitRate = DEFAULT_BIT_RATE
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createAudioFormat(MIME.rawValue, sampleRate, channelCount).apply {
@@ -16,7 +16,7 @@ internal class AudioCodec : Codec(MIME) {
     }
 
     companion object {
-        val MIME = Codec.MIME.AUDIO_MP4A
+        val MIME = MediaCodec.MIME.AUDIO_MP4A
 
         const val DEFAULT_SAMPLE_RATE: Int = 44100
         const val DEFAULT_CHANNEL_COUNT: Int = 1

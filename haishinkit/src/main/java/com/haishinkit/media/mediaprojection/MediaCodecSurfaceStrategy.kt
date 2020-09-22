@@ -3,7 +3,7 @@ package com.haishinkit.media.mediaprojection
 import android.media.MediaCodecInfo
 import android.util.DisplayMetrics
 import android.view.Surface
-import com.haishinkit.codec.Codec
+import com.haishinkit.codec.MediaCodec
 import com.haishinkit.rtmp.RTMPStream
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -23,7 +23,7 @@ internal class MediaCodecSurfaceStrategy(override val metrics: DisplayMetrics) :
     override var stream: RTMPStream? = null
 
     override fun setUp() {
-        stream?.videoCodec?.callback = Codec.Callback(Codec.MIME.VIDEO_AVC)
+        stream?.videoCodec?.callback = MediaCodec.Callback(MediaCodec.MIME.VIDEO_AVC)
         stream?.videoCodec?.colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
     }
 

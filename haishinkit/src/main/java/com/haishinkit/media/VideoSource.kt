@@ -1,3 +1,7 @@
 package com.haishinkit.media
 
-interface VideoSource : Source
+import com.haishinkit.data.VideoResolution
+
+interface VideoSource : Source {
+    var resolution: VideoResolution
+}

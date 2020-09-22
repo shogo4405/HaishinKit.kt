@@ -4,7 +4,7 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.view.Surface
 
-internal class VideoCodec() : Codec(MIME) {
+internal class VideoCodec() : MediaCodec(MIME) {
     var bitRate = DEFAULT_BIT_RATE
     var frameRate = DEFAULT_FRAME_RATE
     var IFrameInterval = DEFAULT_I_FRAME_INTERVAL
@@ -32,7 +32,7 @@ internal class VideoCodec() : Codec(MIME) {
     }
 
     companion object {
-        val MIME = com.haishinkit.codec.Codec.MIME.VIDEO_AVC
+        val MIME = com.haishinkit.codec.MediaCodec.MIME.VIDEO_AVC
 
         const val DEFAULT_BIT_RATE = 500 * 1000
         const val DEFAULT_FRAME_RATE = 30

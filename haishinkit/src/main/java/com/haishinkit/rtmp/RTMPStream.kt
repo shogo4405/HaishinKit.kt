@@ -112,6 +112,9 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         var IFrameInterval: Int by Delegates.observable(VideoCodec.DEFAULT_I_FRAME_INTERVAL) { _, _, newValue ->
             stream?.videoCodec?.IFrameInterval = newValue
         }
+        var frameRate: Int by Delegates.observable(VideoCodec.DEFAULT_FRAME_RATE) { _, _, newValue ->
+            stream?.videoCodec?.frameRate = newValue
+        }
         fun dispose() {
             stream = null
         }

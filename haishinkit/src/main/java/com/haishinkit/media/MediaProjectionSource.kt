@@ -4,24 +4,34 @@ import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.util.DisplayMetrics
+import com.haishinkit.data.VideoResolution
 import com.haishinkit.media.mediaprojection.MediaCodecSurfaceStrategy
 import com.haishinkit.media.mediaprojection.SurfaceStrategy
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * A video source that captures a display by the MediaProjection API.
+ */
 class MediaProjectionSource(private var mediaProjection: MediaProjection, private val metrics: DisplayMetrics) : VideoSource {
+    var scale = 0.5F
     override var stream: RTMPStream? = null
     override val isRunning: AtomicBoolean
         get() = surfaceStrategy.isRunning
+    override var resolution: VideoResolution = VideoResolution(1, 1)
+        set(value) {
+            field = value
+            stream?.videoSetting?.width = value.width
+            stream?.videoSetting?.height = value.height
+        }
     private var virtualDisplay: VirtualDisplay? = null
     private var surfaceStrategy: SurfaceStrategy = MediaCodecSurfaceStrategy(metrics)
 
     override fun setUp() {
         surfaceStrategy.stream = stream
         surfaceStrategy.setUp()
-        stream?.videoSetting?.width = (metrics.widthPixels).toInt()
-        stream?.videoSetting?.height = (metrics.heightPixels).toInt()
+        resolution = resolution.copy((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
     }
 
     override fun tearDown() {
@@ -32,8 +42,8 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
         if (isRunning.get()) return
         virtualDisplay = mediaProjection.createVirtualDisplay(
             MediaProjectionSource.DEFAULT_DISPLAY_NAME,
-            (metrics.widthPixels).toInt(),
-            (metrics.heightPixels).toInt(),
+            resolution.width,
+            resolution.height,
             metrics.densityDpi,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             surfaceStrategy.surface,
