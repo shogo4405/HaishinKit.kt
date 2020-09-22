@@ -1,19 +1,21 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
     ext.kotlin_version = '1.3.31'
+
     repositories {
         jcenter()
         google()
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.10"
     }
 }
 
@@ -34,9 +36,6 @@ configurations {
 
 dependencies {
     ktlint "com.pinterest:ktlint:0.39.0"
-    // additional 3rd party ruleset(s) can be specified here
-    // just add them to the classpath (e.g. ktlint 'groupId:artifactId:version') and 
-    // ktlint will pick them up
 }
 
 task ktlint(type: JavaExec, group: "verification") {
@@ -56,4 +55,3 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     main = "com.pinterest.ktlint.Main"
     args "-F", "haishinkit/src/**/*.kt"
 }
-

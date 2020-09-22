@@ -1,3 +1,3 @@
 package com.haishinkit.media
 
-interface VideoSource : DeviceSource
+interface VideoSource : Source

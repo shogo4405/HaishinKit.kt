@@ -12,7 +12,7 @@ internal class VideoCodec() : Codec(MIME) {
     var height = DEFAULT_HEIGHT
     var profile = DEFAULT_PROFILE
     var level = DEFAULT_LEVEL
-    var colorFormat: Int = -1
+    var colorFormat = DEFAULT_COLOR_FORMAT
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createVideoFormat(MIME.rawValue, width, height).apply {
@@ -21,7 +21,9 @@ internal class VideoCodec() : Codec(MIME) {
             this.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
             this.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFrameInterval)
             this.setInteger(MediaFormat.KEY_PROFILE, profile)
-            this.setInteger(MediaFormat.KEY_LEVEL, level)
+            if (colorFormat != DEFAULT_COLOR_FORMAT) {
+                this.setInteger(MediaFormat.KEY_LEVEL, level)
+            }
         }
     }
 
@@ -39,5 +41,6 @@ internal class VideoCodec() : Codec(MIME) {
         const val DEFAULT_HEIGHT = 768
         const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
         const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
+        const val DEFAULT_COLOR_FORMAT = -1
     }
 }

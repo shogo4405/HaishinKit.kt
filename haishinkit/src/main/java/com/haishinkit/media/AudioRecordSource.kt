@@ -4,15 +4,19 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaCodec
 import android.media.MediaRecorder
+import android.os.Build
+import android.support.annotation.RequiresApi
+import android.util.Log
 import com.haishinkit.codec.Codec
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
-class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListener {
+class AudioRecordSource() : AudioSource {
     internal class Callback(private val src: AudioRecordSource) : Codec.Callback(Codec.MIME.AUDIO_MP4A) {
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
             val result = src.read()
+            Log.d(javaClass.name, result.toString())
             val inputBuffer = codec.getInputBuffer(index)
             inputBuffer.clear()
             inputBuffer.put(src.buffer)
@@ -20,9 +24,9 @@ class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListe
         }
     }
     var channel = DEFAULT_CHANNEL
+    var audioSource = DEFAULT_AUDIO_SOURCE
     override var stream: RTMPStream? = null
     override val isRunning = AtomicBoolean(false)
-    private var encoding = DEFAULT_ENCODING
 
     private var _buffer: ByteArray? = null
     var buffer: ByteArray
@@ -36,13 +40,13 @@ class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListe
             _buffer = value
         }
 
-    var samplingRate = DEFAULT_SAMPLING_RATE
+    var sampleRate = DEFAULT_SAMPLE_RATE
 
     private var _minBufferSize: Int = -1
     var minBufferSize: Int
         get() {
             if (_minBufferSize == -1) {
-                _minBufferSize = AudioRecord.getMinBufferSize(samplingRate, channel, encoding)
+                _minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channel, encoding)
             }
             return _minBufferSize
         }
@@ -54,13 +58,26 @@ class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListe
     var audioRecord: AudioRecord
         get() {
             if (_audioRecord == null) {
-                _audioRecord = AudioRecord(
-                    MediaRecorder.AudioSource.MIC,
-                    samplingRate,
-                    channel,
-                    encoding,
-                    minBufferSize
-                )
+                if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+                    _audioRecord = AudioRecord.Builder()
+                        .setAudioSource(audioSource)
+                        .setAudioFormat(AudioFormat.Builder()
+                            .setEncoding(encoding)
+                            .setSampleRate(sampleRate)
+                            .setChannelIndexMask(channel)
+                            .build()
+                        )
+                        .setBufferSizeInBytes(minBufferSize * 2)
+                        .build()
+                } else {
+                    _audioRecord = AudioRecord(
+                        audioSource,
+                        sampleRate,
+                        channel,
+                        encoding,
+                        minBufferSize
+                    )
+                }
             }
             return _audioRecord as AudioRecord
         }
@@ -71,17 +88,17 @@ class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListe
     var currentPresentationTimestamp: Long = 0L
         private set
 
+    private var encoding = DEFAULT_ENCODING
+
     override fun setUp() {
         stream?.audioCodec?.callback = Callback(this)
-        audioRecord?.positionNotificationPeriod = minBufferSize / 2
-        // audioRecord?.setRecordPositionUpdateListener(this)
     }
 
     override fun tearDown() {
-        // audioRecord?.setRecordPositionUpdateListener(null)
     }
 
     override fun startRunning() {
+        Log.i(javaClass.name + "#startRunning()", minBufferSize.toString())
         currentPresentationTimestamp = 0
         audioRecord.startRecording()
     }
@@ -96,17 +113,8 @@ class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListe
         return result
     }
 
-    override fun onMarkerReached(audio: AudioRecord?) {
-    }
-
-    override fun onPeriodicNotification(audio: AudioRecord?) {
-        // audio?.read(buffer, 0, minBufferSize)
-        // stream?.appendBytes(buffer, BufferInfo(BufferType.AUDIO, currentPresentationTimestamp.toLong()))
-        // currentPresentationTimestamp += timestamp()
-    }
-
     private fun timestamp(): Long {
-        return (1000000 * (minBufferSize / 2 / samplingRate)).toLong()
+        return (1000000 * (minBufferSize / 2 / sampleRate)).toLong()
     }
 
     override fun toString(): String {
@@ -116,6 +124,7 @@ class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListe
     companion object {
         const val DEFAULT_CHANNEL = AudioFormat.CHANNEL_IN_MONO
         const val DEFAULT_ENCODING = AudioFormat.ENCODING_PCM_16BIT
-        const val DEFAULT_SAMPLING_RATE = 44100
+        const val DEFAULT_SAMPLE_RATE = 44100
+        const val DEFAULT_AUDIO_SOURCE = MediaRecorder.AudioSource.CAMCORDER
     }
 }

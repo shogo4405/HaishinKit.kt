@@ -82,14 +82,14 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     class AudioSettings(private var stream: RTMPStream?) {
-        var bitrate: Int by Delegates.observable(AudioCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
-            stream?.audioCodec?.bitRate = newValue
-        }
         var channelCount: Int by Delegates.observable(AudioCodec.DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
             stream?.audioCodec?.channelCount = newValue
         }
         var bitRate: Int by Delegates.observable(AudioCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
             stream?.audioCodec?.bitRate = newValue
+        }
+        var sampleRate: Int by Delegates.observable(AudioCodec.DEFAULT_SAMPLE_RATE) { _, _, newValue ->
+            stream?.audioCodec?.sampleRate = newValue
         }
         fun dispose() {
             stream = null
@@ -100,14 +100,17 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     class VideoSettings(private var stream: RTMPStream?) {
-        var width: Int by Delegates.observable(-1) { _, _, newValue ->
+        var width: Int by Delegates.observable(VideoCodec.DEFAULT_WIDTH) { _, _, newValue ->
             stream?.videoCodec?.width = newValue
         }
-        var height: Int by Delegates.observable(-1) { _, _, newValue ->
+        var height: Int by Delegates.observable(VideoCodec.DEFAULT_HEIGHT) { _, _, newValue ->
             stream?.videoCodec?.height = newValue
         }
-        var bitRate: Int by Delegates.observable(0) { _, _, newValue ->
+        var bitRate: Int by Delegates.observable(VideoCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
             stream?.videoCodec?.bitRate = newValue
+        }
+        var IFrameInterval: Int by Delegates.observable(VideoCodec.DEFAULT_I_FRAME_INTERVAL) { _, _, newValue ->
+            stream?.videoCodec?.IFrameInterval = newValue
         }
         fun dispose() {
             stream = null
@@ -160,9 +163,21 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     internal var readyState = ReadyState.INITIALIZED
         set(value) {
             Log.d(javaClass.name, value.toString())
+            when (field) {
+                RTMPStream.ReadyState.PUBLISHING -> {
+                    audioCodec.stopRunning()
+                    videoCodec.stopRunning()
+                    audio?.stopRunning()
+                    video?.stopRunning()
+                }
+                else -> {
+                }
+            }
             field = value
             when (value) {
                 RTMPStream.ReadyState.OPEN -> {
+                    currentFPS = 0
+                    frameCount.set(0)
                     for (message in messages) {
                         message.streamID = id
                         if (message is RTMPCommandMessage) {
@@ -314,6 +329,22 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     }
 
+    /**
+     * Closes the stream from the server.
+     */
+    open fun close() {
+        if (readyState == ReadyState.CLOSED) {
+            return
+        }
+        readyState = ReadyState.CLOSED
+        val message = RTMPCommandMessage(RTMPObjectEncoding.AMF0)
+        message.streamID = 0
+        message.chunkStreamID = RTMPChunk.COMMAND
+        message.commandName = "deleteStream"
+        message.arguments = listOf<Any>(id)
+        connection.doOutput(RTMPChunk.ZERO, message)
+    }
+
     open fun dispose() {
         connection.removeEventListener(Event.RTMP_STATUS, listener)
         audio?.tearDown()
@@ -322,14 +353,9 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         videoSetting.dispose()
     }
 
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
-    }
-
     internal fun on() {
         currentFPS = frameCount.get()
         frameCount.set(0)
-        Log.d(javaClass.name, currentFPS.toString())
     }
 
     private fun toMetaData(): Map<String, Any> {

@@ -1,6 +1,7 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.dokka'
 
 version = '0.0.1'
 
@@ -8,6 +9,21 @@ task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     archiveClassifier.set("sources")
 }
+
+buildscript {
+    ext.kotlin_version = '1.3.31'
+
+    repositories {
+        jcenter()
+        google()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 
 android {
     compileSdkVersion 26
@@ -17,7 +33,6 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "0.0.1"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -82,4 +97,5 @@ publishing {
         }
     }
 }
+
 

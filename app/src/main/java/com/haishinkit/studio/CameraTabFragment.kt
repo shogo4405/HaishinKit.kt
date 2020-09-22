@@ -39,8 +39,6 @@ class CameraTabFragment: Fragment(), IEventListener {
         stream?.attachAudio(AudioRecordSource())
         stream?.attachCamera(CameraSource(android.hardware.Camera.open()))
         connection?.addEventListener("rtmpStatus", this)
-
-        stream?.audioSetting?.bitrate = 10000
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

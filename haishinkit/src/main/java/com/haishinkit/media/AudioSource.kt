@@ -1,3 +1,3 @@
 package com.haishinkit.media
 
-interface AudioSource : DeviceSource
+interface AudioSource : Source

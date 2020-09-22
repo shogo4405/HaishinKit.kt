@@ -17,8 +17,13 @@ import java.util.TimerTask
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.schedule
 
+/**
+ * flash.net.NetConnection for Kotlin
+ */
 open class RTMPConnection : EventDispatcher(null) {
-
+    /**
+     * NetStatusEvent#info.code for NetConnection
+     */
     enum class Code(val rawValue: String, val level: String) {
         CALL_BAD_VERSION("NetConnection.Call.BadVersion", "error"),
         CALL_FAILED("NetConnection.Call.Failed", "error"),
@@ -92,12 +97,38 @@ open class RTMPConnection : EventDispatcher(null) {
         }
     }
 
+    /**
+     * The URI passed to the RTMPConnection.connect() method.
+     */
     var uri: URI? = null
         private set
+
+    /**
+     * The URL of .swf.
+     */
     var swfUrl: String? = null
+
+    /**
+     * The URL of an HTTP referer.
+     */
     var pageUrl: String? = null
+
+    /**
+     * The name of application.
+     */
     var flashVer = RTMPConnection.DEFAULT_FLASH_VER
+
+    /**
+     * he object encoding for this RTMPConnection instance.
+     */
     var objectEncoding = RTMPConnection.DEFAULT_OBJECT_ENCODING
+
+    /**
+     * This instance connected to server(true) or not(false).
+     */
+    val isConnected: Boolean
+        get() = socket.isConnected
+
     internal val messages = ConcurrentHashMap<Short, RTMPMessage>()
     internal val streams = ConcurrentHashMap<Int, RTMPStream>()
     internal val responders = ConcurrentHashMap<Int, Responder>()
@@ -116,10 +147,7 @@ open class RTMPConnection : EventDispatcher(null) {
         addEventListener(Event.RTMP_STATUS, EventListener(this))
     }
 
-    val isConnected: Boolean
-        get() = socket.isConnected
-
-    fun call(commandName: String, responder: Responder?, vararg arguments: Any) {
+    open fun call(commandName: String, responder: Responder?, vararg arguments: Any) {
         if (!isConnected) {
             return
         }
@@ -139,28 +167,37 @@ open class RTMPConnection : EventDispatcher(null) {
         doOutput(RTMPChunk.ZERO, message)
     }
 
-    fun connect(command: String, vararg arguments: Any?) {
+    open fun connect(command: String, vararg arguments: Any?) {
         uri = URI.create(command)
-        if (isConnected || uri!!.scheme != "rtmp") {
+        val uri = this.uri ?: return
+        if (isConnected || uri.scheme != "rtmp") {
             return
         }
-        val port = uri!!.port
+        val port = uri.port
         this.arguments.clear()
-        arguments.forEach { value ->
-            this.arguments.add(value)
-        }
-        socket.connect(uri!!.host, if (port == -1) RTMPConnection.DEFAULT_PORT else port)
+        arguments.forEach { value -> this.arguments.add(value) }
+        socket.connect(uri.host, if (port == -1) RTMPConnection.DEFAULT_PORT else port)
     }
 
-    fun close() {
+    /**
+     * Closes the connection from the server.
+     */
+    open fun close() {
         if (!isConnected) {
             return
         }
         timerTask = null
+        for (stream in streams) {
+            stream.value.close()
+            streams.remove(stream.key)
+        }
         socket.close(false)
     }
 
-    fun dispose() {
+    /**
+     * Dispose the connection for a memory management.
+     */
+    open fun dispose() {
         timerTask = null
         streams.forEach {
             it.value.dispose()

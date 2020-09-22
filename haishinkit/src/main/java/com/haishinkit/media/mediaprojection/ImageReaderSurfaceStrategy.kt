@@ -5,9 +5,9 @@ import android.media.ImageReader
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
-import com.haishinkit.rtmp.RTMPStream
-import com.haishinkit.codec.BufferType
 import com.haishinkit.codec.BufferInfo
+import com.haishinkit.codec.BufferType
+import com.haishinkit.rtmp.RTMPStream
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) : SurfaceStrategy, ImageReader.OnImageAvailableListener {
