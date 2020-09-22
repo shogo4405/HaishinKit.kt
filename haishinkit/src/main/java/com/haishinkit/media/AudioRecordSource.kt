@@ -7,6 +7,7 @@ import android.media.MediaRecorder
 import com.haishinkit.codec.Codec
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
+import java.util.concurrent.atomic.AtomicBoolean
 
 class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListener {
     internal class Callback(private val src: AudioRecordSource) : Codec.Callback(Codec.MIME.AUDIO_MP4A) {
@@ -20,7 +21,7 @@ class AudioRecordSource() : AudioSource, AudioRecord.OnRecordPositionUpdateListe
     }
     var channel = DEFAULT_CHANNEL
     override var stream: RTMPStream? = null
-    override var isRunning: Boolean = false
+    override val isRunning = AtomicBoolean(false)
     private var encoding = DEFAULT_ENCODING
 
     private var _buffer: ByteArray? = null

@@ -6,11 +6,16 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
 import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.codec.BufferType
+import com.haishinkit.codec.BufferInfo
+import java.util.concurrent.atomic.AtomicBoolean
 
 internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) : SurfaceStrategy, ImageReader.OnImageAvailableListener {
-    override var isRunning: Boolean = false
+    override var isRunning = AtomicBoolean(false)
     override var surface: Surface? = null
-        get() = reader?.surface
+        get() {
+            return reader?.surface
+        }
     override var stream: RTMPStream? = null
     private var width: Int = ImageReaderSurfaceStrategy.DEFAULT_WIDTH
     private var height: Int = ImageReaderSurfaceStrategy.DEFAULT_HEIGHT
@@ -36,11 +41,11 @@ internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) 
     }
 
     override fun startRunning() {
-        isRunning = true
+        isRunning.set(true)
     }
 
     override fun stopRunning() {
-        isRunning = false
+        isRunning.set(false)
     }
 
     override fun onImageAvailable(reader: ImageReader) {
@@ -50,7 +55,6 @@ internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) 
                 val byteArray = ByteArray(plane.buffer.remaining()).apply {
                     plane.buffer.get(this)
                 }
-                /*
                 stream?.appendBytes(
                     byteArray,
                     BufferInfo(
@@ -62,7 +66,6 @@ internal class ImageReaderSurfaceStrategy(override val metrics: DisplayMetrics) 
                         pixelStride = plane.pixelStride
                     )
                 )
-                 */
             }.exceptionOrNull()?.also {
                 Log.w(javaClass.name, it)
             }

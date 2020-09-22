@@ -10,6 +10,7 @@ import com.haishinkit.media.util.CameraUtils
 import com.haishinkit.media.util.MediaCodecUtils
 import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.util.Size
+import java.util.concurrent.atomic.AtomicBoolean
 
 class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
     var camera: android.hardware.Camera?
@@ -20,7 +21,7 @@ class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camer
             stream?.videoCodec?.width = actualSize.width
             stream?.videoCodec?.height = actualSize.height
         }
-    override var isRunning: Boolean = false
+    override val isRunning = AtomicBoolean(false)
 
     var size: Size = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     var actualSize: Size = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
@@ -50,11 +51,11 @@ class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camer
     }
 
     override fun startRunning() {
-        isRunning = true
+        isRunning.set(true)
     }
 
     override fun stopRunning() {
-        isRunning = false
+        isRunning.set(false)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {

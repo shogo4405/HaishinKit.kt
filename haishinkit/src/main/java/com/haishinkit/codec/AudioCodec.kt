@@ -16,7 +16,7 @@ internal class AudioCodec : Codec(MIME) {
     }
 
     companion object {
-        val MIME = com.haishinkit.codec.Codec.MIME.AUDIO_MP4A
+        val MIME = Codec.MIME.AUDIO_MP4A
 
         const val DEFAULT_SAMPLE_RATE: Int = 44100
         const val DEFAULT_CHANNEL_COUNT: Int = 1

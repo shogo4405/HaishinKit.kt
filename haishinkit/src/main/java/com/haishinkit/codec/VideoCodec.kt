@@ -32,11 +32,11 @@ internal class VideoCodec() : Codec(MIME) {
     companion object {
         val MIME = com.haishinkit.codec.Codec.MIME.VIDEO_AVC
 
-        const val DEFAULT_BIT_RATE = 125000
-        const val DEFAULT_FRAME_RATE = 15
+        const val DEFAULT_BIT_RATE = 500 * 1000
+        const val DEFAULT_FRAME_RATE = 30
         const val DEFAULT_I_FRAME_INTERVAL = 2
-        const val DEFAULT_WIDTH = 1920
-        const val DEFAULT_HEIGHT = 1080
+        const val DEFAULT_WIDTH = 1024
+        const val DEFAULT_HEIGHT = 768
         const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
         const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
     }

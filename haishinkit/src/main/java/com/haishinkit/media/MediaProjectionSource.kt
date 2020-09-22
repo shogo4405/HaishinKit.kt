@@ -7,21 +7,19 @@ import android.util.DisplayMetrics
 import com.haishinkit.media.mediaprojection.MediaCodecSurfaceStrategy
 import com.haishinkit.media.mediaprojection.SurfaceStrategy
 import com.haishinkit.rtmp.RTMPStream
-import com.haishinkit.yuv.ARGB8888toYUV420SemiPlanarConverter
 import org.apache.commons.lang3.builder.ToStringBuilder
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MediaProjectionSource(private var mediaProjection: MediaProjection, private val metrics: DisplayMetrics) : VideoSource {
     override var stream: RTMPStream? = null
-    override val isRunning: Boolean
+    override val isRunning: AtomicBoolean
         get() = surfaceStrategy.isRunning
-    private var byteConverter = ARGB8888toYUV420SemiPlanarConverter()
     private var virtualDisplay: VirtualDisplay? = null
     private var surfaceStrategy: SurfaceStrategy = MediaCodecSurfaceStrategy(metrics)
 
     override fun setUp() {
         surfaceStrategy.stream = stream
         surfaceStrategy.setUp()
-        stream?.videoCodec?.byteConverter = byteConverter
         stream?.videoSetting?.width = (metrics.widthPixels).toInt()
         stream?.videoSetting?.height = (metrics.heightPixels).toInt()
     }
@@ -31,8 +29,7 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
     }
 
     override fun startRunning() {
-        if (isRunning) return
-        surfaceStrategy.startRunning()
+        if (isRunning.get()) return
         virtualDisplay = mediaProjection.createVirtualDisplay(
             MediaProjectionSource.DEFAULT_DISPLAY_NAME,
             (metrics.widthPixels).toInt(),
@@ -43,13 +40,14 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
             null,
             null
         )
+        surfaceStrategy.startRunning()
     }
 
     override fun stopRunning() {
-        if (!isRunning) return
+        if (!isRunning.get()) return
+        surfaceStrategy.stopRunning()
         virtualDisplay?.release()
         mediaProjection.stop()
-        surfaceStrategy.stopRunning()
     }
 
     override fun toString(): String {

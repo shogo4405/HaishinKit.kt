@@ -82,14 +82,18 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     class AudioSettings(private var stream: RTMPStream?) {
-        var bitrate: Int by Delegates.observable(0) { _, _, newValue ->
+        var bitrate: Int by Delegates.observable(AudioCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
             stream?.audioCodec?.bitRate = newValue
         }
-
+        var channelCount: Int by Delegates.observable(AudioCodec.DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
+            stream?.audioCodec?.channelCount = newValue
+        }
+        var bitRate: Int by Delegates.observable(AudioCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
+            stream?.audioCodec?.bitRate = newValue
+        }
         fun dispose() {
             stream = null
         }
-
         override fun toString(): String {
             return ToStringBuilder.reflectionToString(this)
         }
@@ -102,14 +106,12 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         var height: Int by Delegates.observable(-1) { _, _, newValue ->
             stream?.videoCodec?.height = newValue
         }
-        var bitrate: Int by Delegates.observable(0) { _, _, newValue ->
+        var bitRate: Int by Delegates.observable(0) { _, _, newValue ->
             stream?.videoCodec?.bitRate = newValue
         }
-
         fun dispose() {
             stream = null
         }
-
         override fun toString(): String {
             return ToStringBuilder.reflectionToString(this)
         }
@@ -172,10 +174,10 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
                 }
                 RTMPStream.ReadyState.PUBLISHING -> {
                     send("@setDataFrame", "onMetaData", toMetaData())
-                    audioCodec.startRunning()
-                    videoCodec.startRunning()
                     audio?.startRunning()
                     video?.startRunning()
+                    audioCodec.startRunning()
+                    videoCodec.startRunning()
                 }
                 else -> {
                 }

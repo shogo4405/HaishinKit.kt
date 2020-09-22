@@ -3,13 +3,13 @@ package com.haishinkit.codec
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
-import com.haishinkit.lang.IRunnable
+import com.haishinkit.lang.Running
 import com.haishinkit.yuv.NullByteConverter
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal abstract class Codec(private val mime: MIME) : IRunnable {
+internal abstract class Codec(private val mime: MIME) : Running {
     internal enum class MIME(val rawValue: String) {
         VIDEO_VP8("video/x-vnd.on2.vp8"),
         VIDEO_VP9("video/x-vnd.on2.vp9"),
@@ -37,11 +37,9 @@ internal abstract class Codec(private val mime: MIME) : IRunnable {
         var listener: Listener? = null
 
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
-            Log.d(javaClass.name, "$index:$listener")
         }
 
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
-            Log.d(javaClass.name, "$index:$listener")
             val buffer = codec.getOutputBuffer(index)
             listener?.onSampleOutput(mime, info, buffer)
             codec.releaseOutputBuffer(index, false)
@@ -83,31 +81,29 @@ internal abstract class Codec(private val mime: MIME) : IRunnable {
             _codec = value
         }
 
-    private val running = AtomicBoolean(false)
-    override val isRunning: Boolean
-        get() = running.get()
+    override val isRunning = AtomicBoolean(false)
 
-    override fun startRunning() {
+    final override fun startRunning() {
         synchronized(this) {
-            if (running.get()) {
+            if (isRunning.get()) {
                 return
             }
             try {
                 codec?.start()
-                running.set(true)
+                isRunning.set(true)
             } catch (e: IOException) {
                 Log.w(javaClass.name, e)
             }
         }
     }
 
-    override fun stopRunning() {
+    final override fun stopRunning() {
         synchronized(this) {
-            if (!running.get()) {
+            if (!isRunning.get()) {
                 return
             }
             codec = null
-            running.set(false)
+            isRunning.set(false)
         }
     }
 
