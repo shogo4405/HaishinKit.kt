@@ -192,10 +192,14 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
                 }
                 RTMPStream.ReadyState.PUBLISHING -> {
                     send("@setDataFrame", "onMetaData", toMetaData())
-                    audio?.startRunning()
-                    video?.startRunning()
-                    audioCodec.startRunning()
-                    videoCodec.startRunning()
+                    if (audio != null) {
+                        audio?.startRunning()
+                        audioCodec.startRunning()
+                    }
+                    if (video != null) {
+                        video?.startRunning()
+                        videoCodec.startRunning()
+                    }
                 }
                 else -> {
                 }

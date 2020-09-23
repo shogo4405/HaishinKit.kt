@@ -27,21 +27,19 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
     }
 
     internal interface Listener {
-        fun onFormatChanged(mime: MIME, mediaFormat: MediaFormat)
-        fun onSampleOutput(mime: MIME, info: MediaCodec.BufferInfo, buffer: ByteBuffer)
+        fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
+        fun onSampleOutput(mime: String, info: MediaCodec.BufferInfo, buffer: ByteBuffer)
     }
 
-    internal open class Callback(
-        private val mime: MIME
-    ) : android.media.MediaCodec.Callback() {
+    internal open class Callback : android.media.MediaCodec.Callback() {
         var listener: Listener? = null
 
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
         }
 
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
-            val buffer = codec.getOutputBuffer(index)
-            listener?.onSampleOutput(mime, info, buffer)
+            val buffer = codec.getOutputBuffer(index) ?: return
+            listener?.onSampleOutput(codec.outputFormat.getString("mime"), info, buffer)
             codec.releaseOutputBuffer(index, false)
         }
 
@@ -50,7 +48,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         }
 
         override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
-            listener?.onFormatChanged(mime, format)
+            listener?.onFormatChanged(codec.outputFormat.getString("mime"), format)
         }
     }
 

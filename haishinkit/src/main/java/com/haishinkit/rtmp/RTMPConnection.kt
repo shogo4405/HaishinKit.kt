@@ -232,17 +232,17 @@ open class RTMPConnection : EventDispatcher(null) {
                 buffer.position(buffer.position() + remaining)
                 if (!payload.hasRemaining()) {
                     payload.flip()
+                    Log.v(javaClass.name + "#listen", message.toString())
                     message.decode(payload).execute(this)
                     messageFactory.release(message)
-                    Log.v(javaClass.name + "#listen", message.toString())
                     payloads.remove(streamID)
                 }
             } else {
                 message = chunk.decode(streamID, this, buffer)
                 if (message.length <= chunkSizeC) {
+                    Log.v(javaClass.name + "#listen", message.toString())
                     message.decode(buffer).execute(this)
                     messageFactory.release(message)
-                    Log.v(javaClass.name + "#listen", message.toString())
                 } else {
                     payload = ByteBuffer.allocate(message.length)
                     payload.put(buffer.array(), buffer.position(), chunkSizeC)

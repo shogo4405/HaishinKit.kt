@@ -20,10 +20,10 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
     private var audioConfig: AudioSpecificConfig? = null
     private var videoConfig: AVCConfigurationRecord? = null
 
-    override fun onFormatChanged(mime: MediaCodec.MIME, mediaFormat: MediaFormat) {
+    override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
         var message: RTMPMessage? = null
         when (mime) {
-            MediaCodec.MIME.VIDEO_AVC -> {
+            MediaCodec.MIME.VIDEO_AVC.rawValue -> {
                 videoConfig = AVCConfigurationRecord(mediaFormat)
                 var video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.SEQ.rawValue
@@ -34,7 +34,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
                 video.streamID = stream.id
                 message = video
             }
-            MediaCodec.MIME.AUDIO_MP4A -> {
+            MediaCodec.MIME.AUDIO_MP4A.rawValue -> {
                 val buffer = mediaFormat.getByteBuffer("csd-0")
                 audioConfig = AudioSpecificConfig(buffer)
                 var audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
@@ -51,17 +51,17 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
         }
     }
 
-    override fun onSampleOutput(mime: MediaCodec.MIME, info: android.media.MediaCodec.BufferInfo, buffer: ByteBuffer) {
+    override fun onSampleOutput(mime: String, info: android.media.MediaCodec.BufferInfo, buffer: ByteBuffer) {
         if (info.flags and android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
             return
         }
         var timestamp = 0
         var message: RTMPMessage? = null
-        if (timestamps.containsKey(mime.rawValue)) {
-            timestamp = (info.presentationTimeUs - timestamps[mime.rawValue]!!.toLong()).toInt()
+        if (timestamps.containsKey(mime)) {
+            timestamp = (info.presentationTimeUs - timestamps[mime]!!.toLong()).toInt()
         }
         when (mime) {
-            MediaCodec.MIME.VIDEO_AVC -> {
+            MediaCodec.MIME.VIDEO_AVC.rawValue -> {
                 val keyframe = info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
                 var video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.NAL.rawValue
@@ -74,7 +74,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
                 message = video
                 stream.frameCount.incrementAndGet()
             }
-            MediaCodec.MIME.AUDIO_MP4A -> {
+            MediaCodec.MIME.AUDIO_MP4A.rawValue -> {
                 var audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
                 audio.aacPacketType = AACPacketType.RAW.rawValue
                 audio.config = audioConfig
@@ -88,7 +88,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
         if (message != null) {
             stream.connection.doOutput(RTMPChunk.ONE, message)
         }
-        timestamps[mime.rawValue] = info.presentationTimeUs
+        timestamps[mime] = info.presentationTimeUs
     }
 
     fun clear() {

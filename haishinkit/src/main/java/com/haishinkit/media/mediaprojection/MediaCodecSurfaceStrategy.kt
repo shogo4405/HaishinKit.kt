@@ -23,7 +23,7 @@ internal class MediaCodecSurfaceStrategy(override val metrics: DisplayMetrics) :
     override var stream: RTMPStream? = null
 
     override fun setUp() {
-        stream?.videoCodec?.callback = MediaCodec.Callback(MediaCodec.MIME.VIDEO_AVC)
+        stream?.videoCodec?.callback = MediaCodec.Callback()
         stream?.videoCodec?.colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
     }
 
