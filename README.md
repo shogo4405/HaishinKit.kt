@@ -1,13 +1,14 @@
 # HaishinKit.kt
 [![GitHub license](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.kt/master/LICENSE.md)
 
-Coming soon... Camera and Microphone streaming library via RTMP for Android.
+Technical Preview. Camera and Microphone streaming library via RTMP for Android.
+* [API Documentation](https://shogo4405.github.io/HaishinKit.kt/haishinkit/)
 
 ## Features
 ### RTMP
 - [ ] Authentication
-- [x] Publish (H264/AAC)
-- [ ] Playback
+- [x] Publish (H264/AAC) 
+- [ ] ~Playback~
 - [x] AMF0
 - [ ] AMF3
 - [ ] SharedObject
@@ -16,7 +17,8 @@ Coming soon... Camera and Microphone streaming library via RTMP for Android.
   - [ ] Tunneled (RTMPT over SSL/TSL)
 
 ### Others
-- [x] Hardware acceleration for H264 video encoding/AAC audio encoding
+- [x] Hardware acceleration for H264 video encoding/AAC audio encoding.
+  - [x] Asynchronously processing.
 
 ## License
 New BSD
@@ -24,7 +26,7 @@ New BSD
 ## Donation
 Bitcoin
 ```txt
-1CWA9muX36QKBdJiRQJGpu2HvchfEpJbWr
+3FnjC3CmwFLTzNY5WPNz4LjTo1uxGNozUR
 ```
 
 ## Android manifest
@@ -45,7 +47,6 @@ ActivityCompat.requestPermissions(this,arrayOf(
 ## RTMP Usage
 Real Time Messaging Protocol (RTMP).
 
-###
 ```kt
 class MainActivity : AppCompatActivity(), IEventListener {
 
@@ -90,6 +91,18 @@ class MainActivity : AppCompatActivity(), IEventListener {
     }
 }
 ```
+### RTML URL Format
+* rtmp://server-ip-address[:port]/application/[appInstance]/[prefix:[path1[/path2/]]]streamName
+  - [] mark is an Optional.
+  ```
+  rtmpConneciton.connect("rtmp://server-ip-address[:port]/application/[appInstance]")
+  rtmpStream.publish("[prefix:[path1[/path2/]]]streamName")
+  ```
+* rtmp://localhost/live/streamName
+  ```
+  rtmpConneciton.connect("rtmp://localhost/live")
+  rtmpStream.publish("streamName")
+  ```
 
 ## Related Project
 * HaishinKit.swift - Camera and Microphone streaming library via RTMP, HLS for iOS, macOS and tvOS.

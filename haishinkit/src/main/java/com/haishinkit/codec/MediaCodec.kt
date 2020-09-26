@@ -2,9 +2,12 @@ package com.haishinkit.codec
 
 import android.media.MediaCodec
 import android.media.MediaFormat
+import android.os.Build
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.Log
 import com.haishinkit.lang.Running
-import java.io.IOException
+import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -62,11 +65,15 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         get() {
             if (_codec == null) {
                 _codec = MediaCodec.createEncoderByType(mime.rawValue).apply {
-                    this.configure(this@MediaCodec.createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
                     if (callback != null) {
                         callback?.listener = listener
-                        this.setCallback(callback)
+                        if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+                            this.setCallback(callback, backgroundHandler)
+                        } else {
+                            this.setCallback(callback)
+                        }
                     }
+                    this.configure(createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
                 }
             }
             return _codec
@@ -76,35 +83,37 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
             _codec?.release()
             _codec = value
         }
-
     override val isRunning = AtomicBoolean(false)
+    private val backgroundHandler by lazy {
+        var thread = HandlerThread(javaClass.name)
+        thread.start()
+        Handler(thread.looper)
+    }
 
-    final override fun startRunning() {
-        synchronized(this) {
-            if (isRunning.get()) {
-                return
-            }
-            try {
-                codec?.start()
-                isRunning.set(true)
-            } catch (e: IOException) {
-                Log.w(javaClass.name, e)
-            }
+    @Synchronized final override fun startRunning() {
+        if (isRunning.get()) {
+            return
+        }
+        val codec = codec ?: return
+        try {
+            codec.start()
+            isRunning.set(true)
+        } catch (e: MediaCodec.CodecException) {
+            Log.w(javaClass.name, ToStringBuilder.reflectionToString(codec.outputFormat), e)
         }
     }
 
-    final override fun stopRunning() {
-        synchronized(this) {
-            if (!isRunning.get()) {
-                return
-            }
-            codec = null
-            isRunning.set(false)
+    @Synchronized final override fun stopRunning() {
+        if (!isRunning.get()) {
+            return
         }
-    }
-
-    fun appendBytes(bytes: ByteArray, info: BufferInfo) {
+        codec = null
+        isRunning.set(false)
     }
 
     protected abstract fun createOutputFormat(): MediaFormat
+
+    override fun toString(): String {
+        return ToStringBuilder.reflectionToString(this)
+    }
 }

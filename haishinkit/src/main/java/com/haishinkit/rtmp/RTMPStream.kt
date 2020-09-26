@@ -2,18 +2,16 @@ package com.haishinkit.rtmp
 
 import android.util.Log
 import com.haishinkit.codec.AudioCodec
-import com.haishinkit.codec.BufferInfo
-import com.haishinkit.codec.BufferType
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.events.Event
 import com.haishinkit.events.EventDispatcher
+import com.haishinkit.events.EventUtils
 import com.haishinkit.events.IEventListener
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPDataMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
-import com.haishinkit.util.EventUtils
 import com.haishinkit.view.CameraView
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
@@ -30,7 +28,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         LIVE("live");
     }
 
-    enum class Code(val rawValue: String, val level: String) {
+    enum class Code(val rawValue: String, private val level: String) {
         BUFFER_EMPTY("NetStream.Buffer.Empty", "status"),
         BUFFER_FLUSH("NetStream.Buffer.Flush", "status"),
         BUFFER_FULL("NetStream.Buffer.Full", "status"),
@@ -153,12 +151,15 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         PUBLISHING(0x05),
         CLOSED(0x06);
     }
+
     val videoSetting: VideoSettings by lazy {
         VideoSettings(this)
     }
+
     val audioSetting: AudioSettings by lazy {
         AudioSettings(this)
     }
+
     @Volatile var currentFPS: Int = 0
         private set
 
@@ -228,6 +229,9 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         videoCodec.listener = muxer
     }
 
+    /**
+     * Attaches an audio stream to a RTMPStream.
+     */
     open fun attachAudio(audio: AudioSource?) {
         if (audio == null) {
             this.audio?.tearDown()
@@ -239,6 +243,9 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         this.audio?.setUp()
     }
 
+    /**
+     * Attaches a video stream to a RTMPStream.
+     */
     open fun attachCamera(video: VideoSource?) {
         if (video == null) {
             this.video?.tearDown()
@@ -313,6 +320,9 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     }
 
+    /**
+     * Sends a message on a published stream.
+     */
     open fun send(handlerName: String, vararg arguments: Any) {
         readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED ?: return
         var message = RTMPDataMessage(connection.objectEncoding)
@@ -323,19 +333,6 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         message.streamID = id
         message.chunkStreamID = RTMPChunk.COMMAND
         connection.doOutput(RTMPChunk.ZERO, message)
-    }
-
-    open fun appendBytes(bytes: ByteArray?, info: BufferInfo) {
-        bytes ?: return
-        if (readyState != ReadyState.PUBLISHING) { return }
-        when (info.type) {
-            BufferType.AUDIO -> {
-                audioCodec.appendBytes(bytes, info)
-            }
-            BufferType.VIDEO -> {
-                videoCodec.appendBytes(bytes, info)
-            }
-        }
     }
 
     /**
@@ -368,6 +365,18 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     private fun toMetaData(): Map<String, Any> {
-        return HashMap<String, Any>()
+        var metadata = mutableMapOf<String, Any>()
+        if (video != null) {
+            metadata["width"] = video?.resolution?.width?.toString() ?: "0"
+            metadata["height"] = video?.resolution?.height?.toString() ?: "0"
+            metadata["framerate"] = videoCodec.frameRate
+            metadata["videocodecid"] = com.haishinkit.flv.VideoCodec.AVC.rawValue.toString()
+            metadata["videodatarate"] = videoCodec.bitRate / 1000
+        }
+        if (audio != null) {
+            metadata["audiocodecid"] = com.haishinkit.flv.AudioCodec.AAC.rawValue.toString()
+            metadata["audiodatarate"] = audioCodec.bitRate / 1000
+        }
+        return metadata
     }
 }

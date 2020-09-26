@@ -19,7 +19,7 @@ import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.MediaProjectionSource
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPStream
-import com.haishinkit.util.EventUtils
+import com.haishinkit.events.EventUtils
 
 class MediaProjectionTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RTMPConnection

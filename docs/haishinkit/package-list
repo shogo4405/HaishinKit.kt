@@ -2,7 +2,7 @@ $dokka.format:html-v1
 $dokka.linkExtension:html
 
 com.haishinkit.amf.data
-com.haishinkit.codec
+com.haishinkit.data
 com.haishinkit.events
 com.haishinkit.flv
 com.haishinkit.iso
@@ -11,7 +11,5 @@ com.haishinkit.media
 com.haishinkit.media.util
 com.haishinkit.net
 com.haishinkit.rtmp
-com.haishinkit.util
 com.haishinkit.view
-com.haishinkit.yuv
 

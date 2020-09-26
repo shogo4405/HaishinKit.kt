@@ -3,12 +3,12 @@ package com.haishinkit.rtmp
 import android.util.Log
 import com.haishinkit.events.Event
 import com.haishinkit.events.EventDispatcher
+import com.haishinkit.events.EventUtils
 import com.haishinkit.events.IEventListener
 import com.haishinkit.net.Responder
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
 import com.haishinkit.rtmp.messages.RTMPMessageFactory
-import com.haishinkit.util.EventUtils
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
 import java.nio.ByteBuffer

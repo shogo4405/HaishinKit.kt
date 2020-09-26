@@ -13,7 +13,7 @@ import com.haishinkit.rtmp.RTMPStream
 import com.haishinkit.events.IEventListener
 import com.haishinkit.media.CameraSource
 import com.haishinkit.events.Event
-import com.haishinkit.util.EventUtils
+import com.haishinkit.events.EventUtils
 import com.haishinkit.view.CameraView
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
@@ -41,8 +41,9 @@ class CameraTabFragment: Fragment(), IEventListener {
         stream?.attachAudio(AudioRecordSource())
 
         val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        var camera = CameraSource(manager)
-        camera.cameraId = manager.cameraIdList[0]
+        var camera = CameraSource(manager).apply {
+            this.open(cameraId)
+        }
         stream?.attachCamera(camera)
 
         connection?.addEventListener("rtmpStatus", this)

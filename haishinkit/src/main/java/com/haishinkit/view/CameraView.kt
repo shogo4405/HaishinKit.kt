@@ -7,14 +7,12 @@ import android.hardware.camera2.CaptureRequest
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.AttributeSet
-import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.haishinkit.lang.Running
 import com.haishinkit.media.CameraSource
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
-import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -22,7 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 open class CameraView : SurfaceView, Running {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    private var session: CameraCaptureSession? = null
     private var request: CaptureRequest.Builder? = null
     private var stream: RTMPStream? = null
         set(value) {
@@ -30,16 +27,12 @@ open class CameraView : SurfaceView, Running {
             field = value
             field?.renderer = this
         }
-    private val stateCallback by lazy {
-        object : CameraCaptureSession.StateCallback() {
-            override fun onConfigured(session: CameraCaptureSession) {
-                this@CameraView.session = session
-                this@CameraView.startPreview()
-            }
-            override fun onConfigureFailed(session: CameraCaptureSession) {
-            }
+    private var session: CameraCaptureSession? = null
+        set(value) {
+            session?.close()
+            field = value
+            field?.setRepeatingRequest(request!!.build(), null, backgroundHandler)
         }
-    }
     private val backgroundHandler by lazy {
         var thread = HandlerThread(javaClass.name)
         thread.start()
@@ -70,29 +63,27 @@ open class CameraView : SurfaceView, Running {
 
     override fun startRunning() {
         if (isRunning.get()) { return }
-        try {
-            val device = (stream?.video as CameraSource)?.device ?: return
-            request = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-                this.addTarget(holder.surface)
-            }
-            device.createCaptureSession((Collections.singletonList(holder.surface)), stateCallback, null)
-            isRunning.set(true)
-        } catch (e: IllegalArgumentException) {
-            Log.d(javaClass.name, "", e)
+        if (!holder.surface.isValid) { return }
+        val source = (stream?.video as CameraSource) ?: return
+        val device = source.device ?: return
+        request = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+            this?.addTarget(holder.surface)
         }
+        device.createCaptureSession(listOf(holder.surface), object : CameraCaptureSession.StateCallback() {
+            override fun onConfigured(session: CameraCaptureSession) {
+                this@CameraView.session = session
+            }
+            override fun onConfigureFailed(session: CameraCaptureSession) {
+                this@CameraView.session = null
+            }
+        }, null)
+        isRunning.set(true)
     }
 
     override fun stopRunning() {
         if (!isRunning.get()) { return }
-        session?.stopRepeating()
-        session = null
+        request = null
         isRunning.set(false)
-    }
-
-    private fun startPreview() {
-        val session = session ?: return
-        val request = request ?: return
-        session.setRepeatingRequest(request.build(), null, backgroundHandler)
     }
 
     override fun toString(): String {

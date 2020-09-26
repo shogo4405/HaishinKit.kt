@@ -31,7 +31,7 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
     override fun setUp() {
         surfaceStrategy.stream = stream
         surfaceStrategy.setUp()
-        resolution = resolution.copy((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
+        resolution = resolution.copy(width = (metrics.widthPixels * scale).toInt(), height = (metrics.heightPixels * scale).toInt())
     }
 
     override fun tearDown() {
