@@ -1,6 +1,7 @@
 package com.haishinkit.studio
 
 import android.Manifest
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.haishinkit.util.EventUtils
 import com.haishinkit.view.CameraView
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraManager
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.haishinkit.media.AudioRecordSource
@@ -37,12 +39,17 @@ class CameraTabFragment: Fragment(), IEventListener {
         connection = RTMPConnection()
         stream = RTMPStream(connection!!)
         stream?.attachAudio(AudioRecordSource())
-        stream?.attachCamera(CameraSource(android.hardware.Camera.open()))
+
+        val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        var camera = CameraSource(manager)
+        camera.cameraId = manager.cameraIdList[0]
+        stream?.attachCamera(camera)
+
         connection?.addEventListener("rtmpStatus", this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater!!.inflate(R.layout.fragment_camera, container, false)
+        val v = inflater.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
             connection?.connect(Preference.shared.rtmpURL)

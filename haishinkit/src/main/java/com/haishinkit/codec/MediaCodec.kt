@@ -4,7 +4,6 @@ import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
 import com.haishinkit.lang.Running
-import com.haishinkit.yuv.NullByteConverter
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
@@ -52,7 +51,6 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         }
     }
 
-    var byteConverter: ByteConverter = NullByteConverter.instance
     var listener: Listener? = null
         set(value) {
             field = value

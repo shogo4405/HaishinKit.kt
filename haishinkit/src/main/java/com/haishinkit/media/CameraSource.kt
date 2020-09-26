@@ -1,94 +1,105 @@
 package com.haishinkit.media
 
-import android.graphics.ImageFormat
-import android.hardware.Camera
-import android.util.Log
-import android.view.SurfaceHolder
-import com.haishinkit.codec.BufferInfo
-import com.haishinkit.codec.BufferType
+import android.annotation.SuppressLint
+import android.hardware.camera2.CameraCaptureSession
+import android.hardware.camera2.CameraDevice
+import android.hardware.camera2.CameraManager
+import android.hardware.camera2.CaptureRequest
+import android.os.Handler
+import android.os.HandlerThread
 import com.haishinkit.data.VideoResolution
-import com.haishinkit.media.util.CameraUtils
-import com.haishinkit.media.util.MediaCodecUtils
 import com.haishinkit.rtmp.RTMPStream
+import org.apache.commons.lang3.builder.ToStringBuilder
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
 
-class CameraSource : VideoSource, SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
-    var camera: android.hardware.Camera?
-
-    override var stream: RTMPStream? = null
+/**
+ * A video source that captures a camera by the Camera2 API.
+ */
+class CameraSource(val manager: CameraManager) : VideoSource {
+    var device: CameraDevice? = null
+        private set(value) {
+            device?.close()
+            field = value
+            if (value != null) {
+                stream?.renderer?.startRunning()
+            }
+        }
+    var cameraId: String = "0"
+        @SuppressLint("MissingPermission")
         set(value) {
             field = value
-            stream?.videoCodec?.width = actualResolution.width
-            stream?.videoCodec?.height = actualResolution.height
+            this.manager.openCamera(value, stateCallback, null)
         }
+    override var stream: RTMPStream? = null
     override val isRunning = AtomicBoolean(false)
-
     override var resolution: VideoResolution = VideoResolution(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    var actualResolution: VideoResolution = VideoResolution(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-        private set
-    internal var displayOrientation: Int = 0
-
-    constructor(camera: android.hardware.Camera) {
-        this.camera = camera
+    private var request: CaptureRequest.Builder? = null
+    private var session: CameraCaptureSession? = null
+        set(value) {
+            session?.close()
+            field = value
+        }
+    private val stateCallback by lazy {
+        object : CameraDevice.StateCallback() {
+            override fun onOpened(camera: CameraDevice) {
+                this@CameraSource.device = camera
+            }
+            override fun onDisconnected(camera: CameraDevice) {
+                this@CameraSource.device = null
+            }
+            override fun onError(camera: CameraDevice, error: Int) {
+            }
+        }
+    }
+    private val backgroundHandler by lazy {
+        var thread = HandlerThread(javaClass.name)
+        thread.start()
+        Handler(thread.looper)
     }
 
     override fun setUp() {
-        if (camera == null) {
-            return
+        val stream = stream ?: return
+        val device = device ?: return
+        val surface = stream.videoCodec.createInputSurface() ?: return
+        request = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+            this.addTarget(surface)
         }
-        actualResolution = CameraUtils.getActualSize(resolution, camera!!.parameters.supportedPreviewSizes)
-        val parameters = camera!!.parameters
-        parameters.setPreviewSize(actualResolution.width, actualResolution.height)
-        parameters.setPreviewFpsRange(30000, 30000)
-        for (format in camera!!.parameters.supportedPreviewFormats) {
-            Log.v(javaClass.name, MediaCodecUtils.imageFormatToString(format))
-        }
-        parameters.previewFormat = ImageFormat.NV21
-        camera?.parameters = parameters
+        device.createCaptureSession(
+            (Collections.singletonList(surface)),
+            object : CameraCaptureSession.StateCallback() {
+                override fun onConfigured(session: CameraCaptureSession) {
+                    this@CameraSource.session = session
+                }
+                override fun onConfigureFailed(session: CameraCaptureSession) {
+                    this@CameraSource.session = null
+                }
+            },
+            null
+        )
+        isRunning.set(true)
     }
 
     override fun tearDown() {
     }
 
     override fun startRunning() {
+        if (isRunning.get()) { return }
+        val request = request ?: return
+        var session = session ?: return
+        session.setRepeatingRequest(request.build(), null, backgroundHandler)
         isRunning.set(true)
     }
 
     override fun stopRunning() {
+        if (!isRunning.get()) { return }
+        request = null
+        session = null
         isRunning.set(false)
     }
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        try {
-            camera?.setPreviewCallback(this)
-            camera?.setPreviewDisplay(holder)
-        } catch (e: Exception) {
-            Log.w(javaClass.name, "", e)
-        }
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        camera?.stopPreview()
-        if (-1 < displayOrientation) {
-            camera?.setDisplayOrientation(displayOrientation)
-        }
-        camera?.startPreview()
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-    }
-
-    override fun onPreviewFrame(bytes: ByteArray?, camera: Camera?) {
-        stream?.appendBytes(
-            bytes,
-            BufferInfo(
-                type = BufferType.VIDEO,
-                presentationTimeUs = System.nanoTime() / 1000000L,
-                width = actualResolution.width,
-                height = actualResolution.height,
-                rotation = displayOrientation
-            )
-        )
+    override fun toString(): String {
+        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

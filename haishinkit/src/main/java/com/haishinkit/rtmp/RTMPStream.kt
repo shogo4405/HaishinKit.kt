@@ -14,6 +14,7 @@ import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPDataMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
 import com.haishinkit.util.EventUtils
+import com.haishinkit.view.CameraView
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
@@ -209,6 +210,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     internal val videoCodec = VideoCodec()
     internal val messages = ArrayList<RTMPMessage>()
     internal var frameCount = AtomicInteger(0)
+    internal var renderer: CameraView? = null
     private var muxer = RTMPMuxer(this)
     private var audio: AudioSource? = null
     private val listener = EventListener(this)

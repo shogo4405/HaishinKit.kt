@@ -1,78 +1,101 @@
 package com.haishinkit.view
 
 import android.content.Context
-import android.hardware.Camera
+import android.hardware.camera2.CameraCaptureSession
+import android.hardware.camera2.CameraDevice
+import android.hardware.camera2.CaptureRequest
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.AttributeSet
-import android.view.Surface
+import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.WindowManager
+import com.haishinkit.lang.Running
 import com.haishinkit.media.CameraSource
 import com.haishinkit.rtmp.RTMPStream
+import org.apache.commons.lang3.builder.ToStringBuilder
+import java.util.Collections
+import java.util.concurrent.atomic.AtomicBoolean
 
-class CameraView : SurfaceView, SurfaceHolder.Callback {
-    private var camera: CameraSource? = null
-    private var displayOrientation: Int = 0
-        get() {
-            val info = Camera.CameraInfo()
-            Camera.getCameraInfo(0, info)
-
-            val winManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            var degrees = 0
-
-            when (winManager.defaultDisplay.rotation) {
-                Surface.ROTATION_0 -> degrees = 0
-                Surface.ROTATION_90 -> degrees = 90
-                Surface.ROTATION_180 -> degrees = 180
-                Surface.ROTATION_270 -> degrees = 270
-            }
-
-            var result: Int
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                result = (info.orientation + degrees) % 360
-                return (360 - result) % 360
-            }
-
-            return (info.orientation - degrees + 360) % 360
+/**
+ * A view that previews a camera.
+ */
+open class CameraView : SurfaceView, Running {
+    override val isRunning: AtomicBoolean = AtomicBoolean(false)
+    private var session: CameraCaptureSession? = null
+    private var request: CaptureRequest.Builder? = null
+    private var stream: RTMPStream? = null
+        set(value) {
+            stream?.renderer = null
+            field = value
+            field?.renderer = this
         }
+    private val stateCallback by lazy {
+        object : CameraCaptureSession.StateCallback() {
+            override fun onConfigured(session: CameraCaptureSession) {
+                this@CameraView.session = session
+                this@CameraView.startPreview()
+            }
+            override fun onConfigureFailed(session: CameraCaptureSession) {
+            }
+        }
+    }
+    private val backgroundHandler by lazy {
+        var thread = HandlerThread(javaClass.name)
+        thread.start()
+        Handler(thread.looper)
+    }
 
     constructor(context: Context, attributes: AttributeSet) : super(context, attributes) {
-        holder.addCallback(this)
+        holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder?) {
+                this@CameraView.startRunning()
+            }
+            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+            }
+            override fun surfaceDestroyed(holder: SurfaceHolder?) {
+                this@CameraView.stopRunning()
+            }
+        })
     }
 
-    fun attachStream(stream: RTMPStream?) {
-        this.camera = stream?.video as CameraSource
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        camera?.surfaceCreated(holder)
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        camera?.displayOrientation = displayOrientation
-        camera?.surfaceChanged(holder, format, width, height)
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        camera?.surfaceDestroyed(holder)
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val previewSize = camera?.camera?.parameters?.previewSize
-        if (previewSize == null) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-            return
+    open fun attachStream(stream: RTMPStream?) {
+        this.stream = stream
+        if (stream != null) {
+            startRunning()
+        } else {
+            stopRunning()
         }
+    }
 
-        val aspectRadio = previewSize.height.toDouble() / previewSize.width.toDouble()
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightSize = (widthSize * aspectRadio).toInt()
+    override fun startRunning() {
+        if (isRunning.get()) { return }
+        try {
+            val device = (stream?.video as CameraSource)?.device ?: return
+            request = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+                this.addTarget(holder.surface)
+            }
+            device.createCaptureSession((Collections.singletonList(holder.surface)), stateCallback, null)
+            isRunning.set(true)
+        } catch (e: IllegalArgumentException) {
+            Log.d(javaClass.name, "", e)
+        }
+    }
 
-        setMeasuredDimension(widthSize, heightSize)
+    override fun stopRunning() {
+        if (!isRunning.get()) { return }
+        session?.stopRepeating()
+        session = null
+        isRunning.set(false)
+    }
 
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+    private fun startPreview() {
+        val session = session ?: return
+        val request = request ?: return
+        session.setRepeatingRequest(request.build(), null, backgroundHandler)
+    }
 
-        super.onMeasure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), MeasureSpec.makeMeasureSpec(heightSize, heightMode))
+    override fun toString(): String {
+        return ToStringBuilder.reflectionToString(this)
     }
 }
