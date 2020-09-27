@@ -1,7 +1,6 @@
 package com.haishinkit.events
 
 import android.support.v4.util.Pools
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
@@ -93,10 +92,6 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
 
     override fun removeEventListener(type: String, listener: IEventListener) {
         removeEventListener(type, listener, false)
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

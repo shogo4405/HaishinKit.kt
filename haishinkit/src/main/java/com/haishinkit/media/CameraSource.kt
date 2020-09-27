@@ -9,7 +9,6 @@ import android.hardware.camera2.CaptureRequest
 import android.media.MediaCodecInfo
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import android.view.Surface
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.data.VideoResolution
@@ -76,17 +75,21 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
 
     @SuppressLint("MissingPermission")
     fun open(cameraId: String) {
-        manager.openCamera(cameraId, object : CameraDevice.StateCallback() {
-            override fun onOpened(camera: CameraDevice) {
-                this@CameraSource.device = camera
-                this@CameraSource.setUp()
-            }
-            override fun onDisconnected(camera: CameraDevice) {
-                this@CameraSource.device = null
-            }
-            override fun onError(camera: CameraDevice, error: Int) {
-            }
-        }, null)
+        manager.openCamera(
+            cameraId,
+            object : CameraDevice.StateCallback() {
+                override fun onOpened(camera: CameraDevice) {
+                    this@CameraSource.device = camera
+                    this@CameraSource.setUp()
+                }
+                override fun onDisconnected(camera: CameraDevice) {
+                    this@CameraSource.device = null
+                }
+                override fun onError(camera: CameraDevice, error: Int) {
+                }
+            },
+            null
+        )
         characteristics = manager.getCameraCharacteristics(cameraId)
         this.cameraId = cameraId
     }
@@ -115,7 +118,8 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
         if (rendererSurface != null) {
             surfaceList.add(rendererSurface)
         }
-        device.createCaptureSession(surfaceList,
+        device.createCaptureSession(
+            surfaceList,
             object : CameraCaptureSession.StateCallback() {
                 override fun onConfigured(session: CameraCaptureSession) {
                     this@CameraSource.session = session
@@ -125,7 +129,8 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
                 override fun onConfigureFailed(session: CameraCaptureSession) {
                     this@CameraSource.session = null
                 }
-            }, backgroundHandler
+            },
+            backgroundHandler
         )
         isRunning.set(true)
     }

@@ -82,6 +82,7 @@ open class RTMPConnection : EventDispatcher(null) {
     private inner class EventListener(private val connection: RTMPConnection) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
+            Log.i(javaClass.name, data["code"].toString())
             when (data["code"].toString()) {
                 RTMPConnection.Code.CONNECT_SUCCESS.rawValue -> {
                     timerTask = Timer().schedule(0, 1000) {
@@ -232,7 +233,7 @@ open class RTMPConnection : EventDispatcher(null) {
                 buffer.position(buffer.position() + remaining)
                 if (!payload.hasRemaining()) {
                     payload.flip()
-                    Log.v(javaClass.name + "#listen", message.toString())
+                    if (VERBOSE) Log.v(javaClass.name + "#listen", message.toString())
                     message.decode(payload).execute(this)
                     messageFactory.release(message)
                     payloads.remove(streamID)
@@ -240,7 +241,7 @@ open class RTMPConnection : EventDispatcher(null) {
             } else {
                 message = chunk.decode(streamID, this, buffer)
                 if (message.length <= chunkSizeC) {
-                    Log.v(javaClass.name + "#listen", message.toString())
+                    if (VERBOSE) Log.v(javaClass.name + "#listen", message.toString())
                     message.decode(buffer).execute(this)
                     messageFactory.release(message)
                 } else {
@@ -317,5 +318,6 @@ open class RTMPConnection : EventDispatcher(null) {
 
         private const val DEFAULT_CHUNK_SIZE_S = 1024 * 8
         private const val DEFAULT_CAPABILITIES = 239
+        private const val VERBOSE = false
     }
 }

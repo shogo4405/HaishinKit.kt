@@ -14,7 +14,6 @@ internal class RTMPHandshake {
                 for (i in 0..SIGNAL_SIZE - 9) {
                     field.put(random.nextInt().toByte())
                 }
-                field.flip()
             }
             return field
         }
@@ -48,5 +47,6 @@ internal class RTMPHandshake {
 
     companion object {
         const val SIGNAL_SIZE = 1536
+        private const val VERBOSE = true
     }
 }

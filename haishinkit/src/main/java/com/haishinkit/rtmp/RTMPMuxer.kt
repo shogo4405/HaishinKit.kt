@@ -24,7 +24,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
         var message: RTMPMessage? = null
         when (mime) {
             MediaCodec.MIME.VIDEO_AVC.rawValue -> {
-                videoConfig = AVCConfigurationRecord(mediaFormat)
+                videoConfig = AVCConfigurationRecord.create(mediaFormat)
                 var video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.SEQ.rawValue
                 video.frame = FlameType.KEY.rawValue
@@ -36,7 +36,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
             }
             MediaCodec.MIME.AUDIO_MP4A.rawValue -> {
                 val buffer = mediaFormat.getByteBuffer("csd-0")
-                audioConfig = AudioSpecificConfig(buffer)
+                audioConfig = AudioSpecificConfig.create(buffer)
                 var audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
                 audio.config = audioConfig
                 audio.aacPacketType = AACPacketType.SEQ.rawValue

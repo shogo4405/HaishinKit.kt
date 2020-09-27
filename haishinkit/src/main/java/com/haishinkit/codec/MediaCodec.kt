@@ -8,6 +8,7 @@ import android.os.HandlerThread
 import android.util.Log
 import com.haishinkit.lang.Running
 import org.apache.commons.lang3.builder.ToStringBuilder
+import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -35,14 +36,19 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
 
     internal open class Callback : android.media.MediaCodec.Callback() {
         var listener: Listener? = null
+        var codec: com.haishinkit.codec.MediaCodec? = null
 
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
         }
 
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
-            val buffer = codec.getOutputBuffer(index) ?: return
-            listener?.onSampleOutput(codec.outputFormat.getString("mime"), info, buffer)
-            codec.releaseOutputBuffer(index, false)
+            try {
+                val buffer = codec.getOutputBuffer(index) ?: return
+                listener?.onSampleOutput(codec.outputFormat.getString("mime"), info, buffer)
+                codec.releaseOutputBuffer(index, false)
+            } catch (e: IllegalStateException) {
+                Log.w(javaClass.name, e)
+            }
         }
 
         override fun onError(codec: MediaCodec, e: android.media.MediaCodec.CodecException) {
@@ -50,7 +56,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         }
 
         override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
-            listener?.onFormatChanged(codec.outputFormat.getString("mime"), format)
+            this.codec?.outputFormat = format
         }
     }
 
@@ -60,8 +66,12 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
             callback?.listener = value
         }
     var callback: Callback? = null
-    private var _codec: MediaCodec? = null
-    protected var codec: MediaCodec?
+        set(value) {
+            field = value
+            callback?.codec = this
+        }
+    var _codec: MediaCodec? = null
+    var codec: MediaCodec?
         get() {
             if (_codec == null) {
                 _codec = MediaCodec.createEncoderByType(mime.rawValue).apply {
@@ -84,6 +94,15 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
             _codec = value
         }
     override val isRunning = AtomicBoolean(false)
+
+    private var outputFormat: MediaFormat? = null
+        set(value) {
+            if (field != value && value != null) {
+                Log.i(javaClass.name, value.toString())
+                listener?.onFormatChanged(value.getString("mime"), value)
+            }
+            field = value
+        }
     private val backgroundHandler by lazy {
         var thread = HandlerThread(javaClass.name)
         thread.start()
@@ -94,12 +113,15 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         if (isRunning.get()) {
             return
         }
-        val codec = codec ?: return
         try {
+            val codec = codec ?: return
+            outputFormat?.let {
+                listener?.onFormatChanged(it.getString("mime"), it)
+            }
             codec.start()
             isRunning.set(true)
         } catch (e: MediaCodec.CodecException) {
-            Log.w(javaClass.name, ToStringBuilder.reflectionToString(codec.outputFormat), e)
+            Log.w(javaClass.name, ToStringBuilder.reflectionToString(outputFormat), e)
         }
     }
 
@@ -107,7 +129,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         if (!isRunning.get()) {
             return
         }
-        codec = null
+        codec?.flush()
         isRunning.set(false)
     }
 

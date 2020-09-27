@@ -22,13 +22,15 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
     var chunkSizeS = RTMPChunk.DEFAULT_SIZE
     var isConnected = false
         private set
-    private val handshake = RTMPHandshake()
+    private val handshake: RTMPHandshake by lazy {
+        RTMPHandshake()
+    }
     private var readyState = ReadyState.Uninitialized
 
     override fun onTimeout() {
         close(false)
         connection?.dispatchEventWith(Event.IO_ERROR, false)
-        Log.w(javaClass.name + "#onTimeout", "connection timedout")
+        Log.i(javaClass.name + "#onTimeout", "connection timedout")
     }
 
     override fun onConnect() {
@@ -42,18 +44,19 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
     override fun close(disconnected: Boolean) {
         var data: Any? = null
         if (disconnected) {
-            if (readyState == RTMPSocket.ReadyState.HandshakeDone) {
-                data = RTMPConnection.Code.CONNECT_CLOSED.data("")
+            data = if (readyState == RTMPSocket.ReadyState.HandshakeDone) {
+                RTMPConnection.Code.CONNECT_CLOSED.data("")
             } else {
-                data = RTMPConnection.Code.CONNECT_FAILED.data("")
+                RTMPConnection.Code.CONNECT_FAILED.data("")
             }
         }
         readyState = RTMPSocket.ReadyState.Closing
         super.close(disconnected)
         if (data != null) {
-            connection?.dispatchEventWith(Event.RTMP_STATUS, false, data)
+            connection.dispatchEventWith(Event.RTMP_STATUS, false, data)
         }
         readyState = RTMPSocket.ReadyState.Closed
+        isConnected = false
     }
 
     override fun listen(buffer: ByteBuffer) {

@@ -20,6 +20,9 @@ import java.util.HashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.properties.Delegates
 
+/**
+ * An object that provides the interface to control a one-way channel over a RTMPConnection.
+ */
 open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher(null) {
     enum class HowToPublish(val rawValue: String) {
         RECORD("record"),
@@ -80,6 +83,10 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     }
 
+    interface Listener {
+        fun onStatics(stream: RTMPStream, connection: RTMPConnection)
+    }
+
     class AudioSettings(private var stream: RTMPStream?) {
         var channelCount: Int by Delegates.observable(AudioCodec.DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
             stream?.audioCodec?.channelCount = newValue
@@ -122,7 +129,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     }
 
-    inner class EventListener internal constructor(private val stream: RTMPStream) : IEventListener {
+    internal inner class EventListener(private val stream: RTMPStream) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
             when (data["code"].toString()) {
@@ -149,8 +156,10 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         PLAYING(0x03),
         PUBLISH(0x04),
         PUBLISHING(0x05),
-        CLOSED(0x06);
+        CLOSED(0x06)
     }
+
+    var listener: Listener? = null
 
     val videoSetting: VideoSettings by lazy {
         VideoSettings(this)
@@ -170,10 +179,14 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
             Log.d(javaClass.name, value.toString())
             when (field) {
                 RTMPStream.ReadyState.PUBLISHING -> {
-                    audioCodec.stopRunning()
-                    videoCodec.stopRunning()
-                    audio?.stopRunning()
-                    video?.stopRunning()
+                    if (audio != null) {
+                        audioCodec.stopRunning()
+                        audio?.stopRunning()
+                    }
+                    if (video != null) {
+                        videoCodec.stopRunning()
+                        video?.stopRunning()
+                    }
                 }
                 else -> {
                 }
@@ -194,6 +207,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
                 }
                 RTMPStream.ReadyState.PUBLISHING -> {
                     send("@setDataFrame", "onMetaData", toMetaData())
+                    muxer.clear()
                     if (audio != null) {
                         audio?.startRunning()
                         audioCodec.startRunning()
@@ -214,17 +228,17 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     internal var renderer: CameraView? = null
     private var muxer = RTMPMuxer(this)
     private var audio: AudioSource? = null
-    private val listener = EventListener(this)
+    private val eventListener = EventListener(this)
 
     init {
         val count = (connection.streams.count() * -1) - 1
         this.connection = connection
         this.connection.streams[count] = this
-        this.connection.addEventListener(Event.RTMP_STATUS, listener)
+        this.connection.addEventListener(Event.RTMP_STATUS, eventListener)
         if (this.connection.isConnected) {
             this.connection.createStream(this)
         }
-        addEventListener(Event.RTMP_STATUS, listener)
+        addEventListener(Event.RTMP_STATUS, eventListener)
         audioCodec.listener = muxer
         videoCodec.listener = muxer
     }
@@ -278,7 +292,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         message.arguments = arguments
 
         when (readyState) {
-            RTMPStream.ReadyState.INITIALIZED -> {
+            RTMPStream.ReadyState.INITIALIZED, RTMPStream.ReadyState.CLOSED -> {
                 messages.add(message)
             }
             RTMPStream.ReadyState.OPEN -> {
@@ -309,7 +323,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
 
         when (readyState) {
-            RTMPStream.ReadyState.INITIALIZED -> {
+            RTMPStream.ReadyState.INITIALIZED, RTMPStream.ReadyState.CLOSED -> {
                 messages.add(message)
             }
             RTMPStream.ReadyState.OPEN, RTMPStream.ReadyState.PLAYING -> {
@@ -352,7 +366,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     open fun dispose() {
-        connection.removeEventListener(Event.RTMP_STATUS, listener)
+        connection.removeEventListener(Event.RTMP_STATUS, eventListener)
         audio?.tearDown()
         video?.tearDown()
         audioSetting.dispose()
@@ -362,6 +376,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     internal fun on() {
         currentFPS = frameCount.get()
         frameCount.set(0)
+        listener?.onStatics(this, connection)
     }
 
     private fun toMetaData(): Map<String, Any> {

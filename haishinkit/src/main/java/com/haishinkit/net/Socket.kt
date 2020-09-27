@@ -13,6 +13,7 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 
 abstract class Socket {
+    var timeout: Int = 1000
     private var inputBuffer: ByteBuffer? = null
     private var socket: java.net.Socket? = null
     private var output: Thread? = null
@@ -20,7 +21,7 @@ abstract class Socket {
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
     private var outputQueue: BlockingQueue<ByteBuffer>? = null
-    var timeout: Int = 1000
+    @Volatile private var keepAlive = false
 
     init {
         inputBuffer = ByteBuffer.allocate(0)
@@ -28,6 +29,7 @@ abstract class Socket {
     }
 
     fun connect(dstName: String, dstPort: Int) {
+        keepAlive = true
         network = object : Thread() {
             override fun run() {
                 doConnection(dstName, dstPort)
@@ -37,6 +39,7 @@ abstract class Socket {
     }
 
     open fun close(disconnected: Boolean) {
+        keepAlive = false
         outputQueue?.clear()
         IOUtils.closeQuietly(socket)
         try {
@@ -82,7 +85,7 @@ abstract class Socket {
     }
 
     private fun doOutput() {
-        while (socket != null && socket!!.isConnected) {
+        while (keepAlive) {
             for (buffer in outputQueue!!) {
                 try {
                     buffer.flip()
@@ -99,6 +102,7 @@ abstract class Socket {
 
     private fun doConnection(dstName: String, dstPort: Int) {
         try {
+            outputQueue?.clear()
             val endpoint = InetSocketAddress(dstName, dstPort)
             socket = java.net.Socket()
             socket?.connect(endpoint, timeout)
@@ -113,7 +117,7 @@ abstract class Socket {
                 output?.start()
                 onConnect()
             }
-            while (socket != null && socket!!.isConnected) {
+            while (keepAlive) {
                 doInput()
             }
         } catch (e: SocketTimeoutException) {

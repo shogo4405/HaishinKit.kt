@@ -36,6 +36,7 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
 
     override fun tearDown() {
         surfaceStrategy.tearDown()
+        mediaProjection.stop()
     }
 
     override fun startRunning() {
@@ -57,7 +58,6 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
         if (!isRunning.get()) return
         surfaceStrategy.stopRunning()
         virtualDisplay?.release()
-        mediaProjection.stop()
     }
 
     override fun toString(): String {

@@ -8,6 +8,7 @@ import android.util.Log
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
+import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -17,10 +18,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 class AudioRecordSource() : AudioSource {
     internal class Callback(private val audio: AudioRecordSource) : MediaCodec.Callback() {
         override fun onInputBufferAvailable(codec: android.media.MediaCodec, index: Int) {
-            val inputBuffer = codec.getInputBuffer(index) ?: return
-            val result = audio.read(inputBuffer)
-            if (0 <= result) {
-                codec.queueInputBuffer(index, 0, result, audio.currentPresentationTimestamp, 0)
+            try {
+                val inputBuffer = codec.getInputBuffer(index) ?: return
+                val result = audio.read(inputBuffer)
+                if (0 <= result) {
+                    codec.queueInputBuffer(index, 0, result, audio.currentPresentationTimestamp, 0)
+                }
+            } catch (e: IllegalStateException) {
+                Log.w(javaClass.name, e)
             }
         }
     }

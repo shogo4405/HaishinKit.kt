@@ -7,6 +7,9 @@ internal class AudioCodec : MediaCodec(MIME) {
     var sampleRate = DEFAULT_SAMPLE_RATE
     var channelCount = DEFAULT_CHANNEL_COUNT
     var bitRate = DEFAULT_BIT_RATE
+        set(value) {
+            _codec?.outputFormat?.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
+        }
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createAudioFormat(MIME.rawValue, sampleRate, channelCount).apply {

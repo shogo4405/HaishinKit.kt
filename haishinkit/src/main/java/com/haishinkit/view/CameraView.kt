@@ -69,14 +69,18 @@ open class CameraView : SurfaceView, Running {
         request = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
             this?.addTarget(holder.surface)
         }
-        device.createCaptureSession(listOf(holder.surface), object : CameraCaptureSession.StateCallback() {
-            override fun onConfigured(session: CameraCaptureSession) {
-                this@CameraView.session = session
-            }
-            override fun onConfigureFailed(session: CameraCaptureSession) {
-                this@CameraView.session = null
-            }
-        }, null)
+        device.createCaptureSession(
+            listOf(holder.surface),
+            object : CameraCaptureSession.StateCallback() {
+                override fun onConfigured(session: CameraCaptureSession) {
+                    this@CameraView.session = session
+                }
+                override fun onConfigureFailed(session: CameraCaptureSession) {
+                    this@CameraView.session = null
+                }
+            },
+            null
+        )
         isRunning.set(true)
     }
 

@@ -8,7 +8,11 @@ import java.nio.ByteBuffer
  * @see http://wiki.multimedia.cx/index.php?title=MPEG-4_Audio.Audio_Specific_Config
  * @see http://wiki.multimedia.cx/?title=Understanding_AAC
  */
-internal class AudioSpecificConfig {
+data class AudioSpecificConfig(
+    val type: AudioObjectType,
+    val frequency: SamplingFrequency,
+    val channel: ChannelConfiguration
+) {
     enum class AudioObjectType(val rawValue: Byte) {
         UNKNOWN(0x00),
         AAC_MAIN(0x01),
@@ -50,25 +54,6 @@ internal class AudioSpecificConfig {
         UNKNOWN(Byte.MAX_VALUE);
     }
 
-    val type: AudioObjectType
-    val frequency: SamplingFrequency
-    val channel: ChannelConfiguration
-
-    constructor(type: AudioObjectType, frequency: SamplingFrequency, channel: ChannelConfiguration) {
-        this.type = type
-        this.frequency = frequency
-        this.channel = channel
-    }
-
-    constructor(buffer: ByteBuffer) {
-        val bytes = ByteArray(2)
-        buffer.get(bytes)
-        type = AudioObjectType.values().filter { n -> n.rawValue.toInt() == bytes[0].toInt() shr 3 }.first()
-        frequency = SamplingFrequency.values().filter { n -> n.rawValue.toInt() == (bytes[0].toInt() and 7 shl 1 or (bytes[1].toInt() and 0xFF shr 7)) }.first()
-        channel = ChannelConfiguration.values().filter { n -> n.rawValue.toInt() == bytes[1].toInt() and 120 shr 3 }.first()
-        buffer.flip()
-    }
-
     fun toADTS(length: Int): ByteArray {
         val fullSize = ADTS_HEADER_SIZE + length
         val adts = ByteArray(ADTS_HEADER_SIZE)
@@ -88,5 +73,13 @@ internal class AudioSpecificConfig {
 
     companion object {
         const val ADTS_HEADER_SIZE = 7
+
+        internal fun create(buffer: ByteBuffer): AudioSpecificConfig {
+            return AudioSpecificConfig(
+                type = AudioObjectType.values().first { n -> n.rawValue.toInt() == buffer[0].toInt() shr 3 },
+                frequency = SamplingFrequency.values().first { n -> n.rawValue.toInt() == (buffer[0].toInt() and 7 shl 1 or (buffer[1].toInt() and 0xFF shr 7)) },
+                channel = ChannelConfiguration.values().first { n -> n.rawValue.toInt() == buffer[1].toInt() and 120 shr 3 }
+            )
+        }
     }
 }

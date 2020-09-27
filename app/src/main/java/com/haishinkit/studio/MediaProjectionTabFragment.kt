@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import com.haishinkit.events.Event
 import com.haishinkit.events.IEventListener
 import com.haishinkit.media.AudioRecordSource
@@ -41,7 +42,6 @@ class MediaProjectionTabFragment : Fragment(), IEventListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val metrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(metrics)
-        Log.i(javaClass.name, metrics.toString())
         if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT) {
             if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
                 stream.attachCamera(MediaProjectionSource(
@@ -53,12 +53,25 @@ class MediaProjectionTabFragment : Fragment(), IEventListener {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val v = inflater!!.inflate(R.layout.fragment_mediaprojection, container, false)
+        val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            connection.connect(Preference.shared.rtmpURL)
+            if (button.text == "Publish") {
+                connection.connect(Preference.shared.rtmpURL)
+                button.text = "Stop"
+            } else {
+                connection.close()
+                button.text = "Publish"
+            }
+        }
+        stream.listener = object : RTMPStream.Listener {
+            override fun onStatics(stream: RTMPStream, connection: RTMPConnection) {
+                activity.runOnUiThread {
+                    v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
+                }
+            }
         }
         return v
     }
@@ -69,6 +82,7 @@ class MediaProjectionTabFragment : Fragment(), IEventListener {
     }
 
     override fun handleEvent(event: Event) {
+        Log.i(javaClass.name, event.toString())
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RTMPConnection.Code.CONNECT_SUCCESS.rawValue) {
