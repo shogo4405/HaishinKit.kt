@@ -44,7 +44,9 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
-                listener?.onSampleOutput(codec.outputFormat.getString("mime"), info, buffer)
+                codec.outputFormat.getString("mime")?.let { mime ->
+                    listener?.onSampleOutput(mime, info, buffer)
+                }
                 codec.releaseOutputBuffer(index, false)
             } catch (e: IllegalStateException) {
                 Log.w(javaClass.name, e)
@@ -99,7 +101,9 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         set(value) {
             if (field != value && value != null) {
                 Log.i(javaClass.name, value.toString())
-                listener?.onFormatChanged(value.getString("mime"), value)
+                value.getString("mime")?.let { mime ->
+                    listener?.onFormatChanged(mime, value)
+                }
             }
             field = value
         }
@@ -115,8 +119,10 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         }
         try {
             val codec = codec ?: return
-            outputFormat?.let {
-                listener?.onFormatChanged(it.getString("mime"), it)
+            outputFormat?.let { format ->
+                format.getString("mime")?.let { mime ->
+                    listener?.onFormatChanged(mime, format)
+                }
             }
             codec.start()
             isRunning.set(true)

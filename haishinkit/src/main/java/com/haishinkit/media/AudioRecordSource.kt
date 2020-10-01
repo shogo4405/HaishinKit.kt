@@ -136,6 +136,6 @@ class AudioRecordSource() : AudioSource {
         const val DEFAULT_CHANNEL = AudioFormat.CHANNEL_IN_MONO
         const val DEFAULT_ENCODING = AudioFormat.ENCODING_PCM_16BIT
         const val DEFAULT_SAMPLE_RATE = 44100
-        const val DEFAULT_AUDIO_SOURCE = MediaRecorder.AudioSource.VOICE_COMMUNICATION
+        const val DEFAULT_AUDIO_SOURCE = MediaRecorder.AudioSource.CAMCORDER
     }
 }

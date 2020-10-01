@@ -53,7 +53,9 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
         }
     private var request: CaptureRequest.Builder? = null
         set(value) {
-            request?.removeTarget(surface)
+            surface?.let {
+                request?.removeTarget(it)
+            }
             field = value
         }
     private var _surface: Surface? = null

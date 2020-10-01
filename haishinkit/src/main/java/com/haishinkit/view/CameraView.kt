@@ -41,12 +41,12 @@ open class CameraView : SurfaceView, Running {
 
     constructor(context: Context, attributes: AttributeSet) : super(context, attributes) {
         holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder?) {
+            override fun surfaceCreated(holder: SurfaceHolder) {
                 this@CameraView.startRunning()
             }
-            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             }
-            override fun surfaceDestroyed(holder: SurfaceHolder?) {
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
                 this@CameraView.stopRunning()
             }
         })
