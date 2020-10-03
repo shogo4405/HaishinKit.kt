@@ -116,7 +116,7 @@ class AudioRecordSource() : AudioSource {
         if (0 <= result) {
             currentPresentationTimestamp += timestamp(result / 2)
         } else {
-            var error = when (result) {
+            val error = when (result) {
                 AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
                 AudioRecord.ERROR_BAD_VALUE -> "ERROR_BAD_VALUE"
                 AudioRecord.ERROR_DEAD_OBJECT -> "ERROR_DEAD_OBJECT"

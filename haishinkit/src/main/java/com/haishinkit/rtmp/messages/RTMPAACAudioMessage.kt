@@ -22,7 +22,7 @@ internal class RTMPAACAudioMessage : RTMPAudioMessage() {
 
     override fun encode(socket: RTMPSocket): ByteBuffer {
         val length = payload?.limit() ?: 0
-        var buffer = ByteBuffer.allocate(2 + length)
+        val buffer = ByteBuffer.allocate(2 + length)
         buffer.put(AAC)
         buffer.put(aacPacketType)
         if (0 < length) {

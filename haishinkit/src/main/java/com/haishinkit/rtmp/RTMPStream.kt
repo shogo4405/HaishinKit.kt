@@ -232,11 +232,10 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
 
     init {
         val count = (connection.streams.count() * -1) - 1
-        this.connection = connection
-        this.connection.streams[count] = this
-        this.connection.addEventListener(Event.RTMP_STATUS, eventListener)
-        if (this.connection.isConnected) {
-            this.connection.createStream(this)
+        connection.streams[count] = this
+        connection.addEventListener(Event.RTMP_STATUS, eventListener)
+        if (connection.isConnected) {
+            connection.createStream(this)
         }
         addEventListener(Event.RTMP_STATUS, eventListener)
         audioCodec.listener = muxer
@@ -286,7 +285,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
             return
         }
 
-        var arguments = mutableListOf<Any?>()
+        val arguments = mutableListOf<Any?>()
         arguments.add(name)
         arguments.add(howToPublish.rawValue)
         message.arguments = arguments
@@ -339,7 +338,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
      */
     open fun send(handlerName: String, vararg arguments: Any) {
         readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED ?: return
-        var message = RTMPDataMessage(connection.objectEncoding)
+        val message = RTMPDataMessage(connection.objectEncoding)
         message.handlerName = handlerName
         arguments.forEach { value ->
             message.arguments.add(value)
@@ -380,7 +379,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     private fun toMetaData(): Map<String, Any> {
-        var metadata = mutableMapOf<String, Any>()
+        val metadata = mutableMapOf<String, Any>()
         if (video != null) {
             metadata["width"] = video?.resolution?.width?.toString() ?: "0"
             metadata["height"] = video?.resolution?.height?.toString() ?: "0"

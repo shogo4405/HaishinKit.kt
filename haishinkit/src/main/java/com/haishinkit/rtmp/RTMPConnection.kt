@@ -120,7 +120,16 @@ open class RTMPConnection : EventDispatcher(null) {
     var flashVer = RTMPConnection.DEFAULT_FLASH_VER
 
     /**
-     * he object encoding for this RTMPConnection instance.
+     * The outgoing RTMPChunkSize.
+     */
+    var chunkSize: Int
+        get() = socket.chunkSizeS
+        set(value) {
+            socket.chunkSizeS = value
+        }
+
+    /**
+     * The object encoding for this RTMPConnection instance.
      */
     var objectEncoding = RTMPConnection.DEFAULT_OBJECT_ENCODING
 
@@ -129,6 +138,27 @@ open class RTMPConnection : EventDispatcher(null) {
      */
     val isConnected: Boolean
         get() = socket.isConnected
+
+    /**
+     * The time to wait for TCP/IP Handshake done.
+     */
+    var timeout: Int
+        get() = socket.timeout
+        set(value) {
+            socket.timeout = value
+        }
+
+    /**
+     * The statistics of total incoming bytes.
+     */
+    val totalBytesIn: Long
+        get() = socket.totalBytesIn.get()
+
+    /**
+     * The statistics of total outgoing bytes.
+     */
+    val totalBytesOut: Long
+        get() = socket.totalBytesOut.get()
 
     internal val messages = ConcurrentHashMap<Short, RTMPMessage>()
     internal val streams = ConcurrentHashMap<Int, RTMPStream>()
@@ -218,7 +248,7 @@ open class RTMPConnection : EventDispatcher(null) {
         try {
             val first = buffer.get()
             val chunkSizeC = socket.chunkSizeC
-            var chunk = RTMPChunk.values().first { v -> v.rawValue.toInt() == ((first.toInt() and 0xff) shr 6) }
+            val chunk = RTMPChunk.values().first { v -> v.rawValue.toInt() == ((first.toInt() and 0xff) shr 6) }
             val streamID = chunk.getStreamID(buffer)
             val payload: ByteBuffer
             val message: RTMPMessage
@@ -305,9 +335,7 @@ open class RTMPConnection : EventDispatcher(null) {
         message.commandName = "connect"
         message.transactionID = ++transactionID
         message.commandObject = commandObject
-        if (arguments != null) {
-            message.arguments = arguments
-        }
+        message.arguments = arguments
         return message
     }
 

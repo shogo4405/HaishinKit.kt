@@ -109,7 +109,7 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
         if (isRunning.get()) { return }
         val device = device ?: return
         val surface = surface ?: return
-        var rendererSurface = stream?.renderer?.holder?.surface
+        val rendererSurface = stream?.renderer?.holder?.surface
         request = device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
             this.addTarget(surface)
             if (rendererSurface != null) {

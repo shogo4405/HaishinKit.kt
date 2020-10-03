@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * A view that previews a camera.
  */
-open class CameraView : SurfaceView, Running {
+open class CameraView(context: Context, attributes: AttributeSet) : SurfaceView(context, attributes), Running {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     private var request: CaptureRequest.Builder? = null
     private var stream: RTMPStream? = null
@@ -34,18 +34,20 @@ open class CameraView : SurfaceView, Running {
             field?.setRepeatingRequest(request!!.build(), null, backgroundHandler)
         }
     private val backgroundHandler by lazy {
-        var thread = HandlerThread(javaClass.name)
+        val thread = HandlerThread(javaClass.name)
         thread.start()
         Handler(thread.looper)
     }
 
-    constructor(context: Context, attributes: AttributeSet) : super(context, attributes) {
+    init {
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 this@CameraView.startRunning()
             }
+
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             }
+
             override fun surfaceDestroyed(holder: SurfaceHolder) {
                 this@CameraView.stopRunning()
             }
@@ -67,7 +69,7 @@ open class CameraView : SurfaceView, Running {
         val source = (stream?.video as CameraSource) ?: return
         val device = source.device ?: return
         request = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-            this?.addTarget(holder.surface)
+            this.addTarget(holder.surface)
         }
         device.createCaptureSession(
             listOf(holder.surface),

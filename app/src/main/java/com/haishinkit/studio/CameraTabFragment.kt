@@ -53,7 +53,13 @@ class CameraTabFragment: Fragment(), IEventListener {
         val v = inflater.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            connection?.connect(Preference.shared.rtmpURL)
+            if (button.text == "Publish") {
+                connection?.connect(Preference.shared.rtmpURL)
+                button.text = "Stop"
+            } else {
+                connection?.close()
+                button.text = "Publish"
+            }
         }
         cameraView = v.findViewById<CameraView>(R.id.camera)
         cameraView?.attachStream(stream!!)

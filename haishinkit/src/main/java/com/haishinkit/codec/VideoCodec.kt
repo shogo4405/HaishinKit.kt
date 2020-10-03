@@ -7,11 +7,13 @@ import android.view.Surface
 internal class VideoCodec() : MediaCodec(MIME) {
     var bitRate = DEFAULT_BIT_RATE
         set(value) {
-            _codec?.outputFormat?.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
+            _codec?.outputFormat?.setInteger(MediaFormat.KEY_BIT_RATE, value)
+            field = value
         }
     var frameRate = DEFAULT_FRAME_RATE
         set(value) {
-            _codec?.outputFormat?.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
+            _codec?.outputFormat?.setInteger(MediaFormat.KEY_FRAME_RATE, value)
+            field = value
         }
     var IFrameInterval = DEFAULT_I_FRAME_INTERVAL
     var width = DEFAULT_WIDTH
@@ -24,11 +26,15 @@ internal class VideoCodec() : MediaCodec(MIME) {
         return MediaFormat.createVideoFormat(MIME.rawValue, width, height).apply {
             this.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
             this.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
-            this.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
+            this.setInteger(MediaFormat.KEY_CAPTURE_RATE, frameRate)
+            this.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000 / frameRate)
+            this.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
             this.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFrameInterval)
             this.setInteger(MediaFormat.KEY_PROFILE, profile)
             if (colorFormat != DEFAULT_COLOR_FORMAT) {
-                this.setInteger(MediaFormat.KEY_LEVEL, level)
+                this.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
+            } else {
+                this.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
             }
         }
     }

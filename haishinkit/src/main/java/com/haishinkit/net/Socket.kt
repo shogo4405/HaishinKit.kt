@@ -1,6 +1,9 @@
 package com.haishinkit.net
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.io.IOException
@@ -10,53 +13,41 @@ import java.net.InetSocketAddress
 import java.net.SocketTimeoutException
 import java.nio.ByteBuffer
 import java.util.concurrent.ArrayBlockingQueue
-import java.util.concurrent.BlockingQueue
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.coroutines.CoroutineContext
 
-abstract class Socket {
-    var timeout: Int = 1000
-    private var inputBuffer: ByteBuffer? = null
+internal abstract class Socket : CoroutineScope {
+    var timeout = DEFAULT_TIMEOUT
+
+    val totalBytesIn = AtomicLong(0)
+    val totalBytesOut = AtomicLong(0)
+    val queueBytesOut = AtomicLong(0)
+    private var inputBuffer = ByteBuffer.allocate(0)
     private var socket: java.net.Socket? = null
-    private var output: Thread? = null
-    private var network: Thread? = null
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
-    private var outputQueue: BlockingQueue<ByteBuffer>? = null
+    private var outputQueue = ArrayBlockingQueue<ByteBuffer>(128)
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO
     @Volatile private var keepAlive = false
-
-    init {
-        inputBuffer = ByteBuffer.allocate(0)
-        outputQueue = ArrayBlockingQueue<ByteBuffer>(128)
-    }
 
     fun connect(dstName: String, dstPort: Int) {
         keepAlive = true
-        network = object : Thread() {
-            override fun run() {
-                doConnection(dstName, dstPort)
-            }
+        launch(Dispatchers.IO) {
+            doConnection(dstName, dstPort)
         }
-        network?.start()
     }
 
     open fun close(disconnected: Boolean) {
         keepAlive = false
-        outputQueue?.clear()
+        outputQueue.clear()
         IOUtils.closeQuietly(socket)
-        try {
-            network?.join()
-        } catch (e: InterruptedException) {
-            Log.w(javaClass.name + "#close", "", e)
-        }
-        try {
-            output?.join()
-        } catch (e: InterruptedException) {
-            Log.w(javaClass.name + "#close", "", e)
-        }
     }
 
     fun doOutput(buffer: ByteBuffer) {
         try {
-            outputQueue?.put(buffer)
+            queueBytesOut.addAndGet(buffer.remaining().toLong())
+            outputQueue.put(buffer)
         } catch (e: InterruptedException) {
             Log.v(javaClass.name + "#doOutput", "", e)
         }
@@ -68,14 +59,15 @@ abstract class Socket {
 
     private fun doInput() {
         try {
-            val available = inputStream!!.available()
+            val available = inputStream?.available() ?: 0
             if (available == 0) {
                 return
             }
-            val buffer = ByteBuffer.allocate(inputBuffer!!.capacity() + available)
+            val buffer = ByteBuffer.allocate(inputBuffer.capacity() + available)
             buffer.put(inputBuffer)
-            inputStream!!.read(buffer.array(), inputBuffer!!.capacity(), available)
+            inputStream?.read(buffer.array(), inputBuffer.capacity(), available)
             buffer.position(0)
+            totalBytesIn.addAndGet(buffer.remaining().toLong())
             listen(buffer)
             inputBuffer = buffer.slice()
         } catch (e: IOException) {
@@ -86,12 +78,15 @@ abstract class Socket {
 
     private fun doOutput() {
         while (keepAlive) {
-            for (buffer in outputQueue!!) {
+            for (buffer in outputQueue) {
                 try {
+                    val remaining = buffer.remaining().toLong()
                     buffer.flip()
-                    outputStream!!.write(buffer.array())
-                    outputStream!!.flush()
-                    outputQueue?.remove(buffer)
+                    outputStream?.write(buffer.array())
+                    outputStream?.flush()
+                    outputQueue.remove(buffer)
+                    totalBytesOut.addAndGet(remaining)
+                    queueBytesOut.addAndGet(remaining * -1)
                 } catch (e: IOException) {
                     Log.w(javaClass.name + "#doOutput", "", e)
                     close(false)
@@ -102,19 +97,16 @@ abstract class Socket {
 
     private fun doConnection(dstName: String, dstPort: Int) {
         try {
-            outputQueue?.clear()
+            outputQueue.clear()
             val endpoint = InetSocketAddress(dstName, dstPort)
             socket = java.net.Socket()
             socket?.connect(endpoint, timeout)
             if (socket!!.isConnected) {
-                inputStream = socket!!.getInputStream()
-                outputStream = socket!!.getOutputStream()
-                output = object : Thread() {
-                    override fun run() {
-                        doOutput()
-                    }
+                inputStream = socket?.getInputStream()
+                outputStream = socket?.getOutputStream()
+                launch(Dispatchers.IO) {
+                    doOutput()
                 }
-                output?.start()
                 onConnect()
             }
             while (keepAlive) {
@@ -132,5 +124,9 @@ abstract class Socket {
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
+    }
+
+    companion object {
+        const val DEFAULT_TIMEOUT: Int = 1000
     }
 }

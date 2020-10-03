@@ -29,7 +29,7 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
 
     override fun onTimeout() {
         close(false)
-        connection?.dispatchEventWith(Event.IO_ERROR, false)
+        connection.dispatchEventWith(Event.IO_ERROR, false)
         Log.i(javaClass.name + "#onTimeout", "connection timedout")
     }
 

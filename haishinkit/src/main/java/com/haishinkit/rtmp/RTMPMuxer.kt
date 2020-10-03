@@ -25,7 +25,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
         when (mime) {
             MediaCodec.MIME.VIDEO_AVC.rawValue -> {
                 videoConfig = AVCConfigurationRecord.create(mediaFormat)
-                var video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
+                val video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.SEQ.rawValue
                 video.frame = FlameType.KEY.rawValue
                 video.codec = VideoCodec.AVC.rawValue
@@ -37,7 +37,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
             MediaCodec.MIME.AUDIO_MP4A.rawValue -> {
                 val buffer = mediaFormat.getByteBuffer("csd-0") ?: return
                 audioConfig = AudioSpecificConfig.create(buffer)
-                var audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
+                val audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
                 audio.config = audioConfig
                 audio.aacPacketType = AACPacketType.SEQ.rawValue
                 audio.payload = buffer
@@ -63,7 +63,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
         when (mime) {
             MediaCodec.MIME.VIDEO_AVC.rawValue -> {
                 val keyframe = info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
-                var video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
+                val video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.NAL.rawValue
                 video.frame = if (keyframe) FlameType.KEY.rawValue else FlameType.INTER.rawValue
                 video.codec = VideoCodec.AVC.rawValue
@@ -75,7 +75,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
                 stream.frameCount.incrementAndGet()
             }
             MediaCodec.MIME.AUDIO_MP4A.rawValue -> {
-                var audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
+                val audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
                 audio.aacPacketType = AACPacketType.RAW.rawValue
                 audio.config = audioConfig
                 audio.payload = buffer

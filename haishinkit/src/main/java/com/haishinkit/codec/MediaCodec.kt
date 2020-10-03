@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import com.haishinkit.BuildConfig
 import com.haishinkit.lang.Running
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalStateException
@@ -49,12 +50,12 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
                 }
                 codec.releaseOutputBuffer(index, false)
             } catch (e: IllegalStateException) {
-                Log.w(javaClass.name, e)
+                if (BuildConfig.DEBUG) { Log.w(javaClass.name, e) }
             }
         }
 
         override fun onError(codec: MediaCodec, e: android.media.MediaCodec.CodecException) {
-            Log.w(javaClass.name, e.toString())
+            if (BuildConfig.DEBUG) { Log.w(javaClass.name, e.toString()) }
         }
 
         override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
@@ -72,7 +73,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
             field = value
             callback?.codec = this
         }
-    var _codec: MediaCodec? = null
+    private var _codec: MediaCodec? = null
     var codec: MediaCodec?
         get() {
             if (_codec == null) {
@@ -107,11 +108,21 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
             }
             field = value
         }
-    private val backgroundHandler by lazy {
-        var thread = HandlerThread(javaClass.name)
-        thread.start()
-        Handler(thread.looper)
-    }
+
+    private var  _backgroundHandler: Handler? = null
+    private var backgroundHandler: Handler?
+        get() {
+            if (_backgroundHandler == null) {
+                val thread = HandlerThread(javaClass.name)
+                thread.start()
+                _backgroundHandler = Handler(thread.looper)
+            }
+            return _backgroundHandler
+        }
+        set(value) {
+            _backgroundHandler?.looper?.quitSafely()
+            _backgroundHandler = value
+        }
 
     @Synchronized final override fun startRunning() {
         if (isRunning.get()) {
@@ -135,7 +146,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         if (!isRunning.get()) {
             return
         }
-        codec?.flush()
+        codec = null
         isRunning.set(false)
     }
 
