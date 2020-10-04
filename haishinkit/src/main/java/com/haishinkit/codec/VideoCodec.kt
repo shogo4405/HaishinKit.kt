@@ -7,13 +7,13 @@ import android.view.Surface
 internal class VideoCodec() : MediaCodec(MIME) {
     var bitRate = DEFAULT_BIT_RATE
         set(value) {
-            _codec?.outputFormat?.setInteger(MediaFormat.KEY_BIT_RATE, value)
             field = value
+            codec?.outputFormat?.setInteger(MediaFormat.KEY_BIT_RATE, field)
         }
     var frameRate = DEFAULT_FRAME_RATE
         set(value) {
-            _codec?.outputFormat?.setInteger(MediaFormat.KEY_FRAME_RATE, value)
             field = value
+            codec?.outputFormat?.setInteger(MediaFormat.KEY_FRAME_RATE, field)
         }
     var IFrameInterval = DEFAULT_I_FRAME_INTERVAL
     var width = DEFAULT_WIDTH

@@ -4,11 +4,14 @@ import android.content.Context
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CaptureRequest
+import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.AttributeSet
+import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import com.haishinkit.BuildConfig
 import com.haishinkit.lang.Running
 import com.haishinkit.media.CameraSource
 import com.haishinkit.rtmp.RTMPStream
@@ -29,9 +32,12 @@ open class CameraView(context: Context, attributes: AttributeSet) : SurfaceView(
         }
     private var session: CameraCaptureSession? = null
         set(value) {
+            Log.d(javaClass.name, value.toString())
             session?.close()
             field = value
-            field?.setRepeatingRequest(request!!.build(), null, backgroundHandler)
+            request?.let {
+                field?.setRepeatingRequest(it.build(), null, backgroundHandler)
+            }
         }
     private val backgroundHandler by lazy {
         val thread = HandlerThread(javaClass.name)
@@ -44,10 +50,8 @@ open class CameraView(context: Context, attributes: AttributeSet) : SurfaceView(
             override fun surfaceCreated(holder: SurfaceHolder) {
                 this@CameraView.startRunning()
             }
-
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             }
-
             override fun surfaceDestroyed(holder: SurfaceHolder) {
                 this@CameraView.stopRunning()
             }
@@ -84,12 +88,19 @@ open class CameraView(context: Context, attributes: AttributeSet) : SurfaceView(
             null
         )
         isRunning.set(true)
+        if (BuildConfig.DEBUG) {
+            Log.d(javaClass.name, "startRunning()")
+        }
     }
 
     override fun stopRunning() {
         if (!isRunning.get()) { return }
         request = null
+        session = null
         isRunning.set(false)
+        if (BuildConfig.DEBUG) {
+            Log.d(javaClass.name, "stopRunning()")
+        }
     }
 
     override fun toString(): String {

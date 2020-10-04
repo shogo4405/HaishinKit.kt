@@ -9,6 +9,7 @@ import android.hardware.camera2.CaptureRequest
 import android.media.MediaCodecInfo
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import android.view.Surface
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.data.VideoResolution
@@ -31,6 +32,7 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
         private set
     var session: CameraCaptureSession? = null
         private set(value) {
+            session?.close()
             field = value
             if (value == null) {
                 stream?.renderer?.stopRunning()
@@ -53,8 +55,10 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
         }
     private var request: CaptureRequest.Builder? = null
         set(value) {
-            surface?.let {
-                request?.removeTarget(it)
+            request?.let { request ->
+                _surface?.let { surface ->
+                    request.removeTarget(surface)
+                }
             }
             field = value
         }
@@ -70,7 +74,7 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
             _surface = value
         }
     private val backgroundHandler by lazy {
-        var thread = HandlerThread(javaClass.name)
+        val thread = HandlerThread(javaClass.name)
         thread.start()
         Handler(thread.looper)
     }
@@ -88,6 +92,7 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
                     this@CameraSource.device = null
                 }
                 override fun onError(camera: CameraDevice, error: Int) {
+                    Log.w(javaClass.name, error.toString())
                 }
             },
             null
@@ -97,12 +102,13 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
     }
 
     override fun setUp() {
+        stream?.renderer?.startRunning()
     }
 
     override fun tearDown() {
-        device = null
         request = null
         session = null
+        device = null
     }
 
     override fun startRunning() {

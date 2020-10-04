@@ -4,10 +4,8 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.os.Build
-import android.os.IBinder
+import android.os.*
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.util.DisplayMetrics
@@ -24,21 +22,31 @@ class MediaProjectionService : Service(), IEventListener {
     private lateinit var stream: RTMPStream
     private lateinit var connection: RTMPConnection
 
+    private var messenger: Messenger? = null
+    private var handler = object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                0 -> connection.connect(Preference.shared.rtmpURL)
+                1 -> connection.close()
+            }
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
-        return null
+        return messenger?.binder
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(javaClass.name, "onStartCommand")
-        var manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
             channel.description = CHANNEL_DESC
             channel.setSound(null, null)
             manager.createNotificationChannel(channel)
         }
-        var notification = NotificationCompat.Builder(this, CHANNEL_ID).apply {
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID).apply {
             setColorized(true)
             setSmallIcon(R.mipmap.ic_launcher)
             setStyle(NotificationCompat.DecoratedCustomViewStyle())
@@ -49,7 +57,7 @@ class MediaProjectionService : Service(), IEventListener {
         } else {
             startForeground(ID, notification)
         }
-        var mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         stream.attachAudio(AudioRecordSource())
         stream.listener = listener
         data?.let {
@@ -61,6 +69,7 @@ class MediaProjectionService : Service(), IEventListener {
 
     override fun onCreate() {
         super.onCreate()
+        messenger = Messenger(handler)
         connection = RTMPConnection()
         connection.addEventListener(Event.RTMP_STATUS, this)
         stream = RTMPStream(connection)
@@ -90,22 +99,5 @@ class MediaProjectionService : Service(), IEventListener {
         var metrics = DisplayMetrics()
         var data: Intent? = null
         var listener: RTMPStream.Listener? = null
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        val start: (Context) -> Unit = {
-            Log.d(javaClass.name, "start")
-            val intent = Intent(it, MediaProjectionService::class.java)
-            if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
-                it.startForegroundService(intent)
-            } else {
-                it.startService(intent)
-            }
-        }
-
-        val stop: (Context) -> Unit = {
-            Log.d(javaClass.name, "stop")
-            val intent = Intent(it, MediaProjectionService::class.java)
-            it.stopService(intent)
-        }
     }
 }

@@ -367,7 +367,9 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     open fun dispose() {
         connection.removeEventListener(Event.RTMP_STATUS, eventListener)
         audio?.tearDown()
+        audioCodec.dispose()
         video?.tearDown()
+        videoCodec.dispose()
         audioSetting.dispose()
         videoSetting.dispose()
     }

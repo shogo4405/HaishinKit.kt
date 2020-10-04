@@ -43,6 +43,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         }
 
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
+            Log.d(javaClass.name, "${index}")
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
                 codec.outputFormat.getString("mime")?.let { mime ->
@@ -77,17 +78,8 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
     var codec: MediaCodec?
         get() {
             if (_codec == null) {
-                _codec = MediaCodec.createEncoderByType(mime.rawValue).apply {
-                    if (callback != null) {
-                        callback?.listener = listener
-                        if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                            this.setCallback(callback, backgroundHandler)
-                        } else {
-                            this.setCallback(callback)
-                        }
-                    }
-                    this.configure(createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-                }
+                _codec = MediaCodec.createEncoderByType(mime.rawValue)
+                _codec?.let { configure(it) }
             }
             return _codec
         }
@@ -128,6 +120,9 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         if (isRunning.get()) {
             return
         }
+        if (BuildConfig.DEBUG) {
+            Log.d(javaClass.name, "startRunning()")
+        }
         try {
             val codec = codec ?: return
             outputFormat?.let { format ->
@@ -146,11 +141,33 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         if (!isRunning.get()) {
             return
         }
-        codec = null
+        if (BuildConfig.DEBUG) {
+            Log.d(javaClass.name, "stopRunning()")
+        }
+        codec?.stop()
+        codec?.let { configure(it) }
+        outputFormat = null
         isRunning.set(false)
     }
 
+    fun dispose() {
+        codec = null
+        outputFormat = null
+    }
+
     protected abstract fun createOutputFormat(): MediaFormat
+
+    private fun configure(codec: MediaCodec) {
+        if (callback != null) {
+            callback?.listener = listener
+            if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+                codec.setCallback(callback, backgroundHandler)
+            } else {
+                codec.setCallback(callback)
+            }
+        }
+        codec.configure(createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+    }
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)

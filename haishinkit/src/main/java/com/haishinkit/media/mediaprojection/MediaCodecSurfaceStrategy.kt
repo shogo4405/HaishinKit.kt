@@ -38,5 +38,6 @@ internal class MediaCodecSurfaceStrategy(override val metrics: DisplayMetrics) :
 
     override fun stopRunning() {
         isRunning.set(false)
+        surface = null
     }
 }

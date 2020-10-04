@@ -1,6 +1,7 @@
 package com.haishinkit.studio
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,11 +24,12 @@ import android.util.Log
 import com.haishinkit.media.AudioRecordSource
 
 class CameraTabFragment: Fragment(), IEventListener {
-    private var connection: RTMPConnection? = null
-    private var stream: RTMPStream? = null
+    private lateinit var connection: RTMPConnection
+    private lateinit var stream: RTMPStream
     private var cameraView: CameraView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(javaClass.name, "onCreate")
         super.onCreate(savedInstanceState)
         val permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -37,38 +39,38 @@ class CameraTabFragment: Fragment(), IEventListener {
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
         }
         connection = RTMPConnection()
-        stream = RTMPStream(connection!!)
-        stream?.attachAudio(AudioRecordSource())
+        stream = RTMPStream(connection)
+        stream.attachAudio(AudioRecordSource())
 
         val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        var camera = CameraSource(manager).apply {
+        val camera = CameraSource(manager).apply {
             this.open(cameraId)
         }
-        stream?.attachCamera(camera)
-
-        connection?.addEventListener("rtmpStatus", this)
+        stream.attachCamera(camera)
+        connection.addEventListener(Event.RTMP_STATUS, this)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
             if (button.text == "Publish") {
-                connection?.connect(Preference.shared.rtmpURL)
+                connection.connect(Preference.shared.rtmpURL)
                 button.text = "Stop"
             } else {
-                connection?.close()
+                connection.close()
                 button.text = "Publish"
             }
         }
         cameraView = v.findViewById<CameraView>(R.id.camera)
-        cameraView?.attachStream(stream!!)
+        cameraView?.attachStream(stream)
         return v
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        connection?.dispose()
+        connection.dispose()
     }
 
     override fun handleEvent(event: Event) {
@@ -76,7 +78,7 @@ class CameraTabFragment: Fragment(), IEventListener {
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RTMPConnection.Code.CONNECT_SUCCESS.rawValue) {
-            stream?.publish(Preference.shared.streamName)
+            stream.publish(Preference.shared.streamName)
         }
     }
 
