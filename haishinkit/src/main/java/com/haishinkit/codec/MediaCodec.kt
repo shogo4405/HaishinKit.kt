@@ -43,7 +43,6 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
         }
 
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
-            Log.d(javaClass.name, "${index}")
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
                 codec.outputFormat.getString("mime")?.let { mime ->

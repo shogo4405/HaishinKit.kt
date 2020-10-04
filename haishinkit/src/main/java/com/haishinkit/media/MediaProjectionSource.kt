@@ -3,7 +3,9 @@ package com.haishinkit.media
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
+import android.os.Build
 import android.util.DisplayMetrics
+import android.view.Surface
 import com.haishinkit.data.VideoResolution
 import com.haishinkit.media.mediaprojection.MediaCodecSurfaceStrategy
 import com.haishinkit.media.mediaprojection.SurfaceStrategy

@@ -3,6 +3,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 
+version = "0.1.0"
+
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     archiveClassifier.set("sources")
