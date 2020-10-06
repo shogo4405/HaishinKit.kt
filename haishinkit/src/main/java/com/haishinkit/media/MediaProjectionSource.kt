@@ -3,10 +3,8 @@ package com.haishinkit.media
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
-import android.os.Build
 import android.util.DisplayMetrics
-import android.view.Surface
-import com.haishinkit.data.VideoResolution
+import android.util.Size
 import com.haishinkit.media.mediaprojection.MediaCodecSurfaceStrategy
 import com.haishinkit.media.mediaprojection.SurfaceStrategy
 import com.haishinkit.rtmp.RTMPStream
@@ -21,7 +19,7 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
     override var stream: RTMPStream? = null
     override val isRunning: AtomicBoolean
         get() = surfaceStrategy.isRunning
-    override var resolution: VideoResolution = VideoResolution(1, 1)
+    override var resolution = Size(1, 1)
         set(value) {
             field = value
             stream?.videoSetting?.width = value.width
@@ -33,7 +31,7 @@ class MediaProjectionSource(private var mediaProjection: MediaProjection, privat
     override fun setUp() {
         surfaceStrategy.stream = stream
         surfaceStrategy.setUp()
-        resolution = resolution.copy(width = (metrics.widthPixels * scale).toInt(), height = (metrics.heightPixels * scale).toInt())
+        resolution = Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
     }
 
     override fun tearDown() {

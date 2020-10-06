@@ -1,10 +1,10 @@
 package com.haishinkit.media
 
-import com.haishinkit.data.VideoResolution
+import android.util.Size
 
 /**
  * An interface that captures a video source.
  */
 interface VideoSource : Source {
-    var resolution: VideoResolution
+    var resolution: Size
 }

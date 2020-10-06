@@ -100,7 +100,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
             field = value
         }
 
-    private var  _backgroundHandler: Handler? = null
+    private var _backgroundHandler: Handler? = null
     private var backgroundHandler: Handler?
         get() {
             if (_backgroundHandler == null) {
