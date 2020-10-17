@@ -2,19 +2,20 @@ package com.haishinkit.codec
 
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
+import android.os.Build
+import android.os.Bundle
 import android.view.Surface
 
 internal class VideoCodec() : MediaCodec(MIME) {
     var bitRate = DEFAULT_BIT_RATE
         set(value) {
             field = value
-            codec?.outputFormat?.setInteger(MediaFormat.KEY_BIT_RATE, field)
+            val bundle = Bundle().apply {
+                putInt(android.media.MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
+            }
+            codec?.setParameters(bundle)
         }
     var frameRate = DEFAULT_FRAME_RATE
-        set(value) {
-            field = value
-            codec?.outputFormat?.setInteger(MediaFormat.KEY_FRAME_RATE, field)
-        }
     var IFrameInterval = DEFAULT_I_FRAME_INTERVAL
     var width = DEFAULT_WIDTH
     var height = DEFAULT_HEIGHT
@@ -23,18 +24,21 @@ internal class VideoCodec() : MediaCodec(MIME) {
     var colorFormat = DEFAULT_COLOR_FORMAT
 
     override fun createOutputFormat(): MediaFormat {
-        return MediaFormat.createVideoFormat(MIME.rawValue, width, height).apply {
-            this.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
-            this.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
-            this.setInteger(MediaFormat.KEY_CAPTURE_RATE, frameRate)
-            this.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000 / frameRate)
-            this.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
-            this.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFrameInterval)
-            this.setInteger(MediaFormat.KEY_PROFILE, profile)
+        return MediaFormat.createVideoFormat(MIME, width, height).apply {
+            setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
+            setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
+            setInteger(MediaFormat.KEY_CAPTURE_RATE, frameRate)
+            setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000 / frameRate)
+            setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
+            setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFrameInterval)
+            setInteger(MediaFormat.KEY_PROFILE, profile)
+            if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+                setInteger(MediaFormat.KEY_LEVEL, level)
+            }
             if (colorFormat != DEFAULT_COLOR_FORMAT) {
-                this.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
+                setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
             } else {
-                this.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
+                setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
             }
         }
     }
@@ -44,7 +48,7 @@ internal class VideoCodec() : MediaCodec(MIME) {
     }
 
     companion object {
-        val MIME = com.haishinkit.codec.MediaCodec.MIME.VIDEO_AVC
+        const val MIME = com.haishinkit.codec.MediaCodec.MIME_VIDEO_AVC
 
         const val DEFAULT_BIT_RATE = 500 * 1000
         const val DEFAULT_FRAME_RATE = 30

@@ -1,17 +1,13 @@
 package com.haishinkit.view
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCaptureSession
-import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CaptureRequest
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.AttributeSet
 import android.util.Log
-import android.util.Size
 import android.view.*
 import com.haishinkit.BuildConfig
 import com.haishinkit.lang.Running

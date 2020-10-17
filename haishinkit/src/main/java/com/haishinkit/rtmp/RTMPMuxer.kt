@@ -23,7 +23,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
     override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
         var message: RTMPMessage? = null
         when (mime) {
-            MediaCodec.MIME.VIDEO_AVC.rawValue -> {
+            MediaCodec.MIME_VIDEO_AVC -> {
                 videoConfig = AVCConfigurationRecord.create(mediaFormat)
                 val video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.SEQ.rawValue
@@ -34,7 +34,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
                 video.streamID = stream.id
                 message = video
             }
-            MediaCodec.MIME.AUDIO_MP4A.rawValue -> {
+            MediaCodec.MIME_AUDIO_MP4A -> {
                 val buffer = mediaFormat.getByteBuffer("csd-0") ?: return
                 audioConfig = AudioSpecificConfig.create(buffer)
                 val audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
@@ -61,7 +61,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
             timestamp = (info.presentationTimeUs - timestamps[mime]!!.toLong()).toInt()
         }
         when (mime) {
-            MediaCodec.MIME.VIDEO_AVC.rawValue -> {
+            MediaCodec.MIME_VIDEO_AVC -> {
                 val keyframe = info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
                 val video = stream.connection.messageFactory.createRTMPVideoMessage() as RTMPAVCVideoMessage
                 video.packetType = AVCPacketType.NAL.rawValue
@@ -74,7 +74,7 @@ internal class RTMPMuxer(private val stream: RTMPStream) : MediaCodec.Listener {
                 message = video
                 stream.frameCount.incrementAndGet()
             }
-            MediaCodec.MIME.AUDIO_MP4A.rawValue -> {
+            MediaCodec.MIME_AUDIO_MP4A -> {
                 val audio = stream.connection.messageFactory.createRTMPAudioMessage() as RTMPAACAudioMessage
                 audio.aacPacketType = AACPacketType.RAW.rawValue
                 audio.config = audioConfig

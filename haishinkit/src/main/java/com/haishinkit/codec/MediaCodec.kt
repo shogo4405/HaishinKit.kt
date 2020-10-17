@@ -13,23 +13,7 @@ import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal abstract class MediaCodec(private val mime: MIME) : Running {
-    internal enum class MIME(val rawValue: String) {
-        VIDEO_VP8("video/x-vnd.on2.vp8"),
-        VIDEO_VP9("video/x-vnd.on2.vp9"),
-        VIDEO_AVC("video/avc"),
-        VIDEO_HEVC("video/hevc"),
-        VIDEO_MP4V("video/mp4v-es"),
-        VIDEO_3GPP("video/3gpp"),
-        AUDIO_3GPP("audio/3gpp"),
-        AUDIO_AMR("audio/amr-wb"),
-        AUDIO_MPEG("audio/mpeg"),
-        AUDIO_MP4A("audio/mp4a-latm"),
-        AUDIO_VORBIS("audio/vorbis"),
-        AUDIO_G711A("audio/g711-alaw"),
-        AUDIO_G711U("audio/g711-mlaw")
-    }
-
+internal abstract class MediaCodec(private val mime: String) : Running {
     internal interface Listener {
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
         fun onSampleOutput(mime: String, info: MediaCodec.BufferInfo, buffer: ByteBuffer)
@@ -77,7 +61,7 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
     var codec: MediaCodec?
         get() {
             if (_codec == null) {
-                _codec = MediaCodec.createEncoderByType(mime.rawValue)
+                _codec = MediaCodec.createEncoderByType(mime)
                 _codec?.let { configure(it) }
             }
             return _codec
@@ -170,5 +154,21 @@ internal abstract class MediaCodec(private val mime: MIME) : Running {
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
+    }
+
+    companion object {
+        const val MIME_VIDEO_VP8 = "video/x-vnd.on2.vp8"
+        const val MIME_VIDEO_VP9 = "video/x-vnd.on2.vp9"
+        const val MIME_VIDEO_AVC = "video/avc"
+        const val MIME_VIDEO_HEVC = "video/hevc"
+        const val MIME_VIDEO_MP4V = "video/mp4v-es"
+        const val MIME_VIDEO_3GPP = "video/3gpp"
+        const val MIME_AUDIO_3GPP = "audio/3gpp"
+        const val MIME_AUDIO_AMR = "audio/amr-wb"
+        const val MIME_AUDIO_MPEG = "audio/mpeg"
+        const val MIME_AUDIO_MP4A = "audio/mp4a-latm"
+        const val MIME_AUDIO_VORBIS = "audio/vorbis"
+        const val MIME_AUDIO_G711A = "audio/g711-alaw"
+        const val MIME_AUDIO_G711U = "audio/g711-mlaw"
     }
 }

@@ -7,7 +7,6 @@ import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CaptureRequest
 import android.media.MediaCodecInfo
-import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -164,9 +163,9 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
     }
 
     internal fun getPreviewSize(): Size {
-        val previewSizes = characteristics?.
-            get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)?.
-            getOutputSizes(SurfaceHolder::class.java) ?: return Size(0, 0)
+        val previewSizes = characteristics
+            ?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+            ?.getOutputSizes(SurfaceHolder::class.java) ?: return Size(0, 0)
         var result: Size? = null
         for (previewSize in previewSizes) {
             val gcd = gcd(previewSize.width, previewSize.height)
