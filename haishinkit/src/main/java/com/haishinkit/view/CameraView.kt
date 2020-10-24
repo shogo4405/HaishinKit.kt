@@ -43,26 +43,6 @@ open class CameraView(context: Context, attributes: AttributeSet) : SurfaceView(
         thread.start()
         Handler(thread.looper)
     }
-    private val requireDimensionSwapped: Boolean
-        get() {
-            val source = stream?.video as CameraSource
-            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val displayRotation = windowManager.defaultDisplay?.rotation ?: 0
-            val sensorOrientation = source.sensorOrientation
-            when (displayRotation) {
-                Surface.ROTATION_0, Surface.ROTATION_180 -> {
-                    if (sensorOrientation == 90 || sensorOrientation == 270) {
-                        return true
-                    }
-                }
-                Surface.ROTATION_90, Surface.ROTATION_270 -> {
-                    if (sensorOrientation == 0 || sensorOrientation == 180) {
-                        return true
-                    }
-                }
-            }
-            return false
-        }
 
     init {
         holder.addCallback(object : SurfaceHolder.Callback {
@@ -95,11 +75,6 @@ open class CameraView(context: Context, attributes: AttributeSet) : SurfaceView(
             this.addTarget(holder.surface)
         }
         val previewSize = source.getPreviewSize()
-        if (requireDimensionSwapped) {
-            setAspectRatio(previewSize.height, previewSize.width)
-        } else {
-            setAspectRatio(previewSize.width, previewSize.height)
-        }
         device.createCaptureSession(
             listOf(holder.surface),
             object : CameraCaptureSession.StateCallback() {
@@ -130,45 +105,6 @@ open class CameraView(context: Context, attributes: AttributeSet) : SurfaceView(
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
-    }
-
-    private var aspectRatio = 0f
-
-    /**
-     * Sets the aspect ratio for this view. The size of the view will be
-     * measured based on the ratio calculated from the parameters.
-     *
-     * @param width  Camera resolution horizontal size
-     * @param height Camera resolution vertical size
-     */
-    fun setAspectRatio(width: Int, height: Int) {
-        require(width > 0 && height > 0) { "Size cannot be negative" }
-        aspectRatio = width.toFloat() / height.toFloat()
-        holder.setFixedSize(width, height)
-        requestLayout()
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val width = MeasureSpec.getSize(widthMeasureSpec)
-        val height = MeasureSpec.getSize(heightMeasureSpec)
-        if (aspectRatio == 0f) {
-            setMeasuredDimension(width, height)
-        } else {
-            // Performs center-crop transformation of the camera frames
-            val newWidth: Int
-            val newHeight: Int
-            val actualRatio = if (width > height) aspectRatio else 1f / aspectRatio
-            if (width < height * actualRatio) {
-                newHeight = height
-                newWidth = (height * actualRatio).roundToInt()
-            } else {
-                newWidth = width
-                newHeight = (width / actualRatio).roundToInt()
-            }
-            Log.d(TAG, "Measured dimensions set: $newWidth x $newHeight")
-            setMeasuredDimension(newWidth, newHeight)
-        }
     }
 
     companion object {
