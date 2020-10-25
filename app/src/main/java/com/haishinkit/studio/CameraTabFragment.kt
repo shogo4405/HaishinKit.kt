@@ -11,25 +11,24 @@ import android.support.v4.app.Fragment
 import android.widget.Button
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPStream
-import com.haishinkit.events.IEventListener
+import com.haishinkit.event.IEventListener
 import com.haishinkit.media.CameraSource
-import com.haishinkit.events.Event
-import com.haishinkit.events.EventUtils
-import com.haishinkit.view.CameraView
+import com.haishinkit.event.Event
+import com.haishinkit.event.EventUtils
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraManager
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.haishinkit.media.AudioRecordSource
+import com.haishinkit.view.GlHkView
 
 class CameraTabFragment: Fragment(), IEventListener {
     private lateinit var connection: RTMPConnection
     private lateinit var stream: RTMPStream
-    private var cameraView: CameraView? = null
+    private lateinit var cameraView: GlHkView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(javaClass.name, "onCreate")
         super.onCreate(savedInstanceState)
         val permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -43,7 +42,7 @@ class CameraTabFragment: Fragment(), IEventListener {
         stream.attachAudio(AudioRecordSource())
 
         val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val camera = CameraSource(manager).apply {
+        val camera = CameraSource(activity).apply {
             this.open(cameraId)
         }
         stream.attachCamera(camera)
@@ -63,8 +62,8 @@ class CameraTabFragment: Fragment(), IEventListener {
                 button.text = "Publish"
             }
         }
-        cameraView = v.findViewById<CameraView>(R.id.camera)
-        cameraView?.attachStream(stream)
+        cameraView = v.findViewById<GlHkView>(R.id.camera)
+        cameraView.attachStream(stream)
         return v
     }
 

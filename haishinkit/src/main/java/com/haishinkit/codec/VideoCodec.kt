@@ -1,10 +1,13 @@
 package com.haishinkit.codec
 
+import android.graphics.SurfaceTexture
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
 import android.view.Surface
+import com.haishinkit.gles.GlPixelContext
+import com.haishinkit.gles.GlPixelTransform
 
 internal class VideoCodec() : MediaCodec(MIME) {
     var bitRate = DEFAULT_BIT_RATE
@@ -22,6 +25,21 @@ internal class VideoCodec() : MediaCodec(MIME) {
     var profile = DEFAULT_PROFILE
     var level = DEFAULT_LEVEL
     var colorFormat = DEFAULT_COLOR_FORMAT
+    var context: GlPixelContext
+        get() = pixelTransform.context
+        set(value) {
+            pixelTransform.context = value
+        }
+    private var pixelTransform: GlPixelTransform = GlPixelTransform()
+
+    fun createInputSurface(): Surface? {
+        return codec?.createInputSurface()
+    }
+
+    fun frameAvailable(surfaceTexture: SurfaceTexture) {
+        if (!isRunning.get()) return
+        pixelTransform.frameAvailable(surfaceTexture)
+    }
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createVideoFormat(MIME, width, height).apply {
@@ -34,6 +52,8 @@ internal class VideoCodec() : MediaCodec(MIME) {
             setInteger(MediaFormat.KEY_PROFILE, profile)
             if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
                 setInteger(MediaFormat.KEY_LEVEL, level)
+            } else {
+                setInteger("level", level)
             }
             if (colorFormat != DEFAULT_COLOR_FORMAT) {
                 setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
@@ -43,8 +63,9 @@ internal class VideoCodec() : MediaCodec(MIME) {
         }
     }
 
-    fun createInputSurface(): Surface? {
-        return codec?.createInputSurface()
+    override fun configure(codec: android.media.MediaCodec) {
+        super.configure(codec)
+        pixelTransform.configure(codec.createInputSurface(), width, height)
     }
 
     companion object {
@@ -58,5 +79,7 @@ internal class VideoCodec() : MediaCodec(MIME) {
         const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
         const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
         const val DEFAULT_COLOR_FORMAT = -1
+
+        private val TAG = VideoCodec::class.java.simpleName
     }
 }

@@ -3,16 +3,16 @@ package com.haishinkit.rtmp
 import android.util.Log
 import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.VideoCodec
-import com.haishinkit.events.Event
-import com.haishinkit.events.EventDispatcher
-import com.haishinkit.events.EventUtils
-import com.haishinkit.events.IEventListener
+import com.haishinkit.event.Event
+import com.haishinkit.event.EventDispatcher
+import com.haishinkit.event.EventUtils
+import com.haishinkit.event.IEventListener
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPDataMessage
 import com.haishinkit.rtmp.messages.RTMPMessage
-import com.haishinkit.view.CameraView
+import com.haishinkit.view.NetStreamView
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
@@ -176,7 +176,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     internal var video: VideoSource? = null
     internal var readyState = ReadyState.INITIALIZED
         set(value) {
-            Log.d(javaClass.name, value.toString())
+            Log.d(TAG, value.toString())
             when (field) {
                 RTMPStream.ReadyState.PUBLISHING -> {
                     if (audio != null) {
@@ -225,7 +225,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     internal val videoCodec = VideoCodec()
     internal val messages = ArrayList<RTMPMessage>()
     internal var frameCount = AtomicInteger(0)
-    internal var renderer: CameraView? = null
+    internal var renderer: NetStreamView? = null
     private var muxer = RTMPMuxer(this)
     private var audio: AudioSource? = null
     private val eventListener = EventListener(this)
@@ -394,5 +394,9 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
             metadata["audiodatarate"] = audioCodec.bitRate / 1000
         }
         return metadata
+    }
+
+    companion object {
+        private val TAG = RTMPStream::class.java.simpleName
     }
 }

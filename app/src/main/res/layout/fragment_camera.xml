@@ -8,10 +8,10 @@
     tools:context=".CameraTabFragment"
     >
 
-    <com.haishinkit.view.CameraView
+    <com.haishinkit.view.GlHkView
         android:id="@+id/camera"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -14,12 +14,12 @@ import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal abstract class MediaCodec(private val mime: String) : Running {
-    internal interface Listener {
+    interface Listener {
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
         fun onSampleOutput(mime: String, info: MediaCodec.BufferInfo, buffer: ByteBuffer)
     }
 
-    internal open class Callback : android.media.MediaCodec.Callback() {
+    open class Callback : android.media.MediaCodec.Callback() {
         var listener: Listener? = null
         var codec: com.haishinkit.codec.MediaCodec? = null
 
@@ -125,7 +125,7 @@ internal abstract class MediaCodec(private val mime: String) : Running {
             return
         }
         if (BuildConfig.DEBUG) {
-            Log.d(javaClass.name, "stopRunning()")
+            Log.d(TAG, "stopRunning()")
         }
         codec?.stop()
         codec?.let { configure(it) }
@@ -138,9 +138,7 @@ internal abstract class MediaCodec(private val mime: String) : Running {
         outputFormat = null
     }
 
-    protected abstract fun createOutputFormat(): MediaFormat
-
-    private fun configure(codec: MediaCodec) {
+    open fun configure(codec: MediaCodec) {
         if (callback != null) {
             callback?.listener = listener
             if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
@@ -151,6 +149,8 @@ internal abstract class MediaCodec(private val mime: String) : Running {
         }
         codec.configure(createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
     }
+
+    protected abstract fun createOutputFormat(): MediaFormat
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
@@ -170,5 +170,7 @@ internal abstract class MediaCodec(private val mime: String) : Running {
         const val MIME_AUDIO_VORBIS = "audio/vorbis"
         const val MIME_AUDIO_G711A = "audio/g711-alaw"
         const val MIME_AUDIO_G711U = "audio/g711-mlaw"
+
+        private val TAG = MediaCodec::class.java.simpleName
     }
 }

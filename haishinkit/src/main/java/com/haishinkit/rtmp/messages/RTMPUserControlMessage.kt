@@ -58,7 +58,7 @@ internal class RTMPUserControlMessage : RTMPMessage(RTMPMessage.Type.USER) {
                         RTMPStream.Code.BUFFER_FLUSH.data("")
                     else
                         RTMPStream.Code.BUFFER_EMPTY.data("")
-                    stream.dispatchEventWith(com.haishinkit.events.Event.RTMP_STATUS, false, data)
+                    stream.dispatchEventWith(com.haishinkit.event.Event.RTMP_STATUS, false, data)
                 }
             }
             else -> {

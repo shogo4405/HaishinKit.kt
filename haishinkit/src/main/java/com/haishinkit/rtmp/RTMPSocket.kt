@@ -1,7 +1,7 @@
 package com.haishinkit.rtmp
 
 import android.util.Log
-import com.haishinkit.events.Event
+import com.haishinkit.event.Event
 import com.haishinkit.net.Socket
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
