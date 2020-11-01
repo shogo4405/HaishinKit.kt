@@ -1,6 +1,6 @@
 package com.haishinkit.flv
 
-enum class SoundType(val rawValue: Byte) {
-    MONO(0x00),
-    STEREO(0x01);
+object SoundType {
+    const val MONO: Byte = 0x00
+    const val STEREO: Byte = 0x01
 }

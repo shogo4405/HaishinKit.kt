@@ -1,6 +1,6 @@
 package com.haishinkit.flv
 
-enum class SoundSize(val rawValue: Byte) {
-    SOUND_8BIT(0x00),
-    SOUND_16BIT(0x01);
+object SoundSize {
+    const val SOUND_8BIT: Byte = 0x00
+    const val SOUND_16BIT: Byte = 0x01
 }

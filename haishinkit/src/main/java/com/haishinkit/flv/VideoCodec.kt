@@ -1,11 +1,9 @@
 package com.haishinkit.flv
 
-enum class VideoCodec(val rawValue: Byte) {
-    SORENSON_H263(0x02),
-    SCREEN1(0x03),
-    ON2_VP6(0x04),
-    ON2_VP6_ALPHA(0x05),
-    SCREEN2(0x06),
-    AVC(0x07),
-    UNKNOWN(Byte.MAX_VALUE);
+object VideoCodec {
+    const val SORENSON_H263: Byte = 0x02
+    const val SCREEN1: Byte = 0x03
+    const val ON2_VP6: Byte = 0x04
+    const val ON2_VP6_ALPHA: Byte = 0x05
+    const val AVC: Byte = 0x07
 }

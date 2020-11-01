@@ -14,10 +14,10 @@ internal class RTMPAACAudioMessage : RTMPAudioMessage() {
     var config: AudioSpecificConfig? = null
 
     init {
-        codec = AudioCodec.AAC.rawValue
-        soundRate = SoundRate.kHz44.rawValue
-        soundSize = SoundSize.SOUND_16BIT.rawValue
-        soundType = SoundType.STEREO.rawValue
+        codec = AudioCodec.AAC
+        soundRate = SoundRate.kHz44
+        soundSize = SoundSize.SOUND_16BIT
+        soundType = SoundType.STEREO
     }
 
     override fun encode(socket: RTMPSocket): ByteBuffer {

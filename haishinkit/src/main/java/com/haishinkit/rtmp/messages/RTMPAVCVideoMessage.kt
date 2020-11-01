@@ -9,7 +9,7 @@ internal class RTMPAVCVideoMessage : RTMPVideoMessage() {
     var compositeTime = 0
 
     init {
-        codec = VideoCodec.AVC.rawValue
+        codec = VideoCodec.AVC
     }
 
     override fun encode(socket: RTMPSocket): ByteBuffer {

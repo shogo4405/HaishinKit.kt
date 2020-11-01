@@ -15,7 +15,6 @@ import com.haishinkit.media.CameraSource
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.roundToInt
 
 /**
  * A view that previews a camera.

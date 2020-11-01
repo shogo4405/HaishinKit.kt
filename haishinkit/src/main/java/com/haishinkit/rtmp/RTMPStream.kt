@@ -386,11 +386,11 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
             metadata["width"] = video?.resolution?.width?.toString() ?: "0"
             metadata["height"] = video?.resolution?.height?.toString() ?: "0"
             metadata["framerate"] = videoCodec.frameRate
-            metadata["videocodecid"] = com.haishinkit.flv.VideoCodec.AVC.rawValue.toString()
+            metadata["videocodecid"] = com.haishinkit.flv.VideoCodec.AVC.toString()
             metadata["videodatarate"] = videoCodec.bitRate / 1000
         }
         if (audio != null) {
-            metadata["audiocodecid"] = com.haishinkit.flv.AudioCodec.AAC.rawValue.toString()
+            metadata["audiocodecid"] = com.haishinkit.flv.AudioCodec.AAC.toString()
             metadata["audiodatarate"] = audioCodec.bitRate / 1000
         }
         return metadata
