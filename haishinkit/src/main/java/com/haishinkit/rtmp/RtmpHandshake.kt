@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 import java.util.Random
 
-internal class RTMPHandshake {
+internal class RtmpHandshake {
     var c0C1Packet: ByteBuffer = ByteBuffer.allocate(SIGNAL_SIZE + 1)
         get() {
             if (field.position() == 0) {

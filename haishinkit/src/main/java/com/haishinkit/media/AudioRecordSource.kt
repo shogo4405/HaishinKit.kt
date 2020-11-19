@@ -6,7 +6,7 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.util.Log
 import com.haishinkit.codec.MediaCodec
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
@@ -33,7 +33,7 @@ class AudioRecordSource() : AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
-    override var stream: RTMPStream? = null
+    override var stream: RtmpStream? = null
     override val isRunning = AtomicBoolean(false)
 
     private var _minBufferSize: Int = -1

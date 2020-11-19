@@ -9,8 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.support.v4.app.Fragment
 import android.widget.Button
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.event.IEventListener
 import com.haishinkit.media.CameraSource
 import com.haishinkit.event.Event
@@ -24,8 +24,8 @@ import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.view.GlHkView
 
 class CameraTabFragment: Fragment(), IEventListener {
-    private lateinit var connection: RTMPConnection
-    private lateinit var stream: RTMPStream
+    private lateinit var connection: RtmpConnection
+    private lateinit var stream: RtmpStream
     private lateinit var cameraView: GlHkView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +37,8 @@ class CameraTabFragment: Fragment(), IEventListener {
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
         }
-        connection = RTMPConnection()
-        stream = RTMPStream(connection)
+        connection = RtmpConnection()
+        stream = RtmpStream(connection)
         stream.attachAudio(AudioRecordSource())
 
         val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -76,7 +76,7 @@ class CameraTabFragment: Fragment(), IEventListener {
         Log.i(javaClass.name + "#handleEvent", event.toString())
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
-        if (code == RTMPConnection.Code.CONNECT_SUCCESS.rawValue) {
+        if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
             stream.publish(Preference.shared.streamName)
         }
     }

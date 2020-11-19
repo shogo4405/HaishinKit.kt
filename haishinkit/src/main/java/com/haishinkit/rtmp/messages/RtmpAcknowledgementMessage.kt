@@ -1,13 +1,13 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPSocket
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
 /**
  * 5.4.3 Acknowledgement (3)
  */
-internal class RTMPAcknowledgementMessage : RTMPMessage(RTMPMessage.Type.ACK) {
+internal class RtmpAcknowledgementMessage : RtmpMessage(RtmpMessage.Type.ACK) {
     var sequence: ByteArray? = null
         private set
 
@@ -15,18 +15,18 @@ internal class RTMPAcknowledgementMessage : RTMPMessage(RTMPMessage.Type.ACK) {
         sequence = ByteArray(CAPACITY)
     }
 
-    override fun encode(socket: RTMPSocket): ByteBuffer {
+    override fun encode(socket: RtmpSocket): ByteBuffer {
         val buffer = ByteBuffer.allocate(CAPACITY)
         buffer.put(sequence)
         return buffer
     }
 
-    override fun decode(buffer: ByteBuffer): RTMPMessage {
+    override fun decode(buffer: ByteBuffer): RtmpMessage {
         buffer.get(sequence)
         return this
     }
 
-    override fun execute(connection: RTMPConnection): RTMPMessage {
+    override fun execute(connection: RtmpConnection): RtmpMessage {
         return this
     }
 

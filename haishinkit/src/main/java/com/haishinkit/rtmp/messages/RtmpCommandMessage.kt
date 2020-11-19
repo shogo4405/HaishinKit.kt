@@ -1,29 +1,29 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.amf.AMF0Deserializer
-import com.haishinkit.amf.AMF0Serializer
+import com.haishinkit.amf.Amf0Deserializer
+import com.haishinkit.amf.Amf0Serializer
 import com.haishinkit.event.Event
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPObjectEncoding
-import com.haishinkit.rtmp.RTMPSocket
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpObjectEncoding
+import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
 /**
  *  7.1.1. Command Message (20, 17)
  */
-internal class RTMPCommandMessage(private val objectEncoding: RTMPObjectEncoding) : RTMPMessage(objectEncoding.commandType) {
+internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding) : RtmpMessage(objectEncoding.commandType) {
     var commandName: String? = null
     var transactionID = 0
     var commandObject: Map<String, Any?>? = null
     var arguments: List<Any?> = mutableListOf()
 
-    override fun encode(socket: RTMPSocket): ByteBuffer {
+    override fun encode(socket: RtmpSocket): ByteBuffer {
         val buffer = ByteBuffer.allocate(CAPACITY)
-        if (type == RTMPMessage.Type.AMF3_COMMAND) {
+        if (type == RtmpMessage.Type.AMF3_COMMAND) {
             buffer.put(0x00.toByte())
         }
-        val serializer = AMF0Serializer(buffer)
+        val serializer = Amf0Serializer(buffer)
         serializer.putString(commandName)
         serializer.putDouble(transactionID.toDouble())
         serializer.putMap(commandObject)
@@ -33,9 +33,9 @@ internal class RTMPCommandMessage(private val objectEncoding: RTMPObjectEncoding
         return buffer
     }
 
-    override fun decode(buffer: ByteBuffer): RTMPMessage {
+    override fun decode(buffer: ByteBuffer): RtmpMessage {
         val position = buffer.position()
-        val deserializer = AMF0Deserializer(buffer)
+        val deserializer = Amf0Deserializer(buffer)
         commandName = deserializer.string
         transactionID = deserializer.double.toInt()
         commandObject = deserializer.map
@@ -47,7 +47,7 @@ internal class RTMPCommandMessage(private val objectEncoding: RTMPObjectEncoding
         return this
     }
 
-    override fun execute(connection: RTMPConnection): RTMPMessage {
+    override fun execute(connection: RtmpConnection): RtmpMessage {
         val responders = connection.responders
 
         if (responders.containsKey(transactionID)) {

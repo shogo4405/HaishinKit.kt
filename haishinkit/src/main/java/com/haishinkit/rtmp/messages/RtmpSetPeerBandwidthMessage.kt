@@ -1,13 +1,13 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPSocket
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
 /**
  * 5.4.5. Set Peer Bandwidth (6)
  */
-internal class RTMPSetPeerBandwidthMessage : RTMPMessage(RTMPMessage.Type.BANDWIDTH) {
+internal class RtmpSetPeerBandwidthMessage : RtmpMessage(RtmpMessage.Type.BANDWIDTH) {
     enum class Limit(val rawValue: Byte) {
         HARD(0x00),
         SOFT(0x01),
@@ -20,21 +20,21 @@ internal class RTMPSetPeerBandwidthMessage : RTMPMessage(RTMPMessage.Type.BANDWI
     var limit = Limit.HARD
         private set
 
-    override fun encode(socket: RTMPSocket): ByteBuffer {
+    override fun encode(socket: RtmpSocket): ByteBuffer {
         val buffer = ByteBuffer.allocate(CAPACITY)
         buffer.putInt(size)
         buffer.put(limit.rawValue)
         return buffer
     }
 
-    override fun decode(buffer: ByteBuffer): RTMPMessage {
+    override fun decode(buffer: ByteBuffer): RtmpMessage {
         size = buffer.int
         var limit = buffer.get()
         this.limit = Limit.values().first { n -> n.rawValue == limit }
         return this
     }
 
-    override fun execute(connection: RTMPConnection): RTMPMessage {
+    override fun execute(connection: RtmpConnection): RtmpMessage {
         connection.socket.bandWidth = size
         return this
     }

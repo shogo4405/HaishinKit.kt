@@ -1,12 +1,12 @@
 package com.haishinkit.amf.data
 
-final class ASUndefined private constructor() {
+final class AsUndefined private constructor() {
 
     override fun toString(): String {
         return "undefined"
     }
 
     companion object {
-        val instance = ASUndefined()
+        val instance = AsUndefined()
     }
 }

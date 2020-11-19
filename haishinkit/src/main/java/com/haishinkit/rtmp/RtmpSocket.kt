@@ -6,7 +6,7 @@ import com.haishinkit.net.Socket
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 
-internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
+internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
     enum class ReadyState {
         Uninitialized,
         VersionSent,
@@ -18,12 +18,12 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
 
     var bandWidth = 0
         internal set
-    var chunkSizeC = RTMPChunk.DEFAULT_SIZE
-    var chunkSizeS = RTMPChunk.DEFAULT_SIZE
+    var chunkSizeC = RtmpChunk.DEFAULT_SIZE
+    var chunkSizeS = RtmpChunk.DEFAULT_SIZE
     var isConnected = false
         private set
-    private val handshake: RTMPHandshake by lazy {
-        RTMPHandshake()
+    private val handshake: RtmpHandshake by lazy {
+        RtmpHandshake()
     }
     private var readyState = ReadyState.Uninitialized
 
@@ -34,8 +34,8 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
     }
 
     override fun onConnect() {
-        chunkSizeC = RTMPChunk.DEFAULT_SIZE
-        chunkSizeS = RTMPChunk.DEFAULT_SIZE
+        chunkSizeC = RtmpChunk.DEFAULT_SIZE
+        chunkSizeS = RtmpChunk.DEFAULT_SIZE
         handshake.clear()
         readyState = ReadyState.VersionSent
         doOutput(handshake.c0C1Packet)
@@ -44,47 +44,47 @@ internal class RTMPSocket(val connection: RTMPConnection) : Socket() {
     override fun close(disconnected: Boolean) {
         var data: Any? = null
         if (disconnected) {
-            data = if (readyState == RTMPSocket.ReadyState.HandshakeDone) {
-                RTMPConnection.Code.CONNECT_CLOSED.data("")
+            data = if (readyState == RtmpSocket.ReadyState.HandshakeDone) {
+                RtmpConnection.Code.CONNECT_CLOSED.data("")
             } else {
-                RTMPConnection.Code.CONNECT_FAILED.data("")
+                RtmpConnection.Code.CONNECT_FAILED.data("")
             }
         }
-        readyState = RTMPSocket.ReadyState.Closing
+        readyState = RtmpSocket.ReadyState.Closing
         super.close(disconnected)
         if (data != null) {
             connection.dispatchEventWith(Event.RTMP_STATUS, false, data)
         }
-        readyState = RTMPSocket.ReadyState.Closed
+        readyState = RtmpSocket.ReadyState.Closed
         isConnected = false
     }
 
     override fun listen(buffer: ByteBuffer) {
         when (readyState) {
-            RTMPSocket.ReadyState.VersionSent -> {
-                if (buffer.limit() < RTMPHandshake.SIGNAL_SIZE + 1) {
+            RtmpSocket.ReadyState.VersionSent -> {
+                if (buffer.limit() < RtmpHandshake.SIGNAL_SIZE + 1) {
                     return
                 }
                 handshake.s0S1Packet = buffer
                 doOutput(handshake.c2Packet)
-                buffer.position(RTMPHandshake.SIGNAL_SIZE + 1)
+                buffer.position(RtmpHandshake.SIGNAL_SIZE + 1)
                 readyState = ReadyState.AckSent
-                if (buffer.limit() - buffer.position() == RTMPHandshake.SIGNAL_SIZE) {
+                if (buffer.limit() - buffer.position() == RtmpHandshake.SIGNAL_SIZE) {
                     listen(buffer.slice())
                     buffer.position(3073)
                 }
             }
-            RTMPSocket.ReadyState.AckSent -> {
-                if (buffer.limit() < RTMPHandshake.SIGNAL_SIZE) {
+            RtmpSocket.ReadyState.AckSent -> {
+                if (buffer.limit() < RtmpHandshake.SIGNAL_SIZE) {
                     return
                 }
                 handshake.s2Packet = buffer
-                buffer.position(RTMPHandshake.SIGNAL_SIZE)
+                buffer.position(RtmpHandshake.SIGNAL_SIZE)
                 readyState = ReadyState.HandshakeDone
                 isConnected = true
-                connection.doOutput(RTMPChunk.ZERO, connection.createConnectionMessage())
+                connection.doOutput(RtmpChunk.ZERO, connection.createConnectionMessage())
             }
-            RTMPSocket.ReadyState.HandshakeDone ->
+            RtmpSocket.ReadyState.HandshakeDone ->
                 try {
                     connection.listen(buffer)
                 } catch (e: IndexOutOfBoundsException) {

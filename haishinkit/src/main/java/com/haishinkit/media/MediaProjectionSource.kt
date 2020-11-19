@@ -7,7 +7,7 @@ import android.util.DisplayMetrics
 import android.util.Size
 import com.haishinkit.media.mediaprojection.MediaCodecSurfaceStrategy
 import com.haishinkit.media.mediaprojection.SurfaceStrategy
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class MediaProjectionSource(private var mediaProjection: MediaProjection, private val metrics: DisplayMetrics) : VideoSource {
     var scale = 0.5F
-    override var stream: RTMPStream? = null
+    override var stream: RtmpStream? = null
     override val isRunning: AtomicBoolean
         get() = surfaceStrategy.isRunning
     override var resolution = Size(1, 1)

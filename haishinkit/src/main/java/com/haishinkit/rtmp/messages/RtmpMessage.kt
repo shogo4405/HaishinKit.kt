@@ -1,12 +1,12 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPSocket
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpSocket
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 
-internal open class RTMPMessage(val type: Type) {
+internal open class RtmpMessage(val type: Type) {
     enum class Type(val rawValue: Byte) {
         CHUNK_SIZE(0x01),
         ABORT(0x02),
@@ -31,15 +31,15 @@ internal open class RTMPMessage(val type: Type) {
     var timestamp: Int = 0
     var length: Int = 0
 
-    open fun encode(socket: RTMPSocket): ByteBuffer {
+    open fun encode(socket: RtmpSocket): ByteBuffer {
         throw NotImplementedException(javaClass.name + "#encode")
     }
 
-    open fun decode(buffer: ByteBuffer): RTMPMessage {
+    open fun decode(buffer: ByteBuffer): RtmpMessage {
         throw NotImplementedException(javaClass.name + "#decode")
     }
 
-    open fun execute(connection: RTMPConnection): RTMPMessage {
+    open fun execute(connection: RtmpConnection): RtmpMessage {
         throw NotImplementedException(javaClass.name + "#execute")
     }
 

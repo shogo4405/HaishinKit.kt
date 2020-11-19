@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
-data class AVCConfigurationRecord(
+data class AvcConfigurationRecord(
     val configurationVersion: Byte = 1,
     val avcProfileIndication: Byte = 0,
     val profileCompatibility: Byte = 0,
@@ -66,7 +66,7 @@ data class AVCConfigurationRecord(
         const val RESERVE_BIT_DEPTH_LUMA_MINUS8 = 0xF8
         const val RESERVE_BIT_DEPTH_CHROME_MINUS8 = 0xF8
 
-        internal fun create(mediaFormat: MediaFormat): AVCConfigurationRecord {
+        internal fun create(mediaFormat: MediaFormat): AvcConfigurationRecord {
             // SPS => 0x00,0x00,0x00,0x01,0x67,0x42,0x00,0x29,0x8d,0x8d,0x40,0xa0,0xfd,0x00,0xf0,0x88,0x45,0x38
             val spsBuffer = mediaFormat.getByteBuffer("csd-0")
             // PPS => 0x00,0x00,0x00,0x01,0x68,0xca,0x43,0xc8
@@ -74,7 +74,7 @@ data class AVCConfigurationRecord(
             if (spsBuffer == null || ppsBuffer == null) {
                 throw IllegalStateException()
             }
-            return AVCConfigurationRecord(
+            return AvcConfigurationRecord(
                 configurationVersion = 0x01,
                 avcProfileIndication = spsBuffer[5],
                 profileCompatibility = spsBuffer[6],

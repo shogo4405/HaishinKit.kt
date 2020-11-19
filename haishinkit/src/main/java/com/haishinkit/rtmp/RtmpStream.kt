@@ -9,9 +9,9 @@ import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
-import com.haishinkit.rtmp.messages.RTMPCommandMessage
-import com.haishinkit.rtmp.messages.RTMPDataMessage
-import com.haishinkit.rtmp.messages.RTMPMessage
+import com.haishinkit.rtmp.messages.RtmpCommandMessage
+import com.haishinkit.rtmp.messages.RtmpDataMessage
+import com.haishinkit.rtmp.messages.RtmpMessage
 import com.haishinkit.view.NetStreamView
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
@@ -23,7 +23,7 @@ import kotlin.properties.Delegates
 /**
  * An object that provides the interface to control a one-way channel over a RTMPConnection.
  */
-open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher(null) {
+open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher(null) {
     enum class HowToPublish(val rawValue: String) {
         RECORD("record"),
         APPEND("append"),
@@ -84,10 +84,10 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     interface Listener {
-        fun onStatics(stream: RTMPStream, connection: RTMPConnection)
+        fun onStatics(stream: RtmpStream, connection: RtmpConnection)
     }
 
-    class AudioSettings(private var stream: RTMPStream?) {
+    class AudioSettings(private var stream: RtmpStream?) {
         var channelCount: Int by Delegates.observable(AudioCodec.DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
             stream?.audioCodec?.channelCount = newValue
         }
@@ -105,7 +105,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     }
 
-    class VideoSettings(private var stream: RTMPStream?) {
+    class VideoSettings(private var stream: RtmpStream?) {
         var width: Int by Delegates.observable(VideoCodec.DEFAULT_WIDTH) { _, _, newValue ->
             stream?.videoCodec?.width = newValue
         }
@@ -129,14 +129,14 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     }
 
-    internal inner class EventListener(private val stream: RTMPStream) : IEventListener {
+    internal inner class EventListener(private val stream: RtmpStream) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
             when (data["code"].toString()) {
-                RTMPConnection.Code.CONNECT_SUCCESS.rawValue -> {
+                RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
                     connection.createStream(stream)
                 }
-                RTMPStream.Code.PUBLISH_START.rawValue -> {
+                RtmpStream.Code.PUBLISH_START.rawValue -> {
                     stream.readyState = ReadyState.PUBLISHING
                 }
                 else -> {
@@ -178,7 +178,7 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         set(value) {
             Log.d(TAG, value.toString())
             when (field) {
-                RTMPStream.ReadyState.PUBLISHING -> {
+                RtmpStream.ReadyState.PUBLISHING -> {
                     if (audio != null) {
                         audioCodec.stopRunning()
                         audio?.stopRunning()
@@ -193,19 +193,19 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
             }
             field = value
             when (value) {
-                RTMPStream.ReadyState.OPEN -> {
+                RtmpStream.ReadyState.OPEN -> {
                     currentFPS = 0
                     frameCount.set(0)
                     for (message in messages) {
                         message.streamID = id
-                        if (message is RTMPCommandMessage) {
+                        if (message is RtmpCommandMessage) {
                             message.transactionID = ++connection.transactionID
                         }
-                        connection.doOutput(RTMPChunk.ZERO, message)
+                        connection.doOutput(RtmpChunk.ZERO, message)
                     }
                     messages.clear()
                 }
-                RTMPStream.ReadyState.PUBLISHING -> {
+                RtmpStream.ReadyState.PUBLISHING -> {
                     send("@setDataFrame", "onMetaData", toMetaData())
                     muxer.clear()
                     if (audio != null) {
@@ -223,10 +223,10 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()
-    internal val messages = ArrayList<RTMPMessage>()
+    internal val messages = ArrayList<RtmpMessage>()
     internal var frameCount = AtomicInteger(0)
     internal var renderer: NetStreamView? = null
-    private var muxer = RTMPMuxer(this)
+    private var muxer = RtmpMuxer(this)
     private var audio: AudioSource? = null
     private val eventListener = EventListener(this)
 
@@ -271,15 +271,15 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     open fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
-        val message = RTMPCommandMessage(connection.objectEncoding)
+        val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
         message.commandName = if (name != null) "publish" else "closeStream"
-        message.chunkStreamID = RTMPChunk.AUDIO
+        message.chunkStreamID = RtmpChunk.AUDIO
         message.streamID = id
 
         if (name == null) {
             when (readyState) {
-                RTMPStream.ReadyState.PUBLISHING -> connection.doOutput(RTMPChunk.ZERO, message)
+                RtmpStream.ReadyState.PUBLISHING -> connection.doOutput(RtmpChunk.ZERO, message)
                 else -> {}
             }
             return
@@ -291,11 +291,11 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         message.arguments = arguments
 
         when (readyState) {
-            RTMPStream.ReadyState.INITIALIZED, RTMPStream.ReadyState.CLOSED -> {
+            RtmpStream.ReadyState.INITIALIZED, RtmpStream.ReadyState.CLOSED -> {
                 messages.add(message)
             }
-            RTMPStream.ReadyState.OPEN -> {
-                connection.doOutput(RTMPChunk.ZERO, message)
+            RtmpStream.ReadyState.OPEN -> {
+                connection.doOutput(RtmpChunk.ZERO, message)
                 readyState = ReadyState.PUBLISH
             }
             else -> {}
@@ -304,17 +304,17 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
 
     open fun play(vararg arguments: Any) {
         val streamName = if (arguments.isEmpty()) null else arguments[0]
-        val message = RTMPCommandMessage(connection.objectEncoding)
+        val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
         message.commandName = if (streamName != null) "play" else "closeStream"
         message.arguments = listOf(*arguments)
-        message.chunkStreamID = RTMPChunk.CONTROL
+        message.chunkStreamID = RtmpChunk.CONTROL
         message.streamID = id
 
         if (streamName == null) {
             when (readyState) {
-                RTMPStream.ReadyState.PLAYING -> {
-                    connection.doOutput(RTMPChunk.ZERO, message)
+                RtmpStream.ReadyState.PLAYING -> {
+                    connection.doOutput(RtmpChunk.ZERO, message)
                 }
                 else -> {}
             }
@@ -322,11 +322,11 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
         }
 
         when (readyState) {
-            RTMPStream.ReadyState.INITIALIZED, RTMPStream.ReadyState.CLOSED -> {
+            RtmpStream.ReadyState.INITIALIZED, RtmpStream.ReadyState.CLOSED -> {
                 messages.add(message)
             }
-            RTMPStream.ReadyState.OPEN, RTMPStream.ReadyState.PLAYING -> {
-                connection.doOutput(RTMPChunk.ZERO, message)
+            RtmpStream.ReadyState.OPEN, RtmpStream.ReadyState.PLAYING -> {
+                connection.doOutput(RtmpChunk.ZERO, message)
             }
             else -> {
             }
@@ -338,14 +338,14 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
      */
     open fun send(handlerName: String, vararg arguments: Any) {
         readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED ?: return
-        val message = RTMPDataMessage(connection.objectEncoding)
+        val message = RtmpDataMessage(connection.objectEncoding)
         message.handlerName = handlerName
         arguments.forEach { value ->
             message.arguments.add(value)
         }
         message.streamID = id
-        message.chunkStreamID = RTMPChunk.COMMAND
-        connection.doOutput(RTMPChunk.ZERO, message)
+        message.chunkStreamID = RtmpChunk.COMMAND
+        connection.doOutput(RtmpChunk.ZERO, message)
     }
 
     /**
@@ -356,12 +356,12 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
             return
         }
         readyState = ReadyState.CLOSED
-        val message = RTMPCommandMessage(RTMPObjectEncoding.AMF0)
+        val message = RtmpCommandMessage(RtmpObjectEncoding.AMF0)
         message.streamID = 0
-        message.chunkStreamID = RTMPChunk.COMMAND
+        message.chunkStreamID = RtmpChunk.COMMAND
         message.commandName = "deleteStream"
         message.arguments = listOf<Any>(id)
-        connection.doOutput(RTMPChunk.ZERO, message)
+        connection.doOutput(RtmpChunk.ZERO, message)
     }
 
     open fun dispose() {
@@ -397,6 +397,6 @@ open class RTMPStream(internal var connection: RTMPConnection) : EventDispatcher
     }
 
     companion object {
-        private val TAG = RTMPStream::class.java.simpleName
+        private val TAG = RtmpStream::class.java.simpleName
     }
 }

@@ -1,16 +1,16 @@
 package com.haishinkit.rtmp
 
-import com.haishinkit.rtmp.messages.RTMPMessage
+import com.haishinkit.rtmp.messages.RtmpMessage
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
-internal enum class RTMPChunk(val rawValue: Byte) {
+internal enum class RtmpChunk(val rawValue: Byte) {
     ZERO(0x00),
     ONE(0x01),
     TWO(0x02),
     THREE(0x03);
 
-    fun encode(socket: RTMPSocket, message: RTMPMessage): List<ByteBuffer> {
+    fun encode(socket: RtmpSocket, message: RtmpMessage): List<ByteBuffer> {
         val payload = message.encode(socket)
         payload.flip()
 
@@ -48,7 +48,7 @@ internal enum class RTMPChunk(val rawValue: Byte) {
         }
 
         val mod = length % chunkSize
-        val three = RTMPChunk.THREE.header(message.chunkStreamID)
+        val three = RtmpChunk.THREE.header(message.chunkStreamID)
         buffer.put(payload.array(), 0, chunkSize)
         list.add(buffer)
         for (i in 1..(length - mod) / chunkSize - 1) {
@@ -65,7 +65,7 @@ internal enum class RTMPChunk(val rawValue: Byte) {
         return list
     }
 
-    fun decode(chunkStreamID: Short, connection: RTMPConnection, buffer: ByteBuffer): RTMPMessage {
+    fun decode(chunkStreamID: Short, connection: RtmpConnection, buffer: ByteBuffer): RtmpMessage {
         var timestamp = 0
         var length = 0
         var type: Byte = 0

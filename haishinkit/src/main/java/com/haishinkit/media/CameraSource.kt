@@ -19,7 +19,7 @@ import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.egl.EGLConfig
@@ -50,7 +50,7 @@ class CameraSource(private val activity: Activity) : VideoSource {
             }
         }
     internal var surface: Surface? = null
-    override var stream: RTMPStream? = null
+    override var stream: RtmpStream? = null
         set(value) {
             field = value
             stream?.videoCodec?.callback = MediaCodec.Callback()

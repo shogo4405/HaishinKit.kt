@@ -4,7 +4,7 @@ import android.media.MediaCodecInfo
 import android.util.DisplayMetrics
 import android.view.Surface
 import com.haishinkit.codec.MediaCodec
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpStream
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class MediaCodecSurfaceStrategy(override val metrics: DisplayMetrics) : SurfaceStrategy {
@@ -20,7 +20,7 @@ internal class MediaCodecSurfaceStrategy(override val metrics: DisplayMetrics) :
             _surface = value
         }
     override val isRunning = AtomicBoolean(false)
-    override var stream: RTMPStream? = null
+    override var stream: RtmpStream? = null
 
     override fun setUp() {
         stream?.videoCodec?.callback = MediaCodec.Callback()

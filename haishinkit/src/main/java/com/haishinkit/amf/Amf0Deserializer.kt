@@ -1,66 +1,66 @@
 package com.haishinkit.amf
 
 import android.util.Log
-import com.haishinkit.amf.data.ASArray
-import com.haishinkit.amf.data.ASUndefined
-import com.haishinkit.amf.data.ASXMLDocument
+import com.haishinkit.amf.data.AsArray
+import com.haishinkit.amf.data.AsUndefined
+import com.haishinkit.amf.data.AsXmlDocument
 import java.io.UnsupportedEncodingException
 import java.nio.ByteBuffer
 import java.util.Date
 import java.util.HashMap
 import java.util.IllegalFormatFlagsException
 
-internal class AMF0Deserializer(private val buffer: ByteBuffer) {
+internal class Amf0Deserializer(private val buffer: ByteBuffer) {
     val `object`: Any?
         get() {
             val marker = buffer.get()
 
             when (marker) {
-                AMF0Marker.NUMBER.rawValue -> {
+                Amf0Marker.NUMBER.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return double
                 }
-                AMF0Marker.BOOL.rawValue -> {
+                Amf0Marker.BOOL.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return boolean
                 }
-                AMF0Marker.STRING.rawValue -> {
+                Amf0Marker.STRING.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return string
                 }
-                AMF0Marker.OBJECT.rawValue -> {
+                Amf0Marker.OBJECT.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return map
                 }
-                AMF0Marker.MOVIECLIP.rawValue -> throw UnsupportedOperationException()
-                AMF0Marker.NULL.rawValue -> return null
-                AMF0Marker.UNDEFINED.rawValue -> return ASUndefined.instance
-                AMF0Marker.REFERENCE.rawValue -> throw UnsupportedOperationException()
-                AMF0Marker.ECMAARRAY.rawValue -> {
+                Amf0Marker.MOVIECLIP.rawValue -> throw UnsupportedOperationException()
+                Amf0Marker.NULL.rawValue -> return null
+                Amf0Marker.UNDEFINED.rawValue -> return AsUndefined.instance
+                Amf0Marker.REFERENCE.rawValue -> throw UnsupportedOperationException()
+                Amf0Marker.ECMAARRAY.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return list
                 }
-                AMF0Marker.OBJECTEND.rawValue -> throw UnsupportedOperationException()
-                AMF0Marker.STRICTARRAY.rawValue -> {
+                Amf0Marker.OBJECTEND.rawValue -> throw UnsupportedOperationException()
+                Amf0Marker.STRICTARRAY.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return objects
                 }
-                AMF0Marker.DATE.rawValue -> {
+                Amf0Marker.DATE.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return date
                 }
-                AMF0Marker.LONGSTRING.rawValue -> {
+                Amf0Marker.LONGSTRING.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return string
                 }
-                AMF0Marker.UNSUPPORTED.rawValue -> throw UnsupportedOperationException()
-                AMF0Marker.RECORDSET.rawValue -> throw UnsupportedOperationException()
-                AMF0Marker.XMLDOCUMENT.rawValue -> {
+                Amf0Marker.UNSUPPORTED.rawValue -> throw UnsupportedOperationException()
+                Amf0Marker.RECORDSET.rawValue -> throw UnsupportedOperationException()
+                Amf0Marker.XMLDOCUMENT.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return xmlDocument
                 }
-                AMF0Marker.TYPEDOBJECT.rawValue -> throw UnsupportedOperationException()
-                AMF0Marker.AVMPLUSH.rawValue -> throw UnsupportedOperationException()
+                Amf0Marker.TYPEDOBJECT.rawValue -> throw UnsupportedOperationException()
+                Amf0Marker.AVMPLUSH.rawValue -> throw UnsupportedOperationException()
                 else -> {
                 }
             }
@@ -71,7 +71,7 @@ internal class AMF0Deserializer(private val buffer: ByteBuffer) {
     val boolean: Boolean
         get() {
             val marker = buffer.get()
-            if (marker != AMF0Marker.BOOL.rawValue) {
+            if (marker != Amf0Marker.BOOL.rawValue) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
             return buffer.get().toInt() == 1
@@ -80,7 +80,7 @@ internal class AMF0Deserializer(private val buffer: ByteBuffer) {
     val double: Double
         get() {
             val marker = buffer.get()
-            if (marker != AMF0Marker.NUMBER.rawValue) {
+            if (marker != Amf0Marker.NUMBER.rawValue) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
             return buffer.double
@@ -90,20 +90,20 @@ internal class AMF0Deserializer(private val buffer: ByteBuffer) {
         get() {
             val marker = buffer.get()
             when (marker) {
-                AMF0Marker.STRING.rawValue, AMF0Marker.LONGSTRING.rawValue -> {
+                Amf0Marker.STRING.rawValue, Amf0Marker.LONGSTRING.rawValue -> {
                 }
                 else -> throw IllegalFormatFlagsException(marker.toString())
             }
-            return getString(AMF0Marker.STRING.rawValue == marker)
+            return getString(Amf0Marker.STRING.rawValue == marker)
         }
 
     val map: Map<String, Any?>?
         get() {
             val marker = buffer.get()
-            if (marker == AMF0Marker.NULL.rawValue) {
+            if (marker == Amf0Marker.NULL.rawValue) {
                 return null
             }
-            if (marker != AMF0Marker.OBJECT.rawValue) {
+            if (marker != Amf0Marker.OBJECT.rawValue) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
             val map = HashMap<String, Any?>()
@@ -121,10 +121,10 @@ internal class AMF0Deserializer(private val buffer: ByteBuffer) {
     val objects: Array<Any?>?
         get() {
             val marker = buffer.get()
-            if (marker == AMF0Marker.NULL.rawValue) {
+            if (marker == Amf0Marker.NULL.rawValue) {
                 return null
             }
-            if (marker != AMF0Marker.STRICTARRAY.rawValue) {
+            if (marker != Amf0Marker.STRICTARRAY.rawValue) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
 
@@ -140,14 +140,14 @@ internal class AMF0Deserializer(private val buffer: ByteBuffer) {
     val list: List<Any?>?
         get() {
             val marker = buffer.get()
-            if (marker == AMF0Marker.NULL.rawValue) {
+            if (marker == Amf0Marker.NULL.rawValue) {
                 return null
             }
-            if (marker != AMF0Marker.ECMAARRAY.rawValue) {
+            if (marker != Amf0Marker.ECMAARRAY.rawValue) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
             val count = buffer.int
-            val array = ASArray(count)
+            val array = AsArray(count)
             while (true) {
                 val key = getString(true)
                 if (key == "") {
@@ -163,7 +163,7 @@ internal class AMF0Deserializer(private val buffer: ByteBuffer) {
     val date: Date
         get() {
             val marker = buffer.get()
-            if (marker != AMF0Marker.DATE.rawValue) {
+            if (marker != Amf0Marker.DATE.rawValue) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
             val value = buffer.double
@@ -173,13 +173,13 @@ internal class AMF0Deserializer(private val buffer: ByteBuffer) {
             return date
         }
 
-    val xmlDocument: ASXMLDocument
+    val xmlDocument: AsXmlDocument
         get() {
             val marker = buffer.get()
-            if (marker != AMF0Marker.XMLDOCUMENT.rawValue) {
+            if (marker != Amf0Marker.XMLDOCUMENT.rawValue) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
-            return ASXMLDocument(getString(false))
+            return AsXmlDocument(getString(false))
         }
 
     private fun getString(asShort: Boolean): String {

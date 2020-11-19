@@ -16,8 +16,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpStream
 
 class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
@@ -27,8 +27,8 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                               savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
-        MediaProjectionService.listener = object : RTMPStream.Listener {
-            override fun onStatics(stream: RTMPStream, connection: RTMPConnection) {
+        MediaProjectionService.listener = object : RtmpStream.Listener {
+            override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
                 activity.runOnUiThread {
                     v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
                 }

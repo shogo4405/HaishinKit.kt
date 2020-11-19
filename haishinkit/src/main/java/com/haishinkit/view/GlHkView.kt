@@ -11,7 +11,7 @@ import com.haishinkit.BuildConfig
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.media.CameraSource
 import com.haishinkit.media.VideoSource
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.util.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
@@ -37,7 +37,7 @@ class GlHkView @JvmOverloads constructor(
             field = value
         }
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    override var stream: RTMPStream? = null
+    override var stream: RtmpStream? = null
 
     private val renderer: StrategyRenderer by lazy {
         val renderer = object : StrategyRenderer {

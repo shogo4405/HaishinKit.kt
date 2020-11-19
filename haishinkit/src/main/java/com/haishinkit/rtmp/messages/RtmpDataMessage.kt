@@ -1,23 +1,23 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.amf.AMF0Deserializer
-import com.haishinkit.amf.AMF0Serializer
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPObjectEncoding
-import com.haishinkit.rtmp.RTMPSocket
+import com.haishinkit.amf.Amf0Deserializer
+import com.haishinkit.amf.Amf0Serializer
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpObjectEncoding
+import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
 /**
  * 7.1.2. Data Message (18, 15)
  */
-internal class RTMPDataMessage(objectEncoding: RTMPObjectEncoding) : RTMPMessage(objectEncoding.dataType) {
+internal class RtmpDataMessage(objectEncoding: RtmpObjectEncoding) : RtmpMessage(objectEncoding.dataType) {
     var handlerName: String? = null
     var arguments: ArrayList<Any?> = ArrayList()
 
-    override fun encode(socket: RTMPSocket): ByteBuffer {
+    override fun encode(socket: RtmpSocket): ByteBuffer {
         val buffer = ByteBuffer.allocate(1024)
-        val serializer = AMF0Serializer(buffer)
+        val serializer = Amf0Serializer(buffer)
         serializer.putString(handlerName)
         if (!arguments.isEmpty()) {
             for (argument in arguments) {
@@ -27,9 +27,9 @@ internal class RTMPDataMessage(objectEncoding: RTMPObjectEncoding) : RTMPMessage
         return buffer
     }
 
-    override fun decode(buffer: ByteBuffer): RTMPMessage {
+    override fun decode(buffer: ByteBuffer): RtmpMessage {
         val eom = buffer.position() + length
-        val deserializer = AMF0Deserializer(buffer)
+        val deserializer = Amf0Deserializer(buffer)
         handlerName = deserializer.string
         val arguments = arguments
         while (buffer.position() < eom) {
@@ -38,7 +38,7 @@ internal class RTMPDataMessage(objectEncoding: RTMPObjectEncoding) : RTMPMessage
         return this
     }
 
-    override fun execute(connection: RTMPConnection): RTMPMessage {
+    override fun execute(connection: RtmpConnection): RtmpMessage {
         return this
     }
 }

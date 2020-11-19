@@ -1,6 +1,6 @@
 package com.haishinkit.amf
 
-internal enum class AMF0Marker(val rawValue: Byte) {
+internal enum class Amf0Marker(val rawValue: Byte) {
     NUMBER(0x00),
     BOOL(0x01),
     STRING(0x02),

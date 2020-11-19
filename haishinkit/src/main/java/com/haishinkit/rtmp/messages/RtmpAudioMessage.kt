@@ -1,16 +1,16 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.rtmp.RTMPConnection
+import com.haishinkit.rtmp.RtmpConnection
 import java.nio.ByteBuffer
 
-internal open class RTMPAudioMessage : RTMPMessage(RTMPMessage.Type.AUDIO) {
+internal open class RtmpAudioMessage : RtmpMessage(RtmpMessage.Type.AUDIO) {
     var codec: Byte = 0
     var soundRate: Byte = 0
     var soundSize: Byte = 0
     var soundType: Byte = 0
     var payload: ByteBuffer? = null
 
-    override fun decode(buffer: ByteBuffer): RTMPMessage {
+    override fun decode(buffer: ByteBuffer): RtmpMessage {
         val first = buffer.get()
         codec = (first.toInt() shr 4).toByte()
         soundRate = (first.toInt() and (12 shr 2)).toByte()
@@ -22,7 +22,7 @@ internal open class RTMPAudioMessage : RTMPMessage(RTMPMessage.Type.AUDIO) {
         return this
     }
 
-    override fun execute(connection: RTMPConnection): RTMPMessage {
+    override fun execute(connection: RtmpConnection): RtmpMessage {
         return this
     }
 }

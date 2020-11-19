@@ -1,28 +1,28 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPSocket
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
 /**
  * 5.4.2. Abort Message (2)
  */
-internal class RTMPAbortMessage : RTMPMessage(RTMPMessage.Type.ABORT) {
+internal class RtmpAbortMessage : RtmpMessage(RtmpMessage.Type.ABORT) {
     var discarded: Int = 0
         private set
 
-    override fun encode(socket: RTMPSocket): ByteBuffer {
+    override fun encode(socket: RtmpSocket): ByteBuffer {
         val buffer = ByteBuffer.allocate(CAPACITY)
         buffer.putInt(discarded)
         return buffer
     }
 
-    override fun decode(buffer: ByteBuffer): RTMPMessage {
+    override fun decode(buffer: ByteBuffer): RtmpMessage {
         discarded = buffer.int
         return this
     }
 
-    override fun execute(connection: RTMPConnection): RTMPMessage {
+    override fun execute(connection: RtmpConnection): RtmpMessage {
         return this
     }
 

@@ -5,11 +5,11 @@ import com.haishinkit.flv.SoundRate
 import com.haishinkit.flv.SoundSize
 import com.haishinkit.flv.SoundType
 import com.haishinkit.iso.AudioSpecificConfig
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPSocket
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
-internal class RTMPAACAudioMessage : RTMPAudioMessage() {
+internal class RtmpAacAudioMessage : RtmpAudioMessage() {
     var aacPacketType: Byte = 0
     var config: AudioSpecificConfig? = null
 
@@ -20,7 +20,7 @@ internal class RTMPAACAudioMessage : RTMPAudioMessage() {
         soundType = SoundType.STEREO
     }
 
-    override fun encode(socket: RTMPSocket): ByteBuffer {
+    override fun encode(socket: RtmpSocket): ByteBuffer {
         val length = payload?.limit() ?: 0
         val buffer = ByteBuffer.allocate(2 + length)
         buffer.put(AAC)
@@ -31,12 +31,12 @@ internal class RTMPAACAudioMessage : RTMPAudioMessage() {
         return buffer
     }
 
-    override fun decode(buffer: ByteBuffer): RTMPMessage {
+    override fun decode(buffer: ByteBuffer): RtmpMessage {
         buffer.position(buffer.position() + length)
         return this
     }
 
-    override fun execute(connection: RTMPConnection): RTMPMessage {
+    override fun execute(connection: RtmpConnection): RtmpMessage {
         return this
     }
 

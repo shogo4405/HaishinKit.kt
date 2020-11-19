@@ -1,65 +1,65 @@
 package com.haishinkit.amf
 
-import com.haishinkit.amf.data.ASUndefined
+import com.haishinkit.amf.data.AsUndefined
 import java.nio.ByteBuffer
 import java.util.Date
 
-internal class AMF0Serializer(private val buffer: ByteBuffer) {
+internal class Amf0Serializer(private val buffer: ByteBuffer) {
 
-    fun putBoolean(value: Boolean): AMF0Serializer {
-        buffer.put(AMF0Marker.BOOL.rawValue)
+    fun putBoolean(value: Boolean): Amf0Serializer {
+        buffer.put(Amf0Marker.BOOL.rawValue)
         buffer.put((if (value) 1 else 0).toByte())
         return this
     }
 
-    fun putDouble(value: Double): AMF0Serializer {
-        buffer.put(AMF0Marker.NUMBER.rawValue)
+    fun putDouble(value: Double): Amf0Serializer {
+        buffer.put(Amf0Marker.NUMBER.rawValue)
         buffer.putDouble(value)
         return this
     }
 
-    fun putString(value: String?): AMF0Serializer {
+    fun putString(value: String?): Amf0Serializer {
         if (value == null) {
-            buffer.put(AMF0Marker.NULL.rawValue)
+            buffer.put(Amf0Marker.NULL.rawValue)
             return this
         }
         val length = value.length
         val isShort = if (length <= java.lang.Short.MAX_VALUE.toInt()) true else false
-        buffer.put(if (isShort) AMF0Marker.STRING.rawValue else AMF0Marker.LONGSTRING.rawValue)
+        buffer.put(if (isShort) Amf0Marker.STRING.rawValue else Amf0Marker.LONGSTRING.rawValue)
         return putString(value, isShort)
     }
 
-    fun putMap(value: Map<String, Any?>?): AMF0Serializer {
+    fun putMap(value: Map<String, Any?>?): Amf0Serializer {
         if (value == null) {
-            buffer.put(AMF0Marker.NULL.rawValue)
+            buffer.put(Amf0Marker.NULL.rawValue)
             return this
         }
-        buffer.put(AMF0Marker.OBJECT.rawValue)
+        buffer.put(Amf0Marker.OBJECT.rawValue)
         for ((key, value1) in value) {
             putString(key, true).putObject(value1)
         }
         putString("", true)
-        buffer.put(AMF0Marker.OBJECTEND.rawValue)
+        buffer.put(Amf0Marker.OBJECTEND.rawValue)
         return this
     }
 
-    fun putDate(value: Date?): AMF0Serializer {
+    fun putDate(value: Date?): Amf0Serializer {
         if (value == null) {
-            buffer.put(AMF0Marker.NULL.rawValue)
+            buffer.put(Amf0Marker.NULL.rawValue)
             return this
         }
-        buffer.put(AMF0Marker.DATE.rawValue)
+        buffer.put(Amf0Marker.DATE.rawValue)
         buffer.putDouble(value.time.toDouble())
         buffer.put(byteArrayOf(0x00, 0x00))
         return this
     }
 
-    fun putList(value: List<Any>?): AMF0Serializer {
+    fun putList(value: List<Any>?): Amf0Serializer {
         if (value == null) {
-            buffer.put(AMF0Marker.NULL.rawValue)
+            buffer.put(Amf0Marker.NULL.rawValue)
             return this
         }
-        buffer.put(AMF0Marker.ECMAARRAY.rawValue)
+        buffer.put(Amf0Marker.ECMAARRAY.rawValue)
         if (value.isEmpty()) {
             buffer.put(byteArrayOf(0x00, 0x00, 0x00, 0x00))
             return this
@@ -71,9 +71,9 @@ internal class AMF0Serializer(private val buffer: ByteBuffer) {
         return this
     }
 
-    fun putObject(value: Any?): AMF0Serializer {
+    fun putObject(value: Any?): Amf0Serializer {
         if (value == null) {
-            buffer.put(AMF0Marker.NULL.rawValue)
+            buffer.put(Amf0Marker.NULL.rawValue)
             return this
         }
         if (value is String) {
@@ -100,8 +100,8 @@ internal class AMF0Serializer(private val buffer: ByteBuffer) {
         if (value is List<*>) {
             return putList(value as List<Any>?)
         }
-        if (value is ASUndefined) {
-            buffer.put(AMF0Marker.UNDEFINED.rawValue)
+        if (value is AsUndefined) {
+            buffer.put(Amf0Marker.UNDEFINED.rawValue)
             return this
         }
         return this
@@ -111,7 +111,7 @@ internal class AMF0Serializer(private val buffer: ByteBuffer) {
         return buffer.toString()
     }
 
-    private fun putString(value: String, asShort: Boolean): AMF0Serializer {
+    private fun putString(value: String, asShort: Boolean): Amf0Serializer {
         val length = value.length
         if (asShort) {
             buffer.putShort(length.toShort())

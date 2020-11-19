@@ -15,12 +15,12 @@ import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.MediaProjectionSource
-import com.haishinkit.rtmp.RTMPConnection
-import com.haishinkit.rtmp.RTMPStream
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpStream
 
 class MediaProjectionService : Service(), IEventListener {
-    private lateinit var stream: RTMPStream
-    private lateinit var connection: RTMPConnection
+    private lateinit var stream: RtmpStream
+    private lateinit var connection: RtmpConnection
 
     private var messenger: Messenger? = null
     private var handler = object : Handler(Looper.getMainLooper()) {
@@ -70,9 +70,9 @@ class MediaProjectionService : Service(), IEventListener {
     override fun onCreate() {
         super.onCreate()
         messenger = Messenger(handler)
-        connection = RTMPConnection()
+        connection = RtmpConnection()
         connection.addEventListener(Event.RTMP_STATUS, this)
-        stream = RTMPStream(connection)
+        stream = RtmpStream(connection)
     }
 
     override fun onDestroy() {
@@ -84,7 +84,7 @@ class MediaProjectionService : Service(), IEventListener {
         Log.i(javaClass.name, event.toString())
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
-        if (code == RTMPConnection.Code.CONNECT_SUCCESS.rawValue) {
+        if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
             stream.publish(Preference.shared.streamName)
         }
     }
@@ -98,6 +98,6 @@ class MediaProjectionService : Service(), IEventListener {
 
         var metrics = DisplayMetrics()
         var data: Intent? = null
-        var listener: RTMPStream.Listener? = null
+        var listener: RtmpStream.Listener? = null
     }
 }

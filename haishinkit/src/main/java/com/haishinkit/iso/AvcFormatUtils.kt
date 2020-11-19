@@ -2,7 +2,7 @@ package com.haishinkit.iso
 
 import java.nio.ByteBuffer
 
-object AVCFormatUtils {
+object AvcFormatUtils {
     fun toNALFileFormat(buffer: ByteBuffer): ByteBuffer {
         val result = ByteBuffer.allocate(buffer.remaining())
         result.put(buffer)
