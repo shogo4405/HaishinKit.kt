@@ -10,8 +10,8 @@ internal class AudioCodec : MediaCodec(MIME) {
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createAudioFormat(MIME, sampleRate, channelCount).apply {
-            this.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
-            this.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
+            setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
+            setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
         }
     }
 

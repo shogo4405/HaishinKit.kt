@@ -1,10 +1,10 @@
 package com.haishinkit.rtmp
 
 import android.util.Log
-import com.haishinkit.events.Event
-import com.haishinkit.events.EventDispatcher
-import com.haishinkit.events.EventUtils
-import com.haishinkit.events.IEventListener
+import com.haishinkit.event.Event
+import com.haishinkit.event.EventDispatcher
+import com.haishinkit.event.EventUtils
+import com.haishinkit.event.IEventListener
 import com.haishinkit.net.Responder
 import com.haishinkit.rtmp.messages.RTMPCommandMessage
 import com.haishinkit.rtmp.messages.RTMPMessage

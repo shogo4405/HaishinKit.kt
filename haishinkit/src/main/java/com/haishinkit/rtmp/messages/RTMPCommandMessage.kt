@@ -2,7 +2,7 @@ package com.haishinkit.rtmp.messages
 
 import com.haishinkit.amf.AMF0Deserializer
 import com.haishinkit.amf.AMF0Serializer
-import com.haishinkit.events.Event
+import com.haishinkit.event.Event
 import com.haishinkit.rtmp.RTMPConnection
 import com.haishinkit.rtmp.RTMPObjectEncoding
 import com.haishinkit.rtmp.RTMPSocket

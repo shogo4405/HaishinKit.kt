@@ -10,9 +10,9 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.util.DisplayMetrics
 import android.util.Log
-import com.haishinkit.events.Event
-import com.haishinkit.events.EventUtils
-import com.haishinkit.events.IEventListener
+import com.haishinkit.event.Event
+import com.haishinkit.event.EventUtils
+import com.haishinkit.event.IEventListener
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.MediaProjectionSource
 import com.haishinkit.rtmp.RTMPConnection

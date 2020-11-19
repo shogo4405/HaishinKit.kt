@@ -1,6 +1,9 @@
 package com.haishinkit.media
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
@@ -12,26 +15,25 @@ import android.os.HandlerThread
 import android.util.Log
 import android.util.Size
 import android.view.Surface
-import android.view.SurfaceHolder
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
+import com.haishinkit.gles.GlPixelContext
+import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import com.haishinkit.rtmp.RTMPStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
-
-private fun gcd(a: Int, b: Int): Int {
-    if (b == 0) return a
-    return gcd(b, a % b)
-}
+import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.opengles.GL10
 
 /**
  * A video source that captures a camera by the Camera2 API.
  */
-class CameraSource(private val manager: CameraManager) : VideoSource {
+class CameraSource(private val activity: Activity) : VideoSource {
     var device: CameraDevice? = null
         private set(value) {
             device?.close()
             field = value
+            startRunning()
         }
     var cameraId: String = DEFAULT_CAMERA_ID
         private set
@@ -47,9 +49,7 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
                 stream?.renderer?.startRunning()
             }
         }
-    val sensorOrientation
-        get() = characteristics?.get(CameraCharacteristics.SENSOR_ORIENTATION) ?: 0
-
+    internal var surface: Surface? = null
     override var stream: RTMPStream? = null
         set(value) {
             field = value
@@ -64,25 +64,7 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
             stream?.videoSetting?.height = value.height
         }
     private var request: CaptureRequest.Builder? = null
-        set(value) {
-            request?.let { request ->
-                _surface?.let { surface ->
-                    request.removeTarget(surface)
-                }
-            }
-            field = value
-        }
-    private var _surface: Surface? = null
-    private var surface: Surface?
-        get() {
-            if (_surface == null) {
-                _surface = stream?.videoCodec?.createInputSurface()
-            }
-            return _surface
-        }
-        set(value) {
-            _surface = value
-        }
+    private var manager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private val backgroundHandler by lazy {
         val thread = HandlerThread(javaClass.name)
         thread.start()
@@ -100,9 +82,11 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
                     this@CameraSource.device = camera
                     this@CameraSource.setUp()
                 }
+
                 override fun onDisconnected(camera: CameraDevice) {
                     this@CameraSource.device = null
                 }
+
                 override fun onError(camera: CameraDevice, error: Int) {
                     Log.w(TAG, error.toString())
                 }
@@ -122,20 +106,14 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
     }
 
     override fun startRunning() {
+        Log.d(TAG, "${this::startRunning.name}: $device, $surface")
         if (isRunning.get()) { return }
         val device = device ?: return
         val surface = surface ?: return
-        val rendererSurface = stream?.renderer?.holder?.surface
         request = device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
             this.addTarget(surface)
-            if (rendererSurface != null) {
-                this.addTarget(rendererSurface)
-            }
         }
         val surfaceList = mutableListOf<Surface>(surface)
-        if (rendererSurface != null) {
-            surfaceList.add(rendererSurface)
-        }
         device.createCaptureSession(
             surfaceList,
             object : CameraCaptureSession.StateCallback() {
@@ -151,52 +129,63 @@ class CameraSource(private val manager: CameraManager) : VideoSource {
             backgroundHandler
         )
         isRunning.set(true)
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, this::startRunning.name)
+        }
     }
 
     override fun stopRunning() {
         if (!isRunning.get()) { return }
         isRunning.set(false)
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, this::startRunning.name)
+        }
+    }
+
+    override fun createGLSurfaceViewRenderer(): VideoSource.GlRenderer {
+        return object : VideoSource.GlRenderer {
+            override var context: GlPixelContext = GlPixelContext.instance
+            override var videoGravity: Int
+                get() {
+                    return renderer.videoGravity
+                }
+                set(value) {
+                    renderer.videoGravity = value
+                }
+
+            private var renderer: GlFramePixelRenderer = GlFramePixelRenderer()
+
+            override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
+                renderer.setUp()
+                this@CameraSource.startRunning()
+                context.textureSize = this@CameraSource.getCameraSize()
+            }
+
+            override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
+                renderer.resolution = Size(width, height)
+            }
+
+            override fun onDrawFrame(gl: GL10) {
+                renderer.render(context, FloatArray(16))
+            }
+        }
     }
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
     }
 
-    internal fun getPreviewSize(): Size {
-        val previewSizes = characteristics
-            ?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-            ?.getOutputSizes(SurfaceHolder::class.java) ?: return Size(0, 0)
-        var result: Size? = null
-        for (previewSize in previewSizes) {
-            val gcd = gcd(previewSize.width, previewSize.height)
-            val width = previewSize.width / gcd
-            val height = previewSize.height / gcd
-            if ((height == ASPECT_VERTICAL && width == ASPECT_HORIZONTAL) || (width == ASPECT_VERTICAL && height == ASPECT_HORIZONTAL)) {
-                if (result == null) {
-                    result = previewSize
-                } else {
-                    if (result.height < previewSize.height && result.width < previewSize.width) {
-                        result = previewSize
-                    }
-                }
-            }
-        }
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "$result, list=${ToStringBuilder.reflectionToString(previewSizes)}")
-        }
-        return result ?: previewSizes[0]
+    private fun getCameraSize(): Size {
+        val scm = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+        val cameraSizes = scm?.getOutputSizes(SurfaceTexture::class.java) ?: return Size(0, 0)
+        return cameraSizes[0]
     }
 
     companion object {
         const val DEFAULT_WIDTH: Int = 640
         const val DEFAULT_HEIGHT: Int = 480
 
-        private const val DEFAULT_CAMERA_ID: String = "0"
-        private const val MAX_PREVIEW_WIDTH: Int = 1920
-        private const val MAX_PREVIEW_HEIGHT: Int = 1080
-        private const val ASPECT_VERTICAL = 16
-        private const val ASPECT_HORIZONTAL = 9
-
+        private const val DEFAULT_CAMERA_ID = "0"
         private val TAG = CameraSource::class.java.simpleName
     }
 }
