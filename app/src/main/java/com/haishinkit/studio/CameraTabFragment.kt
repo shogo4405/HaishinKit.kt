@@ -45,7 +45,7 @@ class CameraTabFragment: Fragment(), IEventListener {
         val camera = CameraSource(activity).apply {
             this.open(cameraId)
         }
-        stream.attachCamera(camera)
+        stream.attachVideo(camera)
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
 

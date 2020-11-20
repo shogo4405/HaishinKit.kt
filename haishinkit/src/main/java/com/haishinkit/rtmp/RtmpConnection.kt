@@ -88,7 +88,7 @@ open class RtmpConnection : EventDispatcher(null) {
                     timerTask = Timer().schedule(0, 1000) {
                         for (stream in streams) stream.value.on()
                     }
-                    var message = messageFactory.createRTMPSetChunkSizeMessage()
+                    val message = messageFactory.createRtmpSetChunkSizeMessage()
                     message.size = RtmpConnection.DEFAULT_CHUNK_SIZE_S
                     message.chunkStreamID = RtmpChunk.CONTROL
                     connection.socket.chunkSizeS = RtmpConnection.DEFAULT_CHUNK_SIZE_S

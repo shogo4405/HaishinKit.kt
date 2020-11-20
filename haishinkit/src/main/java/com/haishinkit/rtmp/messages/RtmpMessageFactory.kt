@@ -32,35 +32,35 @@ internal final class RtmpMessageFactory(private val maxPoolSize: Int) {
         }
     }
 
-    fun createRTMPSetChunkSizeMessage(): RtmpSetChunkSizeMessage {
+    fun createRtmpSetChunkSizeMessage(): RtmpSetChunkSizeMessage {
         return RtmpSetChunkSizeMessage()
     }
 
-    fun createRTMPAbortMessage(): RtmpAbortMessage {
+    fun createRtmpAbortMessage(): RtmpAbortMessage {
         return RtmpAbortMessage()
     }
 
-    fun createRTMPAcknowledgementMessage(): RtmpAcknowledgementMessage {
+    fun createRtmpAcknowledgementMessage(): RtmpAcknowledgementMessage {
         return RtmpAcknowledgementMessage()
     }
 
-    fun createRTMPUserControlMessage(): RtmpUserControlMessage {
+    fun createRtmpUserControlMessage(): RtmpUserControlMessage {
         return user.acquire() ?: RtmpUserControlMessage()
     }
 
-    fun createRTMPWindowAcknowledgementSizeMessage(): RtmpWindowAcknowledgementSizeMessage {
+    fun createRtmpWindowAcknowledgementSizeMessage(): RtmpWindowAcknowledgementSizeMessage {
         return RtmpWindowAcknowledgementSizeMessage()
     }
 
-    fun createRTMPSetPeerBandwidthMessage(): RtmpSetPeerBandwidthMessage {
+    fun createRtmpSetPeerBandwidthMessage(): RtmpSetPeerBandwidthMessage {
         return RtmpSetPeerBandwidthMessage()
     }
 
-    fun createRTMPVideoMessage(): RtmpVideoMessage {
+    fun createRtmpVideoMessage(): RtmpVideoMessage {
         return video.acquire() ?: RtmpAvcVideoMessage()
     }
 
-    fun createRTMPAudioMessage(): RtmpAudioMessage {
+    fun createRtmpAudioMessage(): RtmpAudioMessage {
         return audio.acquire() ?: RtmpAacAudioMessage()
     }
 }

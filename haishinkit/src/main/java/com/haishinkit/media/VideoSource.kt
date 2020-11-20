@@ -2,6 +2,8 @@ package com.haishinkit.media
 
 import android.opengl.GLSurfaceView
 import android.util.Size
+import com.haishinkit.codec.util.DefaultFpsController
+import com.haishinkit.codec.util.FpsController
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.util.VideoGravity
 import javax.microedition.khronos.egl.EGLConfig
@@ -16,7 +18,7 @@ interface VideoSource : Source {
         var context: GlPixelContext
     }
 
-    class NullRenderer: GlRenderer {
+    class NullRenderer : GlRenderer {
         override var videoGravity = VideoGravity.RESIZE_ASPECT_FILL
         override var context = GlPixelContext.instance
 
@@ -35,6 +37,7 @@ interface VideoSource : Source {
     }
 
     var resolution: Size
+    val fpsControllerClass: Class<*>
 
     fun createGLSurfaceViewRenderer(): GlRenderer? {
         return null

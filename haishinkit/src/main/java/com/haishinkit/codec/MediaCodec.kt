@@ -57,20 +57,20 @@ internal abstract class MediaCodec(private val mime: String) : Running {
             field = value
             callback?.codec = this
         }
-    private var _codec: MediaCodec? = null
-    var codec: MediaCodec?
+    var codec: MediaCodec? = null
         get() {
-            if (_codec == null) {
-                _codec = MediaCodec.createEncoderByType(mime)
-                _codec?.let { configure(it) }
+            if (field == null) {
+                field = MediaCodec.createEncoderByType(mime)
+                field?.let { configure(it) }
             }
-            return _codec
+            return field
         }
         set(value) {
-            _codec?.stop()
-            _codec?.release()
-            _codec = value
+            field?.stop()
+            field?.release()
+            field = value
         }
+    var options = listOf<CodecOption>()
     override val isRunning = AtomicBoolean(false)
 
     private var outputFormat: MediaFormat? = null
@@ -83,26 +83,22 @@ internal abstract class MediaCodec(private val mime: String) : Running {
             }
             field = value
         }
-
-    private var _backgroundHandler: Handler? = null
-    private var backgroundHandler: Handler?
+    private var backgroundHandler: Handler? = null
         get() {
-            if (_backgroundHandler == null) {
+            if (field == null) {
                 val thread = HandlerThread(javaClass.name)
                 thread.start()
-                _backgroundHandler = Handler(thread.looper)
+                field = Handler(thread.looper)
             }
-            return _backgroundHandler
+            return field
         }
         set(value) {
-            _backgroundHandler?.looper?.quitSafely()
-            _backgroundHandler = value
+            field?.looper?.quitSafely()
+            field = value
         }
 
     @Synchronized final override fun startRunning() {
-        if (isRunning.get()) {
-            return
-        }
+        if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(javaClass.name, "startRunning()")
         }
@@ -121,9 +117,7 @@ internal abstract class MediaCodec(private val mime: String) : Running {
     }
 
     @Synchronized final override fun stopRunning() {
-        if (!isRunning.get()) {
-            return
-        }
+        if (!isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
@@ -147,7 +141,11 @@ internal abstract class MediaCodec(private val mime: String) : Running {
                 codec.setCallback(callback)
             }
         }
-        codec.configure(createOutputFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+        val format = createOutputFormat()
+        for (option in options) {
+            option.apply(format)
+        }
+        codec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
     }
 
     protected abstract fun createOutputFormat(): MediaFormat

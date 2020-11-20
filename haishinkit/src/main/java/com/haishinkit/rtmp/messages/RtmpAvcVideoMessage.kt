@@ -1,6 +1,6 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.flv.VideoCodec
+import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
@@ -9,7 +9,7 @@ internal class RtmpAvcVideoMessage : RtmpVideoMessage() {
     var compositeTime = 0
 
     init {
-        codec = VideoCodec.AVC
+        codec = FlvVideoCodec.AVC
     }
 
     override fun encode(socket: RtmpSocket): ByteBuffer {

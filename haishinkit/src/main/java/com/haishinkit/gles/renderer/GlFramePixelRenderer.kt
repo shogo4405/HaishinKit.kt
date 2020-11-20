@@ -54,9 +54,6 @@ class GlFramePixelRenderer(
     override fun render(context: GlPixelContext, matrix: FloatArray) {
         configuration(context)
 
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT)
-
         GLES20.glUseProgram(program)
 
         GLES20.glVertexAttribPointer(texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)

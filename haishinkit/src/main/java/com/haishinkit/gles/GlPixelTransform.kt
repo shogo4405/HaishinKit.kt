@@ -9,38 +9,58 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
+import com.haishinkit.codec.util.FpsController
+import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import java.lang.ref.WeakReference
 
 internal class GlPixelTransform {
+    internal interface Listener {
+        fun onConfiguration()
+    }
+
     var context = GlPixelContext.instance
 
+    private var listener: Listener? = null
     private var renderer = GlFramePixelRenderer()
     private var transform = FloatArray(16)
+    private var fpsController: FpsController = ScheduledFpsController()
     private var inputWindowSurface = GlWindowSurface()
-    private var _handler: Handler? = null
-    private var handler: Handler?
+    private var handler: Handler? = null
         get() {
-            if (_handler == null) {
+            if (field == null) {
                 val thread = HandlerThread(TAG)
                 thread.start()
-                _handler = Handler(this, thread.looper)
+                field = Handler(this, thread.looper)
             }
-            return _handler
+            return field
         }
         set(value) {
-            _handler?.looper?.quitSafely()
-            _handler = value
+            field?.looper?.quitSafely()
+            field = null
         }
 
+    fun setListener(listener: Listener?) {
+        handler?.let {
+            if (listener == null) {
+                it.sendMessage(it.obtainMessage(MSG_SET_LISTENER))
+            } else {
+                it.sendMessage(it.obtainMessage(MSG_SET_LISTENER, listener))
+            }
+        }
+    }
+
     fun frameAvailable(surfaceTexture: SurfaceTexture) {
-        val timestamp = surfaceTexture.timestamp
+        var timestamp = surfaceTexture.timestamp
         if (timestamp <= 0L) {
             return
         }
-        surfaceTexture.getTransformMatrix(transform)
-        handler?.let {
-            it.sendMessage(it.obtainMessage(MSG_FRAME_AVAILABLE, (timestamp shl 32).toInt(), timestamp.toInt(), transform))
+        if (fpsController.advanced(timestamp)) {
+            timestamp = fpsController.timestamp(timestamp)
+            surfaceTexture.getTransformMatrix(transform)
+            handler?.let {
+                it.sendMessage(it.obtainMessage(MSG_FRAME_AVAILABLE, (timestamp shr 32).toInt(), timestamp.toInt(), transform))
+            }
         }
     }
 
@@ -50,19 +70,29 @@ internal class GlPixelTransform {
         }
     }
 
+    private fun onSetListener(listener: Listener?) {
+        this.listener = listener
+    }
+
     private fun onConfiguration(surface: Surface, width: Int, height: Int) {
-        inputWindowSurface.setUp(surface, context.eglContext)
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "configuration for ${width}x$height surface=$surface")
+        }
+        renderer.tearDown()
+        inputWindowSurface.tearDown()
+        inputWindowSurface.setUp(surface, null)
         inputWindowSurface.makeCurrent()
         renderer.resolution = Size(width, height)
         renderer.setUp()
         GLES10.glOrthof(0.0f, width.toFloat(), height.toFloat(), 0.0f, -1.0f, 1.0f)
+        listener?.onConfiguration()
     }
 
     private fun onFrameAvailable(transform: FloatArray, timestamp: Long) {
         renderer.render(context, transform)
-        // inputWindowSurface.setPresentationTime(timestamp)
+        inputWindowSurface.setPresentationTime(timestamp)
         if (!inputWindowSurface.swapBuffers() && BuildConfig.DEBUG) {
-            Log.d(TAG, "can't swap buffers.")
+            Log.w(TAG, "can't swap buffers.")
         }
     }
 
@@ -81,6 +111,14 @@ internal class GlPixelTransform {
                     val timestamp = message.arg1.toLong() shl 32 or (message.arg2.toLong() and 0xffffffffL)
                     transform.onFrameAvailable(obj as FloatArray, timestamp)
                 }
+                MSG_SET_LISTENER -> {
+                    val obj = message.obj
+                    if (obj == null) {
+                        transform.onSetListener(null)
+                    } else {
+                        transform.onSetListener(message.obj as Listener)
+                    }
+                }
                 else ->
                     throw RuntimeException("Unhandled msg what=$message.what")
             }
@@ -90,6 +128,7 @@ internal class GlPixelTransform {
     companion object {
         private const val MSG_CONFIGURATION = 0
         private const val MSG_FRAME_AVAILABLE = 1
+        private const val MSG_SET_LISTENER = 2
 
         private val TAG = GlPixelTransform::class.java.simpleName
     }

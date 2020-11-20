@@ -24,7 +24,7 @@ internal class RtmpWindowAcknowledgementSizeMessage : RtmpMessage(RtmpMessage.Ty
     }
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
-        var ack = connection.messageFactory.createRTMPWindowAcknowledgementSizeMessage()
+        var ack = connection.messageFactory.createRtmpWindowAcknowledgementSizeMessage()
         ack.size = size
         ack.chunkStreamID = RtmpChunk.CONTROL
         connection.doOutput(RtmpChunk.ZERO, ack)

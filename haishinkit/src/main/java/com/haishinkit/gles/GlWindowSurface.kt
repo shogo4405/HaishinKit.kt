@@ -16,11 +16,13 @@ internal class GlWindowSurface(
     private var context = EGL14.EGL_NO_CONTEXT
     private var surface = EGL14.EGL_NO_SURFACE
 
-    fun makeCurrent() {
-        if (!utilizable) return
+    fun makeCurrent(): Boolean {
+        if (!utilizable) return false
         if (!EGL14.eglMakeCurrent(display, surface, surface, context)) {
             Log.e(TAG, "eglMakeCurrent failed.")
+            return false
         }
+        return true
     }
 
     fun swapBuffers(): Boolean {
@@ -47,10 +49,7 @@ internal class GlWindowSurface(
         }
 
         val config = chooseConfig(eglSharedContext) ?: return
-        context = EGL14.eglCreateContext(
-            display, config,
-            eglSharedContext ?: EGL14.EGL_NO_CONTEXT, CONTEXT_ATTRIBUTES, 0
-        )
+        context = EGL14.eglCreateContext(display, config, eglSharedContext ?: EGL14.EGL_NO_CONTEXT, CONTEXT_ATTRIBUTES, 0)
         GlUtil.checkGlError("eglCreateContext")
 
         this.surface = EGL14.eglCreateWindowSurface(display, config, surface, SURFACE_ATTRIBUTES, 0)
@@ -75,11 +74,7 @@ internal class GlWindowSurface(
     }
 
     private fun chooseConfig(eglSharedContext: EGLContext?): EGLConfig? {
-        val attributes: IntArray = if (eglSharedContext == null) {
-            CONFIG_ATTRIBUTES_NO_CONTEXT
-        } else {
-            CONFIG_ATTRIBUTES_WITH_CONTEXT
-        }
+        val attributes: IntArray = CONFIG_ATTRIBUTES_WITH_CONTEXT
         val configs: Array<EGLConfig?> = arrayOfNulls<EGLConfig>(1)
         val numConfigs = IntArray(1)
         if (!EGL14.eglChooseConfig(display, attributes, 0, configs, 0, configs.size, numConfigs, 0)) {
@@ -96,19 +91,10 @@ internal class GlWindowSurface(
         private val CONTEXT_ATTRIBUTES = intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
         private val SURFACE_ATTRIBUTES = intArrayOf(EGL14.EGL_NONE)
 
-        private val CONFIG_ATTRIBUTES_NO_CONTEXT = intArrayOf(
-            EGL14.EGL_RED_SIZE, 8,
-            EGL14.EGL_GREEN_SIZE, 8,
-            EGL14.EGL_BLUE_SIZE, 8,
-            EGL14.EGL_ALPHA_SIZE, 8,
-            EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
-            EGL14.EGL_NONE
-        )
         private val CONFIG_ATTRIBUTES_WITH_CONTEXT = intArrayOf(
             EGL14.EGL_RED_SIZE, 8,
             EGL14.EGL_GREEN_SIZE, 8,
             EGL14.EGL_BLUE_SIZE, 8,
-            EGL14.EGL_ALPHA_SIZE, 8,
             EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
             EGL_RECORDABLE_ANDROID, 1,
             EGL14.EGL_NONE

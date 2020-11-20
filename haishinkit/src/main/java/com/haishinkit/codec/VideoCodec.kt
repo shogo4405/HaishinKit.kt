@@ -5,7 +5,6 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
-import android.view.Surface
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.GlPixelTransform
 
@@ -32,8 +31,8 @@ internal class VideoCodec() : MediaCodec(MIME) {
         }
     private var pixelTransform: GlPixelTransform = GlPixelTransform()
 
-    fun createInputSurface(): Surface? {
-        return codec?.createInputSurface()
+    fun setListener(listener: GlPixelTransform.Listener?) {
+        pixelTransform.setListener(listener)
     }
 
     fun frameAvailable(surfaceTexture: SurfaceTexture) {
@@ -55,11 +54,7 @@ internal class VideoCodec() : MediaCodec(MIME) {
             } else {
                 setInteger("level", level)
             }
-            if (colorFormat != DEFAULT_COLOR_FORMAT) {
-                setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
-            } else {
-                setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
-            }
+            setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
         }
     }
 
@@ -74,11 +69,11 @@ internal class VideoCodec() : MediaCodec(MIME) {
         const val DEFAULT_BIT_RATE = 500 * 1000
         const val DEFAULT_FRAME_RATE = 30
         const val DEFAULT_I_FRAME_INTERVAL = 2
-        const val DEFAULT_WIDTH = 1024
-        const val DEFAULT_HEIGHT = 768
+        const val DEFAULT_WIDTH = 640
+        const val DEFAULT_HEIGHT = 360
         const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
         const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
-        const val DEFAULT_COLOR_FORMAT = -1
+        const val DEFAULT_COLOR_FORMAT = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
 
         private val TAG = VideoCodec::class.java.simpleName
     }

@@ -1,9 +1,9 @@
 package com.haishinkit.rtmp.messages
 
-import com.haishinkit.flv.AudioCodec
-import com.haishinkit.flv.SoundRate
-import com.haishinkit.flv.SoundSize
-import com.haishinkit.flv.SoundType
+import com.haishinkit.flv.FlvAudioCodec
+import com.haishinkit.flv.FlvSoundRate
+import com.haishinkit.flv.FlvSoundSize
+import com.haishinkit.flv.FlvSoundType
 import com.haishinkit.iso.AudioSpecificConfig
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpSocket
@@ -14,10 +14,10 @@ internal class RtmpAacAudioMessage : RtmpAudioMessage() {
     var config: AudioSpecificConfig? = null
 
     init {
-        codec = AudioCodec.AAC
-        soundRate = SoundRate.kHz44
-        soundSize = SoundSize.SOUND_16BIT
-        soundType = SoundType.STEREO
+        codec = FlvAudioCodec.AAC
+        soundRate = FlvSoundRate.kHz44
+        soundSize = FlvSoundSize.SOUND_16BIT
+        soundType = FlvSoundType.STEREO
     }
 
     override fun encode(socket: RtmpSocket): ByteBuffer {

@@ -2,7 +2,6 @@ package com.haishinkit.view
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.EGL14
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.util.Log
@@ -56,12 +55,10 @@ class GlHkView @JvmOverloads constructor(
                 }
 
             private var texture: SurfaceTexture? = null
-            private var context: GlPixelContext = GlPixelContext()
+            private var context: GlPixelContext = GlPixelContext(context, true)
 
             override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-                this.context.applicationContext = context.applicationContext
                 this.context.setUp()
-                this.context.eglContext = EGL14.eglGetCurrentContext()
                 texture = this.context.createSurfaceTexture(640, 480)
                 strategy.context = this.context
                 (stream?.video as CameraSource).surface = Surface(texture)

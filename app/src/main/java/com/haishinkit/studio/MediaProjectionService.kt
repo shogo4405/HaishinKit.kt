@@ -10,6 +10,7 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.WindowManager
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
@@ -61,7 +62,7 @@ class MediaProjectionService : Service(), IEventListener {
         stream.attachAudio(AudioRecordSource())
         stream.listener = listener
         data?.let {
-            stream.attachCamera(MediaProjectionSource(mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it), metrics))
+            stream.attachVideo(MediaProjectionSource(this, mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it), metrics))
         }
         connection.connect(Preference.shared.rtmpURL)
         return START_NOT_STICKY
@@ -99,5 +100,7 @@ class MediaProjectionService : Service(), IEventListener {
         var metrics = DisplayMetrics()
         var data: Intent? = null
         var listener: RtmpStream.Listener? = null
+
+        private val TAG = MediaProjectionSource::class.java.simpleName
     }
 }

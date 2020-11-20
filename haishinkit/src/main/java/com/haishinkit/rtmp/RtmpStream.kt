@@ -259,7 +259,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher
     /**
      * Attaches a video stream to a RTMPStream.
      */
-    open fun attachCamera(video: VideoSource?) {
+    open fun attachVideo(video: VideoSource?) {
         if (video == null) {
             this.video?.tearDown()
             this.video = null
@@ -383,14 +383,14 @@ open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher
     private fun toMetaData(): Map<String, Any> {
         val metadata = mutableMapOf<String, Any>()
         if (video != null) {
-            metadata["width"] = video?.resolution?.width?.toString() ?: "0"
-            metadata["height"] = video?.resolution?.height?.toString() ?: "0"
+            metadata["width"] = video?.resolution?.width ?: 0
+            metadata["height"] = video?.resolution?.height ?: 0
             metadata["framerate"] = videoCodec.frameRate
-            metadata["videocodecid"] = com.haishinkit.flv.VideoCodec.AVC.toString()
+            metadata["videocodecid"] = com.haishinkit.flv.FlvVideoCodec.AVC.toInt()
             metadata["videodatarate"] = videoCodec.bitRate / 1000
         }
         if (audio != null) {
-            metadata["audiocodecid"] = com.haishinkit.flv.AudioCodec.AAC.toString()
+            metadata["audiocodecid"] = com.haishinkit.flv.FlvAudioCodec.AAC.toInt()
             metadata["audiodatarate"] = audioCodec.bitRate / 1000
         }
         return metadata

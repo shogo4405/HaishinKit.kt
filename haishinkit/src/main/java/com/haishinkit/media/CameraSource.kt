@@ -17,6 +17,8 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
+import com.haishinkit.codec.util.DefaultFpsController
+import com.haishinkit.codec.util.FpsController
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import com.haishinkit.rtmp.RtmpStream
@@ -28,7 +30,10 @@ import javax.microedition.khronos.opengles.GL10
 /**
  * A video source that captures a camera by the Camera2 API.
  */
-class CameraSource(private val activity: Activity) : VideoSource {
+class CameraSource(
+    private val activity: Activity,
+    override var fpsControllerClass: Class<*> = DefaultFpsController::class.java
+) : VideoSource {
     var device: CameraDevice? = null
         private set(value) {
             device?.close()

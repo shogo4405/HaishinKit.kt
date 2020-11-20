@@ -45,7 +45,7 @@ internal class RtmpUserControlMessage : RtmpMessage(RtmpMessage.Type.USER) {
     override fun execute(connection: RtmpConnection): RtmpMessage {
         when (event) {
             RtmpUserControlMessage.Event.PING -> {
-                var message = connection.messageFactory.createRTMPUserControlMessage()
+                var message = connection.messageFactory.createRtmpUserControlMessage()
                 message.event = Event.PONG
                 message.chunkStreamID = RtmpChunk.CONTROL
                 connection.doOutput(RtmpChunk.ZERO, message)
