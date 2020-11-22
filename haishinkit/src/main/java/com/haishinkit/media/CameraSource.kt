@@ -32,7 +32,7 @@ import javax.microedition.khronos.opengles.GL10
  */
 class CameraSource(
     private val activity: Activity,
-    override var fpsControllerClass: Class<*> = DefaultFpsController::class.java
+    override val fpsControllerClass: Class<*>? = null
 ) : VideoSource {
     var device: CameraDevice? = null
         private set(value) {
@@ -58,8 +58,8 @@ class CameraSource(
     override var stream: RtmpStream? = null
         set(value) {
             field = value
+            stream?.videoCodec?.fpsControllerClass = fpsControllerClass
             stream?.videoCodec?.callback = MediaCodec.Callback()
-            stream?.videoCodec?.colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)

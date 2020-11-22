@@ -29,6 +29,7 @@ internal class VideoCodec() : MediaCodec(MIME) {
         set(value) {
             pixelTransform.context = value
         }
+    var fpsControllerClass: Class<*>? = null
     private var pixelTransform: GlPixelTransform = GlPixelTransform()
 
     fun setListener(listener: GlPixelTransform.Listener?) {
@@ -60,6 +61,7 @@ internal class VideoCodec() : MediaCodec(MIME) {
 
     override fun configure(codec: android.media.MediaCodec) {
         super.configure(codec)
+        pixelTransform.fpsControllerClass = fpsControllerClass
         pixelTransform.configure(codec.createInputSurface(), width, height)
     }
 

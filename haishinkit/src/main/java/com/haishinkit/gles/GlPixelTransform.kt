@@ -9,9 +9,11 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
+import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
 import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
+import java.lang.ClassCastException
 import java.lang.ref.WeakReference
 
 internal class GlPixelTransform {
@@ -20,11 +22,12 @@ internal class GlPixelTransform {
     }
 
     var context = GlPixelContext.instance
+    var fpsControllerClass: Class<*>? = null
 
     private var listener: Listener? = null
     private var renderer = GlFramePixelRenderer()
     private var transform = FloatArray(16)
-    private var fpsController: FpsController = ScheduledFpsController()
+    private var fpsController: FpsController = DefaultFpsController.instance
     private var inputWindowSurface = GlWindowSurface()
     private var handler: Handler? = null
         get() {
@@ -77,6 +80,14 @@ internal class GlPixelTransform {
     private fun onConfiguration(surface: Surface, width: Int, height: Int) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "configuration for ${width}x$height surface=$surface")
+        }
+        fpsControllerClass?.let {
+            fpsController = try {
+                it.newInstance() as FpsController
+            } catch (e: ClassCastException) {
+                DefaultFpsController.instance
+            }
+            Log.d(TAG, fpsController.toString())
         }
         renderer.tearDown()
         inputWindowSurface.tearDown()

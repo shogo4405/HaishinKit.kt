@@ -37,7 +37,7 @@ interface VideoSource : Source {
     }
 
     var resolution: Size
-    val fpsControllerClass: Class<*>
+    val fpsControllerClass: Class<*>?
 
     fun createGLSurfaceViewRenderer(): GlRenderer? {
         return null

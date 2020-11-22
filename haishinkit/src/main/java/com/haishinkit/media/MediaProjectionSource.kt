@@ -28,15 +28,15 @@ class MediaProjectionSource(
     private val context: Context,
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
-    override val fpsControllerClass: Class<*> = ScheduledFpsController::class.java
+    override val fpsControllerClass: Class<*>? = ScheduledFpsController::class.java
 ) :
     VideoSource, Choreographer.FrameCallback, GlPixelTransform.Listener {
     var scale = 0.5F
     override var stream: RtmpStream? = null
         set(value) {
             field = value
+            stream?.videoCodec?.fpsControllerClass = fpsControllerClass
             stream?.videoCodec?.callback = MediaCodec.Callback()
-            stream?.videoCodec?.colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(1, 1)
