@@ -11,16 +11,15 @@ internal enum class RtmpChunk(val rawValue: Byte) {
     THREE(0x03);
 
     fun encode(socket: RtmpSocket, message: RtmpMessage): List<ByteBuffer> {
-        val payload = message.encode(socket)
+        val payload = message.payload
+        message.encode(payload)
         payload.flip()
 
         val list = ArrayList<ByteBuffer>()
         val length = payload.limit()
         val timestamp = message.timestamp
         val chunkSize = socket.chunkSizeS
-        var buffer = ByteBuffer.allocate(length(message.chunkStreamID) + if (length < chunkSize) length else chunkSize)
-        message.length = length
-
+        var buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
         buffer.put(header(message.chunkStreamID))
         buffer.put(byteArrayOf((timestamp shr 16).toByte(), (timestamp shr 8).toByte(), timestamp.toByte()))
 
@@ -42,7 +41,6 @@ internal enum class RtmpChunk(val rawValue: Byte) {
 
         if (length < chunkSize) {
             buffer.put(payload.array(), 0, length)
-            buffer.flip()
             list.add(buffer)
             return list
         }
@@ -52,12 +50,12 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         buffer.put(payload.array(), 0, chunkSize)
         list.add(buffer)
         for (i in 1..(length - mod) / chunkSize - 1) {
-            buffer = ByteBuffer.allocate(three.size + chunkSize)
+            buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
             buffer.put(three)
             buffer.put(payload.array(), chunkSize * i, chunkSize)
             list.add(buffer)
         }
-        buffer = ByteBuffer.allocate(three.size + mod)
+        buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
         buffer.put(three)
         buffer.put(payload.array(), length - mod, mod)
         list.add(buffer)
@@ -84,7 +82,7 @@ internal enum class RtmpChunk(val rawValue: Byte) {
                 type = buffer.get()
             }
             TWO -> {
-                var message = connection.messages[chunkStreamID]!!
+                val message = connection.messages[chunkStreamID]!!
                 message.timestamp = getInt(buffer)
                 return message
             }
@@ -92,7 +90,7 @@ internal enum class RtmpChunk(val rawValue: Byte) {
             }
         }
 
-        var message = connection.messageFactory.create(type)
+        val message = connection.messageFactory.create(type)
         message.chunkStreamID = chunkStreamID
         message.streamID = streamID
         message.timestamp = timestamp
@@ -122,12 +120,12 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         val first = buffer.get()
         return when (first.toInt() and 63) {
             0 -> {
-                var bytes = ByteArray(2)
+                val bytes = ByteArray(2)
                 buffer.get(bytes)
                 (bytes[1] + 64).toShort()
             }
             1 -> {
-                var bytes = ByteArray(3)
+                val bytes = ByteArray(3)
                 buffer.get(bytes)
                 (bytes[1].toInt() shl 8 or bytes[2].toInt() or 64.toInt()).toShort()
             }
@@ -157,5 +155,7 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         const val AUDIO: Short = 0x04
         const val VIDEO: Short = 0x05
         const val DEFAULT_SIZE = 128
+
+        private val TAG = RtmpChunk::class.java.simpleName
     }
 }

@@ -5,7 +5,6 @@ import com.haishinkit.amf.Amf0Serializer
 import com.haishinkit.event.Event
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpObjectEncoding
-import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
@@ -17,9 +16,9 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
     var transactionID = 0
     var commandObject: Map<String, Any?>? = null
     var arguments: List<Any?> = mutableListOf()
+    override var length: Int = CAPACITY
 
-    override fun encode(socket: RtmpSocket): ByteBuffer {
-        val buffer = ByteBuffer.allocate(CAPACITY)
+    override fun encode(buffer: ByteBuffer): RtmpMessage {
         if (type == RtmpMessage.Type.AMF3_COMMAND) {
             buffer.put(0x00.toByte())
         }
@@ -30,7 +29,7 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
         for (`object` in arguments) {
             serializer.putObject(`object`)
         }
-        return buffer
+        return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {

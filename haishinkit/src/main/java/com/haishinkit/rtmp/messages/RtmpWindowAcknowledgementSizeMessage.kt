@@ -2,7 +2,6 @@ package com.haishinkit.rtmp.messages
 
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
-import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
 /**
@@ -11,11 +10,11 @@ import java.nio.ByteBuffer
 internal class RtmpWindowAcknowledgementSizeMessage : RtmpMessage(RtmpMessage.Type.ACK) {
     var size: Int = 0
         private set
+    override var length: Int = CAPACITY
 
-    override fun encode(socket: RtmpSocket): ByteBuffer {
-        val buffer = ByteBuffer.allocate(CAPACITY)
+    override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.putInt(size)
-        return buffer
+        return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
@@ -24,7 +23,7 @@ internal class RtmpWindowAcknowledgementSizeMessage : RtmpMessage(RtmpMessage.Ty
     }
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
-        var ack = connection.messageFactory.createRtmpWindowAcknowledgementSizeMessage()
+        val ack = connection.messageFactory.createRtmpWindowAcknowledgementSizeMessage()
         ack.size = size
         ack.chunkStreamID = RtmpChunk.CONTROL
         connection.doOutput(RtmpChunk.ZERO, ack)

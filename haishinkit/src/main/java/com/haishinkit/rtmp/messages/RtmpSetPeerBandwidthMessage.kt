@@ -1,7 +1,6 @@
 package com.haishinkit.rtmp.messages
 
 import com.haishinkit.rtmp.RtmpConnection
-import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
 /**
@@ -19,17 +18,17 @@ internal class RtmpSetPeerBandwidthMessage : RtmpMessage(RtmpMessage.Type.BANDWI
         private set
     var limit = Limit.HARD
         private set
+    override var length: Int = CAPACITY
 
-    override fun encode(socket: RtmpSocket): ByteBuffer {
-        val buffer = ByteBuffer.allocate(CAPACITY)
+    override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.putInt(size)
         buffer.put(limit.rawValue)
-        return buffer
+        return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
         size = buffer.int
-        var limit = buffer.get()
+        val limit = buffer.get()
         this.limit = Limit.values().first { n -> n.rawValue == limit }
         return this
     }

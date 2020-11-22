@@ -26,10 +26,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
             MediaCodec.MIME_VIDEO_AVC -> {
                 videoConfig = AvcConfigurationRecord.create(mediaFormat)
                 val video = stream.connection.messageFactory.createRtmpVideoMessage() as RtmpAvcVideoMessage
-                video.packetType = FlvAvcPacketType.SEQ.toByte()
+                video.packetType = FlvAvcPacketType.SEQ
                 video.frame = FlvFlameType.KEY
                 video.codec = FlvVideoCodec.AVC
-                video.payload = videoConfig!!.toByteBuffer()
+                video.data = videoConfig?.toByteBuffer()
                 video.chunkStreamID = RtmpChunk.VIDEO
                 video.streamID = stream.id
                 message = video
@@ -39,8 +39,8 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
                 audioConfig = AudioSpecificConfig.create(buffer)
                 val audio = stream.connection.messageFactory.createRtmpAudioMessage() as RtmpAacAudioMessage
                 audio.config = audioConfig
-                audio.aacPacketType = FlvAacPacketType.SEQ.toByte()
-                audio.payload = buffer
+                audio.aacPacketType = FlvAacPacketType.SEQ
+                audio.data = buffer
                 audio.chunkStreamID = RtmpChunk.AUDIO
                 audio.streamID = stream.id
                 message = audio
@@ -67,7 +67,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
                 video.packetType = FlvAvcPacketType.NAL
                 video.frame = if (keyframe) FlvFlameType.KEY else FlvFlameType.INTER
                 video.codec = FlvVideoCodec.AVC
-                video.payload = AvcFormatUtils.toNALFileFormat(buffer)
+                video.data = AvcFormatUtils.toNALFileFormat(buffer)
                 video.chunkStreamID = RtmpChunk.VIDEO
                 video.timestamp = timestamp / 1000
                 video.streamID = stream.id
@@ -78,7 +78,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
                 val audio = stream.connection.messageFactory.createRtmpAudioMessage() as RtmpAacAudioMessage
                 audio.aacPacketType = FlvAacPacketType.RAW
                 audio.config = audioConfig
-                audio.payload = buffer
+                audio.data = buffer
                 audio.chunkStreamID = RtmpChunk.AUDIO
                 audio.timestamp = timestamp / 1000
                 audio.streamID = stream.id

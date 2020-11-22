@@ -1,14 +1,19 @@
 package com.haishinkit.rtmp
 
+import android.os.Build
 import android.util.Log
+import com.haishinkit.BuildConfig
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
+import com.haishinkit.metric.FrameTracker
 import com.haishinkit.net.Responder
+import com.haishinkit.rtmp.messages.RtmpAudioMessage
 import com.haishinkit.rtmp.messages.RtmpCommandMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
 import com.haishinkit.rtmp.messages.RtmpMessageFactory
+import com.haishinkit.rtmp.messages.RtmpVideoMessage
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
 import java.nio.ByteBuffer
@@ -173,6 +178,7 @@ open class RtmpConnection : EventDispatcher(null) {
         }
     private var arguments: MutableList<Any?> = mutableListOf()
     private val payloads = ConcurrentHashMap<Short, ByteBuffer>()
+    private val frameTracker = FrameTracker()
 
     init {
         addEventListener(Event.RTMP_STATUS, EventListener(this))
@@ -237,6 +243,13 @@ open class RtmpConnection : EventDispatcher(null) {
     }
 
     internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
+        if (BuildConfig.DEBUG) {
+            if (message is RtmpAudioMessage) {
+                frameTracker.track(FrameTracker.TYPE_AUDIO, System.currentTimeMillis())
+            } else if (message is RtmpVideoMessage) {
+                frameTracker.track(FrameTracker.TYPE_VIDEO, System.currentTimeMillis())
+            }
+        }
         for (buffer in chunk.encode(socket, message)) {
             socket.doOutput(buffer)
         }
@@ -263,7 +276,7 @@ open class RtmpConnection : EventDispatcher(null) {
                 buffer.position(buffer.position() + remaining)
                 if (!payload.hasRemaining()) {
                     payload.flip()
-                    if (VERBOSE) Log.v(javaClass.name + "#listen", message.toString())
+                    if (VERBOSE) Log.v("$TAG#listen", message.toString())
                     message.decode(payload).execute(this)
                     messageFactory.release(message)
                     payloads.remove(streamID)
@@ -271,7 +284,7 @@ open class RtmpConnection : EventDispatcher(null) {
             } else {
                 message = chunk.decode(streamID, this, buffer)
                 if (message.length <= chunkSizeC) {
-                    if (VERBOSE) Log.v(javaClass.name + "#listen", message.toString())
+                    if (VERBOSE) Log.v("$TAG#listen", message.toString())
                     message.decode(buffer).execute(this)
                     messageFactory.release(message)
                 } else {
@@ -344,6 +357,7 @@ open class RtmpConnection : EventDispatcher(null) {
         const val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
         val DEFAULT_OBJECT_ENCODING = RtmpObjectEncoding.AMF0
 
+        private val TAG = RtmpConnection::class.java.simpleName
         private const val DEFAULT_CHUNK_SIZE_S = 1024 * 8
         private const val DEFAULT_CAPABILITIES = 239
         private const val VERBOSE = false

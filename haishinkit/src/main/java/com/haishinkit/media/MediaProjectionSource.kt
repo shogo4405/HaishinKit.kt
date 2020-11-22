@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
-import android.media.MediaCodecInfo
 import android.media.projection.MediaProjection
 import android.util.DisplayMetrics
 import android.util.Log
@@ -12,7 +11,6 @@ import android.util.Size
 import android.view.Choreographer
 import android.view.Surface
 import com.haishinkit.codec.MediaCodec
-import com.haishinkit.codec.util.FpsController
 import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.GlPixelTransform

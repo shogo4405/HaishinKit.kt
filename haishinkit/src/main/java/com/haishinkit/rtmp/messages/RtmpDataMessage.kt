@@ -4,7 +4,6 @@ import com.haishinkit.amf.Amf0Deserializer
 import com.haishinkit.amf.Amf0Serializer
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpObjectEncoding
-import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
@@ -14,9 +13,9 @@ import java.util.ArrayList
 internal class RtmpDataMessage(objectEncoding: RtmpObjectEncoding) : RtmpMessage(objectEncoding.dataType) {
     var handlerName: String? = null
     var arguments: ArrayList<Any?> = ArrayList()
+    override var length: Int = CAPACITY
 
-    override fun encode(socket: RtmpSocket): ByteBuffer {
-        val buffer = ByteBuffer.allocate(1024)
+    override fun encode(buffer: ByteBuffer): RtmpMessage {
         val serializer = Amf0Serializer(buffer)
         serializer.putString(handlerName)
         if (!arguments.isEmpty()) {
@@ -24,7 +23,7 @@ internal class RtmpDataMessage(objectEncoding: RtmpObjectEncoding) : RtmpMessage
                 serializer.putObject(argument)
             }
         }
-        return buffer
+        return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
@@ -40,5 +39,9 @@ internal class RtmpDataMessage(objectEncoding: RtmpObjectEncoding) : RtmpMessage
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
         return this
+    }
+
+    companion object {
+        private const val CAPACITY = 1024
     }
 }

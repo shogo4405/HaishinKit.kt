@@ -1,27 +1,24 @@
 package com.haishinkit.rtmp.messages
 
 import com.haishinkit.flv.FlvVideoCodec
-import com.haishinkit.rtmp.RtmpSocket
 import java.nio.ByteBuffer
 
 internal class RtmpAvcVideoMessage : RtmpVideoMessage() {
+    override var codec = FlvVideoCodec.AVC
     var packetType: Byte = 0
     var compositeTime = 0
+    override var length: Int
+        get() = 5 + (data?.limit() ?: 0)
+        set(value) { super.length = value }
 
-    init {
-        codec = FlvVideoCodec.AVC
-    }
-
-    override fun encode(socket: RtmpSocket): ByteBuffer {
-        val length = payload?.limit() ?: 0
-        val buffer = ByteBuffer.allocate(5 + length)
+    override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.put((frame.toInt() shl 4 or codec.toInt()).toByte())
         buffer.put(packetType)
         buffer.put(byteArrayOf((compositeTime shr 16).toByte(), (compositeTime shr 8).toByte(), compositeTime.toByte()))
-        if (0 < length) {
-            buffer.put(payload)
+        data?.let {
+            buffer.put(it)
         }
-        return buffer
+        return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {

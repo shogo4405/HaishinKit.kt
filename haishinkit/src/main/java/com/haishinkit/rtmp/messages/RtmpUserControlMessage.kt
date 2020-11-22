@@ -2,7 +2,6 @@ package com.haishinkit.rtmp.messages
 
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
-import com.haishinkit.rtmp.RtmpSocket
 import com.haishinkit.rtmp.RtmpStream
 import java.nio.ByteBuffer
 
@@ -27,12 +26,12 @@ internal class RtmpUserControlMessage : RtmpMessage(RtmpMessage.Type.USER) {
         private set
     var value = 0
         private set
+    override var length: Int = CAPACITY
 
-    override fun encode(socket: RtmpSocket): ByteBuffer {
-        val buffer = ByteBuffer.allocate(CAPACITY)
+    override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.putShort(event.rawValue)
         buffer.putInt(value)
-        return buffer
+        return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
@@ -45,7 +44,7 @@ internal class RtmpUserControlMessage : RtmpMessage(RtmpMessage.Type.USER) {
     override fun execute(connection: RtmpConnection): RtmpMessage {
         when (event) {
             RtmpUserControlMessage.Event.PING -> {
-                var message = connection.messageFactory.createRtmpUserControlMessage()
+                val message = connection.messageFactory.createRtmpUserControlMessage()
                 message.event = Event.PONG
                 message.chunkStreamID = RtmpChunk.CONTROL
                 connection.doOutput(RtmpChunk.ZERO, message)

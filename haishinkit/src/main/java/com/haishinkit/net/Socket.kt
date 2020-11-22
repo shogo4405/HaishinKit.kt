@@ -1,5 +1,6 @@
 package com.haishinkit.net
 
+import android.support.v4.util.Pools
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,7 @@ internal abstract class Socket : CoroutineScope {
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
     private var outputQueue = ArrayBlockingQueue<ByteBuffer>(128)
+    private var outputBufferPool = Pools.SimplePool<ByteBuffer>(1024)
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
     @Volatile private var keepAlive = false
@@ -46,10 +48,23 @@ internal abstract class Socket : CoroutineScope {
 
     fun doOutput(buffer: ByteBuffer) {
         try {
+            buffer.flip()
             queueBytesOut.addAndGet(buffer.remaining().toLong())
             outputQueue.put(buffer)
         } catch (e: InterruptedException) {
-            Log.v(javaClass.name + "#doOutput", "", e)
+            Log.v(TAG, "", e)
+        }
+    }
+
+    fun createByteBuffer(capacity: Int): ByteBuffer {
+        synchronized(outputBufferPool) {
+            var byteBuffer = outputBufferPool.acquire()
+            if (byteBuffer == null || byteBuffer.capacity() != capacity) {
+                byteBuffer = ByteBuffer.allocate(capacity)
+            } else {
+                byteBuffer.clear()
+            }
+            return byteBuffer
         }
     }
 
@@ -71,7 +86,7 @@ internal abstract class Socket : CoroutineScope {
             listen(buffer)
             inputBuffer = buffer.slice()
         } catch (e: IOException) {
-            Log.w(javaClass.name + "#doInput", "", e)
+            Log.w(TAG, "", e)
             close(true)
         }
     }
@@ -81,16 +96,23 @@ internal abstract class Socket : CoroutineScope {
             for (buffer in outputQueue) {
                 try {
                     val remaining = buffer.remaining().toLong()
-                    buffer.flip()
-                    outputStream?.write(buffer.array())
+                    outputStream?.write(buffer.array(), 0, buffer.remaining())
                     outputStream?.flush()
                     outputQueue.remove(buffer)
                     totalBytesOut.addAndGet(remaining)
                     queueBytesOut.addAndGet(remaining * -1)
+                    synchronized(outputBufferPool) {
+                        outputBufferPool.release(buffer)
+                    }
                 } catch (e: IOException) {
-                    Log.w(javaClass.name + "#doOutput", "", e)
+                    Log.w(TAG, "", e)
                     close(false)
                 }
+            }
+            try {
+                Thread.sleep(KEEPALIVE_SLEEP_INTERVAL)
+            } catch (e: InterruptedException) {
+                Log.w(TAG, "", e)
             }
         }
     }
@@ -111,13 +133,18 @@ internal abstract class Socket : CoroutineScope {
             }
             while (keepAlive) {
                 doInput()
+                try {
+                    Thread.sleep(KEEPALIVE_SLEEP_INTERVAL)
+                } catch (e: InterruptedException) {
+                    Log.w(TAG, "", e)
+                }
             }
         } catch (e: SocketTimeoutException) {
-            Log.w(javaClass.name + "#doConnection", "", e)
+            Log.w(TAG, "", e)
             close(false)
             onTimeout()
         } catch (e: Exception) {
-            Log.w(javaClass.name + "#doConnection", "", e)
+            Log.w(TAG, "", e)
             close(true)
         }
     }
@@ -128,5 +155,8 @@ internal abstract class Socket : CoroutineScope {
 
     companion object {
         const val DEFAULT_TIMEOUT: Int = 1000
+
+        private val KEEPALIVE_SLEEP_INTERVAL = 100L
+        private val TAG = Socket::class.java.simpleName
     }
 }

@@ -2,8 +2,6 @@ package com.haishinkit.media
 
 import android.opengl.GLSurfaceView
 import android.util.Size
-import com.haishinkit.codec.util.DefaultFpsController
-import com.haishinkit.codec.util.FpsController
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.util.VideoGravity
 import javax.microedition.khronos.egl.EGLConfig

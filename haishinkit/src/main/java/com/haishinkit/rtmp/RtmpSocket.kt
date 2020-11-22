@@ -30,7 +30,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
     override fun onTimeout() {
         close(false)
         connection.dispatchEventWith(Event.IO_ERROR, false)
-        Log.i(javaClass.name + "#onTimeout", "connection timedout")
+        Log.i(TAG, "a connection was timeout")
     }
 
     override fun onConnect() {
@@ -52,8 +52,8 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
         }
         readyState = RtmpSocket.ReadyState.Closing
         super.close(disconnected)
-        if (data != null) {
-            connection.dispatchEventWith(Event.RTMP_STATUS, false, data)
+        data?.let {
+            connection.dispatchEventWith(Event.RTMP_STATUS, false, it)
         }
         readyState = RtmpSocket.ReadyState.Closed
         isConnected = false
@@ -88,9 +88,9 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
                 try {
                     connection.listen(buffer)
                 } catch (e: IndexOutOfBoundsException) {
-                    Log.w(javaClass.name + "#listen", "", e)
+                    Log.w(TAG, "", e)
                 } catch (e: IllegalArgumentException) {
-                    Log.w(javaClass.name + "#listen", "", e)
+                    Log.w(TAG, "", e)
                     throw e
                 }
             else -> {}
@@ -99,5 +99,9 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
+    }
+
+    companion object {
+        private var TAG = RtmpSocket::class.java.simpleName
     }
 }

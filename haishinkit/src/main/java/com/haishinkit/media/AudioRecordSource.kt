@@ -36,24 +36,19 @@ class AudioRecordSource() : AudioSource {
     override var stream: RtmpStream? = null
     override val isRunning = AtomicBoolean(false)
 
-    private var _minBufferSize: Int = -1
-    var minBufferSize: Int
+    var minBufferSize: Int = -1
         get() {
-            if (_minBufferSize == -1) {
-                _minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channel, encoding)
+            if (field == -1) {
+                field = AudioRecord.getMinBufferSize(sampleRate, channel, encoding)
             }
-            return _minBufferSize
-        }
-        set(value) {
-            _minBufferSize = value
+            return field
         }
 
-    private var _audioRecord: AudioRecord? = null
-    var audioRecord: AudioRecord
+    var audioRecord: AudioRecord? = null
         get() {
-            if (_audioRecord == null) {
+            if (field == null) {
                 if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                    _audioRecord = AudioRecord.Builder()
+                    field = AudioRecord.Builder()
                         .setAudioSource(audioSource)
                         .setAudioFormat(
                             AudioFormat.Builder()
@@ -65,7 +60,7 @@ class AudioRecordSource() : AudioSource {
                         .setBufferSizeInBytes(minBufferSize)
                         .build()
                 } else {
-                    _audioRecord = AudioRecord(
+                    field = AudioRecord(
                         audioSource,
                         sampleRate,
                         channel,
@@ -74,10 +69,7 @@ class AudioRecordSource() : AudioSource {
                     )
                 }
             }
-            return _audioRecord as AudioRecord
-        }
-        set(value) {
-            _audioRecord = value
+            return field
         }
 
     var currentPresentationTimestamp: Long = 0L
@@ -97,13 +89,13 @@ class AudioRecordSource() : AudioSource {
     override fun startRunning() {
         if (isRunning.get()) return
         currentPresentationTimestamp = 0
-        audioRecord.startRecording()
+        audioRecord?.startRecording()
         isRunning.set(true)
     }
 
     override fun stopRunning() {
         if (!isRunning.get()) return
-        audioRecord.stop()
+        audioRecord?.stop()
         isRunning.set(false)
     }
 
@@ -112,7 +104,7 @@ class AudioRecordSource() : AudioSource {
     }
 
     private fun read(audioBuffer: ByteBuffer): Int {
-        val result = audioRecord.read(audioBuffer, sampleCount * 2)
+        val result = audioRecord?.read(audioBuffer, sampleCount * 2) ?: -1
         if (0 <= result) {
             currentPresentationTimestamp += timestamp(result / 2)
         } else {
@@ -123,7 +115,7 @@ class AudioRecordSource() : AudioSource {
                 AudioRecord.ERROR -> "ERROR"
                 else -> "ERROR($result)"
             }
-            Log.w(javaClass.name + "#read", error)
+            Log.w(TAG, error)
         }
         return result
     }
@@ -137,5 +129,7 @@ class AudioRecordSource() : AudioSource {
         const val DEFAULT_ENCODING = AudioFormat.ENCODING_PCM_16BIT
         const val DEFAULT_SAMPLE_RATE = 44100
         const val DEFAULT_AUDIO_SOURCE = MediaRecorder.AudioSource.CAMCORDER
+
+        private val TAG = AudioRecordSource::class.java.simpleName
     }
 }

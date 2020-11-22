@@ -2,6 +2,7 @@ package com.haishinkit.view
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.opengl.EGL14
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.util.Log
@@ -15,6 +16,7 @@ import com.haishinkit.util.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.egl.EGLContext
 import javax.microedition.khronos.opengles.GL10
 
 /**
@@ -58,6 +60,7 @@ class GlHkView @JvmOverloads constructor(
             private var context: GlPixelContext = GlPixelContext(context, true)
 
             override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
+                this.context.eglContext = EGL14.eglGetCurrentContext()
                 this.context.setUp()
                 texture = this.context.createSurfaceTexture(640, 480)
                 strategy.context = this.context

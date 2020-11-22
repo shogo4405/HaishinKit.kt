@@ -1,7 +1,7 @@
 package com.haishinkit.rtmp.messages
 
+import android.util.Log
 import com.haishinkit.rtmp.RtmpConnection
-import com.haishinkit.rtmp.RtmpSocket
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
@@ -29,21 +29,35 @@ internal open class RtmpMessage(val type: Type) {
     var chunkStreamID: Short = 0
     var streamID: Int = 0
     var timestamp: Int = 0
-    var length: Int = 0
+    open var payload: ByteBuffer = EMPTY_BYTE_BUFFER
+        get() {
+            if (field.capacity() < length) {
+                field = ByteBuffer.allocate(length)
+            } else {
+                field.clear()
+            }
+            return field
+        }
+    open var length: Int = 0
 
-    open fun encode(socket: RtmpSocket): ByteBuffer {
-        throw NotImplementedException(javaClass.name + "#encode")
+    open fun encode(buffer: ByteBuffer): RtmpMessage {
+        throw NotImplementedException("$TAG#encode")
     }
 
     open fun decode(buffer: ByteBuffer): RtmpMessage {
-        throw NotImplementedException(javaClass.name + "#decode")
+        throw NotImplementedException("$TAG#decode")
     }
 
     open fun execute(connection: RtmpConnection): RtmpMessage {
-        throw NotImplementedException(javaClass.name + "#execute")
+        throw NotImplementedException("$TAG#execute")
     }
 
     override fun toString(): String {
         return ToStringBuilder.reflectionToString(this)
+    }
+
+    companion object {
+        private var EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0)
+        private val TAG = RtmpMessage::class.java.simpleName
     }
 }

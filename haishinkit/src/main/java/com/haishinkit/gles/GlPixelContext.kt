@@ -3,6 +3,7 @@ package com.haishinkit.gles
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.SurfaceTexture
+import android.opengl.EGLContext
 import android.opengl.GLES20
 import android.util.Size
 import android.view.Surface
@@ -14,6 +15,7 @@ class GlPixelContext(private val context: Context? = null, private val swapped: 
     var textureId: Int = 0
         private set
     var textureSize = Size(0, 0)
+    var eglContext: EGLContext? = null
     val orientation: Int
         get() {
             context ?: return ROTATION_0
@@ -52,6 +54,7 @@ class GlPixelContext(private val context: Context? = null, private val swapped: 
         if (!utilizable) return
 
         textureId = 0
+        eglContext = null
 
         super.tearDown()
     }

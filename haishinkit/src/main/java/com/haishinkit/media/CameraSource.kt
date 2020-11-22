@@ -9,7 +9,6 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CaptureRequest
-import android.media.MediaCodecInfo
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -17,8 +16,6 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
-import com.haishinkit.codec.util.DefaultFpsController
-import com.haishinkit.codec.util.FpsController
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import com.haishinkit.rtmp.RtmpStream

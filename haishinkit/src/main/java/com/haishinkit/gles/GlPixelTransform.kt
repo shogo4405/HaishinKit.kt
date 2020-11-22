@@ -11,7 +11,6 @@ import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
-import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import java.lang.ClassCastException
 import java.lang.ref.WeakReference
@@ -91,7 +90,7 @@ internal class GlPixelTransform {
         }
         renderer.tearDown()
         inputWindowSurface.tearDown()
-        inputWindowSurface.setUp(surface, null)
+        inputWindowSurface.setUp(surface, context.eglContext)
         inputWindowSurface.makeCurrent()
         renderer.resolution = Size(width, height)
         renderer.setUp()
