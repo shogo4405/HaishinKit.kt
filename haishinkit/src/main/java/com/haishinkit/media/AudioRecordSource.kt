@@ -10,22 +10,24 @@ import com.haishinkit.net.NetStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
+import java.util.Arrays
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * An audio source that captures a microphone by the AudioRecord api.
  */
-class AudioRecordSource() : AudioSource {
-    internal class Callback(private val audio: AudioRecordSource) : MediaCodec.Callback() {
+class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource {
+    internal class Callback(private val audio: AudioRecordSource) : MediaCodec.Callback(MediaCodec.MIME_AUDIO_MP4A) {
         override fun onInputBufferAvailable(codec: android.media.MediaCodec, index: Int) {
             try {
+                if (!audio.isRunning.get()) return
                 val inputBuffer = codec.getInputBuffer(index) ?: return
                 val result = audio.read(inputBuffer)
                 if (0 <= result) {
                     codec.queueInputBuffer(index, 0, result, audio.currentPresentationTimestamp, 0)
                 }
             } catch (e: IllegalStateException) {
-                Log.w(javaClass.name, e)
+                Log.w(TAG, e)
             }
         }
     }
@@ -33,10 +35,11 @@ class AudioRecordSource() : AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
+    @Volatile var muted = false
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
 
-    var minBufferSize: Int = -1
+    var minBufferSize = -1
         get() {
             if (field == -1) {
                 field = AudioRecord.getMinBufferSize(sampleRate, channel, encoding)
@@ -72,23 +75,27 @@ class AudioRecordSource() : AudioSource {
             return field
         }
 
-    var currentPresentationTimestamp: Long = 0L
+    var currentPresentationTimestamp = DEFAULT_TIMESTAMP
         private set
 
     private var encoding = DEFAULT_ENCODING
-    private var sampleCount = 1024
+    private var sampleCount = DEFAULT_SAMPLE_COUNT
 
     override fun setUp() {
+        if (utilizable) return
         stream?.audioCodec?.callback = Callback(this)
+        super.setUp()
     }
 
     override fun tearDown() {
+        if (!utilizable) return
         stream?.audioCodec?.callback = null
+        super.tearDown()
     }
 
     override fun startRunning() {
         if (isRunning.get()) return
-        currentPresentationTimestamp = 0
+        currentPresentationTimestamp = DEFAULT_TIMESTAMP
         audioRecord?.startRecording()
         isRunning.set(true)
     }
@@ -106,6 +113,9 @@ class AudioRecordSource() : AudioSource {
     private fun read(audioBuffer: ByteBuffer): Int {
         val result = audioRecord?.read(audioBuffer, sampleCount * 2) ?: -1
         if (0 <= result) {
+            if (muted) {
+                Arrays.fill(audioBuffer.array(), audioBuffer.position(), result, 0.toByte())
+            }
             currentPresentationTimestamp += timestamp(result / 2)
         } else {
             val error = when (result) {
@@ -129,7 +139,9 @@ class AudioRecordSource() : AudioSource {
         const val DEFAULT_ENCODING = AudioFormat.ENCODING_PCM_16BIT
         const val DEFAULT_SAMPLE_RATE = 44100
         const val DEFAULT_AUDIO_SOURCE = MediaRecorder.AudioSource.CAMCORDER
+        const val DEFAULT_SAMPLE_COUNT = 1024
 
+        private const val DEFAULT_TIMESTAMP = 0L
         private val TAG = AudioRecordSource::class.java.simpleName
     }
 }

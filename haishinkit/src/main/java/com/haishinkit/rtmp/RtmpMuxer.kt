@@ -1,6 +1,7 @@
 package com.haishinkit.rtmp
 
 import android.media.MediaFormat
+import android.util.Log
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.flv.FlvAacPacketType
 import com.haishinkit.flv.FlvAvcPacketType
@@ -12,11 +13,11 @@ import com.haishinkit.rtmp.messages.RtmpAacAudioMessage
 import com.haishinkit.rtmp.messages.RtmpAvcVideoMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
 import java.nio.ByteBuffer
-import java.util.concurrent.ConcurrentHashMap
 
 internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
-    private val timestamps = ConcurrentHashMap<String, Long>()
+    private var audioTimestamp = 0L
     private var audioConfig: AudioSpecificConfig? = null
+    private var videoTimestamp = 0L
     private var videoConfig: AvcConfigurationRecord? = null
 
     override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
@@ -54,13 +55,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
         if (info.flags and android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
             return
         }
-        var timestamp = 0
+        val timestamp: Int
         var message: RtmpMessage? = null
-        if (timestamps.containsKey(mime)) {
-            timestamp = (info.presentationTimeUs - timestamps[mime]!!.toLong()).toInt()
-        }
         when (mime) {
             MediaCodec.MIME_VIDEO_AVC -> {
+                timestamp = (info.presentationTimeUs - videoTimestamp).toInt()
                 val keyframe = info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
                 val video = stream.connection.messageFactory.createRtmpVideoMessage() as RtmpAvcVideoMessage
                 video.packetType = FlvAvcPacketType.NAL
@@ -72,8 +71,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
                 video.streamID = stream.id
                 message = video
                 stream.frameCount.incrementAndGet()
+                videoTimestamp = info.presentationTimeUs
             }
             MediaCodec.MIME_AUDIO_MP4A -> {
+                timestamp = (info.presentationTimeUs - audioTimestamp).toInt()
                 val audio = stream.connection.messageFactory.createRtmpAudioMessage() as RtmpAacAudioMessage
                 audio.aacPacketType = FlvAacPacketType.RAW
                 audio.config = audioConfig
@@ -82,15 +83,22 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
                 audio.timestamp = timestamp / 1000
                 audio.streamID = stream.id
                 message = audio
+                audioTimestamp = info.presentationTimeUs
             }
         }
         if (message != null) {
             stream.connection.doOutput(RtmpChunk.ONE, message)
         }
-        timestamps[mime] = info.presentationTimeUs
     }
 
     fun clear() {
-        timestamps.clear()
+        audioConfig = null
+        audioTimestamp = 0L
+        videoConfig = null
+        videoTimestamp = 0L
+    }
+
+    companion object {
+        private var TAG = RtmpMuxer::class.java.simpleName
     }
 }

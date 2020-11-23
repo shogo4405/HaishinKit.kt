@@ -56,7 +56,7 @@ internal open class RtmpMessage(val type: Type) {
     }
 
     companion object {
-        private var EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0)
+        val EMPTY_BYTE_BUFFER: ByteBuffer = ByteBuffer.allocate(0)
         private val TAG = RtmpMessage::class.java.simpleName
     }
 }

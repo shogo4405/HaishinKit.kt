@@ -2,7 +2,6 @@ package com.haishinkit.rtmp
 
 import com.haishinkit.rtmp.messages.RtmpMessage
 import java.nio.ByteBuffer
-import java.util.ArrayList
 
 internal enum class RtmpChunk(val rawValue: Byte) {
     ZERO(0x00),
@@ -10,29 +9,28 @@ internal enum class RtmpChunk(val rawValue: Byte) {
     TWO(0x02),
     THREE(0x03);
 
-    fun encode(socket: RtmpSocket, message: RtmpMessage): List<ByteBuffer> {
+    fun encode(socket: RtmpSocket, message: RtmpMessage) {
         val payload = message.payload
         message.encode(payload)
         payload.flip()
 
-        val list = ArrayList<ByteBuffer>()
         val length = payload.limit()
         val timestamp = message.timestamp
         val chunkSize = socket.chunkSizeS
         var buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
-        buffer.put(header(message.chunkStreamID))
-        buffer.put(byteArrayOf((timestamp shr 16).toByte(), (timestamp shr 8).toByte(), timestamp.toByte()))
+        putHeader(buffer, message.chunkStreamID)
+        buffer.put((timestamp shr 16).toByte()).put((timestamp shr 8).toByte()).put(timestamp.toByte())
 
         when (this) {
             ZERO -> {
-                buffer.put(byteArrayOf((length shr 16).toByte(), (length shr 8).toByte(), length.toByte()))
+                buffer.put((length shr 16).toByte()).put((length shr 8).toByte()).put(length.toByte())
                 buffer.put(message.type.rawValue)
                 val streamID = message.streamID
                 // message streamID is a litleEndian
-                buffer.put(byteArrayOf(streamID.toByte(), (streamID shr 8).toByte(), (streamID shr 16).toByte(), (streamID shr 24).toByte()))
+                buffer.put(streamID.toByte()).put((streamID shr 8).toByte()).put((streamID shr 16).toByte()).put((streamID shr 24).toByte())
             }
             ONE -> {
-                buffer.put(byteArrayOf((length shr 16).toByte(), (length shr 8).toByte(), length.toByte()))
+                buffer.put((length shr 16).toByte()).put((length shr 8).toByte()).put(length.toByte())
                 buffer.put(message.type.rawValue)
             }
             else -> {
@@ -41,26 +39,23 @@ internal enum class RtmpChunk(val rawValue: Byte) {
 
         if (length < chunkSize) {
             buffer.put(payload.array(), 0, length)
-            list.add(buffer)
-            return list
+            socket.doOutput(buffer)
+            return
         }
 
         val mod = length % chunkSize
-        val three = RtmpChunk.THREE.header(message.chunkStreamID)
         buffer.put(payload.array(), 0, chunkSize)
-        list.add(buffer)
-        for (i in 1..(length - mod) / chunkSize - 1) {
+        socket.doOutput(buffer)
+        for (i in 1 until (length - mod) / chunkSize) {
             buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
-            buffer.put(three)
+            RtmpChunk.THREE.putHeader(buffer, message.chunkStreamID)
             buffer.put(payload.array(), chunkSize * i, chunkSize)
-            list.add(buffer)
+            socket.doOutput(buffer)
         }
         buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
-        buffer.put(three)
+        RtmpChunk.THREE.putHeader(buffer, message.chunkStreamID)
         buffer.put(payload.array(), length - mod, mod)
-        list.add(buffer)
-
-        return list
+        socket.doOutput(buffer)
     }
 
     fun decode(chunkStreamID: Short, connection: RtmpConnection, buffer: ByteBuffer): RtmpMessage {
@@ -111,7 +106,6 @@ internal enum class RtmpChunk(val rawValue: Byte) {
             ONE -> basic + 7
             TWO -> basic + 3
             THREE -> basic + 0
-            else -> 0
         }
     }
 
@@ -127,20 +121,22 @@ internal enum class RtmpChunk(val rawValue: Byte) {
             1 -> {
                 val bytes = ByteArray(3)
                 buffer.get(bytes)
-                (bytes[1].toInt() shl 8 or bytes[2].toInt() or 64.toInt()).toShort()
+                (bytes[1].toInt() shl 8 or bytes[2].toInt() or 64).toShort()
             }
             else -> (first.toInt() and 63).toShort()
         }
     }
 
-    private fun header(streamID: Short): ByteArray {
+    private fun putHeader(buffer: ByteBuffer, streamID: Short) {
         if (streamID <= 63) {
-            return byteArrayOf((rawValue.toInt() shl 6 or streamID.toInt()).toByte())
+            buffer.put((rawValue.toInt() shl 6 or streamID.toInt()).toByte())
+            return
         }
         if (streamID <= 319) {
-            return byteArrayOf((rawValue.toInt() shl 6 or 0).toByte(), (streamID - 64).toByte())
+            buffer.put((rawValue.toInt() shl 6 or 0).toByte()).put((streamID - 64).toByte())
+            return
         }
-        return byteArrayOf((rawValue.toInt() shl 6 or 1).toByte(), (streamID - 64 shr 8).toByte(), (streamID - 64).toByte())
+        buffer.put((rawValue.toInt() shl 6 or 1).toByte()).put((streamID - 64 shr 8).toByte()).put((streamID - 64).toByte())
     }
 
     private fun getInt(buffer: ByteBuffer): Int {

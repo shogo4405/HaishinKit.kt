@@ -29,7 +29,8 @@ import javax.microedition.khronos.opengles.GL10
  */
 class CameraSource(
     private val activity: Activity,
-    override val fpsControllerClass: Class<*>? = null
+    override val fpsControllerClass: Class<*>? = null,
+    override var utilizable: Boolean = false
 ) : VideoSource {
     var device: CameraDevice? = null
         private set(value) {
@@ -56,7 +57,7 @@ class CameraSource(
         set(value) {
             field = value
             stream?.videoCodec?.fpsControllerClass = fpsControllerClass
-            stream?.videoCodec?.callback = MediaCodec.Callback()
+            stream?.videoCodec?.callback = MediaCodec.Callback(MediaCodec.MIME_VIDEO_AVC)
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
@@ -68,7 +69,7 @@ class CameraSource(
     private var request: CaptureRequest.Builder? = null
     private var manager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private val backgroundHandler by lazy {
-        val thread = HandlerThread(javaClass.name)
+        val thread = HandlerThread(TAG)
         thread.start()
         Handler(thread.looper)
     }
@@ -98,13 +99,17 @@ class CameraSource(
     }
 
     override fun setUp() {
+        if (utilizable) return
         stream?.renderer?.startRunning()
+        super.setUp()
     }
 
     override fun tearDown() {
+        if (!utilizable) return
         request = null
         session = null
         device = null
+        super.tearDown()
     }
 
     override fun startRunning() {

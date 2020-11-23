@@ -12,11 +12,20 @@ internal class RtmpAvcVideoMessage : RtmpVideoMessage() {
     override var length: Int
         get() = 5 + (data?.limit() ?: 0)
         set(value) { super.length = value }
+    override var payload: ByteBuffer = EMPTY_BYTE_BUFFER
+        get() {
+            if (field.capacity() < length) {
+                field = ByteBuffer.allocate(5 + (data?.capacity() ?: 0))
+            } else {
+                field.clear()
+            }
+            return field
+        }
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.put((frame.toInt() shl 4 or codec.toInt()).toByte())
         buffer.put(packetType)
-        buffer.put(byteArrayOf((compositeTime shr 16).toByte(), (compositeTime shr 8).toByte(), compositeTime.toByte()))
+        buffer.put((compositeTime shr 16).toByte()).put((compositeTime shr 8).toByte()).put(compositeTime.toByte())
         data?.let {
             when (packetType) {
                 FlvAvcPacketType.NAL -> {

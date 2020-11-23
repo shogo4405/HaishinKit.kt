@@ -6,6 +6,7 @@ import android.graphics.SurfaceTexture
 import android.opengl.EGLContext
 import android.opengl.GLES20
 import android.util.Size
+import android.view.Display
 import android.view.Surface
 import android.view.WindowManager
 import com.haishinkit.lang.Utilize
@@ -19,8 +20,7 @@ class GlPixelContext(private val context: Context? = null, private val swapped: 
     val orientation: Int
         get() {
             context ?: return ROTATION_0
-            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            return when (windowManager.defaultDisplay?.rotation ?: -1) {
+            return when (defaultDisplay?.rotation ?: -1) {
                 Surface.ROTATION_0 -> if (isPortrait) ROTATION_270 else ROTATION_0
                 Surface.ROTATION_90 -> if (isPortrait) ROTATION_0 else ROTATION_90
                 Surface.ROTATION_180 -> if (isPortrait) ROTATION_90 else ROTATION_180
@@ -28,10 +28,13 @@ class GlPixelContext(private val context: Context? = null, private val swapped: 
                 else -> 0
             }
         }
+    private var defaultDisplay: Display? = null
     private var isPortrait: Boolean = false
 
     init {
         if (context != null && swapped) {
+            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            defaultDisplay = windowManager.defaultDisplay
             isPortrait = if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 (orientation == Surface.ROTATION_0 || orientation == Surface.ROTATION_180)
             } else {

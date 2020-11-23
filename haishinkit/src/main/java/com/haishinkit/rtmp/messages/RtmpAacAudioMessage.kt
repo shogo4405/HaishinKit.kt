@@ -18,12 +18,21 @@ internal class RtmpAacAudioMessage : RtmpAudioMessage() {
     override var length: Int
         get() = 2 + (data?.limit() ?: 0)
         set(value) { super.length = value }
+    override var payload: ByteBuffer = EMPTY_BYTE_BUFFER
+        get() {
+            if (field.capacity() < length) {
+                field = ByteBuffer.allocate(2 + (data?.capacity() ?: 0))
+            } else {
+                field.clear()
+            }
+            return field
+        }
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.put(AAC)
         buffer.put(aacPacketType)
         data?.let {
-            buffer.put(data)
+            buffer.put(it)
         }
         return this
     }

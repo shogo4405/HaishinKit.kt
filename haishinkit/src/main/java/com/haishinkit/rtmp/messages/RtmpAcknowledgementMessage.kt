@@ -7,13 +7,9 @@ import java.nio.ByteBuffer
  * 5.4.3 Acknowledgement (3)
  */
 internal class RtmpAcknowledgementMessage : RtmpMessage(RtmpMessage.Type.ACK) {
-    var sequence: ByteArray? = null
+    var sequence = ByteArray(CAPACITY)
         private set
     override var length: Int = CAPACITY
-
-    init {
-        sequence = ByteArray(CAPACITY)
-    }
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.put(sequence)

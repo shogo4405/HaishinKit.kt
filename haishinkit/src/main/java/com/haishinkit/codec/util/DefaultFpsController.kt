@@ -9,6 +9,9 @@ internal class DefaultFpsController : FpsController {
         return timestamp
     }
 
+    override fun clear() {
+    }
+
     companion object {
         var instance = DefaultFpsController()
     }

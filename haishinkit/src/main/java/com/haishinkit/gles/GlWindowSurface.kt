@@ -4,9 +4,11 @@ import android.opengl.EGL14
 import android.opengl.EGLConfig
 import android.opengl.EGLContext
 import android.opengl.EGLExt
+import android.opengl.GLES20
 import android.util.Log
 import android.view.Surface
 import com.haishinkit.lang.Utilize
+import java.nio.ByteBuffer
 
 internal class GlWindowSurface(
     override var utilizable: Boolean = false
@@ -33,6 +35,10 @@ internal class GlWindowSurface(
     fun setPresentationTime(timestamp: Long): Boolean {
         if (!utilizable) return false
         return EGLExt.eglPresentationTimeANDROID(display, surface, timestamp)
+    }
+
+    fun readPixels(width: Int, height: Int, buffer: ByteBuffer) {
+        GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer)
     }
 
     fun setUp(surface: Surface?, eglSharedContext: EGLContext?) {

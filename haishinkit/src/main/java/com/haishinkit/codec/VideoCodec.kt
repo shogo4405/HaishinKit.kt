@@ -7,8 +7,26 @@ import android.os.Build
 import android.os.Bundle
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.GlPixelTransform
+import kotlin.properties.Delegates
 
-internal class VideoCodec() : MediaCodec(MIME) {
+class VideoCodec() : MediaCodec(MIME) {
+    class Setting(var codec: VideoCodec? = null) : MediaCodec.Setting(codec) {
+        var width: Int by Delegates.observable(VideoCodec.DEFAULT_WIDTH) { _, _, newValue ->
+            codec?.width = newValue
+        }
+        var height: Int by Delegates.observable(VideoCodec.DEFAULT_HEIGHT) { _, _, newValue ->
+            codec?.height = newValue
+        }
+        var bitRate: Int by Delegates.observable(VideoCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
+            codec?.bitRate = newValue
+        }
+        var IFrameInterval: Int by Delegates.observable(VideoCodec.DEFAULT_I_FRAME_INTERVAL) { _, _, newValue ->
+            codec?.IFrameInterval = newValue
+        }
+        var frameRate: Int by Delegates.observable(VideoCodec.DEFAULT_FRAME_RATE) { _, _, newValue ->
+            codec?.frameRate = newValue
+        }
+    }
     var bitRate = DEFAULT_BIT_RATE
         set(value) {
             field = value

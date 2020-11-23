@@ -5,61 +5,17 @@ import com.haishinkit.codec.VideoCodec
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
 import com.haishinkit.view.NetStreamView
-import org.apache.commons.lang3.builder.ToStringBuilder
-import kotlin.properties.Delegates
 
 /**
  * The `NetStream` class is the foundation of a RTMPStream.
  */
-open abstract class NetStream {
-    class AudioSettings(private var stream: NetStream?) {
-        var channelCount: Int by Delegates.observable(AudioCodec.DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
-            stream?.audioCodec?.channelCount = newValue
-        }
-        var bitRate: Int by Delegates.observable(AudioCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
-            stream?.audioCodec?.bitRate = newValue
-        }
-        var sampleRate: Int by Delegates.observable(AudioCodec.DEFAULT_SAMPLE_RATE) { _, _, newValue ->
-            stream?.audioCodec?.sampleRate = newValue
-        }
-        fun dispose() {
-            stream = null
-        }
-        override fun toString(): String {
-            return ToStringBuilder.reflectionToString(this)
-        }
+abstract class NetStream {
+    val videoSetting: VideoCodec.Setting by lazy {
+        VideoCodec.Setting(videoCodec)
     }
 
-    class VideoSettings(private var stream: NetStream?) {
-        var width: Int by Delegates.observable(VideoCodec.DEFAULT_WIDTH) { _, _, newValue ->
-            stream?.videoCodec?.width = newValue
-        }
-        var height: Int by Delegates.observable(VideoCodec.DEFAULT_HEIGHT) { _, _, newValue ->
-            stream?.videoCodec?.height = newValue
-        }
-        var bitRate: Int by Delegates.observable(VideoCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
-            stream?.videoCodec?.bitRate = newValue
-        }
-        var IFrameInterval: Int by Delegates.observable(VideoCodec.DEFAULT_I_FRAME_INTERVAL) { _, _, newValue ->
-            stream?.videoCodec?.IFrameInterval = newValue
-        }
-        var frameRate: Int by Delegates.observable(VideoCodec.DEFAULT_FRAME_RATE) { _, _, newValue ->
-            stream?.videoCodec?.frameRate = newValue
-        }
-        fun dispose() {
-            stream = null
-        }
-        override fun toString(): String {
-            return ToStringBuilder.reflectionToString(this)
-        }
-    }
-
-    val videoSetting: VideoSettings by lazy {
-        VideoSettings(this)
-    }
-
-    val audioSetting: AudioSettings by lazy {
-        AudioSettings(this)
+    val audioSetting: AudioCodec.Setting by lazy {
+        AudioCodec.Setting(audioCodec)
     }
 
     internal val audioCodec = AudioCodec()
@@ -95,4 +51,9 @@ open abstract class NetStream {
         this.video?.stream = this
         this.video?.setUp()
     }
+
+    /**
+     * Closes the stream from the server.
+     */
+    abstract fun close()
 }

@@ -15,14 +15,18 @@ import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import java.lang.ClassCastException
 import java.lang.ref.WeakReference
 
-internal class GlPixelTransform {
-    internal interface Listener {
+class GlPixelTransform {
+    interface Listener {
         fun onConfiguration()
     }
 
     var context = GlPixelContext.instance
     var fpsControllerClass: Class<*>? = null
-
+        set(value) {
+            field = value
+            fpsController = DefaultFpsController.instance
+        }
+    private var reader: GlPixelReader? = null
     private var listener: Listener? = null
     private var renderer = GlFramePixelRenderer()
     private var transform = FloatArray(16)
@@ -39,7 +43,7 @@ internal class GlPixelTransform {
         }
         set(value) {
             field?.looper?.quitSafely()
-            field = null
+            field = value
         }
 
     fun setListener(listener: Listener?) {
@@ -81,13 +85,16 @@ internal class GlPixelTransform {
             Log.d(TAG, "configuration for ${width}x$height surface=$surface")
         }
         fpsControllerClass?.let {
-            fpsController = try {
-                it.newInstance() as FpsController
-            } catch (e: ClassCastException) {
-                DefaultFpsController.instance
+            if (fpsController is DefaultFpsController) {
+                fpsController = try {
+                    it.newInstance() as FpsController
+                } catch (e: ClassCastException) {
+                    DefaultFpsController.instance
+                }
+                Log.d(TAG, fpsController.toString())
             }
-            Log.d(TAG, fpsController.toString())
         }
+        fpsController.clear()
         renderer.tearDown()
         inputWindowSurface.tearDown()
         inputWindowSurface.setUp(surface, context.eglContext)
@@ -101,6 +108,7 @@ internal class GlPixelTransform {
     private fun onFrameAvailable(transform: FloatArray, timestamp: Long) {
         renderer.render(context, transform)
         inputWindowSurface.setPresentationTime(timestamp)
+        reader?.read(inputWindowSurface)
         if (!inputWindowSurface.swapBuffers() && BuildConfig.DEBUG) {
             Log.w(TAG, "can't swap buffers.")
         }

@@ -12,14 +12,21 @@ import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.properties.Delegates
 
-internal abstract class MediaCodec(private val mime: String) : Running {
+abstract class MediaCodec(private val mime: String) : Running {
+    open class Setting(private var codec: com.haishinkit.codec.MediaCodec?) {
+        var options: List<CodecOption> by Delegates.observable(listOf()) { _, _, newValue ->
+            codec?.options = newValue
+        }
+    }
+
     interface Listener {
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
         fun onSampleOutput(mime: String, info: MediaCodec.BufferInfo, buffer: ByteBuffer)
     }
 
-    open class Callback : android.media.MediaCodec.Callback() {
+    open class Callback(private val mime: String) : android.media.MediaCodec.Callback() {
         var listener: Listener? = null
         var codec: com.haishinkit.codec.MediaCodec? = null
 
@@ -29,17 +36,19 @@ internal abstract class MediaCodec(private val mime: String) : Running {
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
-                codec.outputFormat.getString("mime")?.let { mime ->
-                    listener?.onSampleOutput(mime, info, buffer)
-                }
+                listener?.onSampleOutput(mime, info, buffer)
                 codec.releaseOutputBuffer(index, false)
             } catch (e: IllegalStateException) {
-                if (BuildConfig.DEBUG) { Log.w(javaClass.name, e) }
+                if (BuildConfig.DEBUG) {
+                    Log.w(TAG, e)
+                }
             }
         }
 
         override fun onError(codec: MediaCodec, e: android.media.MediaCodec.CodecException) {
-            if (BuildConfig.DEBUG) { Log.w(javaClass.name, e.toString()) }
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, e.toString())
+            }
         }
 
         override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
@@ -76,7 +85,7 @@ internal abstract class MediaCodec(private val mime: String) : Running {
     private var outputFormat: MediaFormat? = null
         set(value) {
             if (field != value && value != null) {
-                Log.i(javaClass.name, value.toString())
+                Log.i(TAG, value.toString())
                 value.getString("mime")?.let { mime ->
                     listener?.onFormatChanged(mime, value)
                 }
@@ -100,7 +109,7 @@ internal abstract class MediaCodec(private val mime: String) : Running {
     @Synchronized final override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
-            Log.d(javaClass.name, "startRunning()")
+            Log.d(TAG, "startRunning()")
         }
         try {
             val codec = codec ?: return
@@ -112,7 +121,7 @@ internal abstract class MediaCodec(private val mime: String) : Running {
             codec.start()
             isRunning.set(true)
         } catch (e: MediaCodec.CodecException) {
-            Log.w(javaClass.name, ToStringBuilder.reflectionToString(outputFormat), e)
+            Log.w(TAG, ToStringBuilder.reflectionToString(outputFormat), e)
         }
     }
 

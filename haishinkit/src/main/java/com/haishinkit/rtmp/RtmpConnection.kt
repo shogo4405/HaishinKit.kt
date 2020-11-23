@@ -43,10 +43,10 @@ open class RtmpConnection : EventDispatcher(null) {
 
         fun data(description: String): Map<String, Any> {
             val data = HashMap<String, Any>()
-            data.put("code", rawValue)
-            data.put("level", level)
+            data["code"] = rawValue
+            data["level"] = level
             if (StringUtils.isNoneEmpty(description)) {
-                data.put("description", description)
+                data["description"] = description
             }
             return data
         }
@@ -86,7 +86,7 @@ open class RtmpConnection : EventDispatcher(null) {
     private inner class EventListener(private val connection: RtmpConnection) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
-            Log.i(javaClass.name, data["code"].toString())
+            Log.i(TAG, data["code"].toString())
             when (data["code"].toString()) {
                 RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
                     timerTask = Timer().schedule(0, 1000) {
@@ -177,7 +177,13 @@ open class RtmpConnection : EventDispatcher(null) {
         }
     private var arguments: MutableList<Any?> = mutableListOf()
     private val payloads = ConcurrentHashMap<Short, ByteBuffer>()
-    private val frameTracker = FrameTracker()
+    private var frameTracker: FrameTracker? = null
+        get() {
+            if (field == null && BuildConfig.DEBUG) {
+                field = FrameTracker()
+            }
+            return field
+        }
 
     init {
         addEventListener(Event.RTMP_STATUS, EventListener(this))
@@ -244,14 +250,12 @@ open class RtmpConnection : EventDispatcher(null) {
     internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
         if (BuildConfig.DEBUG) {
             if (message is RtmpAudioMessage) {
-                frameTracker.track(FrameTracker.TYPE_AUDIO, System.currentTimeMillis())
+                frameTracker?.track(FrameTracker.TYPE_AUDIO, System.currentTimeMillis())
             } else if (message is RtmpVideoMessage) {
-                frameTracker.track(FrameTracker.TYPE_VIDEO, System.currentTimeMillis())
+                frameTracker?.track(FrameTracker.TYPE_VIDEO, System.currentTimeMillis())
             }
         }
-        for (buffer in chunk.encode(socket, message)) {
-            socket.doOutput(buffer)
-        }
+        chunk.encode(socket, message)
         messageFactory.release(message)
     }
 
@@ -321,7 +325,7 @@ open class RtmpConnection : EventDispatcher(null) {
                     stream.readyState = RtmpStream.ReadyState.OPEN
                 }
                 override fun onStatus(arguments: List<Any?>) {
-                    Log.w(javaClass.name + "#onStatus", arguments.toString())
+                    Log.w("$TAG#onStatus", arguments.toString())
                 }
             }
         )

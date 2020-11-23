@@ -11,6 +11,7 @@ import com.haishinkit.BuildConfig
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.media.CameraSource
 import com.haishinkit.media.VideoSource
+import com.haishinkit.media.VideoSourceNullRenderer
 import com.haishinkit.net.NetStream
 import com.haishinkit.util.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
@@ -41,7 +42,7 @@ class GlHkView @JvmOverloads constructor(
 
     private val renderer: StrategyRenderer by lazy {
         val renderer = object : StrategyRenderer {
-            override var strategy: VideoSource.GlRenderer = VideoSource.NullRenderer.instance
+            override var strategy: VideoSource.GlRenderer = VideoSourceNullRenderer.instance
                 set(value) {
                     val videoGravity = field.videoGravity
                     field = value
@@ -95,7 +96,7 @@ class GlHkView @JvmOverloads constructor(
     override fun startRunning() {
         if (isRunning.get()) return
 
-        renderer.strategy = stream?.video?.createGLSurfaceViewRenderer() ?: VideoSource.NullRenderer.instance
+        renderer.strategy = stream?.video?.createGLSurfaceViewRenderer() ?: VideoSourceNullRenderer.instance
         isRunning.set(true)
 
         if (BuildConfig.DEBUG) {
@@ -106,7 +107,7 @@ class GlHkView @JvmOverloads constructor(
     override fun stopRunning() {
         if (!isRunning.get()) return
 
-        renderer.strategy = VideoSource.NullRenderer.instance
+        renderer.strategy = VideoSourceNullRenderer.instance
         isRunning.set(false)
 
         if (BuildConfig.DEBUG) {

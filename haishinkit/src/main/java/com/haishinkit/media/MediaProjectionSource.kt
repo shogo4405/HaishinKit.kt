@@ -26,7 +26,8 @@ class MediaProjectionSource(
     private val context: Context,
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
-    override val fpsControllerClass: Class<*>? = ScheduledFpsController::class.java
+    override val fpsControllerClass: Class<*>? = ScheduledFpsController::class.java,
+    override var utilizable: Boolean = false
 ) :
     VideoSource, Choreographer.FrameCallback, GlPixelTransform.Listener {
     var scale = 0.5F
@@ -34,7 +35,7 @@ class MediaProjectionSource(
         set(value) {
             field = value
             stream?.videoCodec?.fpsControllerClass = fpsControllerClass
-            stream?.videoCodec?.callback = MediaCodec.Callback()
+            stream?.videoCodec?.callback = MediaCodec.Callback(MediaCodec.MIME_VIDEO_AVC)
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(1, 1)
@@ -50,13 +51,17 @@ class MediaProjectionSource(
     private var pixelContext = GlPixelContext(context, false)
 
     override fun setUp() {
+        if (utilizable) return
         stream?.videoCodec?.context = pixelContext
         resolution = Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
         stream?.videoCodec?.setListener(this)
+        super.setUp()
     }
 
     override fun tearDown() {
+        if (!utilizable) return
         mediaProjection.stop()
+        super.tearDown()
     }
 
     override fun startRunning() {
@@ -66,11 +71,9 @@ class MediaProjectionSource(
 
     override fun stopRunning() {
         if (!isRunning.get()) return
-
         choreographer.removeFrameCallback(this)
         pixelContext.tearDown()
         virtualDisplay?.release()
-
         isRunning.set(false)
     }
 

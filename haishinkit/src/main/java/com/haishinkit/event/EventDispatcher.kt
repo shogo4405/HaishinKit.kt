@@ -28,10 +28,10 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
             val isTargetPhase = target === event.target
 
             if (isTargetPhase) {
-                event.eventPhase = EventPhase.AT_TARGET
+                event.eventPhase = Event.EVENT_PHASE_AT_TARGET
             }
 
-            val isCapturingPhase = (event.eventPhase == EventPhase.CAPTURING).toString()
+            val isCapturingPhase = (event.eventPhase == Event.EVENT_PHASE_CAPTURING).toString()
             val listeners = this.listeners["${event.type}/$isCapturingPhase"]
             if (listeners != null) {
                 for (listener in listeners) {
@@ -43,13 +43,13 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
             }
 
             if (isTargetPhase) {
-                event.eventPhase = EventPhase.BUBBLING
+                event.eventPhase = Event.EVENT_PHASE_BUBBLING
             }
         }
 
         event.target = null
         event.currentTarget = null
-        event.eventPhase = EventPhase.NONE
+        event.eventPhase = Event.EVENT_PHASE_NONE
         event.propagationStopped = false
     }
 

@@ -2,8 +2,8 @@ package com.haishinkit.rtmp
 
 import android.util.Log
 import com.haishinkit.event.Event
-import com.haishinkit.event.EventUtils
 import com.haishinkit.event.EventDispatcher
+import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
 import com.haishinkit.net.NetStream
@@ -264,10 +264,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         connection.doOutput(RtmpChunk.ZERO, message)
     }
 
-    /**
-     * Closes the stream from the server.
-     */
-    open fun close() {
+    open override fun close() {
         if (readyState == ReadyState.CLOSED) {
             return
         }
@@ -286,8 +283,6 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         audioCodec.dispose()
         video?.tearDown()
         videoCodec.dispose()
-        audioSetting.dispose()
-        videoSetting.dispose()
     }
 
     override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {

@@ -9,7 +9,7 @@ open class Event(type: String, bubbles: Boolean, data: Any?) {
         internal set
     var currentTarget: IEventDispatcher? = null
         internal set
-    internal var eventPhase = EventPhase.NONE
+    internal var eventPhase = EVENT_PHASE_NONE
     var data: Any? = null
         internal set
     var isBubbles = false
@@ -33,5 +33,10 @@ open class Event(type: String, bubbles: Boolean, data: Any?) {
     companion object {
         const val RTMP_STATUS = "rtmpStatus"
         const val IO_ERROR = "ioError"
+
+        const val EVENT_PHASE_NONE = 0x00
+        const val EVENT_PHASE_CAPTURING = 0x01
+        const val EVENT_PHASE_AT_TARGET = 0x02
+        const val EVENT_PHASE_BUBBLING = 0x03
     }
 }

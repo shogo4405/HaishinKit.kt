@@ -5,16 +5,16 @@ package com.haishinkit.codec.util
  * https://github.com/google/grafika/blob/c747398a8f0d5c8ec7be2c66522a80b43dfc9a1e/app/src/main/java/com/android/grafika/ScheduledSwapActivity.java#L76
  */
 class ScheduledFpsController : FpsController {
-    private var framesAheadIndex = 2
-    private var refreshPeriodNs = -1L
-    private var holdFrames = 0
-    private var updatePatternOffset = 0
-    private var choreographerSkips = 0
-    private var droppedFrames = 0
-    private var previousRefreshNs: Long = 0
+    private var framesAheadIndex = DEFAULT_FRAMES_AHEAD_INDEX
+    private var refreshPeriodNs = DEFAULT_REFRESH_PERIOD_NS
+    private var holdFrames = DEFAULT_HOLD_FRAMES
+    private var updatePatternOffset = DEFAULT_UPDATE_PATTERN_OFFSET
+    private var choreographerSkips = DEFAULT_CHOREGRAPHER_SKIPS
+    private var droppedFrames = DEFAULT_DROPPED_FRAMES
+    private var previousRefreshNs = DEFAULT_PREVIOUS_REFRESH_NS
     private var updatePatternIdx = DEFAULT_UPDATE_PATTERN_INDEX
-    private var position = 0
-    private var speed = 0
+    private var position = DEFAULT_POSITION
+    private var speed = DEFAULT_SPEED
 
     override fun advanced(timestamp: Long): Boolean {
         var draw = false
@@ -46,13 +46,35 @@ class ScheduledFpsController : FpsController {
         return timestamp + refreshPeriodNs * framesAhead
     }
 
+    override fun clear() {
+        framesAheadIndex = DEFAULT_FRAMES_AHEAD_INDEX
+        refreshPeriodNs = DEFAULT_REFRESH_PERIOD_NS
+        holdFrames = DEFAULT_HOLD_FRAMES
+        updatePatternOffset = DEFAULT_UPDATE_PATTERN_OFFSET
+        choreographerSkips = DEFAULT_CHOREGRAPHER_SKIPS
+        droppedFrames = DEFAULT_DROPPED_FRAMES
+        previousRefreshNs = DEFAULT_PREVIOUS_REFRESH_NS
+        updatePatternIdx = DEFAULT_UPDATE_PATTERN_INDEX
+        position = DEFAULT_POSITION
+        speed = DEFAULT_SPEED
+    }
+
     private fun getHoldTime(): Int {
         val ch: Char = UPDATE_PATTERNS[updatePatternIdx][updatePatternOffset]
         return ch - '0'
     }
 
     companion object {
-        const val DEFAULT_UPDATE_PATTERN_INDEX = 3
+        private const val DEFAULT_FRAMES_AHEAD_INDEX = 2
+        private const val DEFAULT_REFRESH_PERIOD_NS = -1L
+        private const val DEFAULT_HOLD_FRAMES = 0
+        private const val DEFAULT_UPDATE_PATTERN_OFFSET = 0
+        private const val DEFAULT_CHOREGRAPHER_SKIPS = 0
+        private const val DEFAULT_DROPPED_FRAMES = 0
+        private const val DEFAULT_PREVIOUS_REFRESH_NS = 0L
+        private const val DEFAULT_UPDATE_PATTERN_INDEX = 3
+        private const val DEFAULT_POSITION = 0
+        private const val DEFAULT_SPEED = 0
 
         private val UPDATE_PATTERNS = arrayOf(
             "4", // 15 fps
