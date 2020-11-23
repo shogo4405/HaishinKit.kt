@@ -1,13 +1,13 @@
 package com.haishinkit.view
 
 import com.haishinkit.lang.Running
-import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.net.NetStream
 
 internal interface NetStreamView : Running {
     var videoGravity: Int
-    var stream: RtmpStream?
+    var stream: NetStream?
 
-    fun attachStream(stream: RtmpStream?) {
+    fun attachStream(stream: NetStream?) {
         stream?.renderer = this
         this.stream = stream
         if (stream != null) {

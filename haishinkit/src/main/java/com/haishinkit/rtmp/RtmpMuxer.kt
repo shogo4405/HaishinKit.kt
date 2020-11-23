@@ -8,7 +8,6 @@ import com.haishinkit.flv.FlvFlameType
 import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.iso.AudioSpecificConfig
 import com.haishinkit.iso.AvcConfigurationRecord
-import com.haishinkit.iso.AvcFormatUtils
 import com.haishinkit.rtmp.messages.RtmpAacAudioMessage
 import com.haishinkit.rtmp.messages.RtmpAvcVideoMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
@@ -67,7 +66,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
                 video.packetType = FlvAvcPacketType.NAL
                 video.frame = if (keyframe) FlvFlameType.KEY else FlvFlameType.INTER
                 video.codec = FlvVideoCodec.AVC
-                video.data = AvcFormatUtils.toNALFileFormat(buffer)
+                video.data = buffer
                 video.chunkStreamID = RtmpChunk.VIDEO
                 video.timestamp = timestamp / 1000
                 video.streamID = stream.id

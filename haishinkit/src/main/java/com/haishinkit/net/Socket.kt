@@ -110,7 +110,7 @@ internal abstract class Socket : CoroutineScope {
                 }
             }
             try {
-                Thread.sleep(KEEPALIVE_SLEEP_INTERVAL)
+                Thread.sleep(KEEP_ALIVE_SLEEP_INTERVAL)
             } catch (e: InterruptedException) {
                 Log.w(TAG, "", e)
             }
@@ -134,7 +134,7 @@ internal abstract class Socket : CoroutineScope {
             while (keepAlive) {
                 doInput()
                 try {
-                    Thread.sleep(KEEPALIVE_SLEEP_INTERVAL)
+                    Thread.sleep(KEEP_ALIVE_SLEEP_INTERVAL)
                 } catch (e: InterruptedException) {
                     Log.w(TAG, "", e)
                 }
@@ -156,7 +156,7 @@ internal abstract class Socket : CoroutineScope {
     companion object {
         const val DEFAULT_TIMEOUT: Int = 1000
 
-        private val KEEPALIVE_SLEEP_INTERVAL = 100L
+        private const val KEEP_ALIVE_SLEEP_INTERVAL = 100L
         private val TAG = Socket::class.java.simpleName
     }
 }

@@ -15,10 +15,6 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
         listeners[key]?.add(listener)
     }
 
-    override fun addEventListener(type: String, listener: IEventListener) {
-        addEventListener(type, listener, false)
-    }
-
     override fun dispatchEvent(event: Event) {
         if (event.type == null) {
             throw IllegalArgumentException()
@@ -66,14 +62,6 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
         pool.release(event)
     }
 
-    override fun dispatchEventWith(type: String, bubbles: Boolean) {
-        dispatchEventWith(type, bubbles, null)
-    }
-
-    override fun dispatchEventWith(type: String) {
-        dispatchEventWith(type, false)
-    }
-
     override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
         val key = "$type/$useCapture"
         if (!listeners.containsKey(key)) {
@@ -88,10 +76,6 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
             }
             --i
         }
-    }
-
-    override fun removeEventListener(type: String, listener: IEventListener) {
-        removeEventListener(type, listener, false)
     }
 
     companion object {

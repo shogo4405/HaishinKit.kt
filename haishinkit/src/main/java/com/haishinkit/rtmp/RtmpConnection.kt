@@ -1,6 +1,5 @@
 package com.haishinkit.rtmp
 
-import android.os.Build
 import android.util.Log
 import com.haishinkit.BuildConfig
 import com.haishinkit.event.Event
@@ -335,7 +334,7 @@ open class RtmpConnection : EventDispatcher(null) {
         commandObject["app"] = paths[1]
         commandObject["flashVer"] = flashVer
         commandObject["swfUrl"] = swfUrl
-        commandObject["tcUrl"] = uri!!.toString()
+        commandObject["tcUrl"] = uri?.toString() ?: ""
         commandObject["fpad"] = false
         commandObject["capabilities"] = RtmpConnection.DEFAULT_CAPABILITIES
         commandObject["audioCodecs"] = SupportSound.AAC.rawValue

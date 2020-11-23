@@ -1,13 +1,13 @@
 package com.haishinkit.media
 
 import com.haishinkit.lang.Running
-import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.net.NetStream
 
 /**
  * An interface that captures a source.
  */
 interface Source : Running {
-    var stream: RtmpStream?
+    var stream: NetStream?
 
     fun setUp()
     fun tearDown()

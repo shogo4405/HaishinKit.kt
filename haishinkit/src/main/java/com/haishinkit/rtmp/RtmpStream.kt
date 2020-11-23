@@ -1,29 +1,25 @@
 package com.haishinkit.rtmp
 
 import android.util.Log
-import com.haishinkit.codec.AudioCodec
-import com.haishinkit.codec.VideoCodec
 import com.haishinkit.event.Event
-import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
+import com.haishinkit.event.EventDispatcher
+import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
-import com.haishinkit.media.AudioSource
-import com.haishinkit.media.VideoSource
+import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.messages.RtmpCommandMessage
 import com.haishinkit.rtmp.messages.RtmpDataMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
-import com.haishinkit.view.NetStreamView
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.properties.Delegates
 
 /**
  * An object that provides the interface to control a one-way channel over a RTMPConnection.
  */
-open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher(null) {
+open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IEventDispatcher {
     enum class HowToPublish(val rawValue: String) {
         RECORD("record"),
         APPEND("append"),
@@ -87,48 +83,6 @@ open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher
         fun onStatics(stream: RtmpStream, connection: RtmpConnection)
     }
 
-    class AudioSettings(private var stream: RtmpStream?) {
-        var channelCount: Int by Delegates.observable(AudioCodec.DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
-            stream?.audioCodec?.channelCount = newValue
-        }
-        var bitRate: Int by Delegates.observable(AudioCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
-            stream?.audioCodec?.bitRate = newValue
-        }
-        var sampleRate: Int by Delegates.observable(AudioCodec.DEFAULT_SAMPLE_RATE) { _, _, newValue ->
-            stream?.audioCodec?.sampleRate = newValue
-        }
-        fun dispose() {
-            stream = null
-        }
-        override fun toString(): String {
-            return ToStringBuilder.reflectionToString(this)
-        }
-    }
-
-    class VideoSettings(private var stream: RtmpStream?) {
-        var width: Int by Delegates.observable(VideoCodec.DEFAULT_WIDTH) { _, _, newValue ->
-            stream?.videoCodec?.width = newValue
-        }
-        var height: Int by Delegates.observable(VideoCodec.DEFAULT_HEIGHT) { _, _, newValue ->
-            stream?.videoCodec?.height = newValue
-        }
-        var bitRate: Int by Delegates.observable(VideoCodec.DEFAULT_BIT_RATE) { _, _, newValue ->
-            stream?.videoCodec?.bitRate = newValue
-        }
-        var IFrameInterval: Int by Delegates.observable(VideoCodec.DEFAULT_I_FRAME_INTERVAL) { _, _, newValue ->
-            stream?.videoCodec?.IFrameInterval = newValue
-        }
-        var frameRate: Int by Delegates.observable(VideoCodec.DEFAULT_FRAME_RATE) { _, _, newValue ->
-            stream?.videoCodec?.frameRate = newValue
-        }
-        fun dispose() {
-            stream = null
-        }
-        override fun toString(): String {
-            return ToStringBuilder.reflectionToString(this)
-        }
-    }
-
     internal inner class EventListener(private val stream: RtmpStream) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
@@ -161,19 +115,10 @@ open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher
 
     var listener: Listener? = null
 
-    val videoSetting: VideoSettings by lazy {
-        VideoSettings(this)
-    }
-
-    val audioSetting: AudioSettings by lazy {
-        AudioSettings(this)
-    }
-
     @Volatile var currentFPS: Int = 0
         private set
 
     internal var id = 0
-    internal var video: VideoSource? = null
     internal var readyState = ReadyState.INITIALIZED
         set(value) {
             Log.d(TAG, value.toString())
@@ -221,13 +166,12 @@ open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher
                 }
             }
         }
-    internal val audioCodec = AudioCodec()
-    internal val videoCodec = VideoCodec()
     internal val messages = ArrayList<RtmpMessage>()
     internal var frameCount = AtomicInteger(0)
-    internal var renderer: NetStreamView? = null
+    private val dispatcher: EventDispatcher by lazy {
+        EventDispatcher(this)
+    }
     private var muxer = RtmpMuxer(this)
-    private var audio: AudioSource? = null
     private val eventListener = EventListener(this)
 
     init {
@@ -240,34 +184,6 @@ open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher
         addEventListener(Event.RTMP_STATUS, eventListener)
         audioCodec.listener = muxer
         videoCodec.listener = muxer
-    }
-
-    /**
-     * Attaches an audio stream to a RTMPStream.
-     */
-    open fun attachAudio(audio: AudioSource?) {
-        if (audio == null) {
-            this.audio?.tearDown()
-            this.audio = null
-            return
-        }
-        this.audio = audio
-        this.audio?.stream = this
-        this.audio?.setUp()
-    }
-
-    /**
-     * Attaches a video stream to a RTMPStream.
-     */
-    open fun attachVideo(video: VideoSource?) {
-        if (video == null) {
-            this.video?.tearDown()
-            this.video = null
-            return
-        }
-        this.video = video
-        this.video?.stream = this
-        this.video?.setUp()
     }
 
     open fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
@@ -372,6 +288,22 @@ open class RtmpStream(internal var connection: RtmpConnection) : EventDispatcher
         videoCodec.dispose()
         audioSetting.dispose()
         videoSetting.dispose()
+    }
+
+    override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
+        dispatcher.addEventListener(type, listener, useCapture)
+    }
+
+    override fun dispatchEvent(event: Event) {
+        dispatcher.dispatchEvent(event)
+    }
+
+    override fun dispatchEventWith(type: String, bubbles: Boolean, data: Any?) {
+        dispatcher.dispatchEventWith(type, bubbles, data)
+    }
+
+    override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
+        dispatcher.removeEventListener(type, listener, useCapture)
     }
 
     internal fun on() {

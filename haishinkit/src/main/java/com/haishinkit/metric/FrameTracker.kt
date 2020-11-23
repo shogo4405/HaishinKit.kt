@@ -7,7 +7,7 @@ class FrameTracker {
     private var videoTimestamps: ArrayList<Long> = ArrayList<Long>()
 
     fun track(type: Int, timestamp: Long) {
-        when(type) {
+        when (type) {
             TYPE_AUDIO -> {
                 audioTimestamps.add(timestamp)
                 print(TYPE_AUDIO, timestamp)

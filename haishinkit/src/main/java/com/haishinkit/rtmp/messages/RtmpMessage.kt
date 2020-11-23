@@ -1,6 +1,5 @@
 package com.haishinkit.rtmp.messages
 
-import android.util.Log
 import com.haishinkit.rtmp.RtmpConnection
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.commons.lang3.builder.ToStringBuilder

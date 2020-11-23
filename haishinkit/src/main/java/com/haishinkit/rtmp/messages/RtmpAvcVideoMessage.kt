@@ -1,6 +1,8 @@
 package com.haishinkit.rtmp.messages
 
+import com.haishinkit.flv.FlvAvcPacketType
 import com.haishinkit.flv.FlvVideoCodec
+import com.haishinkit.iso.AvcFormatUtils
 import java.nio.ByteBuffer
 
 internal class RtmpAvcVideoMessage : RtmpVideoMessage() {
@@ -16,7 +18,14 @@ internal class RtmpAvcVideoMessage : RtmpVideoMessage() {
         buffer.put(packetType)
         buffer.put(byteArrayOf((compositeTime shr 16).toByte(), (compositeTime shr 8).toByte(), compositeTime.toByte()))
         data?.let {
-            buffer.put(it)
+            when (packetType) {
+                FlvAvcPacketType.NAL -> {
+                    AvcFormatUtils.put(it, buffer)
+                }
+                else -> {
+                    buffer.put(it)
+                }
+            }
         }
         return this
     }

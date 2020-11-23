@@ -11,12 +11,11 @@ import com.haishinkit.BuildConfig
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.media.CameraSource
 import com.haishinkit.media.VideoSource
-import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.net.NetStream
 import com.haishinkit.util.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.egl.EGLConfig
-import javax.microedition.khronos.egl.EGLContext
 import javax.microedition.khronos.opengles.GL10
 
 /**
@@ -38,7 +37,7 @@ class GlHkView @JvmOverloads constructor(
             field = value
         }
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    override var stream: RtmpStream? = null
+    override var stream: NetStream? = null
 
     private val renderer: StrategyRenderer by lazy {
         val renderer = object : StrategyRenderer {

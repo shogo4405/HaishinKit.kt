@@ -14,7 +14,7 @@ import com.haishinkit.codec.MediaCodec
 import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.GlPixelTransform
-import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.net.NetStream
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
@@ -30,7 +30,7 @@ class MediaProjectionSource(
 ) :
     VideoSource, Choreographer.FrameCallback, GlPixelTransform.Listener {
     var scale = 0.5F
-    override var stream: RtmpStream? = null
+    override var stream: NetStream? = null
         set(value) {
             field = value
             stream?.videoCodec?.fpsControllerClass = fpsControllerClass
