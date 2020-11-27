@@ -38,7 +38,9 @@ internal class GlWindowSurface(
     }
 
     fun readPixels(width: Int, height: Int, buffer: ByteBuffer) {
+        buffer.clear()
         GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer)
+        buffer.rewind()
     }
 
     fun setUp(surface: Surface?, eglSharedContext: EGLContext?) {
@@ -101,6 +103,7 @@ internal class GlWindowSurface(
             EGL14.EGL_RED_SIZE, 8,
             EGL14.EGL_GREEN_SIZE, 8,
             EGL14.EGL_BLUE_SIZE, 8,
+            EGL14.EGL_ALPHA_SIZE, 8,
             EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
             EGL_RECORDABLE_ANDROID, 1,
             EGL14.EGL_NONE

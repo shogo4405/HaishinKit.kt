@@ -2,15 +2,16 @@ package com.haishinkit.gles
 
 import com.haishinkit.lang.Utilize
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize {
     interface Listener {
-        fun onRead(width: Int, height: Int, byteBuffer: ByteBuffer)
+        fun execute(width: Int, height: Int, buffer: ByteBuffer)
     }
 
-    var listner: Listener? = null
+    var listener: Listener? = null
     val readable: Boolean
-        get() = listner != null && utilizable
+        get() = listener != null && utilizable
     private var byteBuffer: ByteBuffer? = null
     private var width: Int = DEFAULT_WIDTH
     private var height: Int = DEFAULT_HEIGHT
@@ -19,7 +20,9 @@ internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize
         if (utilizable) { return }
         this.width = width
         this.height = height
-        byteBuffer = ByteBuffer.allocateDirect(width * height * 32)
+        byteBuffer = ByteBuffer.allocateDirect(width * height * 4).apply {
+            order(ByteOrder.LITTLE_ENDIAN)
+        }
         setUp()
     }
 
@@ -31,10 +34,10 @@ internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize
         super.tearDown()
     }
 
-    fun read(windowSurface: GlWindowSurface) {
+    internal fun read(windowSurface: GlWindowSurface) {
         val byteBuffer = byteBuffer ?: return
         windowSurface.readPixels(width, height, byteBuffer)
-        listner?.onRead(width, height, byteBuffer)
+        listener?.execute(width, height, byteBuffer)
     }
 
     companion object {

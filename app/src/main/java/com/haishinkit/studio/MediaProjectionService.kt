@@ -83,7 +83,7 @@ class MediaProjectionService : Service(), IEventListener {
     }
 
     override fun handleEvent(event: Event) {
-        Log.i(javaClass.name, event.toString())
+        Log.i(TAG, event.toString())
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {

@@ -26,7 +26,7 @@ class GlPixelTransform {
             field = value
             fpsController = DefaultFpsController.instance
         }
-    private var reader: GlPixelReader? = null
+    private val reader = GlPixelReader()
     private var listener: Listener? = null
     private var renderer = GlFramePixelRenderer()
     private var transform = FloatArray(16)
@@ -94,6 +94,7 @@ class GlPixelTransform {
                 Log.d(TAG, fpsController.toString())
             }
         }
+        reader.setUp(width, height)
         fpsController.clear()
         renderer.tearDown()
         inputWindowSurface.tearDown()
@@ -108,7 +109,9 @@ class GlPixelTransform {
     private fun onFrameAvailable(transform: FloatArray, timestamp: Long) {
         renderer.render(context, transform)
         inputWindowSurface.setPresentationTime(timestamp)
-        reader?.read(inputWindowSurface)
+        if (reader.readable) {
+            reader.read(inputWindowSurface)
+        }
         if (!inputWindowSurface.swapBuffers() && BuildConfig.DEBUG) {
             Log.w(TAG, "can't swap buffers.")
         }

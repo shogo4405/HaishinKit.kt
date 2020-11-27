@@ -12,4 +12,5 @@ object FlvAudioCodec {
     const val AAC: Byte = 0x0A
     const val SPEEX: Byte = 0x0B
     const val MP3_8K: Byte = 0x0E
+    const val UNKNOWN: Byte = Byte.MAX_VALUE
 }

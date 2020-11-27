@@ -6,7 +6,7 @@ import java.nio.ByteBuffer
  * An interface representations FlvTag.
  */
 interface FlvTag {
-    var type: Int
+    val type: Int
     var dataSize: Long
     var timestamp: Long
     var timestampExtended: Int
