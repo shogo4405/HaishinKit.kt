@@ -6,7 +6,7 @@ import java.nio.ByteBuffer
 /**
  * 5.4.3 Acknowledgement (3)
  */
-internal class RtmpAcknowledgementMessage : RtmpMessage(RtmpMessage.Type.ACK) {
+internal class RtmpAcknowledgementMessage : RtmpMessage(TYPE_ACK) {
     var sequence = ByteArray(CAPACITY)
         private set
     override var length: Int = CAPACITY

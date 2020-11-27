@@ -5,26 +5,7 @@ import org.apache.commons.lang3.NotImplementedException
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 
-internal open class RtmpMessage(val type: Type) {
-    enum class Type(val rawValue: Byte) {
-        CHUNK_SIZE(0x01),
-        ABORT(0x02),
-        ACK(0x03),
-        USER(0x04),
-        WINDOW_ACK(0x05),
-        BANDWIDTH(0x06),
-        AUDIO(0x08),
-        VIDEO(0x09),
-        AMF3_DATA(0x0F),
-        AMF3_SHARED(0x10),
-        AMF3_COMMAND(0x11),
-        AMF0_DATA(0x12),
-        AMF0_SHARED(0x13),
-        AMF0_COMMAND(0x14),
-        AGGREGATE(0x16),
-        UNKNOWN(Byte.MAX_VALUE);
-    }
-
+internal open class RtmpMessage(val type: Byte) {
     var chunkStreamID: Short = 0
     var streamID: Int = 0
     var timestamp: Int = 0
@@ -56,6 +37,23 @@ internal open class RtmpMessage(val type: Type) {
     }
 
     companion object {
+        const val TYPE_CHUNK_SIZE: Byte = 0x01
+        const val TYPE_ABORT: Byte = 0x02
+        const val TYPE_ACK: Byte = 0x03
+        const val TYPE_USER: Byte = 0x04
+        const val TYPE_WINDOW_ACK: Byte = 0x05
+        const val TYPE_BANDWIDTH: Byte = 0x06
+        const val TYPE_AUDIO: Byte = 0x08
+        const val TYPE_VIDEO: Byte = 0x09
+        const val TYPE_AMF3_DATA: Byte = 0x0F
+        const val TYPE_AMF3_SHARED: Byte = 0x10
+        const val TYPE_AMF3_COMMAND: Byte = 0x11
+        const val TYPE_AMF0_DATA: Byte = 0x12
+        const val TYPE_AMF0_SHARED: Byte = 0x13
+        const val TYPE_AMF0_COMMAND: Byte = 0x14
+        const val TYPE_AGGREGATE: Byte = 0x16
+        const val TYPE_UNKNOWN: Byte = Byte.MAX_VALUE
+
         val EMPTY_BYTE_BUFFER: ByteBuffer = ByteBuffer.allocate(0)
         private val TAG = RtmpMessage::class.java.simpleName
     }

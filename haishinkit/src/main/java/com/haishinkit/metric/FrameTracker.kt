@@ -78,7 +78,7 @@ class FrameTracker {
 
     private fun sd(timestamps: List<Long>): Double {
         val mean = average(timestamps)
-        return sqrt(timestamps.fold(0.0, { accumulator, next -> accumulator + (next - mean).pow(2.0) }) / timestamps.size )
+        return sqrt(timestamps.fold(0.0, { accumulator, next -> accumulator + (next - mean).pow(2.0) }) / timestamps.size)
     }
 
     companion object {

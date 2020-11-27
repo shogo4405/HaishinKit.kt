@@ -24,14 +24,14 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         when (this) {
             ZERO -> {
                 buffer.put((length shr 16).toByte()).put((length shr 8).toByte()).put(length.toByte())
-                buffer.put(message.type.rawValue)
+                buffer.put(message.type)
                 val streamID = message.streamID
                 // message streamID is a litleEndian
                 buffer.put(streamID.toByte()).put((streamID shr 8).toByte()).put((streamID shr 16).toByte()).put((streamID shr 24).toByte())
             }
             ONE -> {
                 buffer.put((length shr 16).toByte()).put((length shr 8).toByte()).put(length.toByte())
-                buffer.put(message.type.rawValue)
+                buffer.put(message.type)
             }
             else -> {
             }

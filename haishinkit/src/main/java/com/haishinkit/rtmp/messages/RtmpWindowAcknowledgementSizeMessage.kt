@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
 /**
  * 5.4.4. Window Acknowledgement Size (5)
  */
-internal class RtmpWindowAcknowledgementSizeMessage : RtmpMessage(RtmpMessage.Type.ACK) {
+internal class RtmpWindowAcknowledgementSizeMessage : RtmpMessage(TYPE_ACK) {
     var size: Int = 0
         private set
     override var length: Int = CAPACITY
