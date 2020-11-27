@@ -1,11 +1,10 @@
 package com.haishinkit.net
 
-import android.support.v4.util.Pools
 import android.util.Log
+import androidx.core.util.Pools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.io.IOException
 import java.io.InputStream
@@ -43,7 +42,7 @@ internal abstract class Socket : CoroutineScope {
     open fun close(disconnected: Boolean) {
         keepAlive = false
         outputQueue.clear()
-        IOUtils.closeQuietly(socket)
+        socket?.close()
     }
 
     fun doOutput(buffer: ByteBuffer) {
@@ -58,8 +57,8 @@ internal abstract class Socket : CoroutineScope {
 
     fun createByteBuffer(capacity: Int): ByteBuffer {
         synchronized(outputBufferPool) {
-            var byteBuffer = outputBufferPool.acquire()
-            if (byteBuffer == null || byteBuffer.capacity() != capacity) {
+            var byteBuffer = outputBufferPool.acquire() ?: ByteBuffer.allocate(capacity)
+            if (byteBuffer.capacity() != capacity) {
                 byteBuffer = ByteBuffer.allocate(capacity)
             } else {
                 byteBuffer.clear()

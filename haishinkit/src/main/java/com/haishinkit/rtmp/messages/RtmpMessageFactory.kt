@@ -1,6 +1,6 @@
 package com.haishinkit.rtmp.messages
 
-import android.support.v4.util.Pools
+import androidx.core.util.Pools
 import com.haishinkit.rtmp.RtmpObjectEncoding
 
 internal final class RtmpMessageFactory(private val maxPoolSize: Int) {

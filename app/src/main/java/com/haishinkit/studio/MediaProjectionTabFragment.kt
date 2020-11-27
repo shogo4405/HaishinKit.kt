@@ -10,12 +10,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.projection.MediaProjectionManager
 import android.os.*
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 
@@ -29,7 +29,7 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         val button = v.findViewById<Button>(R.id.button)
         MediaProjectionService.listener = object : RtmpStream.Listener {
             override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
-                activity.runOnUiThread {
+                activity?.runOnUiThread {
                     v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
                 }
             }
@@ -38,7 +38,7 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
             if (button.text == "Publish") {
                 if (messenger == null) {
                     if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT) {
-                        val mediaProjectionManager = activity.getSystemService(Service.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                        val mediaProjectionManager = activity?.getSystemService(Service.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
                         startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CAPTURE)
                     }
                 } else {
@@ -53,18 +53,18 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         return v
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        activity.windowManager.defaultDisplay.getMetrics(MediaProjectionService.metrics)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        activity?.windowManager?.defaultDisplay?.getMetrics(MediaProjectionService.metrics)
         if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT) {
             if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
                 MediaProjectionService.data = data
                 Intent(activity, MediaProjectionService::class.java).also { intent ->
                     if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
-                        activity.startForegroundService(intent)
+                        activity?.startForegroundService(intent)
                     } else {
-                        activity.startService(intent)
+                        activity?.startService(intent)
                     }
-                    activity.bindService(intent, this@MediaProjectionTabFragment, Context.BIND_AUTO_CREATE)
+                    activity?.bindService(intent, this@MediaProjectionTabFragment, Context.BIND_AUTO_CREATE)
                 }
                 Log.i(toString(), "mediaProjectionManager success")
             }

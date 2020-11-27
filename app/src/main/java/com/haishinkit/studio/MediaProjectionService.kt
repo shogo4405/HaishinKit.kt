@@ -1,16 +1,17 @@
 package com.haishinkit.studio
 
-import android.app.*
-import android.content.Context
+import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.media.projection.MediaProjectionManager
 import android.os.*
-import android.support.annotation.RequiresApi
-import android.support.v4.app.NotificationCompat
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.WindowManager
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
@@ -40,7 +41,7 @@ class MediaProjectionService : Service(), IEventListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(javaClass.name, "onStartCommand")
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
             channel.description = CHANNEL_DESC
@@ -58,7 +59,7 @@ class MediaProjectionService : Service(), IEventListener {
         } else {
             startForeground(ID, notification)
         }
-        val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        val mediaProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         stream.attachAudio(AudioRecordSource())
         stream.listener = listener
         data?.let {

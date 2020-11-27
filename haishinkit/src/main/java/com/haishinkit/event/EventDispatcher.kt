@@ -1,12 +1,12 @@
 package com.haishinkit.event
 
-import android.support.v4.util.Pools
+import androidx.core.util.Pools
 import java.util.ArrayList
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
 open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispatcher {
-    private val pool = Pools.SynchronizedPool<Event>(EventDispatcher.MAX_POOL_SIZE)
+    private val pool = Pools.SynchronizedPool<Event>(MAX_POOL_SIZE)
     private val listeners = ConcurrentHashMap<String, MutableList<IEventListener>>()
 
     override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {

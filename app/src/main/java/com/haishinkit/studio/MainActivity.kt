@@ -1,10 +1,10 @@
 package com.haishinkit.studio
 
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import android.support.v4.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var fragment: Fragment? = null
@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         navigation.setOnNavigationItemSelectedListener(this)
 
         fragment = CameraTabFragment.newInstance()
-        val transaction = supportFragmentManager?.beginTransaction()
-        transaction?.replace(R.id.content, fragment)?.commit()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.content, fragment as Fragment).commit()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -35,8 +35,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             else -> {
             }
         }
-        val transaction = supportFragmentManager?.beginTransaction()
-        transaction?.replace(R.id.content, fragment)?.commit()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.content, fragment as Fragment).commit()
         return true
     }
 }
