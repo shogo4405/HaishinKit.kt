@@ -6,11 +6,13 @@ com.haishinkit.codec
 com.haishinkit.codec.util
 com.haishinkit.event
 com.haishinkit.flv
+com.haishinkit.flv.tag
 com.haishinkit.gles
 com.haishinkit.gles.renderer
 com.haishinkit.iso
 com.haishinkit.lang
 com.haishinkit.media
+com.haishinkit.metric
 com.haishinkit.net
 com.haishinkit.rtmp
 com.haishinkit.util
