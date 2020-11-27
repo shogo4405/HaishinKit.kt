@@ -10,17 +10,17 @@ internal final class RtmpMessageFactory(private val maxPoolSize: Int) {
 
     fun create(value: Byte): RtmpMessage {
         return when (value) {
-            RtmpMessage.Type.CHUNK_SIZE.rawValue -> RtmpSetChunkSizeMessage()
-            RtmpMessage.Type.ABORT.rawValue -> RtmpAbortMessage()
-            RtmpMessage.Type.ACK.rawValue -> RtmpAcknowledgementMessage()
-            RtmpMessage.Type.USER.rawValue -> user.acquire() ?: RtmpUserControlMessage()
-            RtmpMessage.Type.WINDOW_ACK.rawValue -> RtmpWindowAcknowledgementSizeMessage()
-            RtmpMessage.Type.BANDWIDTH.rawValue -> RtmpSetPeerBandwidthMessage()
-            RtmpMessage.Type.AUDIO.rawValue -> audio.acquire() ?: RtmpAudioMessage()
-            RtmpMessage.Type.VIDEO.rawValue -> video.acquire() ?: RtmpVideoMessage()
-            RtmpMessage.Type.AMF0_DATA.rawValue -> RtmpDataMessage(RtmpObjectEncoding.AMF0)
-            RtmpMessage.Type.AMF0_COMMAND.rawValue -> RtmpCommandMessage(RtmpObjectEncoding.AMF0)
-            else -> RtmpMessage(RtmpMessage.Type.UNKNOWN)
+            RtmpMessage.TYPE_CHUNK_SIZE -> RtmpSetChunkSizeMessage()
+            RtmpMessage.TYPE_ABORT -> RtmpAbortMessage()
+            RtmpMessage.TYPE_ACK -> RtmpAcknowledgementMessage()
+            RtmpMessage.TYPE_USER -> user.acquire() ?: RtmpUserControlMessage()
+            RtmpMessage.TYPE_WINDOW_ACK -> RtmpWindowAcknowledgementSizeMessage()
+            RtmpMessage.TYPE_BANDWIDTH -> RtmpSetPeerBandwidthMessage()
+            RtmpMessage.TYPE_AUDIO -> audio.acquire() ?: RtmpAudioMessage()
+            RtmpMessage.TYPE_VIDEO -> video.acquire() ?: RtmpVideoMessage()
+            RtmpMessage.TYPE_AMF0_DATA -> RtmpDataMessage(RtmpObjectEncoding.AMF0)
+            RtmpMessage.TYPE_AMF0_COMMAND -> RtmpCommandMessage(RtmpObjectEncoding.AMF0)
+            else -> RtmpMessage(RtmpMessage.TYPE_UNKNOWN)
         }
     }
 

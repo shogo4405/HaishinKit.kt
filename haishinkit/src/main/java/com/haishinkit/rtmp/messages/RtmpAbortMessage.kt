@@ -6,7 +6,7 @@ import java.nio.ByteBuffer
 /**
  * 5.4.2. Abort Message (2)
  */
-internal class RtmpAbortMessage : RtmpMessage(RtmpMessage.Type.ABORT) {
+internal class RtmpAbortMessage : RtmpMessage(TYPE_ABORT) {
     var discarded: Int = 0
         private set
     override var length: Int = CAPACITY

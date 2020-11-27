@@ -3,7 +3,7 @@ package com.haishinkit.rtmp.messages
 import com.haishinkit.rtmp.RtmpConnection
 import java.nio.ByteBuffer
 
-internal open class RtmpVideoMessage : RtmpMessage(RtmpMessage.Type.VIDEO) {
+internal open class RtmpVideoMessage : RtmpMessage(TYPE_VIDEO) {
     var frame: Byte = 0x00
     open var codec: Byte = 0x00
     var data: ByteBuffer? = null

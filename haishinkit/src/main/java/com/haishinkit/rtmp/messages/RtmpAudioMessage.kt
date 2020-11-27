@@ -3,7 +3,7 @@ package com.haishinkit.rtmp.messages
 import com.haishinkit.rtmp.RtmpConnection
 import java.nio.ByteBuffer
 
-internal open class RtmpAudioMessage() : RtmpMessage(RtmpMessage.Type.AUDIO) {
+internal open class RtmpAudioMessage() : RtmpMessage(TYPE_AUDIO) {
     open var codec: Byte = 0
     open var soundRate: Byte = 0
     open var soundSize: Byte = 0

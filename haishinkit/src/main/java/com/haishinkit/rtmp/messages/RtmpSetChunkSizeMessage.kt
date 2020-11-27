@@ -6,7 +6,7 @@ import java.nio.ByteBuffer
 /**
  * 5.4.1. Set Chunk Size (1)
  */
-internal class RtmpSetChunkSizeMessage : RtmpMessage(RtmpMessage.Type.CHUNK_SIZE) {
+internal class RtmpSetChunkSizeMessage : RtmpMessage(TYPE_CHUNK_SIZE) {
     var size: Int = 0
     override var length: Int = CAPACITY
 

@@ -12,8 +12,8 @@ internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize
     val readable: Boolean
         get() = listner != null && utilizable
     private var byteBuffer: ByteBuffer? = null
-    private var width: Int = 0
-    private var height: Int = 0
+    private var width: Int = DEFAULT_WIDTH
+    private var height: Int = DEFAULT_HEIGHT
 
     fun setUp(width: Int, height: Int) {
         if (utilizable) { return }
@@ -25,8 +25,8 @@ internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize
 
     override fun tearDown() {
         if (!utilizable) { return }
-        width = 0
-        height = 0
+        width = DEFAULT_WIDTH
+        height = DEFAULT_HEIGHT
         byteBuffer = null
         super.tearDown()
     }
@@ -35,5 +35,10 @@ internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize
         val byteBuffer = byteBuffer ?: return
         windowSurface.readPixels(width, height, byteBuffer)
         listner?.onRead(width, height, byteBuffer)
+    }
+
+    companion object {
+        private const val DEFAULT_WIDTH = 0
+        private const val DEFAULT_HEIGHT = 0
     }
 }

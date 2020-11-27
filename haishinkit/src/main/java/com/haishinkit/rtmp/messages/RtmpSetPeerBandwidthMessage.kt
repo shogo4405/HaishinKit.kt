@@ -6,30 +6,22 @@ import java.nio.ByteBuffer
 /**
  * 5.4.5. Set Peer Bandwidth (6)
  */
-internal class RtmpSetPeerBandwidthMessage : RtmpMessage(RtmpMessage.Type.BANDWIDTH) {
-    enum class Limit(val rawValue: Byte) {
-        HARD(0x00),
-        SOFT(0x01),
-        DYNAMIC(0x02),
-        UNKNOWN(Byte.MAX_VALUE);
-    }
-
+internal class RtmpSetPeerBandwidthMessage : RtmpMessage(TYPE_BANDWIDTH) {
     var size = 0
         private set
-    var limit = Limit.HARD
+    var limit = LIMIT_HARD
         private set
     override var length: Int = CAPACITY
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.putInt(size)
-        buffer.put(limit.rawValue)
+        buffer.put(limit)
         return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
         size = buffer.int
-        val limit = buffer.get()
-        this.limit = Limit.values().first { n -> n.rawValue == limit }
+        limit = buffer.get()
         return this
     }
 
@@ -39,6 +31,11 @@ internal class RtmpSetPeerBandwidthMessage : RtmpMessage(RtmpMessage.Type.BANDWI
     }
 
     companion object {
+        const val LIMIT_HARD: Byte = 0x00
+        const val LIMIT_SOFT: Byte = 0x01
+        const val LIMIT_DYNAMIC: Byte = 0x02
+        const val LIMIT_UNKNOWN: Byte = Byte.MAX_VALUE
+
         private const val CAPACITY = 5
     }
 }

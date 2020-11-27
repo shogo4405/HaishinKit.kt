@@ -19,7 +19,7 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
     override var length: Int = CAPACITY
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
-        if (type == RtmpMessage.Type.AMF3_COMMAND) {
+        if (type == RtmpMessage.TYPE_AMF3_COMMAND) {
             buffer.put(0x00.toByte())
         }
         val serializer = Amf0Serializer(buffer)

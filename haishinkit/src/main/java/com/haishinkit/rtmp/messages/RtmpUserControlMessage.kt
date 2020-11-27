@@ -8,7 +8,7 @@ import java.nio.ByteBuffer
 /**
  * 7.1.5. Video Message (9)
  */
-internal class RtmpUserControlMessage : RtmpMessage(RtmpMessage.Type.USER) {
+internal class RtmpUserControlMessage : RtmpMessage(TYPE_USER) {
     enum class Event(val rawValue: Short) {
         STREAM_BEGIN(0x00),
         STREAM_EOF(0x01),
@@ -43,14 +43,14 @@ internal class RtmpUserControlMessage : RtmpMessage(RtmpMessage.Type.USER) {
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
         when (event) {
-            RtmpUserControlMessage.Event.PING -> {
+            Event.PING -> {
                 val message = connection.messageFactory.createRtmpUserControlMessage()
                 message.event = Event.PONG
                 message.chunkStreamID = RtmpChunk.CONTROL
                 connection.doOutput(RtmpChunk.ZERO, message)
             }
-            RtmpUserControlMessage.Event.BUFFER_FULL,
-            RtmpUserControlMessage.Event.BUFFER_EMPTY -> {
+            Event.BUFFER_FULL,
+            Event.BUFFER_EMPTY -> {
                 val stream = connection.streams[value]
                 if (stream != null) {
                     val data = if (event == Event.BUFFER_FULL)

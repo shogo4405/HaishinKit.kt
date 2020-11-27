@@ -253,7 +253,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
      * Sends a message on a published stream.
      */
     open fun send(handlerName: String, vararg arguments: Any) {
-        readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED ?: return
+        readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED
         val message = RtmpDataMessage(connection.objectEncoding)
         message.handlerName = handlerName
         arguments.forEach { value ->
