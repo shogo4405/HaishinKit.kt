@@ -79,7 +79,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         }
     }
 
-    interface Listener {
+    interface Listener : NetStream.Listener {
         fun onStatics(stream: RtmpStream, connection: RtmpConnection)
     }
 

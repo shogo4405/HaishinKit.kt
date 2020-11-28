@@ -90,6 +90,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) : MediaCodec.Listener {
         }
     }
 
+    override fun onCaptureOutput(type: Int, buffer: ByteBuffer) {
+        stream.listener?.onCaptureOutput(stream, type, buffer)
+    }
+
     fun clear() {
         audioConfig = null
         audioTimestamp = 0L

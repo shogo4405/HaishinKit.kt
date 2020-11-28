@@ -5,11 +5,15 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
+import com.haishinkit.flv.tag.FlvTag
 import com.haishinkit.gles.GlPixelContext
+import com.haishinkit.gles.GlPixelReader
 import com.haishinkit.gles.GlPixelTransform
+import com.haishinkit.util.FeatureUtil
+import java.nio.ByteBuffer
 import kotlin.properties.Delegates
 
-class VideoCodec() : MediaCodec(MIME) {
+class VideoCodec() : MediaCodec(MIME), GlPixelReader.Listener {
     class Setting(var codec: VideoCodec? = null) : MediaCodec.Setting(codec) {
         var width: Int by Delegates.observable(VideoCodec.DEFAULT_WIDTH) { _, _, newValue ->
             codec?.width = newValue
@@ -27,13 +31,16 @@ class VideoCodec() : MediaCodec(MIME) {
             codec?.frameRate = newValue
         }
     }
+
     var bitRate = DEFAULT_BIT_RATE
         set(value) {
             field = value
-            val bundle = Bundle().apply {
-                putInt(android.media.MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
+            if (FeatureUtil.has(FeatureUtil.FEATURE_BITRATE_CHANGE) && isRunning.get()) {
+                val bundle = Bundle().apply {
+                    putInt(android.media.MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
+                }
+                codec?.setParameters(bundle)
             }
-            codec?.setParameters(bundle)
         }
     var frameRate = DEFAULT_FRAME_RATE
     var IFrameInterval = DEFAULT_I_FRAME_INTERVAL
@@ -48,9 +55,13 @@ class VideoCodec() : MediaCodec(MIME) {
             pixelTransform.context = value
         }
     var fpsControllerClass: Class<*>? = null
-    private var pixelTransform: GlPixelTransform = GlPixelTransform()
+    private val pixelTransform: GlPixelTransform by lazy {
+        val transform = GlPixelTransform()
+        transform.reader.listener = this
+        transform
+    }
 
-    fun setListener(listener: GlPixelTransform.Listener?) {
+    internal fun setListener(listener: GlPixelTransform.Listener?) {
         pixelTransform.setListener(listener)
     }
 
@@ -96,5 +107,9 @@ class VideoCodec() : MediaCodec(MIME) {
         const val DEFAULT_COLOR_FORMAT = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
 
         private val TAG = VideoCodec::class.java.simpleName
+    }
+
+    override fun execute(width: Int, height: Int, buffer: ByteBuffer) {
+        listener?.onCaptureOutput(FlvTag.TYPE_VIDEO, buffer)
     }
 }

@@ -65,6 +65,7 @@ class MediaProjectionService : Service(), IEventListener {
         data?.let {
             stream.attachVideo(MediaProjectionSource(this, mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it), metrics))
         }
+        stream.videoSetting.capturing = true
         connection.connect(Preference.shared.rtmpURL)
         return START_NOT_STICKY
     }

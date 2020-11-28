@@ -15,7 +15,7 @@ import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import java.lang.ClassCastException
 import java.lang.ref.WeakReference
 
-class GlPixelTransform {
+internal class GlPixelTransform {
     interface Listener {
         fun onConfiguration()
     }
@@ -26,7 +26,7 @@ class GlPixelTransform {
             field = value
             fpsController = DefaultFpsController.instance
         }
-    private val reader = GlPixelReader()
+    val reader = GlPixelReader()
     private var listener: Listener? = null
     private var renderer = GlFramePixelRenderer()
     private var transform = FloatArray(16)

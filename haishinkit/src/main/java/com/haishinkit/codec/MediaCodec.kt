@@ -19,11 +19,15 @@ abstract class MediaCodec(private val mime: String) : Running {
         var options: List<CodecOption> by Delegates.observable(listOf()) { _, _, newValue ->
             codec?.options = newValue
         }
+        var capturing: Boolean by Delegates.observable(false) { _, _, newValue ->
+            codec?.capturing = capturing
+        }
     }
 
     interface Listener {
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
         fun onSampleOutput(mime: String, info: MediaCodec.BufferInfo, buffer: ByteBuffer)
+        fun onCaptureOutput(type: Int, buffer: ByteBuffer)
     }
 
     open class Callback(private val mime: String) : android.media.MediaCodec.Callback() {
@@ -80,6 +84,7 @@ abstract class MediaCodec(private val mime: String) : Running {
             field = value
         }
     var options = listOf<CodecOption>()
+    @Volatile var capturing = false
     override val isRunning = AtomicBoolean(false)
 
     private var outputFormat: MediaFormat? = null

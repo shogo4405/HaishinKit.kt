@@ -6,12 +6,13 @@ import java.nio.ByteOrder
 
 internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize {
     interface Listener {
+        var capturing: Boolean
         fun execute(width: Int, height: Int, buffer: ByteBuffer)
     }
 
     var listener: Listener? = null
     val readable: Boolean
-        get() = listener != null && utilizable
+        get() = listener?.capturing == true && utilizable
     private var byteBuffer: ByteBuffer? = null
     private var width: Int = DEFAULT_WIDTH
     private var height: Int = DEFAULT_HEIGHT

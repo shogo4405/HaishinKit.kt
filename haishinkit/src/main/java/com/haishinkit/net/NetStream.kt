@@ -5,11 +5,17 @@ import com.haishinkit.codec.VideoCodec
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
 import com.haishinkit.view.NetStreamView
+import java.nio.ByteBuffer
 
 /**
  * The `NetStream` class is the foundation of a RTMPStream.
  */
 abstract class NetStream {
+    interface Listener {
+        fun onCaptureOutput(stream: NetStream, type: Int, buffer: ByteBuffer) {
+        }
+    }
+
     val videoSetting: VideoCodec.Setting by lazy {
         VideoCodec.Setting(videoCodec)
     }

@@ -16,8 +16,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
+import java.nio.ByteBuffer
 
 class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
@@ -28,6 +30,9 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
         MediaProjectionService.listener = object : RtmpStream.Listener {
+            override fun onCaptureOutput(stream: NetStream, type: Int, buffer: ByteBuffer) {
+                Log.d(TAG, type.toString())
+            }
             override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
                 activity?.runOnUiThread {
                     v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
@@ -80,10 +85,11 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     }
 
     companion object {
-        private const val REQUEST_CAPTURE = 1
-
         fun newInstance(): MediaProjectionTabFragment {
             return MediaProjectionTabFragment()
         }
+
+        private val TAG = MediaProjectionTabFragment::class.java.simpleName
+        private const val REQUEST_CAPTURE = 1
     }
 }
