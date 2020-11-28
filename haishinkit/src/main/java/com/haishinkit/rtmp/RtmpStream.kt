@@ -10,6 +10,7 @@ import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.messages.RtmpCommandMessage
 import com.haishinkit.rtmp.messages.RtmpDataMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
+import com.haishinkit.rtmp.messages.RtmpMessageFactory
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
@@ -20,12 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger
  * An object that provides the interface to control a one-way channel over a RTMPConnection.
  */
 open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IEventDispatcher {
-    enum class HowToPublish(val rawValue: String) {
-        RECORD("record"),
-        APPEND("append"),
-        APPEND_WITH_GAP("appendWithGap"),
-        LIVE("live");
-    }
+    data class Info(
+        var resourceName: String? = null
+    )
 
     enum class Code(val rawValue: String, private val level: String) {
         BUFFER_EMPTY("NetStream.Buffer.Empty", "status"),
@@ -113,6 +111,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         CLOSED(0x06)
     }
 
+    var info: Info = Info()
     var listener: Listener? = null
 
     @Volatile var currentFPS: Int = 0
@@ -123,7 +122,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         set(value) {
             Log.d(TAG, value.toString())
             when (field) {
-                RtmpStream.ReadyState.PUBLISHING -> {
+                ReadyState.PUBLISHING -> {
                     if (audio != null) {
                         audioCodec.stopRunning()
                         audio?.stopRunning()
@@ -132,13 +131,14 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                         videoCodec.stopRunning()
                         video?.stopRunning()
                     }
+                    listener?.onTearDown(this)
                 }
                 else -> {
                 }
             }
             field = value
             when (value) {
-                RtmpStream.ReadyState.OPEN -> {
+                ReadyState.OPEN -> {
                     currentFPS = 0
                     frameCount.set(0)
                     for (message in messages) {
@@ -150,8 +150,15 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                     }
                     messages.clear()
                 }
-                RtmpStream.ReadyState.PUBLISHING -> {
+                ReadyState.PUBLISHING -> {
+                    listener?.onSetUp(this)
                     send("@setDataFrame", "onMetaData", toMetaData())
+                    if (howToPublish == PUBLISH_LOCAL_RECORD) {
+                        info.resourceName?.let {
+                            recorder.startRunning()
+                            recorder.open(recordSetting, it)
+                        }
+                    }
                     muxer.clear()
                     if (audio != null) {
                         audio?.startRunning()
@@ -168,11 +175,14 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         }
     internal val messages = ArrayList<RtmpMessage>()
     internal var frameCount = AtomicInteger(0)
+    internal var messageFactory = RtmpMessageFactory(4)
+    private var recorder = RtmpRecorder()
     private val dispatcher: EventDispatcher by lazy {
         EventDispatcher(this)
     }
     private var muxer = RtmpMuxer(this)
     private val eventListener = EventListener(this)
+    private var howToPublish = PUBLISH_LIVE
 
     init {
         val count = (connection.streams.count() * -1) - 1
@@ -186,7 +196,10 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         videoCodec.listener = muxer
     }
 
-    open fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
+    /**
+     * Sends streaming audio, video and data messages from a client to server.
+     */
+    open fun publish(name: String?, howToPublish: String = PUBLISH_LIVE) {
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
         message.commandName = if (name != null) "publish" else "closeStream"
@@ -195,22 +208,25 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
 
         if (name == null) {
             when (readyState) {
-                RtmpStream.ReadyState.PUBLISHING -> connection.doOutput(RtmpChunk.ZERO, message)
+                ReadyState.PUBLISHING -> connection.doOutput(RtmpChunk.ZERO, message)
                 else -> {}
             }
             return
         }
 
+        this.howToPublish = howToPublish
+        info.resourceName = name
+
         val arguments = mutableListOf<Any?>()
         arguments.add(name)
-        arguments.add(howToPublish.rawValue)
+        arguments.add(howToPublish)
         message.arguments = arguments
 
         when (readyState) {
-            RtmpStream.ReadyState.INITIALIZED, RtmpStream.ReadyState.CLOSED -> {
+            ReadyState.INITIALIZED, ReadyState.CLOSED -> {
                 messages.add(message)
             }
-            RtmpStream.ReadyState.OPEN -> {
+            ReadyState.OPEN -> {
                 connection.doOutput(RtmpChunk.ZERO, message)
                 readyState = ReadyState.PUBLISH
             }
@@ -218,6 +234,9 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         }
     }
 
+    /**
+     * Plays a media file or a live stream from server.
+     */
     open fun play(vararg arguments: Any) {
         val streamName = if (arguments.isEmpty()) null else arguments[0]
         val message = RtmpCommandMessage(connection.objectEncoding)
@@ -229,7 +248,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
 
         if (streamName == null) {
             when (readyState) {
-                RtmpStream.ReadyState.PLAYING -> {
+                ReadyState.PLAYING -> {
                     connection.doOutput(RtmpChunk.ZERO, message)
                 }
                 else -> {}
@@ -238,10 +257,10 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         }
 
         when (readyState) {
-            RtmpStream.ReadyState.INITIALIZED, RtmpStream.ReadyState.CLOSED -> {
+            ReadyState.INITIALIZED, ReadyState.CLOSED -> {
                 messages.add(message)
             }
-            RtmpStream.ReadyState.OPEN, RtmpStream.ReadyState.PLAYING -> {
+            ReadyState.OPEN, ReadyState.PLAYING -> {
                 connection.doOutput(RtmpChunk.ZERO, message)
             }
             else -> {
@@ -264,7 +283,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         connection.doOutput(RtmpChunk.ZERO, message)
     }
 
-    open override fun close() {
+    override fun close() {
         if (readyState == ReadyState.CLOSED) {
             return
         }
@@ -301,6 +320,15 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         dispatcher.removeEventListener(type, listener, useCapture)
     }
 
+    internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
+        chunk.encode(connection.socket, message)
+        if (recorder.isRunning.get()) {
+            recorder.write(message, messageFactory)
+        } else {
+            messageFactory.release(message)
+        }
+    }
+
     internal fun on() {
         currentFPS = frameCount.get()
         frameCount.set(0)
@@ -324,6 +352,12 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
     }
 
     companion object {
+        const val PUBLISH_RECORD = "record"
+        const val PUBLISH_APPEND = "append"
+        const val PUBLISH_APPEND_WITH_GAP = "appendWithGap"
+        const val PUBLISH_LIVE = "live"
+        const val PUBLISH_LOCAL_RECORD = "localRecord"
+
         private val TAG = RtmpStream::class.java.simpleName
     }
 }

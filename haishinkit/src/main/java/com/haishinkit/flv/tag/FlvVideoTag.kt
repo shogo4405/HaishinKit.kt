@@ -6,13 +6,12 @@ import com.haishinkit.flv.FlvVideoCodec
 import java.nio.ByteBuffer
 
 data class FlvVideoTag(
-    override val type: Int = FlvTag.TYPE_VIDEO,
-    override var dataSize: Long,
-    override var timestamp: Long,
-    override var timestampExtended: Int,
-    override var streamId: Long,
-    override var offset: Long,
-    override var payload: ByteBuffer?,
+    override val type: Byte = FlvTag.TYPE_VIDEO,
+    override var dataSize: Int,
+    override var timestamp: Int,
+    override var timestampExtended: Byte,
+    override val streamId: Int = 0,
+    override var data: ByteBuffer? = null,
     var frameType: Byte = FlvFlameType.COMMAND,
     var codec: Byte = FlvVideoCodec.UNKNOWN,
     var avcPacketType: Byte = FlvAvcPacketType.EOS,

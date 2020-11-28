@@ -1,6 +1,7 @@
 package com.haishinkit.net
 
 import com.haishinkit.codec.AudioCodec
+import com.haishinkit.codec.RecordSetting
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
@@ -12,8 +13,20 @@ import java.nio.ByteBuffer
  */
 abstract class NetStream {
     interface Listener {
-        fun onCaptureOutput(stream: NetStream, type: Int, buffer: ByteBuffer) {
-        }
+        /**
+         * Tells the receiver to setUp.
+         */
+        fun onSetUp(stream: NetStream)
+
+        /**
+         * Tells the receiver to tearDown.
+         */
+        fun onTearDown(stream: NetStream)
+
+        /**
+         * Tells the receiver to captureOutput.
+         */
+        fun onCaptureOutput(stream: NetStream, type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
     val videoSetting: VideoCodec.Setting by lazy {
@@ -22,6 +35,10 @@ abstract class NetStream {
 
     val audioSetting: AudioCodec.Setting by lazy {
         AudioCodec.Setting(audioCodec)
+    }
+
+    val recordSetting: RecordSetting by lazy {
+        RecordSetting()
     }
 
     internal val audioCodec = AudioCodec()

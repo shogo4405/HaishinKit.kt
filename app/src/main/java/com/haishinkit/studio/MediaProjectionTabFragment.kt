@@ -1,7 +1,6 @@
 package com.haishinkit.studio
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.app.Activity
 import android.app.Service
 import android.content.ComponentName
@@ -10,16 +9,19 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.projection.MediaProjectionManager
 import android.os.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.haishinkit.metric.FrameCapture
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import java.nio.ByteBuffer
+
 
 class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
@@ -30,13 +32,24 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
         MediaProjectionService.listener = object : RtmpStream.Listener {
-            override fun onCaptureOutput(stream: NetStream, type: Int, buffer: ByteBuffer) {
-                Log.d(TAG, type.toString())
+            private var capture: FrameCapture = FrameCapture()
+
+            override fun onCaptureOutput(stream: NetStream, type: Byte, buffer: ByteBuffer, timestamp: Long) {
+                capture.onCaptureOutput(stream, type, buffer, timestamp)
             }
+
             override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
                 activity?.runOnUiThread {
                     v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
                 }
+            }
+
+            override fun onSetUp(stream: NetStream) {
+                capture.onSetUp(stream)
+            }
+
+            override fun onTearDown(stream: NetStream) {
+                capture.onTearDown(stream)
             }
         }
         button.setOnClickListener {
@@ -82,6 +95,10 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
 
     override fun onServiceDisconnected(name: ComponentName?) {
         messenger = null
+    }
+
+    private fun isExternalStorageWritable(): Boolean {
+        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
     }
 
     companion object {

@@ -1,18 +1,14 @@
 package com.haishinkit.rtmp
 
 import android.util.Log
-import com.haishinkit.BuildConfig
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
-import com.haishinkit.metric.FrameTracker
 import com.haishinkit.net.Responder
-import com.haishinkit.rtmp.messages.RtmpAudioMessage
 import com.haishinkit.rtmp.messages.RtmpCommandMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
 import com.haishinkit.rtmp.messages.RtmpMessageFactory
-import com.haishinkit.rtmp.messages.RtmpVideoMessage
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
 import java.nio.ByteBuffer
@@ -177,13 +173,6 @@ open class RtmpConnection : EventDispatcher(null) {
         }
     private var arguments: MutableList<Any?> = mutableListOf()
     private val payloads = ConcurrentHashMap<Short, ByteBuffer>()
-    private var frameTracker: FrameTracker? = null
-        get() {
-            if (field == null && BuildConfig.DEBUG) {
-                field = FrameTracker()
-            }
-            return field
-        }
 
     init {
         addEventListener(Event.RTMP_STATUS, EventListener(this))
@@ -248,13 +237,6 @@ open class RtmpConnection : EventDispatcher(null) {
     }
 
     internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
-        if (BuildConfig.DEBUG) {
-            if (message is RtmpAudioMessage) {
-                frameTracker?.track(FrameTracker.TYPE_AUDIO, System.currentTimeMillis())
-            } else if (message is RtmpVideoMessage) {
-                frameTracker?.track(FrameTracker.TYPE_VIDEO, System.currentTimeMillis())
-            }
-        }
         chunk.encode(socket, message)
         messageFactory.release(message)
     }

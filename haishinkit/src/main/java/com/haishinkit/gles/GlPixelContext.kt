@@ -32,13 +32,15 @@ class GlPixelContext(private val context: Context? = null, private val swapped: 
     private var isPortrait: Boolean = false
 
     init {
-        if (context != null && swapped) {
+        if (context != null) {
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             defaultDisplay = windowManager.defaultDisplay
-            isPortrait = if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                (orientation == Surface.ROTATION_0 || orientation == Surface.ROTATION_180)
-            } else {
-                (orientation == Surface.ROTATION_90 || orientation == Surface.ROTATION_270)
+            if (swapped) {
+                isPortrait = if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    (orientation == Surface.ROTATION_0 || orientation == Surface.ROTATION_180)
+                } else {
+                    (orientation == Surface.ROTATION_90 || orientation == Surface.ROTATION_270)
+                }
             }
         }
     }

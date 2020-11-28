@@ -27,7 +27,7 @@ abstract class MediaCodec(private val mime: String) : Running {
     interface Listener {
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
         fun onSampleOutput(mime: String, info: MediaCodec.BufferInfo, buffer: ByteBuffer)
-        fun onCaptureOutput(type: Int, buffer: ByteBuffer)
+        fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
     open class Callback(private val mime: String) : android.media.MediaCodec.Callback() {
@@ -74,7 +74,6 @@ abstract class MediaCodec(private val mime: String) : Running {
         get() {
             if (field == null) {
                 field = MediaCodec.createEncoderByType(mime)
-                field?.let { configure(it) }
             }
             return field
         }
@@ -118,6 +117,7 @@ abstract class MediaCodec(private val mime: String) : Running {
         }
         try {
             val codec = codec ?: return
+            configure(codec)
             outputFormat?.let { format ->
                 format.getString("mime")?.let { mime ->
                     listener?.onFormatChanged(mime, format)
@@ -136,7 +136,6 @@ abstract class MediaCodec(private val mime: String) : Running {
             Log.d(TAG, "stopRunning()")
         }
         codec?.stop()
-        codec?.let { configure(it) }
         outputFormat = null
         isRunning.set(false)
     }

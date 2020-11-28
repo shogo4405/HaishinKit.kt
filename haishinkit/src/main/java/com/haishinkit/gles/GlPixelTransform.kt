@@ -12,6 +12,7 @@ import com.haishinkit.BuildConfig
 import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
+import com.haishinkit.gles.renderer.GlPixelRenderer
 import java.lang.ClassCastException
 import java.lang.ref.WeakReference
 
@@ -20,17 +21,14 @@ internal class GlPixelTransform {
         fun onConfiguration()
     }
 
+    val reader = GlPixelReader()
     var context = GlPixelContext.instance
     var fpsControllerClass: Class<*>? = null
-        set(value) {
-            field = value
-            fpsController = DefaultFpsController.instance
-        }
-    val reader = GlPixelReader()
+    var pixelRendererClass: Class<*>? = null
     private var listener: Listener? = null
-    private var renderer = GlFramePixelRenderer()
     private var transform = FloatArray(16)
     private var fpsController: FpsController = DefaultFpsController.instance
+    private var pixelRenderer: GlPixelRenderer = GlFramePixelRenderer()
     private var inputWindowSurface = GlWindowSurface()
     private var handler: Handler? = null
         get() {
@@ -89,28 +87,37 @@ internal class GlPixelTransform {
                 fpsController = try {
                     it.newInstance() as FpsController
                 } catch (e: ClassCastException) {
-                    DefaultFpsController.instance
+                    fpsController
                 }
                 Log.d(TAG, fpsController.toString())
             }
         }
+        pixelRendererClass?.let {
+            if (pixelRenderer is GlFramePixelRenderer) {
+                pixelRenderer = try {
+                    it.newInstance() as GlPixelRenderer
+                } catch (e: ClassCastException) {
+                    pixelRenderer
+                }
+            }
+        }
         reader.setUp(width, height)
         fpsController.clear()
-        renderer.tearDown()
+        pixelRenderer.tearDown()
         inputWindowSurface.tearDown()
         inputWindowSurface.setUp(surface, context.eglContext)
         inputWindowSurface.makeCurrent()
-        renderer.resolution = Size(width, height)
-        renderer.setUp()
+        pixelRenderer.resolution = Size(width, height)
+        pixelRenderer.setUp()
         GLES10.glOrthof(0.0f, width.toFloat(), height.toFloat(), 0.0f, -1.0f, 1.0f)
         listener?.onConfiguration()
     }
 
     private fun onFrameAvailable(transform: FloatArray, timestamp: Long) {
-        renderer.render(context, transform)
+        pixelRenderer.render(context, transform)
         inputWindowSurface.setPresentationTime(timestamp)
         if (reader.readable) {
-            reader.read(inputWindowSurface)
+            reader.read(inputWindowSurface, timestamp)
         }
         if (!inputWindowSurface.swapBuffers() && BuildConfig.DEBUG) {
             Log.w(TAG, "can't swap buffers.")

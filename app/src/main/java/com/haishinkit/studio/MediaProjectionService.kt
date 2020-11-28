@@ -19,6 +19,7 @@ import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.MediaProjectionSource
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
+import java.io.File
 
 class MediaProjectionService : Service(), IEventListener {
     private lateinit var stream: RtmpStream
@@ -28,8 +29,8 @@ class MediaProjectionService : Service(), IEventListener {
     private var handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
-                0 -> connection.connect(Preference.shared.rtmpURL)
-                1 -> connection.close()
+                MSG_CONNECT -> connection.connect(Preference.shared.rtmpURL)
+                MSG_CLOSE -> connection.close()
             }
         }
     }
@@ -40,7 +41,7 @@ class MediaProjectionService : Service(), IEventListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i(javaClass.name, "onStartCommand")
+        Log.i(TAG, "onStartCommand")
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
@@ -65,7 +66,8 @@ class MediaProjectionService : Service(), IEventListener {
         data?.let {
             stream.attachVideo(MediaProjectionSource(this, mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it), metrics))
         }
-        stream.videoSetting.capturing = true
+        stream.recordSetting.directory = getExternalFilesDir(null)
+        // stream.videoSetting.capturing = true
         connection.connect(Preference.shared.rtmpURL)
         return START_NOT_STICKY
     }
@@ -102,6 +104,9 @@ class MediaProjectionService : Service(), IEventListener {
         var metrics = DisplayMetrics()
         var data: Intent? = null
         var listener: RtmpStream.Listener? = null
+
+        private const val MSG_CONNECT = 0
+        private const val MSG_CLOSE = 1
 
         private val TAG = MediaProjectionSource::class.java.simpleName
     }

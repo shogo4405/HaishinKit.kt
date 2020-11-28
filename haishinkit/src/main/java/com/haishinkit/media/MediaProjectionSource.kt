@@ -10,6 +10,7 @@ import android.util.Log
 import android.util.Size
 import android.view.Choreographer
 import android.view.Surface
+import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.gles.GlPixelContext
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * A video source that captures a display by the MediaProjection API.
  */
 class MediaProjectionSource(
-    private val context: Context,
+    context: Context,
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
     override val fpsControllerClass: Class<*>? = ScheduledFpsController::class.java,
@@ -66,11 +67,17 @@ class MediaProjectionSource(
 
     override fun startRunning() {
         if (isRunning.get()) return
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "startRunning()")
+        }
         isRunning.set(true)
     }
 
     override fun stopRunning() {
         if (!isRunning.get()) return
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "stopRunning()")
+        }
         choreographer.removeFrameCallback(this)
         pixelContext.tearDown()
         virtualDisplay?.release()
@@ -85,7 +92,7 @@ class MediaProjectionSource(
         surface = Surface(surfaceTexture)
 
         virtualDisplay = mediaProjection.createVirtualDisplay(
-            MediaProjectionSource.DEFAULT_DISPLAY_NAME,
+            DEFAULT_DISPLAY_NAME,
             resolution.width,
             resolution.height,
             metrics.densityDpi,

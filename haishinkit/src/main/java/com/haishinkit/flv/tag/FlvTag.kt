@@ -6,19 +6,41 @@ import java.nio.ByteBuffer
  * An interface representations FlvTag.
  */
 interface FlvTag {
-    val type: Int
-    var dataSize: Long
-    var timestamp: Long
-    var timestampExtended: Int
-    var streamId: Long
-    var offset: Long
-    var payload: ByteBuffer?
+    /**
+     * Type of the tag.
+     */
+    val type: Byte
+
+    /**
+     * Length of the data in the Data field.
+     */
+    var dataSize: Int
+
+    /**
+     * Time in milliseconds field.
+     */
+    var timestamp: Int
+
+    /**
+     * Extended time in field.
+     */
+    var timestampExtended: Byte
+
+    /**
+     * Always 0
+     */
+    val streamId: Int
+
+    /**
+     * Body of tag.
+     */
+    var data: ByteBuffer?
 
     fun toByteArray(): ByteArray
 
     companion object {
-        var TYPE_AUDIO = 8
-        var TYPE_VIDEO = 9
-        var TYPE_DATA = 18
+        var TYPE_AUDIO: Byte = 8
+        var TYPE_VIDEO: Byte = 9
+        var TYPE_DATA: Byte = 18
     }
 }

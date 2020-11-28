@@ -30,6 +30,9 @@ class VideoCodec() : MediaCodec(MIME), GlPixelReader.Listener {
         var frameRate: Int by Delegates.observable(VideoCodec.DEFAULT_FRAME_RATE) { _, _, newValue ->
             codec?.frameRate = newValue
         }
+        var pixelRendererClass: Class<*>? by Delegates.observable(null) { _, _, newValue ->
+            codec?.pixelRendererClass = newValue
+        }
     }
 
     var bitRate = DEFAULT_BIT_RATE
@@ -55,6 +58,7 @@ class VideoCodec() : MediaCodec(MIME), GlPixelReader.Listener {
             pixelTransform.context = value
         }
     var fpsControllerClass: Class<*>? = null
+    var pixelRendererClass: Class<*>? = null
     private val pixelTransform: GlPixelTransform by lazy {
         val transform = GlPixelTransform()
         transform.reader.listener = this
@@ -91,7 +95,12 @@ class VideoCodec() : MediaCodec(MIME), GlPixelReader.Listener {
     override fun configure(codec: android.media.MediaCodec) {
         super.configure(codec)
         pixelTransform.fpsControllerClass = fpsControllerClass
+        pixelTransform.pixelRendererClass = pixelRendererClass
         pixelTransform.configure(codec.createInputSurface(), width, height)
+    }
+
+    override fun execute(buffer: ByteBuffer, timestamp: Long) {
+        listener?.onCaptureOutput(FlvTag.TYPE_VIDEO, buffer, timestamp)
     }
 
     companion object {
@@ -107,9 +116,5 @@ class VideoCodec() : MediaCodec(MIME), GlPixelReader.Listener {
         const val DEFAULT_COLOR_FORMAT = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
 
         private val TAG = VideoCodec::class.java.simpleName
-    }
-
-    override fun execute(width: Int, height: Int, buffer: ByteBuffer) {
-        listener?.onCaptureOutput(FlvTag.TYPE_VIDEO, buffer)
     }
 }
