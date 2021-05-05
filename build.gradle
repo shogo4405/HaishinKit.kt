@@ -26,16 +26,12 @@ allprojects {
     }
 }
 
-repositories {
-    jcenter()
-}
-
 configurations {
     ktlint
 }
 
 dependencies {
-    ktlint "com.pinterest:ktlint:0.39.0"
+    ktlint "com.pinterest:ktlint:0.41.0"
 }
 
 task ktlint(type: JavaExec, group: "verification") {
