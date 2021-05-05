@@ -4,6 +4,8 @@ import android.util.Log
 import com.haishinkit.event.Event
 import com.haishinkit.net.Socket
 import org.apache.commons.lang3.builder.ToStringBuilder
+import java.lang.IllegalArgumentException
+import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 
 internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
@@ -44,24 +46,24 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
     override fun close(disconnected: Boolean) {
         var data: Any? = null
         if (disconnected) {
-            data = if (readyState == RtmpSocket.ReadyState.HandshakeDone) {
+            data = if (readyState == ReadyState.HandshakeDone) {
                 RtmpConnection.Code.CONNECT_CLOSED.data("")
             } else {
                 RtmpConnection.Code.CONNECT_FAILED.data("")
             }
         }
-        readyState = RtmpSocket.ReadyState.Closing
+        readyState = ReadyState.Closing
         super.close(disconnected)
         data?.let {
             connection.dispatchEventWith(Event.RTMP_STATUS, false, it)
         }
-        readyState = RtmpSocket.ReadyState.Closed
+        readyState = ReadyState.Closed
         isConnected = false
     }
 
     override fun listen(buffer: ByteBuffer) {
         when (readyState) {
-            RtmpSocket.ReadyState.VersionSent -> {
+            ReadyState.VersionSent -> {
                 if (buffer.limit() < RtmpHandshake.SIGNAL_SIZE + 1) {
                     return
                 }
@@ -74,7 +76,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
                     buffer.position(3073)
                 }
             }
-            RtmpSocket.ReadyState.AckSent -> {
+            ReadyState.AckSent -> {
                 if (buffer.limit() < RtmpHandshake.SIGNAL_SIZE) {
                     return
                 }
@@ -84,11 +86,13 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
                 isConnected = true
                 connection.doOutput(RtmpChunk.ZERO, connection.createConnectionMessage())
             }
-            RtmpSocket.ReadyState.HandshakeDone ->
+            ReadyState.HandshakeDone ->
                 try {
                     connection.listen(buffer)
                 } catch (e: IndexOutOfBoundsException) {
-                    Log.w(TAG, "", e)
+                    if (VERBOSE) Log.d(TAG, "", e)
+                } catch (e: BufferUnderflowException) {
+                    if (VERBOSE) Log.d(TAG, "", e)
                 } catch (e: IllegalArgumentException) {
                     Log.w(TAG, "", e)
                     throw e
@@ -102,6 +106,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
     }
 
     companion object {
+        private const val VERBOSE = false
         private var TAG = RtmpSocket::class.java.simpleName
     }
 }

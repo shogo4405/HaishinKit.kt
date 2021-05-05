@@ -19,7 +19,6 @@ import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.MediaProjectionSource
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
-import java.io.File
 
 class MediaProjectionService : Service(), IEventListener {
     private lateinit var stream: RtmpStream

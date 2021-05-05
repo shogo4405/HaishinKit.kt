@@ -22,7 +22,7 @@ import java.util.UUID
 class FrameCapture(
     override var utilizable: Boolean = false
 ) : Listener, Utilize {
-    private var index = 0L
+    private var index = DEFAULT_INDEX
     private var uuid = UUID.randomUUID().toString()
     private var metadata: FileOutputStream? = null
 
@@ -43,7 +43,7 @@ class FrameCapture(
         val workspace = File(stream.recordSetting.directory, uuid)
         ZipUtil.zipFile(workspace.toPath())
         FileUtil.delete(workspace)
-        index = 0
+        index = DEFAULT_INDEX
         super.tearDown()
     }
 
@@ -68,6 +68,7 @@ class FrameCapture(
     }
 
     companion object {
+        const val DEFAULT_INDEX = 1L
         private val TAG = FrameCapture::class.java.simpleName
     }
 }

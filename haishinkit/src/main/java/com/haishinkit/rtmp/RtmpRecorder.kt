@@ -4,7 +4,6 @@ import com.haishinkit.codec.RecordSetting
 import com.haishinkit.flv.FlvWriter
 import com.haishinkit.lang.Running
 import com.haishinkit.rtmp.messages.RtmpMessage
-import com.haishinkit.rtmp.messages.RtmpMessageFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,10 +24,10 @@ internal class RtmpRecorder(override val isRunning: AtomicBoolean = AtomicBoolea
         }
     }
 
-    fun write(message: RtmpMessage, messageFactory: RtmpMessageFactory) {
+    fun write(message: RtmpMessage) {
         launch(coroutineContext) {
             writer.write(message)
-            messageFactory.release(message)
+            message.release()
         }
     }
 

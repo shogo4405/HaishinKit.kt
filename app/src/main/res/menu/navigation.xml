@@ -13,6 +13,11 @@
         android:title="MediaProjection" />
 
     <item
+        android:id="@+id/navigation_playback"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="Playback" />
+
+    <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="Preference" />

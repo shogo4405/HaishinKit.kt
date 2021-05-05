@@ -20,13 +20,13 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.haishinkit.media.AudioRecordSource
-import com.haishinkit.view.GlHkView
+import com.haishinkit.view.HkGLSurfaceView
 import androidx.fragment.app.Fragment
 
 class CameraTabFragment: Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var cameraView: GlHkView
+    private lateinit var cameraView: HkGLSurfaceView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +67,7 @@ class CameraTabFragment: Fragment(), IEventListener {
                 button.text = "Publish"
             }
         }
-        cameraView = v.findViewById<GlHkView>(R.id.camera)
+        cameraView = v.findViewById<HkGLSurfaceView>(R.id.camera)
         cameraView.attachStream(stream)
         return v
     }

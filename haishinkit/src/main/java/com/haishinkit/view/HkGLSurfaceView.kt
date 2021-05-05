@@ -22,7 +22,7 @@ import javax.microedition.khronos.opengles.GL10
 /**
  * A view that displays a video content of a NetStream object which uses OpenGL api.
  */
-class GlHkView @JvmOverloads constructor(
+class HkGLSurfaceView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -64,7 +64,9 @@ class GlHkView @JvmOverloads constructor(
                 this.context.setUp()
                 texture = this.context.createSurfaceTexture(640, 480)
                 strategy.context = this.context
-                (stream?.video as CameraSource).surface = Surface(texture)
+                val surface = Surface(texture)
+                (stream?.video as? CameraSource)?.surface = surface
+                stream?.surface = surface
                 strategy.onSurfaceCreated(gl, config)
             }
 
@@ -76,7 +78,8 @@ class GlHkView @JvmOverloads constructor(
             }
 
             override fun onDrawFrame(gl: GL10) {
-                this@GlHkView.stream?.videoCodec?.context = this.context
+                texture?.updateTexImage()
+                this@HkGLSurfaceView.stream?.videoCodec?.context = this.context
                 texture?.updateTexImage()
                 texture?.let {
                     stream?.videoCodec?.frameAvailable(it)
@@ -120,6 +123,6 @@ class GlHkView @JvmOverloads constructor(
     }
 
     companion object {
-        private val TAG = GlHkView::class.java.simpleName
+        private val TAG = HkGLSurfaceView::class.java.simpleName
     }
 }

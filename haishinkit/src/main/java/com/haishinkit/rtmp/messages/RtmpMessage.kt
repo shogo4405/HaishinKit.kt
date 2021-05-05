@@ -1,11 +1,12 @@
 package com.haishinkit.rtmp.messages
 
+import androidx.core.util.Pools
 import com.haishinkit.rtmp.RtmpConnection
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 
-internal open class RtmpMessage(val type: Byte) {
+internal open class RtmpMessage(val type: Byte, private val pool: Pools.Pool<RtmpMessage>? = null) {
     var chunkStreamID: Short = 0
     var streamID: Int = 0
     var timestamp: Int = 0
@@ -14,11 +15,11 @@ internal open class RtmpMessage(val type: Byte) {
             if (field.capacity() < length) {
                 field = ByteBuffer.allocate(length)
             } else {
-                field.clear()
+                field.limit(length)
             }
             return field
         }
-    open var length: Int = 0
+    open var length: Int = -1
 
     open fun encode(buffer: ByteBuffer): RtmpMessage {
         throw NotImplementedException("$TAG#encode")
@@ -30,6 +31,10 @@ internal open class RtmpMessage(val type: Byte) {
 
     open fun execute(connection: RtmpConnection): RtmpMessage {
         throw NotImplementedException("$TAG#execute")
+    }
+
+    open fun release(): Boolean {
+        return pool?.release(this) ?: false
     }
 
     override fun toString(): String {
@@ -52,7 +57,6 @@ internal open class RtmpMessage(val type: Byte) {
         const val TYPE_AMF0_SHARED: Byte = 0x13
         const val TYPE_AMF0_COMMAND: Byte = 0x14
         const val TYPE_AGGREGATE: Byte = 0x16
-        const val TYPE_UNKNOWN: Byte = Byte.MAX_VALUE
 
         val EMPTY_BYTE_BUFFER: ByteBuffer = ByteBuffer.allocate(0)
         private val TAG = RtmpMessage::class.java.simpleName

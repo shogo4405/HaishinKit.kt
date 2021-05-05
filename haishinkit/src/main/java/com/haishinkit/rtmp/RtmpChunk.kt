@@ -11,6 +11,7 @@ internal enum class RtmpChunk(val rawValue: Byte) {
 
     fun encode(socket: RtmpSocket, message: RtmpMessage) {
         val payload = message.payload
+        payload.clear()
         message.encode(payload)
         payload.flip()
 
@@ -48,12 +49,12 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         socket.doOutput(buffer)
         for (i in 1 until (length - mod) / chunkSize) {
             buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
-            RtmpChunk.THREE.putHeader(buffer, message.chunkStreamID)
+            THREE.putHeader(buffer, message.chunkStreamID)
             buffer.put(payload.array(), chunkSize * i, chunkSize)
             socket.doOutput(buffer)
         }
         buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
-        RtmpChunk.THREE.putHeader(buffer, message.chunkStreamID)
+        THREE.putHeader(buffer, message.chunkStreamID)
         buffer.put(payload.array(), length - mod, mod)
         socket.doOutput(buffer)
     }
@@ -70,11 +71,17 @@ internal enum class RtmpChunk(val rawValue: Byte) {
                 length = getInt(buffer)
                 type = buffer.get()
                 streamID = Integer.reverseBytes(buffer.int)
+                if (timestamp == 16777215) {
+                    timestamp = buffer.int
+                }
             }
             ONE -> {
                 timestamp = getInt(buffer)
                 length = getInt(buffer)
                 type = buffer.get()
+                if (timestamp == 16777215) {
+                    timestamp = buffer.int
+                }
             }
             TWO -> {
                 val message = connection.messages[chunkStreamID]!!
@@ -111,8 +118,8 @@ internal enum class RtmpChunk(val rawValue: Byte) {
 
     fun getStreamID(buffer: ByteBuffer): Short {
         buffer.position(buffer.position() - 1)
-        val first = buffer.get()
-        return when (first.toInt() and 63) {
+        val first = buffer.get().toInt()
+        return when (first and 63) {
             0 -> {
                 val bytes = ByteArray(2)
                 buffer.get(bytes)
@@ -123,7 +130,9 @@ internal enum class RtmpChunk(val rawValue: Byte) {
                 buffer.get(bytes)
                 (bytes[1].toInt() shl 8 or bytes[2].toInt() or 64).toShort()
             }
-            else -> (first.toInt() and 63).toShort()
+            else -> {
+                (first and 63).toShort()
+            }
         }
     }
 
@@ -140,9 +149,10 @@ internal enum class RtmpChunk(val rawValue: Byte) {
     }
 
     private fun getInt(buffer: ByteBuffer): Int {
-        val bytes = ByteArray(3)
-        buffer.get(bytes)
-        return (bytes[0].toInt() and 0xFF).toInt() shl 16 or ((bytes[1].toInt() and 0xFF).toInt() shl 8) or (bytes[2].toInt() and 0xFF).toInt()
+        val first = buffer.get().toInt()
+        val second = buffer.get().toInt()
+        val third = buffer.get().toInt()
+        return (first and 0xFF) shl 16 or ((second and 0xFF) shl 8) or (third and 0xFF)
     }
 
     companion object {
@@ -151,6 +161,16 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         const val AUDIO: Short = 0x04
         const val VIDEO: Short = 0x05
         const val DEFAULT_SIZE = 128
+
+        fun chunk(value: Byte): RtmpChunk {
+            return when ((value.toInt() and 0xff) shr 6) {
+                0 -> ZERO
+                1 -> ONE
+                2 -> TWO
+                3 -> THREE
+                else -> throw IllegalArgumentException("value=$value")
+            }
+        }
 
         private val TAG = RtmpChunk::class.java.simpleName
     }

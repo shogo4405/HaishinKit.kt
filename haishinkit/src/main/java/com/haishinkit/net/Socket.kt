@@ -12,9 +12,10 @@ import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.net.SocketTimeoutException
 import java.nio.ByteBuffer
-import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.min
 
 internal abstract class Socket : CoroutineScope {
     var timeout = DEFAULT_TIMEOUT
@@ -22,19 +23,19 @@ internal abstract class Socket : CoroutineScope {
     val totalBytesIn = AtomicLong(0)
     val totalBytesOut = AtomicLong(0)
     val queueBytesOut = AtomicLong(0)
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO
     private var inputBuffer = ByteBuffer.allocate(0)
     private var socket: java.net.Socket? = null
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
-    private var outputQueue = ArrayBlockingQueue<ByteBuffer>(128)
+    private var outputQueue = LinkedBlockingDeque<ByteBuffer>()
     private var outputBufferPool = Pools.SimplePool<ByteBuffer>(1024)
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
     @Volatile private var keepAlive = false
 
     fun connect(dstName: String, dstPort: Int) {
         keepAlive = true
-        launch(Dispatchers.IO) {
+        launch(coroutineContext) {
             doConnection(dstName, dstPort)
         }
     }
@@ -73,14 +74,18 @@ internal abstract class Socket : CoroutineScope {
 
     private fun doInput() {
         try {
-            val available = inputStream?.available() ?: 0
+            val inputStream = inputStream ?: return
+            val available = inputStream.available()
             if (available == 0) {
                 return
             }
-            val buffer = ByteBuffer.allocate(inputBuffer.capacity() + available)
+            val capacity = inputBuffer.capacity()
+            val buffer = ByteBuffer.allocate(capacity + available)
             buffer.put(inputBuffer)
-            inputStream?.read(buffer.array(), inputBuffer.capacity(), available)
-            buffer.position(0)
+            val result = inputStream.read(buffer.array(), capacity, available)
+            val length = min(result, available)
+            buffer.position(capacity + length)
+            buffer.flip()
             totalBytesIn.addAndGet(buffer.remaining().toLong())
             listen(buffer)
             inputBuffer = buffer.slice()
@@ -92,26 +97,20 @@ internal abstract class Socket : CoroutineScope {
 
     private fun doOutput() {
         while (keepAlive) {
-            for (buffer in outputQueue) {
-                try {
-                    val remaining = buffer.remaining().toLong()
-                    outputStream?.write(buffer.array(), 0, buffer.remaining())
-                    outputStream?.flush()
-                    outputQueue.remove(buffer)
-                    totalBytesOut.addAndGet(remaining)
-                    queueBytesOut.addAndGet(remaining * -1)
-                    synchronized(outputBufferPool) {
-                        outputBufferPool.release(buffer)
-                    }
-                } catch (e: IOException) {
-                    Log.w(TAG, "", e)
-                    close(false)
-                }
-            }
+            val buffer = outputQueue.take()
             try {
-                Thread.sleep(KEEP_ALIVE_SLEEP_INTERVAL)
-            } catch (e: InterruptedException) {
+                val remaining = buffer.remaining().toLong()
+                outputStream?.write(buffer.array(), 0, buffer.remaining())
+                outputStream?.flush()
+                outputQueue.remove(buffer)
+                totalBytesOut.addAndGet(remaining)
+                queueBytesOut.addAndGet(remaining * -1)
+                synchronized(outputBufferPool) {
+                    outputBufferPool.release(buffer)
+                }
+            } catch (e: IOException) {
                 Log.w(TAG, "", e)
+                close(false)
             }
         }
     }

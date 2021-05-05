@@ -130,7 +130,7 @@ internal class Amf0Deserializer(private val buffer: ByteBuffer) {
 
             val count = buffer.int
             val objects = arrayOfNulls<Any>(count)
-            for (i in 0..count - 1) {
+            for (i in 0 until count) {
                 objects[i] = `object`
             }
 
@@ -183,7 +183,7 @@ internal class Amf0Deserializer(private val buffer: ByteBuffer) {
         }
 
     private fun getString(asShort: Boolean): String {
-        var length = if (asShort) buffer.short.toInt() else buffer.int
+        val length = if (asShort) buffer.short.toInt() else buffer.int
         return try {
             val bytes = ByteArray(length)
             buffer.get(bytes)

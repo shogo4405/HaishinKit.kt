@@ -41,7 +41,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         PLAY_FILE_STRUCTURE_INVALID("NetStream.Play.FileStructureInvalid", "error"),
         PLAY_INSUFFICIENT_BW("NetStream.Play.InsufficientBW", "status"),
         PLAY_NO_SUPPORTED_TRACK_FOUND("NetStream.Play.NoSupportedTrackFound", "status"),
-        PLAY_REST("NetStream.Play.Reset", "status"),
+        PLAY_RESET("NetStream.Play.Reset", "status"),
         PLAY_START("NetStream.Play.Start", "status"),
         PLAY_STOP("NetStream.Play.Stop", "status"),
         PLAY_STREAM_NOT_FOUND("NetStream.Play.StreamNotFound", "error"),
@@ -88,7 +88,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                 RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
                     connection.createStream(stream)
                 }
-                RtmpStream.Code.PUBLISH_START.rawValue -> {
+                Code.PUBLISH_START.rawValue -> {
                     stream.readyState = ReadyState.PUBLISHING
                 }
                 else -> {
@@ -114,24 +114,50 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
     var info: Info = Info()
     var listener: Listener? = null
 
+    /**
+     * Incoming video plays on the stream or not.
+     */
+    var receiveVideo = true
+        set(value) {
+            field = value
+            if (readyState != ReadyState.PLAYING) return
+            val message = RtmpCommandMessage(RtmpObjectEncoding.AMF0)
+            message.streamID = id
+            message.chunkStreamID = RtmpChunk.COMMAND
+            message.commandName = "receiveVideo"
+            message.arguments = listOf(field)
+            connection.doOutput(RtmpChunk.ZERO, message)
+        }
+
+    /**
+     * Incoming audio plays on the stream or not.
+     */
+    var receiveAudio = true
+        set(value) {
+            field = value
+            if (readyState != ReadyState.PLAYING) return
+            val message = RtmpCommandMessage(RtmpObjectEncoding.AMF0)
+            message.streamID = id
+            message.chunkStreamID = RtmpChunk.COMMAND
+            message.commandName = "receiveAudio"
+            message.arguments = listOf(field)
+            connection.doOutput(RtmpChunk.ZERO, message)
+        }
+
     @Volatile var currentFPS: Int = 0
         private set
 
     internal var id = 0
     internal var readyState = ReadyState.INITIALIZED
         set(value) {
-            Log.d(TAG, value.toString())
+            Log.d(TAG, "current=$field, change=$value")
             when (field) {
+                ReadyState.PLAYING -> {
+                    muxer.clear()
+                }
                 ReadyState.PUBLISHING -> {
-                    if (audio != null) {
-                        audioCodec.stopRunning()
-                        audio?.stopRunning()
-                    }
-                    if (video != null) {
-                        videoCodec.stopRunning()
-                        video?.stopRunning()
-                    }
-                    listener?.onTearDown(this)
+                    audio?.stopRunning()
+                    video?.startRunning()
                 }
                 else -> {
                 }
@@ -145,34 +171,43 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                         message.streamID = id
                         if (message is RtmpCommandMessage) {
                             message.transactionID = ++connection.transactionID
+                            when (message.commandName) {
+                                "play" -> readyState = ReadyState.PLAY
+                                "publish" -> readyState = ReadyState.PUBLISH
+                            }
                         }
                         connection.doOutput(RtmpChunk.ZERO, message)
                     }
                     messages.clear()
                 }
+                ReadyState.PLAY -> {
+                    surface?.let {
+                        videoCodec.inputSurface = it
+                    }
+                    muxer.startRunning()
+                }
+                ReadyState.PUBLISH -> {
+                    muxer.startRunning()
+                }
                 ReadyState.PUBLISHING -> {
-                    listener?.onSetUp(this)
                     send("@setDataFrame", "onMetaData", toMetaData())
+                    audio?.startRunning()
+                    video?.startRunning()
                     if (howToPublish == PUBLISH_LOCAL_RECORD) {
                         info.resourceName?.let {
                             recorder.startRunning()
                             recorder.open(recordSetting, it)
                         }
                     }
-                    muxer.clear()
-                    if (audio != null) {
-                        audio?.startRunning()
-                        audioCodec.startRunning()
-                    }
-                    if (video != null) {
-                        video?.startRunning()
-                        videoCodec.startRunning()
-                    }
+                }
+                ReadyState.CLOSED -> {
+                    muxer.stopRunning()
                 }
                 else -> {
                 }
             }
         }
+    internal var muxer = RtmpMuxer(this)
     internal val messages = ArrayList<RtmpMessage>()
     internal var frameCount = AtomicInteger(0)
     internal var messageFactory = RtmpMessageFactory(4)
@@ -180,7 +215,6 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
     private val dispatcher: EventDispatcher by lazy {
         EventDispatcher(this)
     }
-    private var muxer = RtmpMuxer(this)
     private val eventListener = EventListener(this)
     private var howToPublish = PUBLISH_LIVE
 
@@ -298,6 +332,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
 
     open fun dispose() {
         connection.removeEventListener(Event.RTMP_STATUS, eventListener)
+        muxer.stopRunning()
         audio?.tearDown()
         audioCodec.dispose()
         video?.tearDown()
@@ -323,9 +358,9 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
     internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
         chunk.encode(connection.socket, message)
         if (recorder.isRunning.get()) {
-            recorder.write(message, messageFactory)
+            recorder.write(message)
         } else {
-            messageFactory.release(message)
+            message.release()
         }
     }
 

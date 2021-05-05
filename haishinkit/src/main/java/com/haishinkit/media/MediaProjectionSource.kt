@@ -36,7 +36,7 @@ class MediaProjectionSource(
         set(value) {
             field = value
             stream?.videoCodec?.fpsControllerClass = fpsControllerClass
-            stream?.videoCodec?.callback = MediaCodec.Callback(MediaCodec.MIME_VIDEO_AVC)
+            stream?.videoCodec?.callback = MediaCodec.Callback()
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(1, 1)

@@ -11,6 +11,7 @@ import com.haishinkit.rtmp.messages.RtmpMessage
 import com.haishinkit.rtmp.messages.RtmpMessageFactory
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
+import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.util.Timer
 import java.util.TimerTask
@@ -84,14 +85,14 @@ open class RtmpConnection : EventDispatcher(null) {
             val data = EventUtils.toMap(event)
             Log.i(TAG, data["code"].toString())
             when (data["code"].toString()) {
-                RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
+                Code.CONNECT_SUCCESS.rawValue -> {
                     timerTask = Timer().schedule(0, 1000) {
                         for (stream in streams) stream.value.on()
                     }
                     val message = messageFactory.createRtmpSetChunkSizeMessage()
-                    message.size = RtmpConnection.DEFAULT_CHUNK_SIZE_S
+                    message.size = DEFAULT_CHUNK_SIZE_S
                     message.chunkStreamID = RtmpChunk.CONTROL
-                    connection.socket.chunkSizeS = RtmpConnection.DEFAULT_CHUNK_SIZE_S
+                    connection.socket.chunkSizeS = DEFAULT_CHUNK_SIZE_S
                     connection.doOutput(RtmpChunk.ZERO, message)
                 }
             }
@@ -162,6 +163,7 @@ open class RtmpConnection : EventDispatcher(null) {
 
     internal val messages = ConcurrentHashMap<Short, RtmpMessage>()
     internal val streams = ConcurrentHashMap<Int, RtmpStream>()
+    internal val streamsmap = ConcurrentHashMap<Short, Int>()
     internal val responders = ConcurrentHashMap<Int, Responder>()
     internal val socket = RtmpSocket(this)
     internal var transactionID = 0
@@ -172,7 +174,6 @@ open class RtmpConnection : EventDispatcher(null) {
             field = value
         }
     private var arguments: MutableList<Any?> = mutableListOf()
-    private val payloads = ConcurrentHashMap<Short, ByteBuffer>()
 
     init {
         addEventListener(Event.RTMP_STATUS, EventListener(this))
@@ -207,7 +208,7 @@ open class RtmpConnection : EventDispatcher(null) {
         val port = uri.port
         this.arguments.clear()
         arguments.forEach { value -> this.arguments.add(value) }
-        socket.connect(uri.host, if (port == -1) RtmpConnection.DEFAULT_PORT else port)
+        socket.connect(uri.host, if (port == -1) DEFAULT_PORT else port)
     }
 
     /**
@@ -238,48 +239,65 @@ open class RtmpConnection : EventDispatcher(null) {
 
     internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
         chunk.encode(socket, message)
-        messageFactory.release(message)
+        message.release()
     }
 
-    internal fun listen(buffer: ByteBuffer) {
+    internal tailrec fun listen(buffer: ByteBuffer) {
         val rollback = buffer.position()
         try {
             val first = buffer.get()
+            val chunk = RtmpChunk.chunk(first)
             val chunkSizeC = socket.chunkSizeC
-            val chunk = RtmpChunk.values().first { v -> v.rawValue.toInt() == ((first.toInt() and 0xff) shr 6) }
-            val streamID = chunk.getStreamID(buffer)
-            val payload: ByteBuffer
-            val message: RtmpMessage
+            val chunkStreamID = chunk.getStreamID(buffer)
             if (chunk == RtmpChunk.THREE) {
-                payload = payloads[streamID]!!
-                message = messages[streamID]!!
+                val message = messages[chunkStreamID]!!
+                val payload = message.payload
                 var remaining = payload.remaining()
                 if (chunkSizeC < remaining) {
                     remaining = chunkSizeC
                 }
-                payload.put(buffer.array(), buffer.position(), remaining)
-                buffer.position(buffer.position() + remaining)
+                if (buffer.position() + remaining <= buffer.limit()) {
+                    payload.put(buffer.array(), buffer.position(), remaining)
+                    buffer.position(buffer.position() + remaining)
+                } else {
+                    buffer.position(rollback)
+                    return
+                }
                 if (!payload.hasRemaining()) {
                     payload.flip()
-                    if (VERBOSE) Log.v("$TAG#listen", message.toString())
                     message.decode(payload).execute(this)
-                    messageFactory.release(message)
-                    payloads.remove(streamID)
                 }
             } else {
-                message = chunk.decode(streamID, this, buffer)
-                if (message.length <= chunkSizeC) {
-                    if (VERBOSE) Log.v("$TAG#listen", message.toString())
-                    message.decode(buffer).execute(this)
-                    messageFactory.release(message)
-                } else {
-                    payload = ByteBuffer.allocate(message.length)
-                    payload.put(buffer.array(), buffer.position(), chunkSizeC)
-                    buffer.position(buffer.position() + chunkSizeC)
-                    payloads[streamID] = payload
+                val message = chunk.decode(chunkStreamID, this, buffer)
+                messages[chunkStreamID] = message
+                when (chunk) {
+                    RtmpChunk.ZERO -> {
+                        streamsmap[chunkStreamID] = message.streamID
+                    }
+                    RtmpChunk.ONE -> {
+                        streamsmap[chunkStreamID]?.let {
+                            message.streamID = it
+                        }
+                    }
+                    else -> {
+                    }
                 }
-                messages[streamID] = message
+                if (message.length <= chunkSizeC) {
+                    message.decode(buffer).execute(this)
+                } else {
+                    val payload = message.payload
+                    if (buffer.position() + chunkSizeC <= buffer.limit()) {
+                        payload.put(buffer.array(), buffer.position(), chunkSizeC)
+                        buffer.position(buffer.position() + chunkSizeC)
+                    } else {
+                        buffer.position(rollback)
+                        return
+                    }
+                }
             }
+        } catch (e: BufferUnderflowException) {
+            buffer.position(rollback)
+            throw e
         } catch (e: IndexOutOfBoundsException) {
             buffer.position(rollback)
             throw e
@@ -322,7 +340,7 @@ open class RtmpConnection : EventDispatcher(null) {
         commandObject["swfUrl"] = swfUrl
         commandObject["tcUrl"] = uri?.toString() ?: ""
         commandObject["fpad"] = false
-        commandObject["capabilities"] = RtmpConnection.DEFAULT_CAPABILITIES
+        commandObject["capabilities"] = DEFAULT_CAPABILITIES
         commandObject["audioCodecs"] = SupportSound.AAC.rawValue
         commandObject["videoCodecs"] = SupportVideo.H264.rawValue
         commandObject["videoFunction"] = VideoFunction.CLIENT_SEEK.rawValue

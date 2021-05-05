@@ -5,13 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    tools:context=".CameraTabFragment"
+    android:background="@color/cardview_dark_background"
+    tools:context=".PlaybackTabFragment"
     >
 
-    <com.haishinkit.view.HkGLSurfaceView
-        android:id="@+id/camera"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <com.haishinkit.view.HkTextureView
+        android:id="@+id/surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,11 +24,10 @@
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Publish"
+            android:text="Play"
             android:layout_margin="16px"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true" />
     </RelativeLayout>
 
 </FrameLayout>
-

@@ -2,11 +2,12 @@ package com.haishinkit.rtmp.messages
 
 import androidx.core.util.Pools
 import com.haishinkit.rtmp.RtmpObjectEncoding
+import java.lang.IllegalArgumentException
 
-internal final class RtmpMessageFactory(private val maxPoolSize: Int) {
-    private val user = Pools.SimplePool<RtmpUserControlMessage>(maxPoolSize)
-    private val audio = Pools.SimplePool<RtmpAudioMessage>(maxPoolSize)
-    private val video = Pools.SimplePool<RtmpVideoMessage>(maxPoolSize)
+internal class RtmpMessageFactory(maxPoolSize: Int) {
+    private val user = Pools.SimplePool<RtmpMessage>(maxPoolSize)
+    private val audio = Pools.SynchronizedPool<RtmpMessage>(maxPoolSize)
+    private val video = Pools.SynchronizedPool<RtmpMessage>(maxPoolSize)
 
     fun create(value: Byte): RtmpMessage {
         return when (value) {
@@ -16,19 +17,11 @@ internal final class RtmpMessageFactory(private val maxPoolSize: Int) {
             RtmpMessage.TYPE_USER -> user.acquire() ?: RtmpUserControlMessage()
             RtmpMessage.TYPE_WINDOW_ACK -> RtmpWindowAcknowledgementSizeMessage()
             RtmpMessage.TYPE_BANDWIDTH -> RtmpSetPeerBandwidthMessage()
-            RtmpMessage.TYPE_AUDIO -> audio.acquire() ?: RtmpAudioMessage()
-            RtmpMessage.TYPE_VIDEO -> video.acquire() ?: RtmpVideoMessage()
+            RtmpMessage.TYPE_AUDIO -> audio.acquire() ?: RtmpAudioMessage(audio)
+            RtmpMessage.TYPE_VIDEO -> video.acquire() ?: RtmpVideoMessage(video)
             RtmpMessage.TYPE_AMF0_DATA -> RtmpDataMessage(RtmpObjectEncoding.AMF0)
             RtmpMessage.TYPE_AMF0_COMMAND -> RtmpCommandMessage(RtmpObjectEncoding.AMF0)
-            else -> RtmpMessage(RtmpMessage.TYPE_UNKNOWN)
-        }
-    }
-
-    fun release(message: RtmpMessage) {
-        when (message) {
-            is RtmpUserControlMessage -> user.release(message)
-            is RtmpAudioMessage -> audio.release(message)
-            is RtmpVideoMessage -> video.release(message)
+            else -> throw IllegalArgumentException("type=$value")
         }
     }
 
@@ -45,7 +38,7 @@ internal final class RtmpMessageFactory(private val maxPoolSize: Int) {
     }
 
     fun createRtmpUserControlMessage(): RtmpUserControlMessage {
-        return user.acquire() ?: RtmpUserControlMessage()
+        return (user.acquire() as? RtmpUserControlMessage) ?: RtmpUserControlMessage()
     }
 
     fun createRtmpWindowAcknowledgementSizeMessage(): RtmpWindowAcknowledgementSizeMessage {
@@ -57,10 +50,10 @@ internal final class RtmpMessageFactory(private val maxPoolSize: Int) {
     }
 
     fun createRtmpVideoMessage(): RtmpVideoMessage {
-        return video.acquire() ?: RtmpAvcVideoMessage()
+        return (video.acquire() as? RtmpVideoMessage) ?: RtmpVideoMessage()
     }
 
     fun createRtmpAudioMessage(): RtmpAudioMessage {
-        return audio.acquire() ?: RtmpAacAudioMessage()
+        return (audio.acquire() as? RtmpAudioMessage) ?: RtmpAudioMessage()
     }
 }

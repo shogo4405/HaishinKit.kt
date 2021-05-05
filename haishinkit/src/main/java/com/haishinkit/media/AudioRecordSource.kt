@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * An audio source that captures a microphone by the AudioRecord api.
  */
 class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource {
-    internal class Callback(private val audio: AudioRecordSource) : MediaCodec.Callback(MediaCodec.MIME_AUDIO_MP4A) {
+    internal class Callback(private val audio: AudioRecordSource) : MediaCodec.Callback() {
         override fun onInputBufferAvailable(codec: android.media.MediaCodec, index: Int) {
             try {
                 if (!audio.isRunning.get()) return

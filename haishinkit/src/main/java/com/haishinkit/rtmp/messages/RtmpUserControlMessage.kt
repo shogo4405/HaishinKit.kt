@@ -1,5 +1,6 @@
 package com.haishinkit.rtmp.messages
 
+import androidx.core.util.Pools
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
@@ -8,7 +9,7 @@ import java.nio.ByteBuffer
 /**
  * 7.1.5. Video Message (9)
  */
-internal class RtmpUserControlMessage : RtmpMessage(TYPE_USER) {
+internal class RtmpUserControlMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMessage(TYPE_USER, pool) {
     enum class Event(val rawValue: Short) {
         STREAM_BEGIN(0x00),
         STREAM_EOF(0x01),
@@ -43,6 +44,16 @@ internal class RtmpUserControlMessage : RtmpMessage(TYPE_USER) {
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
         when (event) {
+            Event.STREAM_BEGIN -> {
+                val stream = connection.streams[value] ?: return this
+                stream.readyState = RtmpStream.ReadyState.PLAYING
+            }
+            Event.STREAM_EOF -> {
+                val stream = connection.streams[value] ?: return this
+                val data = RtmpStream.Code.PLAY_UNPUBLISH_NOTIFY.data("")
+                stream.readyState = RtmpStream.ReadyState.PLAY
+                stream.dispatchEventWith(com.haishinkit.event.Event.RTMP_STATUS, false, data)
+            }
             Event.PING -> {
                 val message = connection.messageFactory.createRtmpUserControlMessage()
                 message.event = Event.PONG
@@ -51,14 +62,12 @@ internal class RtmpUserControlMessage : RtmpMessage(TYPE_USER) {
             }
             Event.BUFFER_FULL,
             Event.BUFFER_EMPTY -> {
-                val stream = connection.streams[value]
-                if (stream != null) {
-                    val data = if (event == Event.BUFFER_FULL)
-                        RtmpStream.Code.BUFFER_FLUSH.data("")
-                    else
-                        RtmpStream.Code.BUFFER_EMPTY.data("")
-                    stream.dispatchEventWith(com.haishinkit.event.Event.RTMP_STATUS, false, data)
-                }
+                val stream = connection.streams[value] ?: return this
+                val data = if (event == Event.BUFFER_FULL)
+                    RtmpStream.Code.BUFFER_FLUSH.data("")
+                else
+                    RtmpStream.Code.BUFFER_EMPTY.data("")
+                stream.dispatchEventWith(com.haishinkit.event.Event.RTMP_STATUS, false, data)
             }
             else -> {
             }
@@ -68,5 +77,6 @@ internal class RtmpUserControlMessage : RtmpMessage(TYPE_USER) {
 
     companion object {
         private const val CAPACITY = 6
+        private val TAG = RtmpUserControlMessage::class.java.simpleName
     }
 }
