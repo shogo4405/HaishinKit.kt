@@ -34,7 +34,7 @@ abstract class MediaCodec(private val mime: String) : Running {
         fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
-    open class Callback() : android.media.MediaCodec.Callback() {
+    open class Callback : android.media.MediaCodec.Callback() {
         var listener: Listener? = null
         var codec: com.haishinkit.codec.MediaCodec? = null
         var mime: String = ""

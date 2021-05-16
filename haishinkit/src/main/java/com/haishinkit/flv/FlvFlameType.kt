@@ -1,5 +1,6 @@
 package com.haishinkit.flv
 
+@Suppress("unused")
 object FlvFlameType {
     const val KEY: Byte = 0x01
     const val INTER: Byte = 0x02

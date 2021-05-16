@@ -3,6 +3,7 @@ package com.haishinkit.flv
 /**
  * The type of flv supports video codecs.
  */
+@Suppress("unused")
 object FlvVideoCodec {
     const val SORENSON_H263: Byte = 0x02
     const val SCREEN1: Byte = 0x03

@@ -3,7 +3,7 @@ package com.haishinkit.amf.data
 import java.util.ArrayList
 import java.util.HashMap
 
-final class AsArray(capacity: Int) : ArrayList<Any>(capacity) {
+class AsArray(capacity: Int) : ArrayList<Any>(capacity) {
     private val properties = HashMap<String, Any?>()
 
     fun put(k: String, v: Any?) {

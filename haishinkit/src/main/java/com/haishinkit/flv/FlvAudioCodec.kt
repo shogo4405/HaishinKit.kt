@@ -1,5 +1,6 @@
 package com.haishinkit.flv
 
+@Suppress("unused")
 object FlvAudioCodec {
     const val ADPCM: Byte = 0x01
     const val MP3: Byte = 0x02

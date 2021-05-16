@@ -3,6 +3,7 @@ package com.haishinkit.flv
 /**
  * The type of flv supports audio sound rates.
  */
+@Suppress("unused")
 object FlvSoundRate {
     /**
      * The sound rate of  5,500.0kHz

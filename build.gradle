@@ -5,15 +5,14 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.4.20'
+    ext.kotlin_version = '1.5.0'
 
     repositories {
-        jcenter()
         google()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.1.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.10"
     }
@@ -21,7 +20,6 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
         google()
     }
 }
@@ -50,4 +48,9 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
     args "-F", "haishinkit/src/**/*.kt"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }

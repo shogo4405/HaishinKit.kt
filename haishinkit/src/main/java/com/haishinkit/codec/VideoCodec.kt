@@ -13,7 +13,7 @@ import com.haishinkit.util.FeatureUtil
 import java.nio.ByteBuffer
 import kotlin.properties.Delegates
 
-class VideoCodec() : MediaCodec(MIME), GlPixelReader.Listener {
+class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
     class Setting(var codec: VideoCodec? = null) : MediaCodec.Setting(codec) {
         var width: Int by Delegates.observable(DEFAULT_WIDTH) { _, _, newValue ->
             codec?.width = newValue

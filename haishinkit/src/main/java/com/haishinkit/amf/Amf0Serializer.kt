@@ -24,7 +24,7 @@ internal class Amf0Serializer(private val buffer: ByteBuffer) {
             return this
         }
         val length = value.length
-        val isShort = if (length <= java.lang.Short.MAX_VALUE.toInt()) true else false
+        val isShort = length <= java.lang.Short.MAX_VALUE.toInt()
         buffer.put(if (isShort) Amf0Marker.STRING.rawValue else Amf0Marker.LONGSTRING.rawValue)
         return putString(value, isShort)
     }

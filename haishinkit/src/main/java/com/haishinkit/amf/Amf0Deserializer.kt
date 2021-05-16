@@ -189,7 +189,7 @@ internal class Amf0Deserializer(private val buffer: ByteBuffer) {
             buffer.get(bytes)
             String(bytes, charset("UTF-8"))
         } catch (e: UnsupportedEncodingException) {
-            Log.e(javaClass.getName(), e.toString())
+            Log.e(javaClass.name, e.toString())
             ""
         }
     }

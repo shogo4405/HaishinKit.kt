@@ -1,16 +1,26 @@
 # HaishinKit.kt
 [![GitHub license](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.kt/master/LICENSE.md)
 
-Technical Preview. Camera and Microphone streaming library via RTMP for Android.
+* Technical Preview. Camera and Microphone streaming library via RTMP for Android.
 * [API Documentation](https://shogo4405.github.io/HaishinKit.kt/haishinkit/)
+* Issuesの言語は、日本語が分かる方は日本語でお願いします！
+
+## Communication
+* If you need help with making LiveStreaming requests using HaishinKit, use a GitHub issue with **Bug report template**
+  - If you don't use an issue template. I will immediately close the your issue without a comment.
+* If you'd like to discuss a feature request, use a GitHub issue with **Feature request template**.
+* If you want to support e-mail based communication without GitHub issue.
+  - Consulting fee is [$50](https://www.paypal.me/shogo4405/50USD)/1 incident. I'm able to response a few days.
+* If you **want to contribute**, submit a pull request!
 
 ## Features
 ### RTMP
 - [ ] Authentication
 - [x] Publish (H264/AAC) 
-- [ ] ~Playback~
-- [x] AMF0
-- [ ] AMF3
+- [x] Playback
+- [ ] Action Message Format
+  - [x] AMF0
+  - [ ] AMF3
 - [ ] SharedObject
 - [ ] RTMPS
   - [ ] Native (RTMP over SSL/TSL)
@@ -21,9 +31,12 @@ Technical Preview. Camera and Microphone streaming library via RTMP for Android.
   - [x] Asynchronously processing.
 
 ## License
-New BSD
+BSD-3-Clause
 
 ## Donation
+Paypal
+ - https://www.paypal.me/shogo4405
+
 Bitcoin
 ```txt
 3FnjC3CmwFLTzNY5WPNz4LjTo1uxGNozUR
