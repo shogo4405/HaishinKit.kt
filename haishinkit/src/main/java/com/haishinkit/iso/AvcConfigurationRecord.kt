@@ -29,23 +29,22 @@ data class AvcConfigurationRecord(
         buffer.put(profileCompatibility)
         buffer.put(avcLevelIndication)
         buffer.put(lengthSizeMinusOneWithReserved)
-
         // SPS
         buffer.put(numOfSequenceParameterSetsWithReserved)
-        sequenceParameterSets?.forEach { sps ->
-            buffer.putShort(sps.size.toShort())
-            buffer.put(sps)
+        sequenceParameterSets?.let {
+            for (sps in it) {
+                buffer.putShort(sps.size.toShort())
+                buffer.put(sps)
+            }
         }
-
         // PPS
-        if (pictureParameterSets != null) {
-            buffer.put(pictureParameterSets.size.toByte())
-            pictureParameterSets.forEach { pps ->
+        pictureParameterSets?.let {
+            buffer.put(it.size.toByte())
+            for (pps in it) {
                 buffer.putShort(pps.size.toShort())
                 buffer.put(pps)
             }
         }
-
         return this
     }
 
@@ -87,11 +86,15 @@ data class AvcConfigurationRecord(
 
     internal fun allocate(): ByteBuffer {
         var capacity = 5
-        sequenceParameterSets?.forEach { sps ->
-            capacity += 3 + sps.size
+        sequenceParameterSets?.let {
+            for (sps in it) {
+                capacity += 3 + sps.size
+            }
         }
-        pictureParameterSets?.forEach { pps ->
-            capacity += 3 + pps.size
+        pictureParameterSets?.let {
+            for (psp in it) {
+                capacity += 3 + psp.size
+            }
         }
         return ByteBuffer.allocate(capacity)
     }
@@ -114,16 +117,20 @@ data class AvcConfigurationRecord(
         }
         val options = mutableListOf<CodecOption>()
         val spsBuffer = ByteBuffer.allocate(128)
-        sequenceParameterSets?.forEach { sps ->
-            spsBuffer.put(AvcFormatUtils.START_CODE)
-            spsBuffer.put(sps)
+        sequenceParameterSets?.let {
+            for (sps in it) {
+                spsBuffer.put(AvcFormatUtils.START_CODE)
+                spsBuffer.put(sps)
+            }
         }
         spsBuffer.flip()
         options.add(CodecOption(CSD0, spsBuffer))
         val ppsBuffer = ByteBuffer.allocate(128)
-        pictureParameterSets?.forEach { pps ->
-            ppsBuffer.put(AvcFormatUtils.START_CODE)
-            ppsBuffer.put(pps)
+        pictureParameterSets?.let {
+            for (pps in it) {
+                ppsBuffer.put(AvcFormatUtils.START_CODE)
+                ppsBuffer.put((pps))
+            }
         }
         ppsBuffer.flip()
         options.add(CodecOption(CSD1, ppsBuffer))
@@ -134,13 +141,17 @@ data class AvcConfigurationRecord(
     internal fun toByteBuffer(): ByteBuffer {
         val result = ByteBuffer.allocate(128)
         result.put(0x00).put(0x00).put(0x00).put(0x00)
-        sequenceParameterSets?.forEach { sps ->
-            result.put(AvcFormatUtils.START_CODE)
-            result.put(sps)
+        sequenceParameterSets?.let {
+            for (sps in it) {
+                result.put(AvcFormatUtils.START_CODE)
+                result.put(sps)
+            }
         }
-        pictureParameterSets?.forEach { pps ->
-            result.put(AvcFormatUtils.START_CODE)
-            result.put(pps)
+        pictureParameterSets?.let {
+            for (pps in it) {
+                result.put(AvcFormatUtils.START_CODE)
+                result.put(pps)
+            }
         }
         return result
     }
@@ -149,6 +160,7 @@ data class AvcConfigurationRecord(
         return ToStringBuilder.reflectionToString(this)
     }
 
+    @Suppress("unused")
     companion object {
         const val RESERVE_LENGTH_SIZE_MINUS_ONE = 0x3F
         const val RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS = 0xE0

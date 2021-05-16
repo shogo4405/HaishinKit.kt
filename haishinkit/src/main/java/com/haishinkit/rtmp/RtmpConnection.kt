@@ -21,10 +21,12 @@ import kotlin.concurrent.schedule
 /**
  * flash.net.NetConnection for Kotlin
  */
+@Suppress("unused")
 open class RtmpConnection : EventDispatcher(null) {
     /**
      * NetStatusEvent#info.code for NetConnection
      */
+    @Suppress("unused")
     enum class Code(val rawValue: String, val level: String) {
         CALL_BAD_VERSION("NetConnection.Call.BadVersion", "error"),
         CALL_FAILED("NetConnection.Call.Failed", "error"),
@@ -49,6 +51,7 @@ open class RtmpConnection : EventDispatcher(null) {
         }
     }
 
+    @Suppress("unused")
     enum class SupportSound(val rawValue: Short) {
         NONE(0x001),
         ADPCM(0x002),
@@ -64,6 +67,7 @@ open class RtmpConnection : EventDispatcher(null) {
         ALL(0x0FFF);
     }
 
+    @Suppress("unused")
     enum class SupportVideo(val rawValue: Short) {
         UNUSED(0x001),
         JPEG(0x002),
@@ -231,8 +235,8 @@ open class RtmpConnection : EventDispatcher(null) {
      */
     open fun dispose() {
         timerTask = null
-        streams.forEach {
-            it.value.dispose()
+        for (stream in streams) {
+            stream.value.dispose()
         }
         streams.clear()
     }
