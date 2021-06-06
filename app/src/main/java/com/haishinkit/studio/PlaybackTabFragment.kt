@@ -13,8 +13,6 @@ import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.view.HkGLSurfaceView
-import com.haishinkit.view.HkSurfaceView
 import com.haishinkit.view.HkTextureView
 
 class PlaybackTabFragment: Fragment(), IEventListener {

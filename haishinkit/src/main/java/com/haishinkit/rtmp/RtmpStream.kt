@@ -1,6 +1,7 @@
 package com.haishinkit.rtmp
 
 import android.util.Log
+import com.haishinkit.codec.MediaCodec
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
@@ -58,7 +59,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
         RECORD_DISK_QUOTA_EXCEEDED("NetStream.Record.DiskQuotaExceeded", "error"),
         SECOND_SCREEN_START("NetStream.SecondScreen.Start", "status"),
         SECOND_SCREEN_STOP("NetStream.SecondScreen.Stop", "status"),
-        SEEK_FAILDED("NetStream.Seek.Failed", "error"),
+        SEEK_FAILED("NetStream.Seek.Failed", "error"),
         SEEK_INVALID_TIME("NetStream.Seek.InvalidTime", "error"),
         SEEK_NOTIFY("NetStream.Seek.Notify", "status"),
         STEP_NOTIFY("NetStream.Step.Notify", "status"),
@@ -157,7 +158,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                 }
                 ReadyState.PUBLISHING -> {
                     audio?.stopRunning()
-                    video?.startRunning()
+                    video?.stopRunning()
                 }
                 else -> {
                 }
@@ -184,15 +185,13 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                     surface?.let {
                         videoCodec.inputSurface = it
                     }
-                    muxer.startRunning()
-                }
-                ReadyState.PUBLISH -> {
+                    muxer.mode = MediaCodec.MODE_DECODE
                     muxer.startRunning()
                 }
                 ReadyState.PUBLISHING -> {
+                    muxer.mode = MediaCodec.MODE_ENCODE
+                    muxer.startRunning()
                     send("@setDataFrame", "onMetaData", toMetaData())
-                    audio?.startRunning()
-                    video?.startRunning()
                     if (howToPublish == PUBLISH_LOCAL_RECORD) {
                         info.resourceName?.let {
                             recorder.startRunning()

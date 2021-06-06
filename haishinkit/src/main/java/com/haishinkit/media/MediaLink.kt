@@ -126,10 +126,8 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) : Running, Corouti
             Log.d(TAG, "startRunning()")
         }
         audio.mode = MediaCodec.MODE_DECODE
-        audio.callback = MediaCodec.Callback()
         audio.startRunning()
         video.mode = MediaCodec.MODE_DECODE
-        video.callback = MediaCodec.Callback()
         video.startRunning()
         keepAlive = true
         audioPlaybackJob = launch(coroutineContext) {

@@ -11,7 +11,6 @@ import android.util.Size
 import android.view.Choreographer
 import android.view.Surface
 import com.haishinkit.BuildConfig
-import com.haishinkit.codec.MediaCodec
 import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.GlPixelTransform
@@ -36,7 +35,6 @@ class MediaProjectionSource(
         set(value) {
             field = value
             stream?.videoCodec?.fpsControllerClass = fpsControllerClass
-            stream?.videoCodec?.callback = MediaCodec.Callback()
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(1, 1)

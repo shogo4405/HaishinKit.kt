@@ -34,7 +34,7 @@ abstract class MediaCodec(private val mime: String) : Running {
         fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
-    open class Callback : android.media.MediaCodec.Callback() {
+    class Callback : android.media.MediaCodec.Callback() {
         var listener: Listener? = null
         var codec: com.haishinkit.codec.MediaCodec? = null
         var mime: String = ""
@@ -76,12 +76,7 @@ abstract class MediaCodec(private val mime: String) : Running {
     var listener: Listener? = null
         set(value) {
             field = value
-            callback?.listener = value
-        }
-    var callback: Callback? = null
-        set(value) {
-            field = value
-            callback?.codec = this
+            callback.listener = value
         }
     var codec: MediaCodec? = null
         get() {
@@ -114,6 +109,11 @@ abstract class MediaCodec(private val mime: String) : Running {
                 }
             }
             field = value
+        }
+    private var callback: Callback = Callback()
+        set(value) {
+            field = value
+            callback.codec = this
         }
     private var backgroundHandler: Handler? = null
         get() {
@@ -155,11 +155,13 @@ abstract class MediaCodec(private val mime: String) : Running {
             Log.d(TAG, "stopRunning($mime)")
         }
         try {
-            backgroundHandler = null
             codec = null
+            backgroundHandler = null
             outputFormat = null
             isRunning.set(false)
         } catch (e: MediaCodec.CodecException) {
+            Log.w(TAG, "", e)
+        } catch (e: IllegalStateException) {
             Log.w(TAG, "", e)
         }
     }
@@ -170,13 +172,12 @@ abstract class MediaCodec(private val mime: String) : Running {
     }
 
     open fun configure(codec: MediaCodec) {
-        callback?.let {
-            it.listener = listener
-            if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                codec.setCallback(callback, backgroundHandler)
-            } else {
-                codec.setCallback(callback)
-            }
+        callback.codec = this
+        callback.listener = listener
+        if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+            codec.setCallback(callback, backgroundHandler)
+        } else {
+            codec.setCallback(callback)
         }
         val format = createOutputFormat()
         for (option in options) {
@@ -184,7 +185,7 @@ abstract class MediaCodec(private val mime: String) : Running {
         }
         codec.configure(format, inputSurface, null, if (mode == MODE_ENCODE) { MediaCodec.CONFIGURE_FLAG_ENCODE } else { 0 })
         codec.outputFormat.getString("mime")?.let { mime ->
-            callback?.mime = mime
+            callback.mime = mime
         }
     }
 

@@ -2,6 +2,7 @@ package com.haishinkit.rtmp
 
 import android.media.MediaFormat
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.util.Log
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
@@ -25,6 +26,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
     override var isRunning = AtomicBoolean(false)
 
     var mode = MediaCodec.MODE_DECODE
+        set(value) {
+            stream.audioCodec.mode = value
+            stream.videoCodec.mode = value
+            field = value
+        }
     var hasAudio: Boolean
         get() = mediaLink.hasAudio
         set(value) {
@@ -84,8 +90,22 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
             Log.d(TAG, "startRunning()")
         }
         hasFirstFlame = false
-        if (mode == MediaCodec.MODE_DECODE) {
-            mediaLink.startRunning()
+        when(mode) {
+            MediaCodec.MODE_ENCODE -> {
+                stream.audio?.let {
+                    it.startRunning()
+                    stream.audioCodec.listener = this
+                    stream.audioCodec.startRunning()
+                }
+                stream.video?.let {
+                    it.startRunning()
+                    stream.videoCodec.listener = this
+                    stream.videoCodec.startRunning()
+                }
+            }
+            MediaCodec.MODE_DECODE -> {
+                mediaLink.startRunning()
+            }
         }
         isRunning.set(true)
     }
@@ -95,8 +115,13 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        if (mode == MediaCodec.MODE_DECODE) {
-            mediaLink.stopRunning()
+        when(mode) {
+            MediaCodec.MODE_ENCODE -> {
+            }
+            MediaCodec.MODE_DECODE -> {
+                clear()
+                mediaLink.stopRunning()
+            }
         }
         isRunning.set(false)
     }
@@ -111,6 +136,9 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
 
     override fun onInputBufferAvailable(mime: String, codec: android.media.MediaCodec, index: Int) {
         when (mime) {
+            MediaCodec.MIME_AUDIO_MP4A -> {
+                stream.audio?.onInputBufferAvailable(codec, index)
+            }
             MediaCodec.MIME_VIDEO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return

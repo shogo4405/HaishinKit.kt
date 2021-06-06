@@ -15,7 +15,6 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
-import com.haishinkit.codec.MediaCodec
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
 import com.haishinkit.net.NetStream
@@ -57,7 +56,6 @@ class CameraSource(
         set(value) {
             field = value
             stream?.videoCodec?.fpsControllerClass = fpsControllerClass
-            stream?.videoCodec?.callback = MediaCodec.Callback()
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
@@ -85,11 +83,9 @@ class CameraSource(
                     this@CameraSource.device = camera
                     this@CameraSource.setUp()
                 }
-
                 override fun onDisconnected(camera: CameraDevice) {
                     this@CameraSource.device = null
                 }
-
                 override fun onError(camera: CameraDevice, error: Int) {
                     Log.w(TAG, error.toString())
                 }

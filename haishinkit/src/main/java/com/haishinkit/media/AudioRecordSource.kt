@@ -5,6 +5,7 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
 import android.util.Log
+import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.net.NetStream
 import org.apache.commons.lang3.builder.ToStringBuilder
@@ -17,21 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  * An audio source that captures a microphone by the AudioRecord api.
  */
 class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource {
-    internal class Callback(private val audio: AudioRecordSource) : MediaCodec.Callback() {
-        override fun onInputBufferAvailable(codec: android.media.MediaCodec, index: Int) {
-            try {
-                if (!audio.isRunning.get()) return
-                val inputBuffer = codec.getInputBuffer(index) ?: return
-                val result = audio.read(inputBuffer)
-                if (0 <= result) {
-                    codec.queueInputBuffer(index, 0, result, audio.currentPresentationTimestamp, 0)
-                }
-            } catch (e: IllegalStateException) {
-                Log.w(TAG, e)
-            }
-        }
-    }
-
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
@@ -83,18 +69,19 @@ class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource 
 
     override fun setUp() {
         if (utilizable) return
-        stream?.audioCodec?.callback = Callback(this)
         super.setUp()
     }
 
     override fun tearDown() {
         if (!utilizable) return
-        stream?.audioCodec?.callback = null
         super.tearDown()
     }
 
     override fun startRunning() {
         if (isRunning.get()) return
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "startRunning()")
+        }
         currentPresentationTimestamp = DEFAULT_TIMESTAMP
         audioRecord?.startRecording()
         isRunning.set(true)
@@ -102,8 +89,24 @@ class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource 
 
     override fun stopRunning() {
         if (!isRunning.get()) return
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "stopRunning()")
+        }
         audioRecord?.stop()
         isRunning.set(false)
+    }
+
+    override fun onInputBufferAvailable(codec: android.media.MediaCodec, index: Int) {
+        try {
+            if (!isRunning.get()) return
+            val inputBuffer = codec.getInputBuffer(index) ?: return
+            val result = read(inputBuffer)
+            if (0 <= result) {
+                codec.queueInputBuffer(index, 0, result, currentPresentationTimestamp, 0)
+            }
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, e)
+        }
     }
 
     override fun toString(): String {
