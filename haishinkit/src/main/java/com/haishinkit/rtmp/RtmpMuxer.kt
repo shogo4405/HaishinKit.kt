@@ -2,7 +2,6 @@ package com.haishinkit.rtmp
 
 import android.media.MediaFormat
 import android.os.SystemClock
-import android.provider.MediaStore
 import android.util.Log
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.MediaCodec
@@ -90,7 +89,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
             Log.d(TAG, "startRunning()")
         }
         hasFirstFlame = false
-        when(mode) {
+        when (mode) {
             MediaCodec.MODE_ENCODE -> {
                 stream.audio?.let {
                     it.startRunning()
@@ -115,7 +114,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        when(mode) {
+        when (mode) {
             MediaCodec.MODE_ENCODE -> {
             }
             MediaCodec.MODE_DECODE -> {
