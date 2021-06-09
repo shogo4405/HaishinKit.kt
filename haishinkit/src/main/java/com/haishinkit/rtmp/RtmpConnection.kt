@@ -10,6 +10,7 @@ import com.haishinkit.rtmp.messages.RtmpCommandMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
 import com.haishinkit.rtmp.messages.RtmpMessageFactory
 import org.apache.commons.lang3.StringUtils
+import java.lang.UnsupportedOperationException
 import java.net.URI
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
@@ -206,13 +207,14 @@ open class RtmpConnection : EventDispatcher(null) {
     open fun connect(command: String, vararg arguments: Any?) {
         uri = URI.create(command)
         val uri = this.uri ?: return
-        if (isConnected || uri.scheme != "rtmp") {
+        if (isConnected || !SUPPORTED_PROTOCOLS.containsKey(uri.scheme)) {
             return
         }
         val port = uri.port
+        val isSecure = uri.scheme == "rtmps"
         this.arguments.clear()
         arguments.forEach { value -> this.arguments.add(value) }
-        socket.connect(uri.host, if (port == -1) DEFAULT_PORT else port)
+        socket.connect(uri.host, if (port == -1) SUPPORTED_PROTOCOLS[uri.scheme] ?: DEFAULT_PORT else port, isSecure)
     }
 
     /**
@@ -362,6 +364,7 @@ open class RtmpConnection : EventDispatcher(null) {
     companion object {
         const val DEFAULT_PORT = 1935
         const val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
+        val SUPPORTED_PROTOCOLS = mapOf("rtmp" to 1935, "rtmps" to 443)
         val DEFAULT_OBJECT_ENCODING = RtmpObjectEncoding.AMF0
 
         private val TAG = RtmpConnection::class.java.simpleName

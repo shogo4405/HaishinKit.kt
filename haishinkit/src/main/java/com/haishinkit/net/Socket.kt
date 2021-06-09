@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.builder.ToStringBuilder
+import java.io.BufferedOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -14,6 +15,10 @@ import java.net.SocketTimeoutException
 import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.atomic.AtomicLong
+import javax.net.ssl.HandshakeCompletedEvent
+import javax.net.ssl.HandshakeCompletedListener
+import javax.net.ssl.SSLSocket
+import javax.net.ssl.SSLSocketFactory
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.min
 
@@ -25,7 +30,7 @@ internal abstract class Socket : CoroutineScope {
     val queueBytesOut = AtomicLong(0)
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
-    private var inputBuffer = ByteBuffer.allocate(0)
+    private var inputBuffer = ByteBuffer.allocate(DEFAULT_WINDOW_SIZE_C)
     private var socket: java.net.Socket? = null
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
@@ -33,10 +38,10 @@ internal abstract class Socket : CoroutineScope {
     private var outputBufferPool = Pools.SimplePool<ByteBuffer>(1024)
     @Volatile private var keepAlive = false
 
-    fun connect(dstName: String, dstPort: Int) {
+    fun connect(dstName: String, dstPort: Int, isSecure: Boolean) {
         keepAlive = true
         launch(coroutineContext) {
-            doConnection(dstName, dstPort)
+            doConnection(dstName, dstPort, isSecure)
         }
     }
 
@@ -68,6 +73,10 @@ internal abstract class Socket : CoroutineScope {
         }
     }
 
+    override fun toString(): String {
+        return ToStringBuilder.reflectionToString(this)
+    }
+
     protected abstract fun onTimeout()
     protected abstract fun onConnect()
     protected abstract fun listen(buffer: ByteBuffer)
@@ -75,20 +84,19 @@ internal abstract class Socket : CoroutineScope {
     private fun doInput() {
         try {
             val inputStream = inputStream ?: return
-            val available = inputStream.available()
-            if (available == 0) {
-                return
+            val offset = inputBuffer.position()
+            val result = inputStream.read(inputBuffer.array(), offset, inputBuffer.remaining())
+            inputBuffer.position(offset + result)
+            inputBuffer.flip()
+            totalBytesIn.addAndGet(result.toLong())
+            listen(inputBuffer)
+            if (inputBuffer.hasRemaining()) {
+                val remaining = inputBuffer.slice()
+                inputBuffer.clear()
+                inputBuffer.put(remaining)
+            } else {
+                inputBuffer.clear()
             }
-            val capacity = inputBuffer.capacity()
-            val buffer = ByteBuffer.allocate(capacity + available)
-            buffer.put(inputBuffer)
-            val result = inputStream.read(buffer.array(), capacity, available)
-            val length = min(result, available)
-            buffer.position(capacity + length)
-            buffer.flip()
-            totalBytesIn.addAndGet(buffer.remaining().toLong())
-            listen(buffer)
-            inputBuffer = buffer.slice()
         } catch (e: IOException) {
             Log.w(TAG, "", e)
             close(true)
@@ -115,12 +123,10 @@ internal abstract class Socket : CoroutineScope {
         }
     }
 
-    private fun doConnection(dstName: String, dstPort: Int) {
+    private fun doConnection(dstName: String, dstPort: Int, isSecure: Boolean) {
         try {
             outputQueue.clear()
-            val endpoint = InetSocketAddress(dstName, dstPort)
-            socket = java.net.Socket()
-            socket?.connect(endpoint, timeout)
+            socket = createSocket(dstName, dstPort, isSecure)
             if (socket!!.isConnected) {
                 inputStream = socket?.getInputStream()
                 outputStream = socket?.getOutputStream()
@@ -147,13 +153,19 @@ internal abstract class Socket : CoroutineScope {
         }
     }
 
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
+    private fun createSocket(dstName: String, dstPort: Int, isSecure: Boolean): java.net.Socket {
+        if (isSecure) {
+            val socket = SSLSocketFactory.getDefault().createSocket(dstName, dstPort) as SSLSocket
+            socket.startHandshake()
+            return socket
+        }
+        return java.net.Socket(dstName, dstPort)
     }
 
     companion object {
         const val DEFAULT_TIMEOUT: Int = 1000
 
+        private const val DEFAULT_WINDOW_SIZE_C = Short.MAX_VALUE.toInt()
         private const val KEEP_ALIVE_SLEEP_INTERVAL = 100L
         private val TAG = Socket::class.java.simpleName
     }

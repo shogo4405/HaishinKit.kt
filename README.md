@@ -22,9 +22,8 @@
   - [x] AMF0
   - [ ] AMF3
 - [ ] SharedObject
-- [ ] RTMPS
-  - [ ] Native (RTMP over SSL/TSL)
-  - [ ] Tunneled (RTMPT over SSL/TSL)
+- [x] RTMPS
+  - [x] Native (RTMP over SSL/TSL)
 
 ### Others
 - [x] Hardware acceleration for H264 video encoding/AAC audio encoding.
