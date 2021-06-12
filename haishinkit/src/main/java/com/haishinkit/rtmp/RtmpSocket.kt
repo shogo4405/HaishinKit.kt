@@ -28,6 +28,10 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
         RtmpHandshake()
     }
     private var readyState = ReadyState.Uninitialized
+        set(value) {
+            field = value
+            connection.onSocketReadyStateChange(this, value)
+        }
 
     override fun onTimeout() {
         close(false)
@@ -44,6 +48,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
     }
 
     override fun close(disconnected: Boolean) {
+        if (!isConnected) return
         var data: Any? = null
         if (disconnected) {
             data = if (readyState == ReadyState.HandshakeDone) {
@@ -84,7 +89,9 @@ internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
                 buffer.position(RtmpHandshake.SIGNAL_SIZE)
                 readyState = ReadyState.HandshakeDone
                 isConnected = true
-                connection.doOutput(RtmpChunk.ZERO, connection.createConnectionMessage())
+                connection.uri?.let {
+                    connection.doOutput(RtmpChunk.ZERO, connection.createConnectionMessage(it))
+                }
             }
             ReadyState.HandshakeDone ->
                 try {

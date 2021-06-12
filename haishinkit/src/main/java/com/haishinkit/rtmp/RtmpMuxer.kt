@@ -116,6 +116,14 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         }
         when (mode) {
             MediaCodec.MODE_ENCODE -> {
+                stream.audio?.let {
+                    it.stopRunning()
+                    stream.audioCodec.stopRunning()
+                }
+                stream.video?.let {
+                    it.stopRunning()
+                    stream.videoCodec.stopRunning()
+                }
             }
             MediaCodec.MODE_DECODE -> {
                 clear()

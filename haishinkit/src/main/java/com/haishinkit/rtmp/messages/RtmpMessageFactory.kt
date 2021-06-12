@@ -29,24 +29,12 @@ internal class RtmpMessageFactory(maxPoolSize: Int) {
         return RtmpSetChunkSizeMessage()
     }
 
-    fun createRtmpAbortMessage(): RtmpAbortMessage {
-        return RtmpAbortMessage()
-    }
-
-    fun createRtmpAcknowledgementMessage(): RtmpAcknowledgementMessage {
-        return RtmpAcknowledgementMessage()
-    }
-
     fun createRtmpUserControlMessage(): RtmpUserControlMessage {
         return (user.acquire() as? RtmpUserControlMessage) ?: RtmpUserControlMessage()
     }
 
     fun createRtmpWindowAcknowledgementSizeMessage(): RtmpWindowAcknowledgementSizeMessage {
         return RtmpWindowAcknowledgementSizeMessage()
-    }
-
-    fun createRtmpSetPeerBandwidthMessage(): RtmpSetPeerBandwidthMessage {
-        return RtmpSetPeerBandwidthMessage()
     }
 
     fun createRtmpVideoMessage(): RtmpVideoMessage {

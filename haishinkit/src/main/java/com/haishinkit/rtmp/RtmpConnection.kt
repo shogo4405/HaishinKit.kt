@@ -9,8 +9,8 @@ import com.haishinkit.net.Responder
 import com.haishinkit.rtmp.messages.RtmpCommandMessage
 import com.haishinkit.rtmp.messages.RtmpMessage
 import com.haishinkit.rtmp.messages.RtmpMessageFactory
+import com.haishinkit.util.URIUtil
 import org.apache.commons.lang3.StringUtils
-import java.lang.UnsupportedOperationException
 import java.net.URI
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
@@ -88,7 +88,9 @@ open class RtmpConnection : EventDispatcher(null) {
     private inner class EventListener(private val connection: RtmpConnection) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
-            Log.i(TAG, data["code"].toString())
+            if (VERBOSE) {
+                Log.i(TAG, data.toString())
+            }
             when (data["code"].toString()) {
                 Code.CONNECT_SUCCESS.rawValue -> {
                     timerTask = Timer().schedule(0, 1000) {
@@ -123,7 +125,7 @@ open class RtmpConnection : EventDispatcher(null) {
     /**
      * The name of application.
      */
-    var flashVer = RtmpConnection.DEFAULT_FLASH_VER
+    var flashVer = DEFAULT_FLASH_VER
 
     /**
      * The outgoing RTMPChunkSize.
@@ -137,7 +139,7 @@ open class RtmpConnection : EventDispatcher(null) {
     /**
      * The object encoding for this RTMPConnection instance.
      */
-    var objectEncoding = RtmpConnection.DEFAULT_OBJECT_ENCODING
+    var objectEncoding = DEFAULT_OBJECT_ENCODING
 
     /**
      * This instance connected to server(true) or not(false).
@@ -184,6 +186,9 @@ open class RtmpConnection : EventDispatcher(null) {
         addEventListener(Event.RTMP_STATUS, EventListener(this))
     }
 
+    /**
+     * Calls a command or method on RTMP Server.
+     */
     open fun call(commandName: String, responder: Responder?, vararg arguments: Any) {
         if (!isConnected) {
             return
@@ -204,6 +209,9 @@ open class RtmpConnection : EventDispatcher(null) {
         doOutput(RtmpChunk.ZERO, message)
     }
 
+    /**
+     * Creates a two-way connection to an application on RTMP Server.
+     */
     open fun connect(command: String, vararg arguments: Any?) {
         uri = URI.create(command)
         val uri = this.uri ?: return
@@ -337,14 +345,32 @@ open class RtmpConnection : EventDispatcher(null) {
         )
     }
 
-    internal fun createConnectionMessage(): RtmpMessage {
-        val paths = uri!!.path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    internal fun onSocketReadyStateChange(socket: RtmpSocket, readyState: RtmpSocket.ReadyState) {
+        if (VERBOSE) {
+            Log.d(TAG, readyState.toString())
+        }
+        when (readyState) {
+            RtmpSocket.ReadyState.Closed -> {
+                transactionID = 0
+                messages.clear()
+                streamsmap.clear()
+                responders.clear()
+            }
+        }
+    }
+
+    internal fun createConnectionMessage(uri: URI): RtmpMessage {
+        val paths = uri.path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val message = RtmpCommandMessage(RtmpObjectEncoding.AMF0)
         val commandObject = HashMap<String, Any?>()
-        commandObject["app"] = paths[1]
+        var app = paths[1]
+        if (uri.query != null) {
+            app += "?" + uri.query
+        }
+        commandObject["app"] = app
         commandObject["flashVer"] = flashVer
         commandObject["swfUrl"] = swfUrl
-        commandObject["tcUrl"] = uri?.toString() ?: ""
+        commandObject["tcUrl"] = URIUtil.withoutUserInfo(uri)
         commandObject["fpad"] = false
         commandObject["capabilities"] = DEFAULT_CAPABILITIES
         commandObject["audioCodecs"] = SupportSound.AAC.rawValue
@@ -358,6 +384,9 @@ open class RtmpConnection : EventDispatcher(null) {
         message.transactionID = ++transactionID
         message.commandObject = commandObject
         message.arguments = arguments
+        if (VERBOSE) {
+            Log.d(TAG, message.toString())
+        }
         return message
     }
 

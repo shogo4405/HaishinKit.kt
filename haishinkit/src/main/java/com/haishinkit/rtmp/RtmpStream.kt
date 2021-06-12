@@ -21,11 +21,13 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * An object that provides the interface to control a one-way channel over a RTMPConnection.
  */
+@Suppress("unused")
 open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IEventDispatcher {
     data class Info(
         var resourceName: String? = null
     )
 
+    @Suppress("unused")
     enum class Code(val rawValue: String, private val level: String) {
         BUFFER_EMPTY("NetStream.Buffer.Empty", "status"),
         BUFFER_FLUSH("NetStream.Buffer.Flush", "status"),
