@@ -17,7 +17,7 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import kotlin.coroutines.CoroutineContext
 
-internal abstract class Socket : CoroutineScope {
+internal abstract class NetSocket : CoroutineScope {
     var timeout = DEFAULT_TIMEOUT
 
     val totalBytesIn = AtomicLong(0)
@@ -184,6 +184,6 @@ internal abstract class Socket : CoroutineScope {
 
         private const val DEFAULT_WINDOW_SIZE_C = Short.MAX_VALUE.toInt()
         private const val KEEP_ALIVE_SLEEP_INTERVAL = 100L
-        private val TAG = Socket::class.java.simpleName
+        private val TAG = NetSocket::class.java.simpleName
     }
 }

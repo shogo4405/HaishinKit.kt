@@ -2,13 +2,13 @@ package com.haishinkit.rtmp
 
 import android.util.Log
 import com.haishinkit.event.Event
-import com.haishinkit.net.Socket
+import com.haishinkit.net.NetSocket
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalArgumentException
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 
-internal class RtmpSocket(val connection: RtmpConnection) : Socket() {
+internal class RtmpSocket(val connection: RtmpConnection) : NetSocket() {
     enum class ReadyState {
         Uninitialized,
         VersionSent,
