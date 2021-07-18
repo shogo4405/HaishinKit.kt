@@ -26,19 +26,15 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
     var isConnected = false
         private set
     var timeout: Int
-        get() = socket.timeout
+        get() = socket?.timeout ?: 0
         set(value) {
-            socket.timeout = value
+            socket?.timeout = value
         }
     val totalBytesIn: Long
-        get() = socket.totalBytesIn.get()
+        get() = socket?.totalBytesIn?.get() ?: 0
     val totalBytesOut: Long
-        get() = socket.totalBytesOut.get()
-    private val socket: NetSocket by lazy {
-        val socket = NetSocketImpl()
-        socket.listener = this
-        socket
-    }
+        get() = socket?.totalBytesOut?.get() ?: 0
+    private var socket: NetSocket? = null
     private val handshake: RtmpHandshake by lazy {
         RtmpHandshake()
     }
@@ -49,15 +45,18 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
         }
 
     fun connect(dstName: String, dstPort: Int, isSecure: Boolean) {
-        socket.connect(dstName, dstPort, isSecure)
+        socket?.listener = null
+        socket = NetSocketImpl()
+        socket?.listener = this
+        socket?.connect(dstName, dstPort, isSecure)
     }
 
     fun doOutput(buffer: ByteBuffer) {
-        socket.doOutput(buffer)
+        socket?.doOutput(buffer)
     }
 
     fun createByteBuffer(capacity: Int): ByteBuffer {
-        return socket.createByteBuffer(capacity)
+        return socket?.createByteBuffer(capacity) ?: ByteBuffer.allocate(capacity)
     }
 
     fun close(disconnected: Boolean) {
@@ -71,7 +70,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
             }
         }
         readyState = ReadyState.Closing
-        socket.close(disconnected)
+        socket?.close(disconnected)
         data?.let {
             connection.dispatchEventWith(Event.RTMP_STATUS, false, it)
         }
@@ -90,7 +89,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
         chunkSizeS = RtmpChunk.DEFAULT_SIZE
         handshake.clear()
         readyState = ReadyState.VersionSent
-        socket.doOutput(handshake.c0C1Packet)
+        socket?.doOutput(handshake.c0C1Packet)
     }
 
     override fun onInput(buffer: ByteBuffer) {
@@ -100,7 +99,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
                     return
                 }
                 handshake.s0S1Packet = buffer
-                socket.doOutput(handshake.c2Packet)
+                socket?.doOutput(handshake.c2Packet)
                 buffer.position(RtmpHandshake.SIGNAL_SIZE + 1)
                 readyState = ReadyState.AckSent
                 if (buffer.limit() - buffer.position() == RtmpHandshake.SIGNAL_SIZE) {
@@ -128,7 +127,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
                 } catch (e: BufferUnderflowException) {
                     if (VERBOSE) Log.d(TAG, "", e)
                 } catch (e: IllegalArgumentException) {
-                    Log.w(TAG, "", e)
+                    if (VERBOSE) Log.w(TAG, "", e)
                     throw e
                 }
             else -> {}
@@ -140,7 +139,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
     }
 
     companion object {
-        private const val VERBOSE = false
+        private const val VERBOSE = true
         private var TAG = RtmpSocket::class.java.simpleName
     }
 }

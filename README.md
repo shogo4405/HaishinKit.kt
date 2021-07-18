@@ -15,7 +15,7 @@
 
 ## Features
 ### RTMP
-- [ ] Authentication
+- [x] Authentication
 - [x] Publish (H264/AAC) 
 - [x] Playback
 - [ ] Action Message Format

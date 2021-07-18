@@ -181,8 +181,12 @@ open class RtmpConnection : EventDispatcher(null) {
             field = value
         }
     private var arguments: MutableList<Any?> = mutableListOf()
+    private val authenticator: RtmpAuthenticator by lazy {
+        RtmpAuthenticator(this)
+    }
 
     init {
+        addEventListener(Event.RTMP_STATUS, authenticator)
         addEventListener(Event.RTMP_STATUS, EventListener(this))
     }
 
@@ -316,7 +320,6 @@ open class RtmpConnection : EventDispatcher(null) {
             buffer.position(rollback)
             throw e
         }
-
         if (buffer.hasRemaining()) {
             listen(buffer)
         }

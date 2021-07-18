@@ -61,7 +61,6 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         outputStream = null
         socket?.close()
         outputQueue.clear()
-        inputBuffer.clear()
     }
 
     override fun doOutput(buffer: ByteBuffer) {
