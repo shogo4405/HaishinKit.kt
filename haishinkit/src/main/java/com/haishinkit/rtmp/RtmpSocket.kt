@@ -3,12 +3,13 @@ package com.haishinkit.rtmp
 import android.util.Log
 import com.haishinkit.event.Event
 import com.haishinkit.net.NetSocket
+import com.haishinkit.net.NetSocketImpl
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalArgumentException
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 
-internal class RtmpSocket(val connection: RtmpConnection) : NetSocket() {
+internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
     enum class ReadyState {
         Uninitialized,
         VersionSent,
@@ -24,6 +25,20 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket() {
     var chunkSizeS = RtmpChunk.DEFAULT_SIZE
     var isConnected = false
         private set
+    var timeout: Int
+        get() = socket.timeout
+        set(value) {
+            socket.timeout = value
+        }
+    val totalBytesIn: Long
+        get() = socket.totalBytesIn.get()
+    val totalBytesOut: Long
+        get() = socket.totalBytesOut.get()
+    private val socket: NetSocket by lazy {
+        val socket = NetSocketImpl()
+        socket.listener = this
+        socket
+    }
     private val handshake: RtmpHandshake by lazy {
         RtmpHandshake()
     }
@@ -32,6 +47,37 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket() {
             field = value
             connection.onSocketReadyStateChange(this, value)
         }
+
+    fun connect(dstName: String, dstPort: Int, isSecure: Boolean) {
+        socket.connect(dstName, dstPort, isSecure)
+    }
+
+    fun doOutput(buffer: ByteBuffer) {
+        socket.doOutput(buffer)
+    }
+
+    fun createByteBuffer(capacity: Int): ByteBuffer {
+        return socket.createByteBuffer(capacity)
+    }
+
+    fun close(disconnected: Boolean) {
+        if (!isConnected) return
+        var data: Any? = null
+        if (disconnected) {
+            data = if (readyState == ReadyState.HandshakeDone) {
+                RtmpConnection.Code.CONNECT_CLOSED.data("")
+            } else {
+                RtmpConnection.Code.CONNECT_FAILED.data("")
+            }
+        }
+        readyState = ReadyState.Closing
+        socket.close(disconnected)
+        data?.let {
+            connection.dispatchEventWith(Event.RTMP_STATUS, false, it)
+        }
+        readyState = ReadyState.Closed
+        isConnected = false
+    }
 
     override fun onTimeout() {
         close(false)
@@ -44,40 +90,21 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket() {
         chunkSizeS = RtmpChunk.DEFAULT_SIZE
         handshake.clear()
         readyState = ReadyState.VersionSent
-        doOutput(handshake.c0C1Packet)
+        socket.doOutput(handshake.c0C1Packet)
     }
 
-    override fun close(disconnected: Boolean) {
-        if (!isConnected) return
-        var data: Any? = null
-        if (disconnected) {
-            data = if (readyState == ReadyState.HandshakeDone) {
-                RtmpConnection.Code.CONNECT_CLOSED.data("")
-            } else {
-                RtmpConnection.Code.CONNECT_FAILED.data("")
-            }
-        }
-        readyState = ReadyState.Closing
-        super.close(disconnected)
-        data?.let {
-            connection.dispatchEventWith(Event.RTMP_STATUS, false, it)
-        }
-        readyState = ReadyState.Closed
-        isConnected = false
-    }
-
-    override fun listen(buffer: ByteBuffer) {
+    override fun onInput(buffer: ByteBuffer) {
         when (readyState) {
             ReadyState.VersionSent -> {
                 if (buffer.limit() < RtmpHandshake.SIGNAL_SIZE + 1) {
                     return
                 }
                 handshake.s0S1Packet = buffer
-                doOutput(handshake.c2Packet)
+                socket.doOutput(handshake.c2Packet)
                 buffer.position(RtmpHandshake.SIGNAL_SIZE + 1)
                 readyState = ReadyState.AckSent
                 if (buffer.limit() - buffer.position() == RtmpHandshake.SIGNAL_SIZE) {
-                    listen(buffer.slice())
+                    onInput(buffer.slice())
                     buffer.position(3073)
                 }
             }

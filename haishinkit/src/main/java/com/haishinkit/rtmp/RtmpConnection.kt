@@ -160,13 +160,13 @@ open class RtmpConnection : EventDispatcher(null) {
      * The statistics of total incoming bytes.
      */
     val totalBytesIn: Long
-        get() = socket.totalBytesIn.get()
+        get() = socket.totalBytesIn
 
     /**
      * The statistics of total outgoing bytes.
      */
     val totalBytesOut: Long
-        get() = socket.totalBytesOut.get()
+        get() = socket.totalBytesOut
 
     internal val messages = ConcurrentHashMap<Short, RtmpMessage>()
     internal val streams = ConcurrentHashMap<Int, RtmpStream>()
