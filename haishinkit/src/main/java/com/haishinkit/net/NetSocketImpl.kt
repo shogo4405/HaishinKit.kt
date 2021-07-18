@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.net.Socket
 import java.net.SocketTimeoutException
 import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingDeque
@@ -60,7 +61,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         inputStream = null
         outputStream = null
         socket?.close()
-        outputQueue.clear()
+        outputQueue.add(ByteBuffer.allocate(0))
     }
 
     override fun doOutput(buffer: ByteBuffer) {
@@ -113,9 +114,12 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         }
     }
 
-    private fun doOutput() {
+    private fun doOutput(socket: Socket) {
         while (keepAlive) {
             val buffer = outputQueue.take()
+            if (socket.isClosed) {
+                break
+            }
             try {
                 val outputStream = outputStream ?: break
                 val remaining = buffer.remaining().toLong()
@@ -143,7 +147,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
                 inputStream = socket.getInputStream()
                 outputStream = socket.getOutputStream()
                 launch(Dispatchers.IO) {
-                    doOutput()
+                    doOutput(socket)
                 }
                 listener?.onConnect()
                 while (keepAlive) {
@@ -165,13 +169,13 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         }
     }
 
-    private fun createSocket(dstName: String, dstPort: Int, isSecure: Boolean): java.net.Socket {
+    private fun createSocket(dstName: String, dstPort: Int, isSecure: Boolean): Socket {
         if (isSecure) {
             val socket = SSLSocketFactory.getDefault().createSocket(dstName, dstPort) as SSLSocket
             socket.startHandshake()
             return socket
         }
-        return java.net.Socket(dstName, dstPort)
+        return Socket(dstName, dstPort)
     }
 
     companion object {
