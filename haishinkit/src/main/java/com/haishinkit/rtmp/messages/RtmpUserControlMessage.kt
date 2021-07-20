@@ -44,16 +44,6 @@ internal class RtmpUserControlMessage(pool: Pools.Pool<RtmpMessage>? = null) : R
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
         when (event) {
-            Event.STREAM_BEGIN -> {
-                val stream = connection.streams[value] ?: return this
-                stream.readyState = RtmpStream.ReadyState.PLAYING
-            }
-            Event.STREAM_EOF -> {
-                val stream = connection.streams[value] ?: return this
-                val data = RtmpStream.Code.PLAY_UNPUBLISH_NOTIFY.data("")
-                stream.readyState = RtmpStream.ReadyState.PLAY
-                stream.dispatchEventWith(com.haishinkit.event.Event.RTMP_STATUS, false, data)
-            }
             Event.PING -> {
                 val message = connection.messageFactory.createRtmpUserControlMessage()
                 message.event = Event.PONG

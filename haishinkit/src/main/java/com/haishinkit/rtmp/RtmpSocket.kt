@@ -139,7 +139,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
     }
 
     companion object {
-        private const val VERBOSE = true
+        private const val VERBOSE = false
         private var TAG = RtmpSocket::class.java.simpleName
     }
 }

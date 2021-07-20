@@ -91,6 +91,12 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                 RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
                     connection.createStream(stream)
                 }
+                Code.PLAY_START.rawValue -> {
+                    stream.readyState = ReadyState.PLAYING
+                }
+                Code.PLAY_UNPUBLISH_NOTIFY.rawValue -> {
+                    stream.readyState = ReadyState.PLAY
+                }
                 Code.PUBLISH_START.rawValue -> {
                     stream.readyState = ReadyState.PUBLISHING
                 }
