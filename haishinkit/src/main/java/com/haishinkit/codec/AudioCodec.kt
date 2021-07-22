@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder
 import kotlin.properties.Delegates
 
 class AudioCodec : MediaCodec(MIME) {
+    @Suppress("unused")
     class Setting(var codec: AudioCodec? = null) : MediaCodec.Setting(codec) {
         var channelCount: Int by Delegates.observable(DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
             codec?.channelCount = newValue

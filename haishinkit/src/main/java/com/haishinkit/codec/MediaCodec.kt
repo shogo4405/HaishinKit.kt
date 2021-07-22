@@ -17,7 +17,9 @@ import java.util.Deque
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
+@Suppress("unused")
 abstract class MediaCodec(private val mime: String) : Running {
+    @Suppress("unused")
     open class Setting(private var codec: com.haishinkit.codec.MediaCodec?) {
         var options: List<CodecOption> by Delegates.observable(listOf()) { _, _, newValue ->
             codec?.options = newValue
