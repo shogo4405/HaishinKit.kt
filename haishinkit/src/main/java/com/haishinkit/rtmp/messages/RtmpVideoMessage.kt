@@ -113,10 +113,14 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
         if (frame == FlvFlameType.KEY) {
             return android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME
         }
-        if (data?.get(0) == FlvAvcPacketType.SEQ) {
-            return android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG
+        return when (data?.get(0)) {
+            FlvAvcPacketType.SEQ -> {
+                android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG
+            }
+            else -> {
+                0
+            }
         }
-        return 0
     }
 
     companion object {

@@ -81,10 +81,14 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
     }
 
     fun toFlags(): Int {
-        if (data?.get(0) == FlvAacPacketType.SEQ) {
-            return android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG
+        return when (data?.get(0)) {
+            FlvAacPacketType.SEQ -> {
+                android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG
+            }
+            else -> {
+                0
+            }
         }
-        return 0
     }
 
     companion object {
