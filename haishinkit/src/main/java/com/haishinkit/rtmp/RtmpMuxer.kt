@@ -16,8 +16,8 @@ import com.haishinkit.lang.Running
 import com.haishinkit.media.BufferController
 import com.haishinkit.media.MediaLink
 import com.haishinkit.metric.FrameTracker
-import com.haishinkit.rtmp.messages.RtmpAudioMessage
-import com.haishinkit.rtmp.messages.RtmpVideoMessage
+import com.haishinkit.rtmp.message.RtmpAudioMessage
+import com.haishinkit.rtmp.message.RtmpVideoMessage
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 

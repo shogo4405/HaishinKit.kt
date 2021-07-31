@@ -1,15 +1,13 @@
-package com.haishinkit.rtmp.messages
+package com.haishinkit.rtmp.message
 
-import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import java.nio.ByteBuffer
 
 /**
- * 5.4.4. Window Acknowledgement Size (5)
+ * 5.4.1. Set Chunk Size (1)
  */
-internal class RtmpWindowAcknowledgementSizeMessage : RtmpMessage(TYPE_ACK) {
+internal class RtmpSetChunkSizeMessage : RtmpMessage(TYPE_CHUNK_SIZE) {
     var size: Int = 0
-        private set
     override var length: Int = CAPACITY
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
@@ -23,10 +21,7 @@ internal class RtmpWindowAcknowledgementSizeMessage : RtmpMessage(TYPE_ACK) {
     }
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
-        val ack = connection.messageFactory.createRtmpWindowAcknowledgementSizeMessage()
-        ack.size = size
-        ack.chunkStreamID = RtmpChunk.CONTROL
-        connection.doOutput(RtmpChunk.ZERO, ack)
+        connection.socket.chunkSizeC = size
         return this
     }
 

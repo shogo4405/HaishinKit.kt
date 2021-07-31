@@ -1,23 +1,23 @@
-package com.haishinkit.rtmp.messages
+package com.haishinkit.rtmp.message
 
 import com.haishinkit.rtmp.RtmpConnection
 import java.nio.ByteBuffer
 
 /**
- * 5.4.2. Abort Message (2)
+ * 5.4.3 Acknowledgement (3)
  */
-internal class RtmpAbortMessage : RtmpMessage(TYPE_ABORT) {
-    var discarded: Int = 0
+internal class RtmpAcknowledgementMessage : RtmpMessage(TYPE_ACK) {
+    var sequence = ByteArray(CAPACITY)
         private set
     override var length: Int = CAPACITY
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
-        buffer.putInt(discarded)
+        buffer.put(sequence)
         return this
     }
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
-        discarded = buffer.int
+        buffer.get(sequence)
         return this
     }
 

@@ -6,9 +6,9 @@ import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.net.Responder
-import com.haishinkit.rtmp.messages.RtmpCommandMessage
-import com.haishinkit.rtmp.messages.RtmpMessage
-import com.haishinkit.rtmp.messages.RtmpMessageFactory
+import com.haishinkit.rtmp.message.RtmpCommandMessage
+import com.haishinkit.rtmp.message.RtmpMessage
+import com.haishinkit.rtmp.message.RtmpMessageFactory
 import com.haishinkit.util.URIUtil
 import org.apache.commons.lang3.StringUtils
 import java.net.URI

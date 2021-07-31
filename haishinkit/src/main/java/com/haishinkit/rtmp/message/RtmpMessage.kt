@@ -1,4 +1,4 @@
-package com.haishinkit.rtmp.messages
+package com.haishinkit.rtmp.message
 
 import androidx.core.util.Pools
 import com.haishinkit.rtmp.RtmpConnection

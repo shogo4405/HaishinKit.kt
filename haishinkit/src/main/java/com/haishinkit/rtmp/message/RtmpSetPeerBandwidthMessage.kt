@@ -1,4 +1,4 @@
-package com.haishinkit.rtmp.messages
+package com.haishinkit.rtmp.message
 
 import com.haishinkit.rtmp.RtmpConnection
 import java.nio.ByteBuffer

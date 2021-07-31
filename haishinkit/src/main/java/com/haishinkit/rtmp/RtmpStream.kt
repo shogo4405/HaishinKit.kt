@@ -8,10 +8,10 @@ import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
 import com.haishinkit.net.NetStream
-import com.haishinkit.rtmp.messages.RtmpCommandMessage
-import com.haishinkit.rtmp.messages.RtmpDataMessage
-import com.haishinkit.rtmp.messages.RtmpMessage
-import com.haishinkit.rtmp.messages.RtmpMessageFactory
+import com.haishinkit.rtmp.message.RtmpCommandMessage
+import com.haishinkit.rtmp.message.RtmpDataMessage
+import com.haishinkit.rtmp.message.RtmpMessage
+import com.haishinkit.rtmp.message.RtmpMessageFactory
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList

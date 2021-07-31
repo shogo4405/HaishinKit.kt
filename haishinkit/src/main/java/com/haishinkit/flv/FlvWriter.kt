@@ -2,10 +2,10 @@ package com.haishinkit.flv
 
 import android.util.Log
 import com.haishinkit.codec.RecordSetting
-import com.haishinkit.rtmp.messages.RtmpAudioMessage
-import com.haishinkit.rtmp.messages.RtmpDataMessage
-import com.haishinkit.rtmp.messages.RtmpMessage
-import com.haishinkit.rtmp.messages.RtmpVideoMessage
+import com.haishinkit.rtmp.message.RtmpAudioMessage
+import com.haishinkit.rtmp.message.RtmpDataMessage
+import com.haishinkit.rtmp.message.RtmpMessage
+import com.haishinkit.rtmp.message.RtmpVideoMessage
 import java.io.Closeable
 import java.io.File
 import java.io.FileNotFoundException

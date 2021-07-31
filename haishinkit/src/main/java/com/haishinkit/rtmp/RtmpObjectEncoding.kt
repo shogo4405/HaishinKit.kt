@@ -1,6 +1,6 @@
 package com.haishinkit.rtmp
 
-import com.haishinkit.rtmp.messages.RtmpMessage
+import com.haishinkit.rtmp.message.RtmpMessage
 
 enum class RtmpObjectEncoding(
     val rawValue: Short,

@@ -1,4 +1,4 @@
-package com.haishinkit.rtmp.messages
+package com.haishinkit.rtmp.message
 
 import junit.framework.TestCase
 import java.nio.ByteBuffer

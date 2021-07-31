@@ -3,7 +3,7 @@ package com.haishinkit.rtmp
 import com.haishinkit.codec.RecordSetting
 import com.haishinkit.flv.FlvWriter
 import com.haishinkit.lang.Running
-import com.haishinkit.rtmp.messages.RtmpMessage
+import com.haishinkit.rtmp.message.RtmpMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
