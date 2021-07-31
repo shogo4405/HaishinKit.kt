@@ -2,7 +2,6 @@ package com.haishinkit.studio
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +10,11 @@ import android.widget.Button
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.event.IEventListener
-import com.haishinkit.media.CameraSource
+import com.haishinkit.media.Camera2Source
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import android.content.pm.PackageManager
-import android.hardware.camera2.CameraManager
+import android.hardware.camera2.CameraCharacteristics
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,6 +26,7 @@ class CameraTabFragment: Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
     private lateinit var cameraView: HkGLSurfaceView
+    private lateinit var cameraSource: Camera2Source
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,15 +42,10 @@ class CameraTabFragment: Fragment(), IEventListener {
         connection = RtmpConnection()
         stream = RtmpStream(connection)
         stream.attachAudio(AudioRecordSource())
-
-        activity?.let {
-            val manager = it.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            val camera = CameraSource(it).apply {
-                this.open(cameraId)
-            }
-            stream.attachVideo(camera)
+        cameraSource = Camera2Source(requireContext()).apply {
+            open(CameraCharacteristics.LENS_FACING_BACK)
         }
-
+        stream.attachVideo(cameraSource)
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
 
@@ -67,7 +62,11 @@ class CameraTabFragment: Fragment(), IEventListener {
                 button.text = "Publish"
             }
         }
-        cameraView = v.findViewById<HkGLSurfaceView>(R.id.camera)
+        val switchButton = v.findViewById<Button>(R.id.switch_button)
+        switchButton.setOnClickListener {
+            cameraSource.switchCamera()
+        }
+        cameraView = v.findViewById(R.id.camera)
         cameraView.attachStream(stream)
         return v
     }

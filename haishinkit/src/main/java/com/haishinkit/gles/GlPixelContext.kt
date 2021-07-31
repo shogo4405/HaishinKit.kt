@@ -17,13 +17,14 @@ class GlPixelContext(private val context: Context? = null, private val swapped: 
         private set
     var textureSize = Size(0, 0)
     var eglContext: EGLContext? = null
+    var isFront = false
     val orientation: Int
         get() {
             context ?: return ROTATION_0
             return when (defaultDisplay?.rotation ?: -1) {
-                Surface.ROTATION_0 -> if (isPortrait) ROTATION_270 else ROTATION_0
+                Surface.ROTATION_0 -> if (isPortrait) if (isFront) ROTATION_90 else ROTATION_270 else ROTATION_0
                 Surface.ROTATION_90 -> if (isPortrait) ROTATION_0 else ROTATION_90
-                Surface.ROTATION_180 -> if (isPortrait) ROTATION_90 else ROTATION_180
+                Surface.ROTATION_180 -> if (isPortrait) if (isFront) ROTATION_270 else ROTATION_90 else ROTATION_180
                 Surface.ROTATION_270 -> if (isPortrait) ROTATION_180 else ROTATION_270
                 else -> 0
             }

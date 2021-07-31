@@ -63,26 +63,27 @@ Real Time Messaging Protocol (RTMP).
 class CameraTabFragment: Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var cameraView: GlHkView
+    private lateinit var cameraView: HkGLSurfaceView
+    private lateinit var cameraSource: CameraSource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), 1)
-        }
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
+        activity?.let {
+            val permissionCheck = ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA)
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.CAMERA), 1)
+            }
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
+            }
         }
         connection = RtmpConnection()
         stream = RtmpStream(connection)
         stream.attachAudio(AudioRecordSource())
-
-        val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val camera = CameraSource(activity).apply {
-            this.open(cameraId)
+        cameraSource = CameraSource(requireContext()).apply {
+            open(CameraCharacteristics.LENS_FACING_BACK)
         }
-        stream.attachVideo(camera)
+        stream.attachVideo(cameraSource)
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
 
@@ -99,7 +100,11 @@ class CameraTabFragment: Fragment(), IEventListener {
                 button.text = "Publish"
             }
         }
-        cameraView = v.findViewById<GlHkView>(R.id.camera)
+        val switchButton = v.findViewById<Button>(R.id.switch_button)
+        switchButton.setOnClickListener {
+            cameraSource.switchCamera()
+        }
+        cameraView = v.findViewById(R.id.camera)
         cameraView.attachStream(stream)
         return v
     }
@@ -110,7 +115,7 @@ class CameraTabFragment: Fragment(), IEventListener {
     }
 
     override fun handleEvent(event: Event) {
-        Log.i(javaClass.name + "#handleEvent", event.toString())
+        Log.i("$TAG#handleEvent", event.toString())
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
@@ -122,6 +127,8 @@ class CameraTabFragment: Fragment(), IEventListener {
         fun newInstance(): CameraTabFragment {
             return CameraTabFragment()
         }
+
+        private val TAG = CameraTabFragment::class.java.simpleName
     }
 }
 ```

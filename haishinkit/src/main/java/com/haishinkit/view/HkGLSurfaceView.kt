@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.gles.GlPixelContext
-import com.haishinkit.media.CameraSource
+import com.haishinkit.media.Camera2Source
 import com.haishinkit.media.VideoSource
 import com.haishinkit.media.VideoSourceNullRenderer
 import com.haishinkit.net.NetStream
@@ -27,8 +27,9 @@ class HkGLSurfaceView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : GLSurfaceView(context, attrs), NetStreamView {
-    internal interface StrategyRenderer : GLSurfaceView.Renderer {
+    internal interface StrategyRenderer : Renderer {
         var strategy: VideoSource.GlRenderer
+        var isFront: Boolean
         var videoGravity: Int
     }
 
@@ -39,6 +40,11 @@ class HkGLSurfaceView @JvmOverloads constructor(
         }
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var stream: NetStream? = null
+    internal var isFront: Boolean
+        get() = renderer.isFront
+        set(value) {
+            renderer.isFront = value
+        }
 
     private val renderer: StrategyRenderer by lazy {
         val renderer = object : StrategyRenderer {
@@ -49,15 +55,18 @@ class HkGLSurfaceView @JvmOverloads constructor(
                     field.videoGravity = videoGravity
                 }
             override var videoGravity: Int
-                get() {
-                    return strategy.videoGravity
-                }
+                get() = strategy.videoGravity
                 set(value) {
                     strategy.videoGravity = value
                 }
+            override var isFront: Boolean
+                get() = this.context.isFront
+                set(value) {
+                    this.context.isFront = value
+                }
 
-            private var texture: SurfaceTexture? = null
             private var context: GlPixelContext = GlPixelContext(context, true)
+            private var texture: SurfaceTexture? = null
 
             override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
                 this.context.eglContext = EGL14.eglGetCurrentContext()
@@ -65,7 +74,7 @@ class HkGLSurfaceView @JvmOverloads constructor(
                 texture = this.context.createSurfaceTexture(640, 480)
                 strategy.context = this.context
                 val surface = Surface(texture)
-                (stream?.video as? CameraSource)?.surface = surface
+                (stream?.video as? Camera2Source)?.surface = surface
                 stream?.surface = surface
                 strategy.onSurfaceCreated(gl, config)
             }

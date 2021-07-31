@@ -1,9 +1,8 @@
 package com.haishinkit.media
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.graphics.SurfaceTexture
+import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
@@ -17,7 +16,9 @@ import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.renderer.GlFramePixelRenderer
+import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
+import com.haishinkit.view.HkGLSurfaceView
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.egl.EGLConfig
@@ -26,19 +27,12 @@ import javax.microedition.khronos.opengles.GL10
 /**
  * A video source that captures a camera by the Camera2 API.
  */
-class CameraSource(
-    private val activity: Activity,
+class Camera2Source(
+    context: Context,
     override val fpsControllerClass: Class<*>? = null,
     override var utilizable: Boolean = false
 ) : VideoSource {
     var device: CameraDevice? = null
-        private set(value) {
-            device?.close()
-            field = value
-            startRunning()
-        }
-    var cameraId: String = DEFAULT_CAMERA_ID
-        private set
     var characteristics: CameraCharacteristics? = null
         private set
     var session: CameraCaptureSession? = null
@@ -51,7 +45,6 @@ class CameraSource(
                 stream?.renderer?.startRunning()
             }
         }
-    internal var surface: Surface? = null
     override var stream: NetStream? = null
         set(value) {
             field = value
@@ -64,27 +57,40 @@ class CameraSource(
             stream?.videoSetting?.width = value.width
             stream?.videoSetting?.height = value.height
         }
+    internal var surface: Surface? = null
+    private var cameraId: String = DEFAULT_CAMERA_ID
     private var request: CaptureRequest.Builder? = null
-    private var manager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    private var manager: CameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private val backgroundHandler by lazy {
         val thread = HandlerThread(TAG)
         thread.start()
         Handler(thread.looper)
     }
+    private val resolver: CameraResolver by lazy {
+        CameraResolver(manager)
+    }
 
     @SuppressLint("MissingPermission")
-    fun open(cameraId: String) {
-        this.cameraId = cameraId
+    fun open(position: Int? = null) {
+        if (position == null) {
+            this.cameraId = DEFAULT_CAMERA_ID
+        } else {
+            this.cameraId = resolver.getCameraId(position) ?: DEFAULT_CAMERA_ID
+        }
         characteristics = manager.getCameraCharacteristics(cameraId)
+        device?.close()
         manager.openCamera(
             cameraId,
             object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
-                    this@CameraSource.device = camera
-                    this@CameraSource.setUp()
+                    this@Camera2Source.device = camera
+                    this@Camera2Source.setUp()
+                    surface?.let { it ->
+                        this@Camera2Source.createCaptureSession(it, camera)
+                    }
                 }
                 override fun onDisconnected(camera: CameraDevice) {
-                    this@CameraSource.device = null
+                    this@Camera2Source.device = null
                 }
                 override fun onError(camera: CameraDevice, error: Int) {
                     Log.w(TAG, error.toString())
@@ -92,6 +98,20 @@ class CameraSource(
             },
             null
         )
+    }
+
+    /**
+     * Switches an using camera front or back.
+     */
+    fun switchCamera() {
+        val characteristics = characteristics ?: return
+        val facing = resolver.getFacing(characteristics)
+        val expect = if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
+            CameraCharacteristics.LENS_FACING_BACK
+        } else {
+            CameraCharacteristics.LENS_FACING_FRONT
+        }
+        open(expect)
     }
 
     override fun setUp() {
@@ -113,24 +133,7 @@ class CameraSource(
         if (isRunning.get()) { return }
         val device = device ?: return
         val surface = surface ?: return
-        request = device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-            this.addTarget(surface)
-        }
-        val surfaceList = mutableListOf<Surface>(surface)
-        device.createCaptureSession(
-            surfaceList,
-            object : CameraCaptureSession.StateCallback() {
-                override fun onConfigured(session: CameraCaptureSession) {
-                    this@CameraSource.session = session
-                    val request = request ?: return
-                    session.setRepeatingRequest(request.build(), null, backgroundHandler)
-                }
-                override fun onConfigureFailed(session: CameraCaptureSession) {
-                    this@CameraSource.session = null
-                }
-            },
-            backgroundHandler
-        )
+        createCaptureSession(surface, device)
         isRunning.set(true)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -139,6 +142,16 @@ class CameraSource(
 
     override fun stopRunning() {
         if (!isRunning.get()) { return }
+        stream?.renderer?.stopRunning()
+        session?.let {
+            try {
+                it.stopRepeating()
+            } catch (exception: CameraAccessException) {
+                Log.e(TAG, "", exception)
+            }
+            session = null
+        }
+        device = null
         isRunning.set(false)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -148,6 +161,7 @@ class CameraSource(
     override fun createGLSurfaceViewRenderer(): VideoSource.GlRenderer {
         return object : VideoSource.GlRenderer {
             override var context: GlPixelContext = GlPixelContext.instance
+
             override var videoGravity: Int
                 get() {
                     return renderer.videoGravity
@@ -160,8 +174,8 @@ class CameraSource(
 
             override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
                 renderer.setUp()
-                this@CameraSource.startRunning()
-                context.textureSize = this@CameraSource.getCameraSize()
+                this@Camera2Source.startRunning()
+                context.textureSize = this@Camera2Source.resolver.getCameraSize(this@Camera2Source.characteristics)
             }
 
             override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
@@ -178,10 +192,29 @@ class CameraSource(
         return ToStringBuilder.reflectionToString(this)
     }
 
-    private fun getCameraSize(): Size {
-        val scm = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-        val cameraSizes = scm?.getOutputSizes(SurfaceTexture::class.java) ?: return Size(0, 0)
-        return cameraSizes[0]
+    private fun createCaptureSession(surface: Surface, device: CameraDevice) {
+        request = device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
+            addTarget(surface)
+        }
+        val surfaceList = mutableListOf(surface)
+        device.createCaptureSession(
+            surfaceList,
+            object : CameraCaptureSession.StateCallback() {
+                override fun onConfigured(session: CameraCaptureSession) {
+                    this@Camera2Source.session = session
+                    val request = request ?: return
+                    (this@Camera2Source.stream?.renderer as HkGLSurfaceView).let { view ->
+                        val facing = resolver.getFacing(characteristics!!)
+                        view.isFront = facing == CameraCharacteristics.LENS_FACING_FRONT
+                    }
+                    session.setRepeatingRequest(request.build(), null, backgroundHandler)
+                }
+                override fun onConfigureFailed(session: CameraCaptureSession) {
+                    this@Camera2Source.session = null
+                }
+            },
+            backgroundHandler
+        )
     }
 
     companion object {
@@ -189,6 +222,6 @@ class CameraSource(
         const val DEFAULT_HEIGHT: Int = 480
 
         private const val DEFAULT_CAMERA_ID = "0"
-        private val TAG = CameraSource::class.java.simpleName
+        private val TAG = Camera2Source::class.java.simpleName
     }
 }

@@ -18,6 +18,14 @@
         android:layout_height="match_parent"
         >
         <Button
+            android:id="@+id/switch_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Switch"
+            android:layout_margin="16px"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" />
+        <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

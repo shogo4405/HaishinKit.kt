@@ -14,6 +14,7 @@ import com.haishinkit.util.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
+@Suppress("unused")
 class HkSurfaceView(context: Context, attributes: AttributeSet) : SurfaceView(context, attributes), NetStreamView, IEventListener {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var videoGravity: Int = VideoGravity.RESIZE_ASPECT_FILL
