@@ -14,6 +14,11 @@ android {
             jvmTarget = "1.8"
         }
 
+      lintOptions {
+          abortOnError false
+      }
+
+
     defaultConfig {
         applicationId "com.haishinkit.studio"
         minSdkVersion 21
