@@ -32,10 +32,7 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
         MediaProjectionService.listener = object : RtmpStream.Listener {
-            private var capture: FrameCapture = FrameCapture()
-
             override fun onCaptureOutput(stream: NetStream, type: Byte, buffer: ByteBuffer, timestamp: Long) {
-                capture.onCaptureOutput(stream, type, buffer, timestamp)
             }
 
             override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
@@ -45,11 +42,9 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
             }
 
             override fun onSetUp(stream: NetStream) {
-                capture.onSetUp(stream)
             }
 
             override fun onTearDown(stream: NetStream) {
-                capture.onTearDown(stream)
             }
         }
         button.setOnClickListener {
