@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30"
+    buildToolsVersion "30.0.3"
 
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
@@ -52,7 +52,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-apply plugin: 'kotlin-android-extensions'
 repositories {
     mavenCentral()
 }
