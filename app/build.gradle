@@ -5,19 +5,18 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
-        }
-        // For Kotlin projects
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    // For Kotlin projects
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 
-      lintOptions {
-          abortOnError false
-      }
-
+    lintOptions {
+        abortOnError false
+    }
 
     defaultConfig {
         applicationId "com.haishinkit.studio"

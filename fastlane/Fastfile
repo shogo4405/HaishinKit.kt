@@ -13,26 +13,31 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-default_platform(:android)
-
-platform :android do
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "test")
-  end
-
-  desc "Submit a new Beta Build to Crashlytics Beta"
-  lane :beta do
-    gradle(task: "clean assembleRelease")
-    crashlytics
-  
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
-  end
-
-  desc "Deploy a new version to the Google Play"
-  lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
-  end
+before_all do |lane, options|
+  ENV['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64' if Helper.is_ci?
 end
+
+desc "Runs all the tests"
+lane :test do
+  install_android_studio
+  gradle(task: "lint")
+  Dir.chdir('../')
+  workspace = Dir.pwd
+  android_studio_path =
+          ENV['ANDROID_STUDIO_HOME'] ||
+            '/Applications/Android Studio.app/Contents'
+  FileUtils.rm_rf("#{workspace}/fastlane/inspect")
+  sh("#{android_studio_path}/bin/inspect.sh #{workspace} #{workspace}/fastlane/inspect.xml #{workspace}/fastlane/inspect")
+  sh("ls -al #{workspace}/fastlane/inspect")
+end
+
+private_lane :install_android_studio do
+  unless File.exists?('/opt/android-studio')
+    sh(
+      'curl -o /opt/android-studio.tar.gz -OL https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2020.3.1.23/android-studio-2020.3.1.23-linux.tar.gz'
+    )
+    sh('tar -zxvf /opt/android-studio.tar.gz -C /opt')
+  end
+  ENV['ANDROID_STUDIO_HOME'] = '/opt/android-studio'
+end
+

@@ -5,15 +5,16 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.5.21'
+    ext.kotlin_version = '1.5.30'
 
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath 'com.android.tools.build:gradle:7.0.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.32"
     }
@@ -31,7 +32,7 @@ configurations {
 }
 
 dependencies {
-    ktlint "com.pinterest:ktlint:0.42.0"
+    ktlint "com.pinterest:ktlint:0.42.1"
 }
 
 task ktlint(type: JavaExec, group: "verification") {
