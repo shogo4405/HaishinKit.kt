@@ -36,6 +36,8 @@ lane :test do
 end
 
 private_lane :inspect_run do
+  current = Dir.pwd
+  Dir.chdir('../')
   workspace = Dir.pwd
   android_studio_path =
     ENV['ANDROID_STUDIO_HOME'] || '/Applications/Android Studio.app/Contents'
@@ -43,6 +45,7 @@ private_lane :inspect_run do
   sh(
     "#{android_studio_path}/bin/inspect.sh #{workspace} #{workspace}/fastlane/inspect.xml #{workspace}/fastlane/inspect"
   )
+  Dir.chdir(current)
 end
 
 private_lane :install_android_studio do

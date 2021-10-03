@@ -6,9 +6,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: set up JDK 11
@@ -29,4 +27,6 @@ jobs:
     - name: Bundle install
       run: bundle install --path=vendor/bundle --jobs 4 --retry 3
     - name: fastlane
+      env:
+        DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
       run: bundle exec fastlane review
