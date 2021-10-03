@@ -71,6 +71,9 @@ class PlaybackTabFragment: Fragment(), IEventListener {
             stream.play(Preference.shared.streamName)
         }
     }
+    
+    fun unusedMehtod() {
+    }
 
     companion object {
         fun newInstance(): PlaybackTabFragment {
