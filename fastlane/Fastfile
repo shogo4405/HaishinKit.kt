@@ -13,22 +13,36 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-before_all do |lane, options|
-  ENV['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64' if Helper.is_ci?
+desc '[CI]Runs the PR review'
+lane :review do
+  if Helper.is_ci?
+    install_android_studio
+    gradle(task: 'lint')
+    inspect_run
+    danger(
+      danger_id: 'danger',
+      dangerfile: 'Dangerfile',
+      github_api_token: ENV['GITHUB_API_TOKEN'],
+      verbose: true
+    )
+  end
 end
 
-desc "Runs all the tests"
+desc 'Runs all the tests'
 lane :test do
   install_android_studio
-  gradle(task: "lint")
-  Dir.chdir('../')
+  gradle(task: 'lint')
+  inspect_run
+end
+
+private_lane :inspect_run do
   workspace = Dir.pwd
   android_studio_path =
-          ENV['ANDROID_STUDIO_HOME'] ||
-            '/Applications/Android Studio.app/Contents'
+    ENV['ANDROID_STUDIO_HOME'] || '/Applications/Android Studio.app/Contents'
   FileUtils.rm_rf("#{workspace}/fastlane/inspect")
-  sh("#{android_studio_path}/bin/inspect.sh #{workspace} #{workspace}/fastlane/inspect.xml #{workspace}/fastlane/inspect")
-  sh("ls -al #{workspace}/fastlane/inspect")
+  sh(
+    "#{android_studio_path}/bin/inspect.sh #{workspace} #{workspace}/fastlane/inspect.xml #{workspace}/fastlane/inspect"
+  )
 end
 
 private_lane :install_android_studio do
@@ -40,4 +54,3 @@ private_lane :install_android_studio do
   end
   ENV['ANDROID_STUDIO_HOME'] = '/opt/android-studio'
 end
-
