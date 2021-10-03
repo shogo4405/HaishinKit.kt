@@ -1,0 +1,2 @@
+inspect.report 'fastlane/inspect'
+
