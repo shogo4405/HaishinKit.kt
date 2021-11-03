@@ -5,7 +5,7 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.5.30'
+    ext.kotlin_version = '1.5.31'
 
     repositories {
         google()
@@ -32,7 +32,7 @@ configurations {
 }
 
 dependencies {
-    ktlint "com.pinterest:ktlint:0.42.1"
+    ktlint "com.pinterest:ktlint:0.43.0"
 }
 
 task ktlint(type: JavaExec, group: "verification") {
