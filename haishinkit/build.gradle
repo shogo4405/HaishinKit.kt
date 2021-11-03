@@ -11,7 +11,7 @@ task sourceJar(type: Jar) {
 }
 
 buildscript {
-    ext.kotlin_version = '1.5.30'
+    ext.kotlin_version = '1.5.31'
     ext.version = '0.5.1'
 
     repositories {
