@@ -33,6 +33,14 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags ''
+            }
+        }
+        shaders {
+            glslcArgs.addAll(['-c', '-g'])
+        }
     }
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
@@ -42,6 +50,7 @@ android {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
         }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -49,6 +58,12 @@ android {
         }
     }
     productFlavors {
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.10.2'
+        }
     }
 }
 
