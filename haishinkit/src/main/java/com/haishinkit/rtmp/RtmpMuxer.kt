@@ -21,7 +21,10 @@ import com.haishinkit.rtmp.message.RtmpVideoMessage
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferController.Listener, MediaCodec.Listener {
+internal class RtmpMuxer(private val stream: RtmpStream) :
+    Running,
+    BufferController.Listener,
+    MediaCodec.Listener {
     override var isRunning = AtomicBoolean(false)
 
     var mode = MediaCodec.MODE_DECODE
@@ -83,7 +86,8 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         videoBufferController.enqueue(message, message.timestamp)
     }
 
-    @Synchronized override fun startRunning() {
+    @Synchronized
+    override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
@@ -109,7 +113,8 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         isRunning.set(true)
     }
 
-    @Synchronized override fun stopRunning() {
+    @Synchronized
+    override fun stopRunning() {
         if (!isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
@@ -157,7 +162,13 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                         inputBuffer.put(it)
                     }
                     videoTimestamp += message.timestamp * 1000
-                    codec.queueInputBuffer(index, 0, message.length - 5, videoTimestamp, message.toFlags())
+                    codec.queueInputBuffer(
+                        index,
+                        0,
+                        message.length - 5,
+                        videoTimestamp,
+                        message.toFlags()
+                    )
                     message.release()
                 } catch (e: InterruptedException) {
                     Log.w(TAG, "", e)
@@ -174,7 +185,13 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                         inputBuffer.put(it)
                     }
                     audioTimestamp += message.timestamp * 1000
-                    codec.queueInputBuffer(index, 0, message.length - 2, audioTimestamp, message.toFlags())
+                    codec.queueInputBuffer(
+                        index,
+                        0,
+                        message.length - 2,
+                        audioTimestamp,
+                        message.toFlags()
+                    )
                     message.release()
                 } catch (e: InterruptedException) {
                     Log.w(TAG, "", e)
@@ -186,7 +203,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
     override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
         when (mime) {
             MediaCodec.MIME_VIDEO_RAW -> {
-                stream.dispatchEventWith(Event.RTMP_STATUS, false, RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data(""))
+                stream.dispatchEventWith(
+                    Event.RTMP_STATUS,
+                    false,
+                    RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data("")
+                )
             }
             MediaCodec.MIME_VIDEO_AVC -> {
                 val config = AvcConfigurationRecord.create(mediaFormat)
@@ -222,15 +243,28 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         }
     }
 
-    override fun onSampleOutput(mime: String, index: Int, info: android.media.MediaCodec.BufferInfo, buffer: ByteBuffer): Boolean {
+    override fun onSampleOutput(
+        mime: String,
+        index: Int,
+        info: android.media.MediaCodec.BufferInfo,
+        buffer: ByteBuffer
+    ): Boolean {
         when (mime) {
             MediaCodec.MIME_VIDEO_RAW -> {
                 if (!hasFirstFlame) {
-                    hasFirstFlame = (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
+                    hasFirstFlame =
+                        (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
                     stream.videoCodec.codec?.releaseOutputBuffer(index, hasFirstFlame)
                     return false
                 }
-                mediaLink.queueVideo(MediaLink.Buffer(index, null, info.presentationTimeUs, (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0))
+                mediaLink.queueVideo(
+                    MediaLink.Buffer(
+                        index,
+                        null,
+                        info.presentationTimeUs,
+                        (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
+                    )
+                )
                 return false
             }
             MediaCodec.MIME_VIDEO_AVC -> {

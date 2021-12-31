@@ -60,7 +60,8 @@ class Camera2Source(
     internal var surface: Surface? = null
     private var cameraId: String = DEFAULT_CAMERA_ID
     private var request: CaptureRequest.Builder? = null
-    private var manager: CameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    private var manager: CameraManager =
+        context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private val backgroundHandler by lazy {
         val thread = HandlerThread(TAG)
         thread.start()
@@ -89,9 +90,11 @@ class Camera2Source(
                         this@Camera2Source.createCaptureSession(it, camera)
                     }
                 }
+
                 override fun onDisconnected(camera: CameraDevice) {
                     this@Camera2Source.device = null
                 }
+
                 override fun onError(camera: CameraDevice, error: Int) {
                     Log.w(TAG, error.toString())
                 }
@@ -130,7 +133,9 @@ class Camera2Source(
 
     override fun startRunning() {
         Log.d(TAG, "${this::startRunning.name}: $device, $surface")
-        if (isRunning.get()) { return }
+        if (isRunning.get()) {
+            return
+        }
         val device = device ?: return
         val surface = surface ?: return
         createCaptureSession(surface, device)
@@ -141,7 +146,9 @@ class Camera2Source(
     }
 
     override fun stopRunning() {
-        if (!isRunning.get()) { return }
+        if (!isRunning.get()) {
+            return
+        }
         stream?.renderer?.stopRunning()
         session?.let {
             try {
@@ -175,7 +182,8 @@ class Camera2Source(
             override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
                 renderer.setUp()
                 this@Camera2Source.startRunning()
-                context.textureSize = this@Camera2Source.resolver.getCameraSize(this@Camera2Source.characteristics)
+                context.textureSize =
+                    this@Camera2Source.resolver.getCameraSize(this@Camera2Source.characteristics)
             }
 
             override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
@@ -209,6 +217,7 @@ class Camera2Source(
                     }
                     session.setRepeatingRequest(request.build(), null, backgroundHandler)
                 }
+
                 override fun onConfigureFailed(session: CameraCaptureSession) {
                     this@Camera2Source.session = null
                 }

@@ -20,18 +20,22 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         val chunkSize = socket.chunkSizeS
         var buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
         putHeader(buffer, message.chunkStreamID)
-        buffer.put((timestamp shr 16).toByte()).put((timestamp shr 8).toByte()).put(timestamp.toByte())
+        buffer.put((timestamp shr 16).toByte()).put((timestamp shr 8).toByte())
+            .put(timestamp.toByte())
 
         when (this) {
             ZERO -> {
-                buffer.put((length shr 16).toByte()).put((length shr 8).toByte()).put(length.toByte())
+                buffer.put((length shr 16).toByte()).put((length shr 8).toByte())
+                    .put(length.toByte())
                 buffer.put(message.type)
                 val streamID = message.streamID
                 // message streamID is a litleEndian
-                buffer.put(streamID.toByte()).put((streamID shr 8).toByte()).put((streamID shr 16).toByte()).put((streamID shr 24).toByte())
+                buffer.put(streamID.toByte()).put((streamID shr 8).toByte())
+                    .put((streamID shr 16).toByte()).put((streamID shr 24).toByte())
             }
             ONE -> {
-                buffer.put((length shr 16).toByte()).put((length shr 8).toByte()).put(length.toByte())
+                buffer.put((length shr 16).toByte()).put((length shr 8).toByte())
+                    .put(length.toByte())
                 buffer.put(message.type)
             }
             else -> {
@@ -145,7 +149,8 @@ internal enum class RtmpChunk(val rawValue: Byte) {
             buffer.put((rawValue.toInt() shl 6 or 0).toByte()).put((streamID - 64).toByte())
             return
         }
-        buffer.put((rawValue.toInt() shl 6 or 1).toByte()).put((streamID - 64 shr 8).toByte()).put((streamID - 64).toByte())
+        buffer.put((rawValue.toInt() shl 6 or 1).toByte()).put((streamID - 64 shr 8).toByte())
+            .put((streamID - 64).toByte())
     }
 
     private fun getInt(buffer: ByteBuffer): Int {

@@ -1,4 +1,3 @@
 package com.haishinkit.lang
 
-interface PixelTransform {
-}
+interface PixelTransform

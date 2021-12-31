@@ -46,7 +46,8 @@ class FlvWriter : Closeable {
         }
     }
 
-    @Synchronized internal fun write(message: RtmpMessage): FlvWriter {
+    @Synchronized
+    internal fun write(message: RtmpMessage): FlvWriter {
         val fileOutputStream = fileOutputStream ?: return this
         if (!(message is RtmpAudioMessage || message is RtmpVideoMessage || message is RtmpDataMessage)) {
             return this

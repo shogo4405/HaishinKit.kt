@@ -11,7 +11,8 @@ import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
-internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMessage(TYPE_VIDEO, pool) {
+internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
+    RtmpMessage(TYPE_VIDEO, pool) {
     var frame: Byte = 0x00
     var codec: Byte = 0x00
     var data: ByteBuffer? = null
@@ -43,7 +44,8 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
     override fun encode(buffer: ByteBuffer): RtmpMessage {
         buffer.put((frame.toInt() shl 4 or codec.toInt()).toByte())
         buffer.put(packetType)
-        buffer.put((compositeTime shr 16).toByte()).put((compositeTime shr 8).toByte()).put(compositeTime.toByte())
+        buffer.put((compositeTime shr 16).toByte()).put((compositeTime shr 8).toByte())
+            .put(compositeTime.toByte())
         data?.let {
             when (packetType) {
                 FlvAvcPacketType.NAL -> {

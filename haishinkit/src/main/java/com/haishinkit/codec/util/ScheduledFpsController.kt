@@ -22,7 +22,8 @@ class ScheduledFpsController : FpsController {
         if (1 < holdFrames) {
             holdFrames--
         } else {
-            updatePatternOffset = (updatePatternOffset + 1) % UPDATE_PATTERNS[updatePatternIdx].length
+            updatePatternOffset =
+                (updatePatternOffset + 1) % UPDATE_PATTERNS[updatePatternIdx].length
             holdFrames = getHoldTime()
             draw = true
             position += speed

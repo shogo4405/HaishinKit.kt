@@ -52,7 +52,8 @@ class MediaProjectionSource(
     override fun setUp() {
         if (utilizable) return
         stream?.videoCodec?.context = pixelContext
-        resolution = Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
+        resolution =
+            Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
         stream?.videoCodec?.setListener(this)
         super.setUp()
     }

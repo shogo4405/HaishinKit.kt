@@ -226,7 +226,11 @@ open class RtmpConnection : EventDispatcher(null) {
         val isSecure = uri.scheme == "rtmps"
         this.arguments.clear()
         arguments.forEach { value -> this.arguments.add(value) }
-        socket.connect(uri.host, if (port == -1) SUPPORTED_PROTOCOLS[uri.scheme] ?: DEFAULT_PORT else port, isSecure)
+        socket.connect(
+            uri.host,
+            if (port == -1) SUPPORTED_PROTOCOLS[uri.scheme] ?: DEFAULT_PORT else port,
+            isSecure
+        )
     }
 
     /**
@@ -341,6 +345,7 @@ open class RtmpConnection : EventDispatcher(null) {
                     streams[id] = stream
                     stream.readyState = RtmpStream.ReadyState.OPEN
                 }
+
                 override fun onStatus(arguments: List<Any?>) {
                     Log.w("$TAG#onStatus", arguments.toString())
                 }

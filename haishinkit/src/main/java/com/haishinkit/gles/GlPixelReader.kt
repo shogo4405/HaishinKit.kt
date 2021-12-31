@@ -26,7 +26,9 @@ internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize
     private var job = Job()
 
     fun setUp(width: Int, height: Int) {
-        if (utilizable) { return }
+        if (utilizable) {
+            return
+        }
         this.width = width
         this.height = height
         byteBuffer = ByteBuffer.allocateDirect(width * height * 4).apply {
@@ -36,7 +38,9 @@ internal class GlPixelReader(override var utilizable: Boolean = false) : Utilize
     }
 
     override fun tearDown() {
-        if (!utilizable) { return }
+        if (!utilizable) {
+            return
+        }
         width = DEFAULT_WIDTH
         height = DEFAULT_HEIGHT
         job.cancel()

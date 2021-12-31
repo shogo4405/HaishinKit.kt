@@ -56,7 +56,8 @@ data class AvcConfigurationRecord(
         val lengthSizeMinusOneWithReserved = buffer.get()
         val numOfSequenceParameterSetsWithReserved = buffer.get()
 
-        val numOfSequenceParameterSets = numOfSequenceParameterSetsWithReserved.toPositiveInt() and RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS.inv()
+        val numOfSequenceParameterSets =
+            numOfSequenceParameterSetsWithReserved.toPositiveInt() and RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS.inv()
         val sequenceParameterSets = mutableListOf<ByteArray>()
         for (i in 0 until numOfSequenceParameterSets) {
             val bytes = ByteArray(buffer.short.toInt())

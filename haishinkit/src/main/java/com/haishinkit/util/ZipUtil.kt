@@ -16,13 +16,22 @@ internal object ZipUtil {
     private const val ZIP_BUFFER_SIZE = 1024 * 1024
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun zipFile(targetPath: Path, destFilePath: Path = Paths.get("$targetPath.zip"), zipFileCoding: Charset = Charset.forName("UTF-8")) {
+    fun zipFile(
+        targetPath: Path,
+        destFilePath: Path = Paths.get("$targetPath.zip"),
+        zipFileCoding: Charset = Charset.forName("UTF-8")
+    ) {
         FileOutputStream(destFilePath.toString()).use { fileOutputStream ->
-            ZipOutputStream(BufferedOutputStream(fileOutputStream), zipFileCoding).use { zipOutStream ->
+            ZipOutputStream(
+                BufferedOutputStream(fileOutputStream),
+                zipFileCoding
+            ).use { zipOutStream ->
                 for (filePath in Files.walk(targetPath).map { it.normalize() }) {
                     val file = filePath.toFile()
-                    val entryPath = "${targetPath.relativize(filePath)}${if (file.isDirectory) "/" else ""}"
-                    val zipEntry = ZipEntry(String(entryPath.toByteArray(zipFileCoding), zipFileCoding))
+                    val entryPath =
+                        "${targetPath.relativize(filePath)}${if (file.isDirectory) "/" else ""}"
+                    val zipEntry =
+                        ZipEntry(String(entryPath.toByteArray(zipFileCoding), zipFileCoding))
                     zipOutStream.putNextEntry(zipEntry)
                     if (file.isFile) {
                         FileInputStream(file).use { inputStream ->

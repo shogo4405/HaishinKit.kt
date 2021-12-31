@@ -44,7 +44,8 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         }
     private var outputQueue = LinkedBlockingDeque<ByteBuffer>()
     private var outputBufferPool = Pools.SimplePool<ByteBuffer>(1024)
-    @Volatile private var keepAlive = false
+    @Volatile
+    private var keepAlive = false
 
     override fun connect(dstName: String, dstPort: Int, isSecure: Boolean) {
         keepAlive = true

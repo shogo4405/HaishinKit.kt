@@ -108,7 +108,8 @@ class HkGLSurfaceView @JvmOverloads constructor(
     override fun startRunning() {
         if (isRunning.get()) return
 
-        renderer.strategy = stream?.video?.createGLSurfaceViewRenderer() ?: VideoSourceNullRenderer.instance
+        renderer.strategy =
+            stream?.video?.createGLSurfaceViewRenderer() ?: VideoSourceNullRenderer.instance
         isRunning.set(true)
 
         if (BuildConfig.DEBUG) {

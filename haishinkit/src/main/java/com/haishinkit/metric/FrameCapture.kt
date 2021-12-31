@@ -47,10 +47,16 @@ class FrameCapture(
         super.tearDown()
     }
 
-    override fun onCaptureOutput(stream: NetStream, type: Byte, buffer: ByteBuffer, timestamp: Long) {
+    override fun onCaptureOutput(
+        stream: NetStream,
+        type: Byte,
+        buffer: ByteBuffer,
+        timestamp: Long
+    ) {
         try {
             val file = createFile(stream.recordSetting)
-            val builder = StringBuilder().append(file.name).append(",").append(timestamp).append("\n")
+            val builder =
+                StringBuilder().append(file.name).append(",").append(timestamp).append("\n")
             metadata?.write(builder.toString().toByteArray(StandardCharsets.UTF_8))
             val outStream = FileOutputStream(file)
             outStream.write(buffer.array())

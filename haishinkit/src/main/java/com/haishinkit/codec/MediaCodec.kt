@@ -32,7 +32,13 @@ abstract class MediaCodec(private val mime: String) : Running {
     interface Listener {
         fun onInputBufferAvailable(mime: String, codec: android.media.MediaCodec, index: Int)
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
-        fun onSampleOutput(mime: String, index: Int, info: MediaCodec.BufferInfo, buffer: ByteBuffer): Boolean
+        fun onSampleOutput(
+            mime: String,
+            index: Int,
+            info: MediaCodec.BufferInfo,
+            buffer: ByteBuffer
+        ): Boolean
+
         fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
@@ -51,7 +57,11 @@ abstract class MediaCodec(private val mime: String) : Running {
             }
         }
 
-        override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: android.media.MediaCodec.BufferInfo) {
+        override fun onOutputBufferAvailable(
+            codec: MediaCodec,
+            index: Int,
+            info: android.media.MediaCodec.BufferInfo
+        ) {
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
                 if (listener?.onSampleOutput(mime, index, info, buffer) == true) {
@@ -99,7 +109,8 @@ abstract class MediaCodec(private val mime: String) : Running {
     var mode = MODE_ENCODE
     var options = listOf<CodecOption>()
     var inputSurface: Surface? = null
-    @Volatile var capturing = false
+    @Volatile
+    var capturing = false
     override val isRunning = AtomicBoolean(false)
     var outputFormat: MediaFormat? = null
         private set(value) {
@@ -131,7 +142,8 @@ abstract class MediaCodec(private val mime: String) : Running {
             field = value
         }
 
-    @Synchronized final override fun startRunning() {
+    @Synchronized
+    final override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning($mime)")
@@ -151,7 +163,8 @@ abstract class MediaCodec(private val mime: String) : Running {
         }
     }
 
-    @Synchronized final override fun stopRunning() {
+    @Synchronized
+    final override fun stopRunning() {
         if (!isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning($mime)")
@@ -185,7 +198,14 @@ abstract class MediaCodec(private val mime: String) : Running {
         for (option in options) {
             option.apply(format)
         }
-        codec.configure(format, inputSurface, null, if (mode == MODE_ENCODE) { MediaCodec.CONFIGURE_FLAG_ENCODE } else { 0 })
+        codec.configure(
+            format, inputSurface, null,
+            if (mode == MODE_ENCODE) {
+                MediaCodec.CONFIGURE_FLAG_ENCODE
+            } else {
+                0
+            }
+        )
         codec.outputFormat.getString("mime")?.let { mime ->
             callback.mime = mime
         }

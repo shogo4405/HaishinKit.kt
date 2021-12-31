@@ -21,7 +21,8 @@ class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource 
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
-    @Volatile var muted = false
+    @Volatile
+    var muted = false
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
 

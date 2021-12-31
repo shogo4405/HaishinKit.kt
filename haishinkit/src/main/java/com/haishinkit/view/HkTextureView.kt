@@ -19,7 +19,11 @@ import com.haishinkit.util.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
-class HkTextureView(context: Context, attributes: AttributeSet) : TextureView(context, attributes), NetStreamView, IEventListener, TextureView.SurfaceTextureListener {
+class HkTextureView(context: Context, attributes: AttributeSet) :
+    TextureView(context, attributes),
+    NetStreamView,
+    IEventListener,
+    TextureView.SurfaceTextureListener {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var videoGravity: Int = VideoGravity.RESIZE_ASPECT_FILL
     override var stream: NetStream? = null

@@ -17,6 +17,7 @@ class AudioCodec : MediaCodec(MIME) {
         var sampleRate: Int by Delegates.observable(DEFAULT_SAMPLE_RATE) { _, _, newValue ->
             codec?.sampleRate = newValue
         }
+
         override fun toString(): String {
             return ToStringBuilder.reflectionToString(this)
         }

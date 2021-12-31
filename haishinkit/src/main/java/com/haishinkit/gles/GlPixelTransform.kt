@@ -63,7 +63,14 @@ internal class GlPixelTransform {
             timestamp = fpsController.timestamp(timestamp)
             surfaceTexture.getTransformMatrix(transform)
             handler?.let {
-                it.sendMessage(it.obtainMessage(MSG_FRAME_AVAILABLE, (timestamp shr 32).toInt(), timestamp.toInt(), transform))
+                it.sendMessage(
+                    it.obtainMessage(
+                        MSG_FRAME_AVAILABLE,
+                        (timestamp shr 32).toInt(),
+                        timestamp.toInt(),
+                        transform
+                    )
+                )
             }
         }
     }
@@ -125,7 +132,8 @@ internal class GlPixelTransform {
     }
 
     private class Handler(frame: GlPixelTransform?, looper: Looper) : android.os.Handler(looper) {
-        private val weakTransform: WeakReference<GlPixelTransform> = WeakReference<GlPixelTransform>(frame)
+        private val weakTransform: WeakReference<GlPixelTransform> =
+            WeakReference<GlPixelTransform>(frame)
 
         override fun handleMessage(message: Message) {
             val transform = weakTransform.get() ?: return
@@ -136,7 +144,8 @@ internal class GlPixelTransform {
                 }
                 MSG_FRAME_AVAILABLE -> {
                     val obj = message.obj
-                    val timestamp = message.arg1.toLong() shl 32 or (message.arg2.toLong() and 0xffffffffL)
+                    val timestamp =
+                        message.arg1.toLong() shl 32 or (message.arg2.toLong() and 0xffffffffL)
                     transform.onFrameAvailable(obj as FloatArray, timestamp)
                 }
                 MSG_SET_LISTENER -> {

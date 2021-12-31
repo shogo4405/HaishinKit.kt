@@ -62,7 +62,9 @@ data class AudioSpecificConfig(
     fun encode(buffer: ByteBuffer): AudioSpecificConfig {
         val frequency = this.frequency.rawValue.toPositiveInt()
         buffer.put(((type.rawValue.toInt() shl 3) or (frequency shr 1)).toByte())
-        buffer.put(((frequency shl 7).toByte().toInt() or (channel.rawValue.toInt() shl 3)).toByte())
+        buffer.put(
+            ((frequency shl 7).toByte().toInt() or (channel.rawValue.toInt() shl 3)).toByte()
+        )
         return this
     }
 
@@ -71,8 +73,10 @@ data class AudioSpecificConfig(
         val second = buffer.get().toPositiveInt()
         return AudioSpecificConfig(
             type = AudioObjectType.values().first { n -> n.rawValue.toInt() == first shr 3 },
-            frequency = SamplingFrequency.values().first { n -> n.rawValue.toInt() == (first and 7 shl 1 or (second and 0xFF shr 7)) },
-            channel = ChannelConfiguration.values().first { n -> n.rawValue.toInt() == second and 120 shr 3 }
+            frequency = SamplingFrequency.values()
+                .first { n -> n.rawValue.toInt() == (first and 7 shl 1 or (second and 0xFF shr 7)) },
+            channel = ChannelConfiguration.values()
+                .first { n -> n.rawValue.toInt() == second and 120 shr 3 }
         )
     }
 

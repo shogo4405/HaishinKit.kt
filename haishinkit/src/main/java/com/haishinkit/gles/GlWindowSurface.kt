@@ -57,7 +57,13 @@ internal class GlWindowSurface(
         }
 
         val config = chooseConfig(eglSharedContext) ?: return
-        context = EGL14.eglCreateContext(display, config, eglSharedContext ?: EGL14.EGL_NO_CONTEXT, CONTEXT_ATTRIBUTES, 0)
+        context = EGL14.eglCreateContext(
+            display,
+            config,
+            eglSharedContext ?: EGL14.EGL_NO_CONTEXT,
+            CONTEXT_ATTRIBUTES,
+            0
+        )
         GlUtil.checkGlError("eglCreateContext")
 
         this.surface = EGL14.eglCreateWindowSurface(display, config, surface, SURFACE_ATTRIBUTES, 0)
@@ -69,7 +75,12 @@ internal class GlWindowSurface(
     override fun tearDown() {
         if (!utilizable) return
 
-        EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)
+        EGL14.eglMakeCurrent(
+            display,
+            EGL14.EGL_NO_SURFACE,
+            EGL14.EGL_NO_SURFACE,
+            EGL14.EGL_NO_CONTEXT
+        )
         EGL14.eglDestroySurface(display, surface)
         EGL14.eglDestroyContext(display, context)
         EGL14.eglReleaseThread()
@@ -85,7 +96,17 @@ internal class GlWindowSurface(
         val attributes: IntArray = CONFIG_ATTRIBUTES_WITH_CONTEXT
         val configs: Array<EGLConfig?> = arrayOfNulls<EGLConfig>(1)
         val numConfigs = IntArray(1)
-        if (!EGL14.eglChooseConfig(display, attributes, 0, configs, 0, configs.size, numConfigs, 0)) {
+        if (!EGL14.eglChooseConfig(
+                display,
+                attributes,
+                0,
+                configs,
+                0,
+                configs.size,
+                numConfigs,
+                0
+            )
+        ) {
             Log.w(TAG, "eglCreateContext RGB888+recordable ES2")
             return null
         }
@@ -96,7 +117,8 @@ internal class GlWindowSurface(
         private const val EGL_RECORDABLE_ANDROID: Int = 0x3142
 
         private val TAG = GlWindowSurface::class.java.simpleName
-        private val CONTEXT_ATTRIBUTES = intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
+        private val CONTEXT_ATTRIBUTES =
+            intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
         private val SURFACE_ATTRIBUTES = intArrayOf(EGL14.EGL_NONE)
 
         private val CONFIG_ATTRIBUTES_WITH_CONTEXT = intArrayOf(

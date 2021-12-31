@@ -153,7 +153,8 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
             connection.doOutput(RtmpChunk.ZERO, message)
         }
 
-    @Volatile var currentFPS: Int = 0
+    @Volatile
+    var currentFPS: Int = 0
         private set
 
     internal var id = 0

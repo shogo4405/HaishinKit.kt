@@ -13,7 +13,8 @@ internal class BufferController<T>(suffix: String) : Object() {
 
     var listener: Listener? = null
     var bufferTime: Int = DEFAULT_BUFFER_TIME
-    @Volatile private var waiting = true
+    @Volatile
+    private var waiting = true
     private var messages = LinkedBlockingDeque<T>()
     private var timestamp = AtomicInteger(0)
     private val tracker = Tracker(suffix)
@@ -29,7 +30,8 @@ internal class BufferController<T>(suffix: String) : Object() {
         return messages.take()
     }
 
-    @Synchronized fun stop(condition: Boolean = true) {
+    @Synchronized
+    fun stop(condition: Boolean = true) {
         if (condition && waiting) {
             wait()
         }
@@ -50,7 +52,8 @@ internal class BufferController<T>(suffix: String) : Object() {
         tracker.clear()
     }
 
-    @Synchronized private fun start() {
+    @Synchronized
+    private fun start() {
         if (waiting && bufferTime <= timestamp.get()) {
             waiting = false
             notifyAll()

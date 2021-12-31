@@ -8,7 +8,8 @@ import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
-internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMessage(TYPE_AUDIO, pool) {
+internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
+    RtmpMessage(TYPE_AUDIO, pool) {
     var codec: Byte = 0
     var soundRate: Byte = 0
     var soundSize: Byte = 0

@@ -12,7 +12,10 @@ import java.io.Closeable
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 
-internal class RtmpRecorder(override val isRunning: AtomicBoolean = AtomicBoolean(false)) : Running, CoroutineScope, Closeable {
+internal class RtmpRecorder(override val isRunning: AtomicBoolean = AtomicBoolean(false)) :
+    Running,
+    CoroutineScope,
+    Closeable {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
     private var job = Job()

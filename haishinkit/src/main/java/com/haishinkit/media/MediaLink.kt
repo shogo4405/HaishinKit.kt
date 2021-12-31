@@ -25,7 +25,10 @@ import kotlin.coroutines.CoroutineContext
 /**
  * MediaLink class can be used to synchronously play audio and video streams.
  */
-class MediaLink(val audio: AudioCodec, val video: VideoCodec) : Running, CoroutineScope, Choreographer.FrameCallback {
+class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
+    Running,
+    CoroutineScope,
+    Choreographer.FrameCallback {
     data class Buffer(
         val index: Int,
         val payload: ByteBuffer? = null,
@@ -94,7 +97,8 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) : Running, Corouti
     private var handler: Handler? = null
         get() {
             if (field == null) {
-                val thread = HandlerThread(javaClass.name, android.os.Process.THREAD_PRIORITY_DISPLAY)
+                val thread =
+                    HandlerThread(javaClass.name, android.os.Process.THREAD_PRIORITY_DISPLAY)
                 thread.start()
                 field = Handler(thread.looper)
             }
@@ -104,7 +108,8 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) : Running, Corouti
             field?.looper?.quitSafely()
             field = value
         }
-    @Volatile private var keepAlive = true
+    @Volatile
+    private var keepAlive = true
     private var frameTracker: FrameTracker? = null
         get() {
             if (field == null && BuildConfig.DEBUG) {
@@ -120,7 +125,8 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) : Running, Corouti
     private var audioCorrection = 0L
     private var audioPlaybackJob: Job? = null
 
-    @Synchronized override fun startRunning() {
+    @Synchronized
+    override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
@@ -136,7 +142,8 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) : Running, Corouti
         isRunning.set(true)
     }
 
-    @Synchronized override fun stopRunning() {
+    @Synchronized
+    override fun stopRunning() {
         if (!isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
@@ -246,7 +253,11 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) : Running, Corouti
                 frameTracker?.track(FrameTracker.TYPE_AUDIO, SystemClock.uptimeMillis())
                 while (payload.hasRemaining()) {
                     if (keepAlive) {
-                        audioTrack?.write(payload, payload.remaining(), AudioTrack.WRITE_NON_BLOCKING)
+                        audioTrack?.write(
+                            payload,
+                            payload.remaining(),
+                            AudioTrack.WRITE_NON_BLOCKING
+                        )
                     } else {
                         break
                     }

@@ -11,7 +11,8 @@ import java.util.ArrayList
 /**
  *  7.1.1. Command Message (20, 17)
  */
-internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding) : RtmpMessage(objectEncoding.commandType) {
+internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding) :
+    RtmpMessage(objectEncoding.commandType) {
     var commandName: String? = null
     var transactionID = 0
     var commandObject: Map<String, Any?>? = null
@@ -71,10 +72,18 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
             }
             "onStatus" -> {
                 val stream = connection.streams[streamID]
-                stream?.dispatchEventWith(Event.RTMP_STATUS, false, if (arguments.isEmpty()) null else arguments[0])
+                stream?.dispatchEventWith(
+                    Event.RTMP_STATUS,
+                    false,
+                    if (arguments.isEmpty()) null else arguments[0]
+                )
             }
             else -> {
-                connection.dispatchEventWith(Event.RTMP_STATUS, false, if (arguments.isEmpty()) null else arguments[0])
+                connection.dispatchEventWith(
+                    Event.RTMP_STATUS,
+                    false,
+                    if (arguments.isEmpty()) null else arguments[0]
+                )
             }
         }
 

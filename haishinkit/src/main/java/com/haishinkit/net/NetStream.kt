@@ -93,7 +93,11 @@ abstract class NetStream {
     internal fun createAudioTrack(mediaFormat: MediaFormat): AudioTrack {
         val sampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
         val channelCount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
-        val channelMask = if (channelCount == 2) { AudioFormat.CHANNEL_OUT_STEREO } else { AudioFormat.CHANNEL_OUT_MONO }
+        val channelMask = if (channelCount == 2) {
+            AudioFormat.CHANNEL_OUT_STEREO
+        } else {
+            AudioFormat.CHANNEL_OUT_MONO
+        }
         Log.d(TAG, "sampleRate=$sampleRate, channelCount=$channelCount")
         return if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
             AudioTrack.Builder()
