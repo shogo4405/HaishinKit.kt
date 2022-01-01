@@ -9,6 +9,7 @@ namespace Vulkan {
     class PixelTransform {
     public:
         jobject surface = nullptr;
+        jobject inputSurface = nullptr;
 
         PixelTransform();
 
@@ -18,11 +19,13 @@ namespace Vulkan {
 
         void SetNativeWindow(ANativeWindow *nativeWindow);
 
-        ANativeWindow *GetNativeWindow();
-
         void SetInputNativeWindow(ANativeWindow *inputNativeWindow);
 
         void UpdateTexture();
+
+        std::string InspectDevices();
+
+        bool IsReady();
 
     private:
         ANativeWindow *inputNativeWindow;
@@ -30,7 +33,6 @@ namespace Vulkan {
         std::vector<Texture *> textures;
         Kernel *kernel;
     };
-
 }
 
 #endif //HAISHINKIT_KT_PIXELTRANSFORM_H

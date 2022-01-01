@@ -15,7 +15,7 @@ import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.view.HkTextureView
 
-class PlaybackTabFragment: Fragment(), IEventListener {
+class PlaybackTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
     private lateinit var playbackView: HkTextureView
@@ -30,7 +30,11 @@ class PlaybackTabFragment: Fragment(), IEventListener {
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val v = inflater.inflate(R.layout.fragment_playback, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {

@@ -15,9 +15,9 @@ namespace Vulkan {
             Stage
         };
 
-        static const vk::Format format;
+        static vk::Format GetFormat(int32_t format);
 
-        Texture(vk::Extent2D extent2D);
+        Texture(vk::Extent2D extent2D, vk::Format format);
 
         ~Texture();
 
@@ -30,6 +30,7 @@ namespace Vulkan {
         vk::DescriptorImageInfo CreateDescriptorImageInfo();
 
     private:
+        vk::Format format;
         vk::UniqueImage image;
         vk::UniqueSampler sampler;
         vk::UniqueImageView imageView;
@@ -40,7 +41,7 @@ namespace Vulkan {
         vk::DeviceSize rowPitch = 0;
         void *mapped = nullptr;
 
-        static bool HasLinearTilingFeatures(Kernel &kernel);
+        bool HasLinearTilingFeatures(Kernel &kernel);
 
         void SetMode(Kernel &kernel, Mode mode);
 

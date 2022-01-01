@@ -32,15 +32,17 @@ namespace Vulkan {
 
         ~Kernel();
 
-        void SetUp(std::vector<Texture *> textures);
+        void SetTextures(const std::vector<Texture *> &textures);
 
-        void SetAssetManager(AAssetManager *assetManager);
+        void SetAssetManager(AAssetManager *newAssetManager);
 
         void SetUp(ANativeWindow *window);
 
         void TearDown();
 
         vk::Result DrawFrame();
+
+        bool IsAvailable() const;
 
         std::string InspectDevices();
 
@@ -59,6 +61,7 @@ namespace Vulkan {
         };
 
         bool isValidationLayersEnabled;
+        bool isAvailable = false;
 
         AAssetManager *assetManager;
 

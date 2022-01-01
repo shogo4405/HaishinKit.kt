@@ -8,6 +8,7 @@
 #include "vulkan/vulkan.h"
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_android.h"
+#include "DynamicLoader.h"
 #include <android/native_window.h>
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
@@ -32,10 +33,9 @@ namespace Vulkan {
     }
 
     Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr) {
-        vk::DynamicLoader dl;
-        const auto vkGetInstanceProcAddr = dl.getProcAddress<PFN_vkGetInstanceProcAddr>(
-                "vkGetInstanceProcAddr");
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
+        if (!DynamicLoader::GetInstance().Load()) {
+            return;
+        }
 
         const auto useValidationLayers = isValidationLayersEnabled && IsValidationLayersSupported();
 
@@ -87,26 +87,35 @@ namespace Vulkan {
 
         instance = vk::createInstanceUnique(createInfo);
         VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
+        isAvailable = true;
     }
 
-    Kernel::~Kernel() = default;
-
-    void Kernel::SetAssetManager(AAssetManager *assetManager) {
-        this->assetManager = assetManager;
+    Kernel::~Kernel() {
+        if (isAvailable) {
+            context.device->waitIdle();
+        }
+        TearDown();
     }
 
-    void Kernel::SetUp(std::vector<Texture *> textures) {
-        if (!context.IsReady()) {
+    void Kernel::SetAssetManager(AAssetManager *newAssetManager) {
+        assetManager = newAssetManager;
+    }
+
+    void Kernel::SetTextures(const std::vector<Texture *> &textures) {
+        if (!(isAvailable && context.IsReady())) {
             return;
         }
         for (auto *texture: textures) {
             texture->SetUp(*this);
         }
-        pipeline.SetUp(*this, textures);
-        commandBuffer.Build(*this);
+        pipeline.SetTextures(*this, textures);
+        commandBuffer.SetTextures(*this, textures);
     }
 
     void Kernel::SetUp(ANativeWindow *nativeWindow) {
+        if (!isAvailable) {
+            return;
+        }
         context.SelectPhysicalDevice(*this);
 
         surface = instance->createAndroidSurfaceKHRUnique(
@@ -122,6 +131,9 @@ namespace Vulkan {
     }
 
     void Kernel::TearDown() {
+        if (!isAvailable) {
+            return;
+        }
         commandBuffer.TearDown(*this);
         pipeline.TearDown(*this);
         renderPass.TearDown(*this);
@@ -129,6 +141,9 @@ namespace Vulkan {
     }
 
     vk::Result Kernel::DrawFrame() {
+        if (!isAvailable) {
+            return vk::Result::eErrorInitializationFailed;
+        }
         const auto currentFrame = renderPass.currentFrame;
 
         context.device->waitForFences(renderPass.fences[currentFrame], true,
@@ -187,6 +202,10 @@ namespace Vulkan {
         }
 
         return result;
+    }
+
+    bool Kernel::IsAvailable() const {
+        return isAvailable;
     }
 
     vk::ShaderModule Kernel::LoadShader(const std::string &fileName) {

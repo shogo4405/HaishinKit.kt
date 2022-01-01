@@ -12,7 +12,15 @@
         >
 
         <SurfaceView
-            android:id="@+id/input_surface_view"
+            android:id="@+id/input_surface_view_a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="8dp"
+            />
+
+        <SurfaceView
+            android:id="@+id/input_surface_view_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -27,5 +35,19 @@
             android:layout_weight="1" />
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RED"
+            android:layout_margin="16px"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
 
 </FrameLayout>

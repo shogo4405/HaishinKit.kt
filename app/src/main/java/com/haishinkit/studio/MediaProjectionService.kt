@@ -43,7 +43,8 @@ class MediaProjectionService : Service(), IEventListener {
         Log.i(TAG, "onStartCommand")
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
+            val channel =
+                NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
             channel.description = CHANNEL_DESC
             channel.setSound(null, null)
             manager.createNotificationChannel(channel)
@@ -59,11 +60,18 @@ class MediaProjectionService : Service(), IEventListener {
         } else {
             startForeground(ID, notification)
         }
-        val mediaProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        val mediaProjectionManager =
+            getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         stream.attachAudio(AudioRecordSource())
         stream.listener = listener
         data?.let {
-            stream.attachVideo(MediaProjectionSource(this, mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it), metrics))
+            stream.attachVideo(
+                MediaProjectionSource(
+                    this,
+                    mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it),
+                    metrics
+                )
+            )
         }
         stream.recordSetting.directory = getExternalFilesDir(null)
         // stream.videoSetting.capturing = true

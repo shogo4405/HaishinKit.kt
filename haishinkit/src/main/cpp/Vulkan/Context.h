@@ -24,8 +24,6 @@ namespace Vulkan {
 
         void Submit(vk::CommandBuffer &commandBuffer);
 
-        void CreateBuffer(vk::UniqueBuffer &buffer);
-
         bool IsReady() const;
 
         vk::UniqueImageView CreateImageView(vk::Image image, vk::Format);

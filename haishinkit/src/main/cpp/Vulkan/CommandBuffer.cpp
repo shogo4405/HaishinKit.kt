@@ -1,11 +1,10 @@
 #include "../haishinkit.hpp"
 #include "Kernel.h"
 #include "Util.h"
-#include "Buffer.h"
 #include "CommandBuffer.h"
 
 namespace Vulkan {
-    const float CommandBuffer::vertices[] = {
+    const float CommandBuffer::VERTICES[] = {
             -1.f, -1.f, 0, 1.f, 0.f, 0.f,
             1.f, -1.f, 0, 1.f, 1.f, 0.f,
             -1.f, 1.f, 0, 1.f, 0.f, 1.f,
@@ -28,30 +27,42 @@ namespace Vulkan {
                         .setQueueFamilyIndex(kernel.context.queueFamilyIndex)
         );
 
+        auto imagesCount = kernel.swapChain.GetImagesCount();
         commandBuffers = kernel.context.device->allocateCommandBuffersUnique(
                 vk::CommandBufferAllocateInfo()
                         .setPNext(nullptr)
                         .setCommandPool(commandPool.get())
                         .setLevel(vk::CommandBufferLevel::ePrimary)
-                        .setCommandBufferCount(kernel.swapChain.images.size())
+                        .setCommandBufferCount(imagesCount)
         );
 
+        framebuffers.resize(imagesCount);
+        for (auto i = 0; i < imagesCount; ++i) {
+            framebuffers[i] = kernel.swapChain.CreateFramebuffer(kernel, i);
+        }
+
         buffers.resize(1);
-        buffers[0] = Buffer(kernel).Build(
-                (void *) CommandBuffer::vertices, sizeof(CommandBuffer::vertices));
+        buffers[0] = CreateBuffer(kernel, (void *) CommandBuffer::VERTICES,
+                                  sizeof(CommandBuffer::VERTICES));
 
         offsets.resize(1);
         offsets[0] = {0};
     }
 
     void CommandBuffer::TearDown(Kernel &kernel) {
+        for (auto &buffer : buffers) {
+            kernel.context.device->destroy(buffer);
+        }
+        for (auto &framebuffer : framebuffers) {
+            kernel.context.device->destroy(framebuffer);
+        }
     }
 
-    void CommandBuffer::Build(Kernel &kernel) {
+    void CommandBuffer::SetTextures(Kernel &kernel, const std::vector<Texture *> &textures) {
         const auto colors = {vk::ClearValue().setColor(
                 vk::ClearColorValue().setFloat32({0.f, 0.f, 0.f, 1.f}))};
 
-        for (auto i = 0; i < commandBuffers.size(); i++) {
+        for (auto i = 0; i < commandBuffers.size(); ++i) {
             auto &commandBuffer = commandBuffers[i].get();
             commandBuffer.begin(
                     vk::CommandBufferBeginInfo()
@@ -60,7 +71,7 @@ namespace Vulkan {
             commandBuffer.beginRenderPass(
                     vk::RenderPassBeginInfo()
                             .setRenderPass(kernel.renderPass.renderPass.get())
-                            .setFramebuffer(kernel.swapChain.framebuffers[i])
+                            .setFramebuffer(framebuffers[i])
                             .setRenderArea(
                                     vk::Rect2D().setOffset({0, 0}).setExtent(kernel.swapChain.size))
                             .setClearValues(colors),
@@ -93,5 +104,31 @@ namespace Vulkan {
                         .setLevel(vk::CommandBufferLevel::ePrimary)
         );
         return commandBuffers[0];
+    }
+
+    vk::Buffer CommandBuffer::CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size) {
+        const auto result = kernel.context.device->createBuffer(
+                vk::BufferCreateInfo()
+                        .setSize(size)
+                        .setUsage(vk::BufferUsageFlagBits::eVertexBuffer)
+                        .setQueueFamilyIndexCount(1)
+                        .setQueueFamilyIndices(kernel.context.queueFamilyIndex)
+        );
+        const auto memoryRequirements = kernel.context.device->getBufferMemoryRequirements(
+                result);
+        const auto memory = kernel.context.device->allocateMemory(
+                vk::MemoryAllocateInfo()
+                        .setAllocationSize(
+                                memoryRequirements.size)
+                        .setMemoryTypeIndex(
+                                kernel.context.FindMemoryType(memoryRequirements.memoryTypeBits,
+                                                              vk::MemoryPropertyFlagBits::eHostVisible |
+                                                              vk::MemoryPropertyFlagBits::eHostCoherent))
+        );
+        void *map = kernel.context.device->mapMemory(memory, 0, memoryRequirements.size);
+        memcpy(map, data, size);
+        kernel.context.device->unmapMemory(memory);
+        kernel.context.device->bindBufferMemory(result, memory, 0);
+        return result;
     }
 }

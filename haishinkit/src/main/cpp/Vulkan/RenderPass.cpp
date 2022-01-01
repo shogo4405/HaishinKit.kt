@@ -38,12 +38,10 @@ namespace Vulkan {
                         .setDependencies(nullptr)
         );
 
-        kernel.swapChain.SetUp(kernel, renderPass.get());
-
         waitSemaphores.resize(DEFAULT_MAX_FRAMES);
         signalSemaphores.resize(DEFAULT_MAX_FRAMES);
         fences.resize(DEFAULT_MAX_FRAMES);
-        images.resize(kernel.swapChain.images.size());
+        images.resize(kernel.swapChain.GetImagesCount());
         for (auto i = 0; i < DEFAULT_MAX_FRAMES; ++i) {
             waitSemaphores[i] = kernel.context.device->createSemaphoreUnique({});
             signalSemaphores[i] = kernel.context.device->createSemaphoreUnique({});
@@ -53,6 +51,12 @@ namespace Vulkan {
     }
 
     void RenderPass::TearDown(Kernel &kernel) {
+        for (auto &fence : fences) {
+            kernel.context.device->destroy(fence);
+        }
+        for (auto &image : images) {
+            kernel.context.device->destroy(image);
+        }
     }
 
     void RenderPass::Next() {

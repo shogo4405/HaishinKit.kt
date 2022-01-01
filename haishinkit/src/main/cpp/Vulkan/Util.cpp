@@ -3,6 +3,7 @@
 #include "../Unmanaged.hpp"
 #include "Kernel.h"
 #include "Util.h"
+#include "DynamicLoader.h"
 
 namespace Vulkan {
     vk::ImageMemoryBarrier Util::CreateImageMemoryBarrier(vk::ImageLayout oldImageLayout,
@@ -50,18 +51,4 @@ namespace Vulkan {
 
         return imageMemoryBarrier;
     }
-}
-
-extern "C"
-{
-JNIEXPORT jboolean JNICALL
-Java_com_haishinkit_vk_VKUtil_isAvailable(JNIEnv *env, jobject thiz) {
-    return true;
-}
-
-JNIEXPORT jstring JNICALL
-Java_com_haishinkit_vk_VKUtil_inspectDevices(JNIEnv *env, jobject thiz) {
-    std::string string = Vulkan::Kernel().InspectDevices();
-    return env->NewStringUTF(string.c_str());
-}
 }

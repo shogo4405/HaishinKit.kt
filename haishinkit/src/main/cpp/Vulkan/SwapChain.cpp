@@ -46,30 +46,29 @@ namespace Vulkan {
         }
     }
 
-    void SwapChain::SetUp(Kernel &kernel, vk::RenderPass renderPass) {
-        auto imagesCount = images.size();
-        framebuffers.resize(imagesCount);
-        for (auto i = 0; i < imagesCount; i++) {
-            vk::ImageView attachments[] = {
-                    imageViews[i].get()
-            };
-            framebuffers[i] = kernel.context.device->createFramebuffer(
-                    vk::FramebufferCreateInfo()
-                            .setPNext(nullptr)
-                            .setRenderPass(renderPass)
-                            .setAttachmentCount(1)
-                            .setPAttachments(attachments)
-                            .setWidth(size.width)
-                            .setHeight(size.height)
-                            .setLayers(1)
-            );
-        }
-    }
-
     void SwapChain::TearDown(Kernel &kernel) {
         const auto imagesCount = images.size();
         for (auto i = 0; i < imagesCount; i++) {
             kernel.context.device->destroy(images[i]);
         }
+    }
+
+    int32_t SwapChain::GetImagesCount() {
+        return images.size();
+    }
+
+    vk::Framebuffer SwapChain::CreateFramebuffer(Kernel &kernel, int32_t index) {
+        vk::ImageView attachments[] = {
+                imageViews[index].get()
+        };
+        return kernel.context.device->createFramebuffer(
+                vk::FramebufferCreateInfo()
+                        .setRenderPass(kernel.renderPass.renderPass.get())
+                        .setAttachmentCount(1)
+                        .setPAttachments(attachments)
+                        .setWidth(size.width)
+                        .setHeight(size.height)
+                        .setLayers(1)
+        );
     }
 }

@@ -13,15 +13,18 @@ namespace Vulkan {
         vk::UniqueSwapchainKHR swapchain;
         vk::Extent2D size;
         vk::Format format;
-        std::vector<vk::Image> images;
-        std::vector<vk::UniqueImageView> imageViews;
-        std::vector<vk::Framebuffer> framebuffers;
 
         void SetUp(Kernel &kernel);
 
-        void SetUp(Kernel &kernel, vk::RenderPass renderPass);
-
         void TearDown(Kernel &kernel);
+
+        int32_t GetImagesCount();
+
+        vk::Framebuffer CreateFramebuffer(Kernel &kernel, int32_t index);
+
+    private:
+        std::vector<vk::Image> images;
+        std::vector<vk::UniqueImageView> imageViews;
     };
 }
 

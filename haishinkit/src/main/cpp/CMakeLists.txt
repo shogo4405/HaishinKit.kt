@@ -24,8 +24,8 @@ add_library(
         SHARED
         # Provides a relative path to your source file(s).
         haishinkit.hpp
-        Vulkan/Buffer.cpp
         Vulkan/Kernel.cpp
+        Vulkan/DynamicLoader.cpp
         Vulkan/CommandBuffer.cpp
         Vulkan/Context.cpp
         Vulkan/PixelTransform.cpp

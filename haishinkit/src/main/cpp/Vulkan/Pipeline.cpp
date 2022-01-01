@@ -5,6 +5,23 @@
 #include "Texture.h"
 
 namespace Vulkan {
+    void Pipeline::SetTextures(Kernel &kernel, std::vector<Texture *> textures) {
+        std::vector<vk::DescriptorImageInfo> images(textures.size());
+        for (auto i = 0; i < images.size(); ++i) {
+            images[i] = textures[i]->CreateDescriptorImageInfo();
+        }
+        for (auto &descriptorSet: descriptorSets) {
+            kernel.context.device->updateDescriptorSets(
+                    vk::WriteDescriptorSet()
+                            .setDstSet(descriptorSet.get())
+                            .setDescriptorCount(1)
+                            .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+                            .setImageInfo(images),
+                    nullptr
+            );
+        }
+    }
+
     void Pipeline::SetUp(Kernel &kernel) {
         descriptorSetLayout = kernel.context.device->createDescriptorSetLayout(
                 vk::DescriptorSetLayoutCreateInfo()
@@ -17,6 +34,22 @@ namespace Vulkan {
                                         .setDescriptorCount(1)
                                         .setStageFlags(vk::ShaderStageFlagBits::eFragment)
                         )
+        );
+
+        descriptorPool = kernel.context.device->createDescriptorPool(
+                vk::DescriptorPoolCreateInfo()
+                        .setMaxSets(1)
+                        .setPoolSizes(
+                                vk::DescriptorPoolSize()
+                                        .setType(vk::DescriptorType::eCombinedImageSampler)
+                                        .setDescriptorCount(1))
+        );
+
+        descriptorSets = kernel.context.device->allocateDescriptorSetsUnique(
+                vk::DescriptorSetAllocateInfo()
+                        .setDescriptorSetCount(1)
+                        .setDescriptorPool(descriptorPool)
+                        .setSetLayouts(descriptorSetLayout)
         );
 
         pipelineLayout = kernel.context.device->createPipelineLayout(
@@ -133,40 +166,6 @@ namespace Vulkan {
 
         kernel.context.device->destroy(vert);
         kernel.context.device->destroy(frag);
-    }
-
-    void Pipeline::SetUp(Kernel &kernel, std::vector<Texture *> textures) {
-        descriptorPool = kernel.context.device->createDescriptorPool(
-                vk::DescriptorPoolCreateInfo()
-                        .setMaxSets(1)
-                        .setPoolSizes(
-                                vk::DescriptorPoolSize()
-                                        .setType(vk::DescriptorType::eCombinedImageSampler)
-                                        .setDescriptorCount(textures.size()))
-        );
-
-        descriptorSets = kernel.context.device->allocateDescriptorSetsUnique(
-                vk::DescriptorSetAllocateInfo()
-                        .setDescriptorSetCount(1)
-                        .setDescriptorPool(descriptorPool)
-                        .setSetLayouts(descriptorSetLayout)
-        );
-
-        std::vector<vk::DescriptorImageInfo> images(textures.size());
-        for (auto i = 0; i < images.size(); ++i) {
-            images[i] = textures[i]->CreateDescriptorImageInfo();
-        }
-
-        for (auto &descriptorSet: descriptorSets) {
-            kernel.context.device->updateDescriptorSets(
-                    vk::WriteDescriptorSet()
-                            .setDstSet(descriptorSet.get())
-                            .setDescriptorCount(1)
-                            .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-                            .setImageInfo(images),
-                    nullptr
-            );
-        }
     }
 
     void Pipeline::TearDown(Kernel &kernel) {

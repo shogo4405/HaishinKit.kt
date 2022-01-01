@@ -3,10 +3,21 @@
 #include "Util.h"
 
 namespace Vulkan {
-    const vk::Format Texture::format = vk::Format::eR8G8B8A8Unorm;
+    vk::Format Texture::GetFormat(int32_t format) {
+        switch (format) {
+            case WINDOW_FORMAT_RGBA_8888:
+                return vk::Format::eR8G8B8A8Unorm;
+            case WINDOW_FORMAT_RGBX_8888:
+                return vk::Format::eR8G8B8A8Unorm;
+            case WINDOW_FORMAT_RGB_565:
+                return vk::Format::eR5G6B5UnormPack16;
+            default:
+                return vk::Format::eR8G8B8A8Unorm;
+        }
+    }
 
-    Texture::Texture(vk::Extent2D extent2D) :
-            extent2D(extent2D) {
+    Texture::Texture(vk::Extent2D extent2D, vk::Format format) :
+            extent2D(extent2D), format(format) {
     }
 
     Texture::~Texture() = default;
@@ -87,13 +98,42 @@ namespace Vulkan {
         if (buffer->bits == nullptr || mapped == nullptr) {
             return;
         }
-        for (int32_t y = 0; y < extent2D.height; y++) {
-            auto *row = reinterpret_cast<unsigned char *>((char *) mapped +
-                                                          rowPitch *
-                                                          y);
-            auto *src = reinterpret_cast<unsigned char *>((char *) buffer->bits +
-                                                          4 * buffer->stride * y);
-            memcpy(row, src, (size_t) (4 * buffer->stride));
+        switch (format) {
+            case vk::Format::eR5G6B5UnormPack16:
+                switch (buffer->format) {
+                    case WINDOW_FORMAT_RGBA_8888:
+                        throw std::runtime_error(
+                                "unsupported formats eR5G6B5UnormPack16:WINDOW_FORMAT_RGBA_8888");
+                    case WINDOW_FORMAT_RGBX_8888:
+                        throw std::runtime_error(
+                                "unsupported formats eR5G6B5UnormPack16:WINDOW_FORMAT_RGBX_8888");
+                    case WINDOW_FORMAT_RGB_565:
+                        memcpy(mapped, buffer->bits, allocationSize);
+                        break;
+                }
+                break;
+            case vk::Format::eR8G8B8A8Unorm:
+                switch (buffer->format) {
+                    case WINDOW_FORMAT_RGBA_8888:
+                        for (int32_t y = 0; y < extent2D.height; y++) {
+                            auto *row = reinterpret_cast<unsigned char *>((char *) mapped +
+                                                                          rowPitch *
+                                                                          y);
+                            auto *src = reinterpret_cast<unsigned char *>((char *) buffer->bits +
+                                                                          4 * buffer->stride * y);
+                            memcpy(row, src, (size_t) (4 * buffer->stride));
+                        }
+                        break;
+                    case WINDOW_FORMAT_RGBX_8888:
+                        throw std::runtime_error(
+                                "unsupported formats eR8G8B8A8Unorm:WINDOW_FORMAT_RGBX_8888");
+                    case WINDOW_FORMAT_RGB_565:
+                        throw std::runtime_error(
+                                "unsupported formats eR8G8B8A8Unorm:WINDOW_FORMAT_RGB_565");
+                }
+                break;
+            default:
+                throw std::runtime_error("unsupported formats");
         }
     }
 

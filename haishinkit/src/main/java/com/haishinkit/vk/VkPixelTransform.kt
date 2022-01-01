@@ -5,12 +5,15 @@ import android.view.Choreographer
 import android.view.Surface
 import com.haishinkit.lang.PixelTransform
 
-class VKPixelTransform : PixelTransform, Choreographer.FrameCallback {
+class VkPixelTransform : PixelTransform, Choreographer.FrameCallback {
     companion object {
         init {
             System.loadLibrary("haishinkit")
         }
 
+        /**
+         * A Boolean value indicating whether the current device supports the Vulkan API.
+         */
         external fun isSupported(): Boolean
     }
 
@@ -27,6 +30,7 @@ class VKPixelTransform : PixelTransform, Choreographer.FrameCallback {
     private var isRunning: Boolean = false
     private var choreographer: Choreographer? = null
 
+    external fun inspectDevices(): String
     external fun setAssetManager(assetManager: AssetManager)
 
     fun startRunning() {

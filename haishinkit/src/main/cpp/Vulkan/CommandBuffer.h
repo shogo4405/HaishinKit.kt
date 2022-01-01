@@ -7,6 +7,7 @@
 
 namespace Vulkan {
     class Kernel;
+    struct Texture;
 
     struct CommandBuffer {
         std::vector<vk::UniqueCommandBuffer> commandBuffers;
@@ -15,19 +16,23 @@ namespace Vulkan {
 
         ~CommandBuffer();
 
+        void SetTextures(Kernel &kernel, const std::vector<Texture *> &textures);
+
         void SetUp(Kernel &kernel);
 
         void TearDown(Kernel &kernel);
 
-        void Build(Kernel &kernel);
-
         vk::CommandBuffer Allocate(Kernel &kernel);
 
     private:
-        static const float vertices[];
+        static const float VERTICES[];
+
+        static vk::Buffer CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size);
+
         vk::UniqueCommandPool commandPool;
         std::vector<vk::Buffer> buffers;
         std::vector<vk::DeviceSize> offsets;
+        std::vector<vk::Framebuffer> framebuffers;
     };
 }
 

@@ -27,12 +27,19 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
 
     @SuppressLint("SetTextI18n")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
         MediaProjectionService.listener = object : RtmpStream.Listener {
-            override fun onCaptureOutput(stream: NetStream, type: Byte, buffer: ByteBuffer, timestamp: Long) {
+            override fun onCaptureOutput(
+                stream: NetStream,
+                type: Byte,
+                buffer: ByteBuffer,
+                timestamp: Long
+            ) {
             }
 
             override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
@@ -51,8 +58,12 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
             if (button.text == "Publish") {
                 if (messenger == null) {
                     if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT) {
-                        val mediaProjectionManager = activity?.getSystemService(Service.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-                        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CAPTURE)
+                        val mediaProjectionManager =
+                            activity?.getSystemService(Service.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                        startActivityForResult(
+                            mediaProjectionManager.createScreenCaptureIntent(),
+                            REQUEST_CAPTURE
+                        )
                     }
                 } else {
                     messenger?.send(Message.obtain(null, 0))
@@ -77,7 +88,11 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                     } else {
                         activity?.startService(intent)
                     }
-                    activity?.bindService(intent, this@MediaProjectionTabFragment, Context.BIND_AUTO_CREATE)
+                    activity?.bindService(
+                        intent,
+                        this@MediaProjectionTabFragment,
+                        Context.BIND_AUTO_CREATE
+                    )
                 }
                 Log.i(toString(), "mediaProjectionManager success")
             }

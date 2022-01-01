@@ -18,9 +18,9 @@ namespace Vulkan {
         vk::PipelineCache pipelineCache;
         vk::UniquePipeline pipeline;
 
-        void SetUp(Kernel &kernel);
+        void SetTextures(Kernel &kernel, std::vector<Texture *> textures);
 
-        void SetUp(Kernel &kernel, std::vector<Texture *> textures);
+        void SetUp(Kernel &kernel);
 
         void TearDown(Kernel &kernel);
     };
