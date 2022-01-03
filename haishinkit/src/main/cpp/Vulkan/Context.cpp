@@ -6,13 +6,6 @@ namespace Vulkan {
 
     Context::~Context() = default;
 
-    void Context::Submit(vk::CommandBuffer &commandBuffer) {
-        auto fence = device->createFence(vk::FenceCreateInfo());
-        queue.submit(vk::SubmitInfo().setCommandBuffers(commandBuffer), fence);
-        device->waitForFences(fence, true, 100000000);
-        device->destroy(fence);
-    }
-
     void Context::SelectPhysicalDevice(Kernel &kernel) {
         if (0 <= selectedPhysicalDevice) {
             return;
@@ -24,7 +17,6 @@ namespace Vulkan {
             selectedPhysicalDevice = i;
             break;
         }
-
         uint32_t propertyCount;
         physicalDevice.getQueueFamilyProperties(&propertyCount, nullptr);
         const auto queueFamilyProperties = physicalDevice.getQueueFamilyProperties();
@@ -36,7 +28,6 @@ namespace Vulkan {
                             return qfp.queueFlags & vk::QueueFlagBits::eGraphics;
                         }));
         assert(graphicsQueueFamilyIndex < queueFamilyProperties.size());
-        queueFamilyIndex = graphicsQueueFamilyIndex;
 
         std::vector<float> queuePriorities{1.0f};
         std::vector<const char *> extensions;
@@ -57,7 +48,7 @@ namespace Vulkan {
                         )
         );
         VULKAN_HPP_DEFAULT_DISPATCHER.init(device.get());
-        queue = device->getQueue(queueFamilyIndex, 0);
+        kernel.queue.SetUp(kernel, graphicsQueueFamilyIndex);
     }
 
     vk::UniqueImageView Context::CreateImageView(vk::Image image, vk::Format format) {

@@ -69,7 +69,7 @@ namespace Vulkan {
                         vk::PipelineStageFlagBits::eFragmentShader
                 );
                 commandBuffer.end();
-                kernel.context.Submit(commandBuffer);
+                kernel.Submit(commandBuffer);
                 memory = kernel.context.device->mapMemory(image.memory.get(), 0,
                                                           allocationSize);
                 break;
@@ -236,6 +236,6 @@ namespace Vulkan {
                 vk::PipelineStageFlagBits::eTransfer,
                 vk::PipelineStageFlagBits::eFragmentShader);
         commandBuffer.end();
-        kernel.context.Submit(commandBuffer);
+        kernel.Submit(commandBuffer);
     }
 }

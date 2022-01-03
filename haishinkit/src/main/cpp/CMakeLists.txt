@@ -29,9 +29,9 @@ add_library(
         Vulkan/DynamicLoader.cpp
         Vulkan/CommandBuffer.cpp
         Vulkan/Context.cpp
+        Vulkan/Queue.cpp
         Vulkan/PixelTransform.cpp
         Vulkan/SwapChain.cpp
-        Vulkan/RenderPass.cpp
         Vulkan/Pipeline.cpp
         Vulkan/Texture.cpp
         Vulkan/Util.cpp

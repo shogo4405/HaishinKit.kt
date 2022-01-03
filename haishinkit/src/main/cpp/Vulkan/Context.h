@@ -12,8 +12,6 @@ namespace Vulkan {
     struct Context {
         vk::UniqueDevice device;
         vk::PhysicalDevice physicalDevice;
-        vk::Queue queue;
-        uint32_t queueFamilyIndex{};
         int32_t selectedPhysicalDevice = -1;
 
         Context();
@@ -21,8 +19,6 @@ namespace Vulkan {
         ~Context();
 
         void SelectPhysicalDevice(Kernel &kernel);
-
-        void Submit(vk::CommandBuffer &commandBuffer);
 
         bool IsReady() const;
 

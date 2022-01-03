@@ -13,6 +13,7 @@ namespace Vulkan {
         vk::UniqueSwapchainKHR swapchain;
         vk::Extent2D size;
         vk::Format format;
+        vk::UniqueRenderPass renderPass;
 
         void SetUp(Kernel &kernel);
 

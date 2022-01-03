@@ -125,8 +125,8 @@ namespace Vulkan {
                         .setWindow(nativeWindow));
 
         swapChain.SetUp(*this);
-        renderPass.SetUp(*this);
         pipeline.SetUp(*this);
+        queue.SetImagesCount(*this, swapChain.GetImagesCount());
         commandBuffer.SetUp(*this);
     }
 
@@ -136,7 +136,6 @@ namespace Vulkan {
         }
         commandBuffer.TearDown(*this);
         pipeline.TearDown(*this);
-        renderPass.TearDown(*this);
         swapChain.TearDown(*this);
     }
 
@@ -144,64 +143,8 @@ namespace Vulkan {
         if (!isAvailable) {
             return vk::Result::eErrorInitializationFailed;
         }
-        const auto currentFrame = renderPass.currentFrame;
-
-        context.device->waitForFences(renderPass.fences[currentFrame], true,
-                                      std::numeric_limits<uint64_t>::max());
-
-        vk::Result result;
-        uint32_t nextIndex;
-
-        result = context.device->acquireNextImageKHR(
-                swapChain.swapchain.get(),
-                std::numeric_limits<uint64_t>::max(),
-                renderPass.waitSemaphores[currentFrame].get(),
-                nullptr,
-                &nextIndex);
-
-        if (result == vk::Result::eErrorOutOfDateKHR) {
-            LOGI("%s", "error out of date");
-        } else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
-            throw std::runtime_error("failed to acquire swap chain");
-        }
-
-        const auto waitStageMask =
-                vk::PipelineStageFlags(vk::PipelineStageFlagBits::eColorAttachmentOutput);
-
-        if (renderPass.images[nextIndex]) {
-            context.device->waitForFences(renderPass.images[nextIndex], true,
-                                          std::numeric_limits<uint64_t>::max());
-        }
-        renderPass.images[nextIndex] = renderPass.fences[currentFrame];
-
-        context.device->resetFences(renderPass.fences[currentFrame]);
-
-        context.queue.submit(
-                vk::SubmitInfo()
-                        .setWaitSemaphores(renderPass.waitSemaphores[currentFrame].get())
-                        .setWaitDstStageMask(waitStageMask)
-                        .setCommandBuffers(
-                                commandBuffer.commandBuffers[nextIndex].get())
-                        .setSignalSemaphores(renderPass.signalSemaphores[currentFrame].get()),
-                renderPass.fences[currentFrame]);
-
-        result = context.queue.presentKHR(
-                vk::PresentInfoKHR()
-                        .setSwapchains(swapChain.swapchain.get())
-                        .setImageIndices(nextIndex)
-                        .setWaitSemaphores(renderPass.signalSemaphores[currentFrame].get())
-                        .setPResults(&result)
-        );
-
-        renderPass.Next();
-
-        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
-            LOGI("%s", "error out of date");
-        } else if (result != vk::Result::eSuccess) {
-            throw std::runtime_error("failed to present image");
-        }
-
-        return result;
+        uint32_t index = queue.Acquire(*this);
+        return queue.Present(*this, index, commandBuffer.commandBuffers[index].get());
     }
 
     bool Kernel::IsAvailable() const {
@@ -227,6 +170,10 @@ namespace Vulkan {
             }
         }
         return false;
+    }
+
+    void Kernel::Submit(vk::CommandBuffer &commandBuffer) {
+        queue.Submit(*this, commandBuffer);
     }
 
     std::string Kernel::InspectDevices() {

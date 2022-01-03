@@ -24,7 +24,7 @@ namespace Vulkan {
                         .setFlags(
                                 vk::CommandPoolCreateFlags(
                                         vk::CommandPoolCreateFlagBits::eResetCommandBuffer))
-                        .setQueueFamilyIndex(kernel.context.queueFamilyIndex)
+                        .setQueueFamilyIndex(kernel.queue.queueFamilyIndex)
         );
 
         auto imagesCount = kernel.swapChain.GetImagesCount();
@@ -70,7 +70,7 @@ namespace Vulkan {
 
             commandBuffer.beginRenderPass(
                     vk::RenderPassBeginInfo()
-                            .setRenderPass(kernel.renderPass.renderPass.get())
+                            .setRenderPass(kernel.swapChain.renderPass.get())
                             .setFramebuffer(framebuffers[i])
                             .setRenderArea(
                                     vk::Rect2D().setOffset({0, 0}).setExtent(kernel.swapChain.size))
@@ -112,7 +112,7 @@ namespace Vulkan {
                         .setSize(size)
                         .setUsage(vk::BufferUsageFlagBits::eVertexBuffer)
                         .setQueueFamilyIndexCount(1)
-                        .setQueueFamilyIndices(kernel.context.queueFamilyIndex)
+                        .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
         );
         const auto memoryRequirements = kernel.context.device->getBufferMemoryRequirements(
                 result);

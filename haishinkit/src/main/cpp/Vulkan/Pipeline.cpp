@@ -1,7 +1,6 @@
 #include "Kernel.h"
 #include "Pipeline.h"
 #include "SwapChain.h"
-#include "RenderPass.h"
 #include "Texture.h"
 
 namespace Vulkan {
@@ -161,7 +160,7 @@ namespace Vulkan {
                                 .setDynamicStateCount(0)
                         )
                         .setLayout(pipelineLayout)
-                        .setRenderPass(kernel.renderPass.renderPass.get())
+                        .setRenderPass(kernel.swapChain.renderPass.get())
         );
 
         kernel.context.device->destroy(vert);

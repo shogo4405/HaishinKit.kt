@@ -12,9 +12,9 @@
 #include "Context.h"
 #include "CommandBuffer.h"
 #include "SwapChain.h"
-#include "RenderPass.h"
 #include "Pipeline.h"
 #include "Texture.h"
+#include "Queue.h"
 
 namespace Vulkan {
     class Kernel {
@@ -24,8 +24,8 @@ namespace Vulkan {
 
         Context context;
         SwapChain swapChain;
-        RenderPass renderPass;
         Pipeline pipeline;
+        Queue queue;
         CommandBuffer commandBuffer;
 
         Kernel();
@@ -41,6 +41,8 @@ namespace Vulkan {
         void TearDown();
 
         vk::Result DrawFrame();
+
+        void Submit(vk::CommandBuffer &commandBuffer);
 
         bool IsAvailable() const;
 

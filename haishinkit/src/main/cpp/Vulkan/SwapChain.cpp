@@ -1,6 +1,5 @@
 #include "Kernel.h"
 #include "SwapChain.h"
-#include "RenderPass.h"
 
 namespace Vulkan {
     void SwapChain::SetUp(Kernel &kernel) {
@@ -30,7 +29,7 @@ namespace Vulkan {
                         .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
                         .setImageSharingMode(vk::SharingMode::eExclusive)
                         .setQueueFamilyIndexCount(1)
-                        .setQueueFamilyIndices(kernel.context.queueFamilyIndex)
+                        .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
                         .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
                         .setPresentMode(vk::PresentModeKHR::eFifo)
                         .setClipped(false)
@@ -44,6 +43,40 @@ namespace Vulkan {
         for (uint32_t i = 0; i < imagesCount; i++) {
             imageViews[i] = kernel.context.CreateImageView(images[i], format);
         }
+
+        const auto attachmentDescription = vk::AttachmentDescription()
+                .setFormat(format)
+                .setSamples(vk::SampleCountFlagBits::e1)
+                .setLoadOp(vk::AttachmentLoadOp::eClear)
+                .setStoreOp(vk::AttachmentStoreOp::eStore)
+                .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                .setInitialLayout(vk::ImageLayout::eUndefined)
+                .setFinalLayout(vk::ImageLayout::ePresentSrcKHR);
+
+        const auto colorAttachment = vk::AttachmentReference()
+                .setAttachment(0)
+                .setLayout(vk::ImageLayout::eColorAttachmentOptimal);
+
+        const auto subpassDescription = vk::SubpassDescription()
+                .setFlags(vk::SubpassDescriptionFlags())
+                .setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
+                .setInputAttachmentCount(0)
+                .setPInputAttachments(nullptr)
+                .setColorAttachmentCount(1)
+                .setPColorAttachments(&colorAttachment)
+                .setPreserveAttachmentCount(0)
+                .setPPreserveAttachments(nullptr);
+
+        renderPass = kernel.context.device->createRenderPassUnique(
+                vk::RenderPassCreateInfo()
+                        .setAttachmentCount(1)
+                        .setAttachments(attachmentDescription)
+                        .setSubpassCount(1)
+                        .setPSubpasses(&subpassDescription)
+                        .setDependencyCount(0)
+                        .setDependencies(nullptr)
+        );
     }
 
     void SwapChain::TearDown(Kernel &kernel) {
@@ -63,7 +96,7 @@ namespace Vulkan {
         };
         return kernel.context.device->createFramebuffer(
                 vk::FramebufferCreateInfo()
-                        .setRenderPass(kernel.renderPass.renderPass.get())
+                        .setRenderPass(renderPass.get())
                         .setAttachmentCount(1)
                         .setPAttachments(attachments)
                         .setWidth(size.width)
