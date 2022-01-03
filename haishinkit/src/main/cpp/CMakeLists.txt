@@ -25,6 +25,7 @@ add_library(
         # Provides a relative path to your source file(s).
         haishinkit.hpp
         Vulkan/Kernel.cpp
+        Vulkan/ImageStorage.cpp
         Vulkan/DynamicLoader.cpp
         Vulkan/CommandBuffer.cpp
         Vulkan/Context.cpp

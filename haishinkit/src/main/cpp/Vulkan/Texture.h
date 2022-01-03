@@ -5,9 +5,12 @@
 #include <vulkan/vulkan_android.h>
 #include <vulkan/vulkan.hpp>
 #include <android/native_window.h>
+#include "ImageStorage.h"
 
 namespace Vulkan {
     class Kernel;
+
+    struct ImageStorage;
 
     struct Texture {
         enum Mode {
@@ -17,7 +20,7 @@ namespace Vulkan {
 
         static vk::Format GetFormat(int32_t format);
 
-        Texture(vk::Extent2D extent2D, vk::Format format);
+        Texture(vk::Extent2D extent, vk::Format format);
 
         ~Texture();
 
@@ -30,26 +33,25 @@ namespace Vulkan {
         vk::DescriptorImageInfo CreateDescriptorImageInfo();
 
     private:
-        vk::Format format;
-        vk::UniqueImage image;
+        Mode mode = Mode::Linear;
+
+        ImageStorage image;
+        ImageStorage stage;
+
         vk::UniqueSampler sampler;
         vk::UniqueImageView imageView;
-        vk::UniqueDeviceMemory deviceMemory;
-        vk::Extent2D extent2D = vk::Extent2D(0, 0);
-        vk::ImageLayout imageLayout = vk::ImageLayout::ePreinitialized;
+
         vk::DeviceSize allocationSize = 0;
         vk::DeviceSize rowPitch = 0;
-        void *mapped = nullptr;
+        void *memory = nullptr;
 
-        bool HasLinearTilingFeatures(Kernel &kernel);
+        bool HasLinearTilingFeatures(Kernel &kernel) const;
 
-        void SetMode(Kernel &kernel, Mode mode);
+        static int32_t
+        BindImageMemory(Kernel &kernel, vk::UniqueDeviceMemory &memory, vk::Image image,
+                        vk::MemoryPropertyFlags properties);
 
-        void SetImageLayout(
-                vk::CommandBuffer &commandBuffer,
-                vk::ImageLayout newImageLayout,
-                vk::PipelineStageFlagBits srcStageMask,
-                vk::PipelineStageFlagBits dstStageMask);
+        void CopyImage(Kernel &kernel);
     };
 }
 

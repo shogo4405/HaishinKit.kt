@@ -1,6 +1,7 @@
 #include "Kernel.h"
 #include "Texture.h"
 #include "Util.h"
+#include "ImageStorage.h"
 
 namespace Vulkan {
     vk::Format Texture::GetFormat(int32_t format) {
@@ -16,53 +17,83 @@ namespace Vulkan {
         }
     }
 
-    Texture::Texture(vk::Extent2D extent2D, vk::Format format) :
-            extent2D(extent2D), format(format) {
+    Texture::Texture(vk::Extent2D extent, vk::Format format) {
+        image.extent = extent;
+        image.format = format;
+        stage.extent = extent;
+        stage.format = format;
     }
 
     Texture::~Texture() = default;
 
     void Texture::SetUp(Kernel &kernel) {
-        const auto hasLinearTilingFeatures = HasLinearTilingFeatures(kernel);
+        mode = HasLinearTilingFeatures(kernel) ? Mode::Linear : Mode::Stage;
 
-        image = kernel.context.device->createImageUnique(
-                vk::ImageCreateInfo()
-                        .setImageType(vk::ImageType::e2D)
-                        .setExtent(vk::Extent3D(extent2D.width, extent2D.height, 1))
-                        .setMipLevels(1)
-                        .setArrayLayers(1)
-                        .setFormat(format)
+        image.SetUp(kernel, image.CreateImageCreateInfo()
+                .setInitialLayout(
+                        mode == Linear ?
+                        vk::ImageLayout::ePreinitialized :
+                        vk::ImageLayout::eUndefined
+                )
+                .setUsage(
+                        mode == Linear ?
+                        vk::ImageUsageFlagBits::eSampled :
+                        vk::ImageUsageFlagBits::eSampled |
+                        vk::ImageUsageFlagBits::eTransferDst)
+                .setTiling(
+                        mode == Linear ?
+                        vk::ImageTiling::eLinear :
+                        vk::ImageTiling::eOptimal)
+        );
+
+        allocationSize = BindImageMemory(kernel, image.memory, image.image.get(),
+                                         mode == Linear ? vk::MemoryPropertyFlagBits::eHostVisible
+                                                        : vk::MemoryPropertyFlagBits::eDeviceLocal);
+
+        switch (mode) {
+            case Linear: {
+                LOGI("%s", "This device has a linear tiling feature.");
+                rowPitch = kernel.context.device->getImageSubresourceLayout(
+                        image.image.get(),
+                        vk::ImageSubresource()
+                                .setMipLevel(0)
+                                .setArrayLayer(0)
+                                .setAspectMask(vk::ImageAspectFlagBits::eColor)
+                ).rowPitch;
+                auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
+                commandBuffer.begin(vk::CommandBufferBeginInfo());
+                image.SetLayout(
+                        commandBuffer,
+                        vk::ImageLayout::eShaderReadOnlyOptimal,
+                        vk::PipelineStageFlagBits::eHost,
+                        vk::PipelineStageFlagBits::eFragmentShader
+                );
+                commandBuffer.end();
+                kernel.context.Submit(commandBuffer);
+                memory = kernel.context.device->mapMemory(image.memory.get(), 0,
+                                                          allocationSize);
+                break;
+            }
+            case Stage: {
+                LOGI("%s", "This device has no a linear tiling feature.");
+                stage.SetUp(kernel, stage.CreateImageCreateInfo()
+                        .setUsage(vk::ImageUsageFlagBits::eTransferSrc)
                         .setTiling(vk::ImageTiling::eLinear)
-                        .setInitialLayout(imageLayout)
-                        .setUsage(hasLinearTilingFeatures ? vk::ImageUsageFlagBits::eSampled
-                                                          : vk::ImageUsageFlagBits::eTransferSrc)
-                        .setSharingMode(vk::SharingMode::eExclusive)
-                        .setSamples(vk::SampleCountFlagBits::e1));
-
-        SetMode(kernel, hasLinearTilingFeatures ? Linear : Stage);
-
-        const auto imageMemoryRequirements = kernel.context.device->getImageMemoryRequirements(
-                image.get());
-
-        const auto layout = kernel.context.device->getImageSubresourceLayout(
-                image.get(),
-                vk::ImageSubresource()
-                        .setMipLevel(0)
-                        .setArrayLayer(0)
-                        .setAspectMask(vk::ImageAspectFlagBits::eColor)
-        );
-
-        rowPitch = layout.rowPitch;
-        allocationSize = imageMemoryRequirements.size;
-        deviceMemory = kernel.context.device->allocateMemoryUnique(
-                vk::MemoryAllocateInfo()
-                        .setAllocationSize(imageMemoryRequirements.size)
-                        .setMemoryTypeIndex(
-                                kernel.context.FindMemoryType(
-                                        imageMemoryRequirements.memoryTypeBits,
-                                        vk::MemoryPropertyFlagBits::eHostVisible))
-        );
-        kernel.context.device->bindImageMemory(image.get(), deviceMemory.get(), 0);
+                );
+                allocationSize = BindImageMemory(kernel, stage.memory, stage.image.get(),
+                                                 vk::MemoryPropertyFlagBits::eHostVisible);
+                rowPitch = kernel.context.device->getImageSubresourceLayout(
+                        stage.image.get(),
+                        vk::ImageSubresource()
+                                .setMipLevel(0)
+                                .setArrayLayer(0)
+                                .setAspectMask(vk::ImageAspectFlagBits::eColor)
+                ).rowPitch;
+                memory = kernel.context.device->mapMemory(stage.memory.get(), 0,
+                                                          allocationSize);
+                break;
+            }
+        }
 
         sampler = kernel.context.device->createSamplerUnique(
                 vk::SamplerCreateInfo()
@@ -80,25 +111,21 @@ namespace Vulkan {
                         .setUnnormalizedCoordinates(false)
         );
 
-        imageView = kernel.context.CreateImageView(image.get(), format);
-
-        mapped = kernel.context.device->mapMemory(deviceMemory.get(), 0, allocationSize);
+        imageView = kernel.context.CreateImageView(image.image.get(), image.format);
     }
 
     void Texture::TearDown(Kernel &kernel) {
-        if (mapped == nullptr) {
+        if (memory == nullptr) {
             return;
         }
-        mapped = nullptr;
-        kernel.context.device->unmapMemory(deviceMemory.get());
-        imageLayout = vk::ImageLayout::ePreinitialized;
+        memory = nullptr;
     }
 
     void Texture::Update(Kernel &kernel, ANativeWindow_Buffer *buffer) {
-        if (buffer->bits == nullptr || mapped == nullptr) {
+        if (buffer->bits == nullptr || memory == nullptr) {
             return;
         }
-        switch (format) {
+        switch (image.format) {
             case vk::Format::eR5G6B5UnormPack16:
                 switch (buffer->format) {
                     case WINDOW_FORMAT_RGBA_8888:
@@ -108,15 +135,15 @@ namespace Vulkan {
                         throw std::runtime_error(
                                 "unsupported formats eR5G6B5UnormPack16:WINDOW_FORMAT_RGBX_8888");
                     case WINDOW_FORMAT_RGB_565:
-                        memcpy(mapped, buffer->bits, allocationSize);
+                        memcpy(memory, buffer->bits, allocationSize);
                         break;
                 }
                 break;
             case vk::Format::eR8G8B8A8Unorm:
                 switch (buffer->format) {
                     case WINDOW_FORMAT_RGBA_8888:
-                        for (int32_t y = 0; y < extent2D.height; y++) {
-                            auto *row = reinterpret_cast<unsigned char *>((char *) mapped +
+                        for (int32_t y = 0; y < image.extent.height; y++) {
+                            auto *row = reinterpret_cast<unsigned char *>((char *) memory +
                                                                           rowPitch *
                                                                           y);
                             auto *src = reinterpret_cast<unsigned char *>((char *) buffer->bits +
@@ -135,62 +162,80 @@ namespace Vulkan {
             default:
                 throw std::runtime_error("unsupported formats");
         }
+
+        CopyImage(kernel);
     }
 
     vk::DescriptorImageInfo Texture::CreateDescriptorImageInfo() {
         return vk::DescriptorImageInfo()
-                .setImageLayout(imageLayout)
+                .setImageLayout(image.layout)
                 .setSampler(sampler.get())
                 .setImageView(imageView.get());
     }
 
-    void Texture::SetImageLayout(vk::CommandBuffer &commandBuffer,
-                                 vk::ImageLayout newImageLayout,
-                                 vk::PipelineStageFlagBits srcStageMask,
-                                 vk::PipelineStageFlagBits dstStageMask) {
-
-        const auto imageMemoryBarrier = Util::CreateImageMemoryBarrier(imageLayout, newImageLayout)
-                .setImage(image.get())
-                .setSubresourceRange({vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1});
-
-        commandBuffer.pipelineBarrier(
-                srcStageMask,
-                dstStageMask,
-                vk::DependencyFlags(),
-                nullptr,
-                nullptr,
-                imageMemoryBarrier
-        );
-
-        imageLayout = newImageLayout;
-    }
-
-    void Texture::SetMode(Kernel &kernel, Mode mode) {
-        auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
-        commandBuffer.begin(vk::CommandBufferBeginInfo());
-        switch (mode) {
-            case Linear:
-                LOGI("%s", "This device has a linear tiling feature.");
-                SetImageLayout(
-                        commandBuffer,
-                        vk::ImageLayout::eShaderReadOnlyOptimal,
-                        vk::PipelineStageFlagBits::eHost,
-                        vk::PipelineStageFlagBits::eFragmentShader
-                );
-                break;
-            case Stage:
-                LOGI("%s", "This device has no a linear tiling feature.");
-                break;
-        }
-        commandBuffer.end();
-        kernel.context.Submit(commandBuffer);
-    }
-
-    bool Texture::HasLinearTilingFeatures(Kernel &kernel) {
-        auto properties = kernel.context.physicalDevice.getFormatProperties(format);
+    bool Texture::HasLinearTilingFeatures(Kernel &kernel) const {
+        auto properties = kernel.context.physicalDevice.getFormatProperties(image.format);
         if (properties.linearTilingFeatures & vk::FormatFeatureFlagBits::eSampledImage) {
             return true;
         }
         return false;
+    }
+
+    int32_t
+    Texture::BindImageMemory(Kernel &kernel, vk::UniqueDeviceMemory &memory, vk::Image image,
+                             vk::MemoryPropertyFlags properties) {
+        const auto requirements = kernel.context.device->getImageMemoryRequirements(image);
+        memory = kernel.context.device->allocateMemoryUnique(
+                vk::MemoryAllocateInfo()
+                        .setAllocationSize(requirements.size)
+                        .setMemoryTypeIndex(
+                                kernel.context.FindMemoryType(
+                                        requirements.memoryTypeBits,
+                                        properties
+                                ))
+        );
+        kernel.context.device->bindImageMemory(image, memory.get(), 0);
+        return requirements.size;
+    }
+
+    void Texture::CopyImage(Kernel &kernel) {
+        if (mode == Linear) {
+            return;
+        }
+        auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
+        commandBuffer.begin(vk::CommandBufferBeginInfo());
+        stage.SetLayout(
+                commandBuffer,
+                vk::ImageLayout::eTransferSrcOptimal,
+                vk::PipelineStageFlagBits::eHost,
+                vk::PipelineStageFlagBits::eTransfer
+        );
+        image.SetLayout(
+                commandBuffer,
+                vk::ImageLayout::eTransferDstOptimal,
+                vk::PipelineStageFlagBits::eHost,
+                vk::PipelineStageFlagBits::eTransfer);
+
+        const auto imageCopy = vk::ImageCopy()
+                .setSrcSubresource({vk::ImageAspectFlagBits::eColor, 0, 0, 1})
+                .setSrcOffset({0, 0, 0})
+                .setDstSubresource({vk::ImageAspectFlagBits::eColor, 0, 0, 1})
+                .setDstOffset({0, 0, 0})
+                .setExtent({stage.extent.width, stage.extent.height, 1});
+
+        commandBuffer.copyImage(
+                stage.image.get(),
+                vk::ImageLayout::eTransferSrcOptimal,
+                image.image.get(),
+                vk::ImageLayout::eTransferDstOptimal,
+                imageCopy);
+
+        image.SetLayout(
+                commandBuffer,
+                vk::ImageLayout::eShaderReadOnlyOptimal,
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eFragmentShader);
+        commandBuffer.end();
+        kernel.context.Submit(commandBuffer);
     }
 }

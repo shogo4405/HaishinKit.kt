@@ -7,6 +7,7 @@
 
 namespace Vulkan {
     class Kernel;
+
     struct Texture;
 
     struct CommandBuffer {
