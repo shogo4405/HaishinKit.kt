@@ -9,7 +9,6 @@
 #include <vulkan/vulkan_android.h>
 #include <vulkan/vulkan.hpp>
 #include <android/asset_manager.h>
-#include "Context.h"
 #include "CommandBuffer.h"
 #include "SwapChain.h"
 #include "Pipeline.h"
@@ -21,8 +20,10 @@ namespace Vulkan {
     public:
         vk::UniqueInstance instance;
         vk::UniqueSurfaceKHR surface;
+        vk::UniqueDevice device;
+        vk::PhysicalDevice physicalDevice;
+        int32_t selectedPhysicalDevice = -1;
 
-        Context context;
         SwapChain swapChain;
         Pipeline pipeline;
         Queue queue;
@@ -49,6 +50,12 @@ namespace Vulkan {
         std::string InspectDevices();
 
         vk::ShaderModule LoadShader(const std::string &fileName);
+
+        void SelectPhysicalDevice();
+
+        vk::UniqueImageView CreateImageView(vk::Image image, vk::Format);
+
+        uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) const;
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL
         callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

@@ -10,7 +10,7 @@ namespace Vulkan {
             images[i] = textures[i]->CreateDescriptorImageInfo();
         }
         for (auto &descriptorSet: descriptorSets) {
-            kernel.context.device->updateDescriptorSets(
+            kernel.device->updateDescriptorSets(
                     vk::WriteDescriptorSet()
                             .setDstSet(descriptorSet.get())
                             .setDescriptorCount(1)
@@ -22,7 +22,7 @@ namespace Vulkan {
     }
 
     void Pipeline::SetUp(Kernel &kernel) {
-        descriptorSetLayout = kernel.context.device->createDescriptorSetLayout(
+        descriptorSetLayout = kernel.device->createDescriptorSetLayout(
                 vk::DescriptorSetLayoutCreateInfo()
                         .setBindingCount(1)
                         .setBindings(
@@ -35,7 +35,7 @@ namespace Vulkan {
                         )
         );
 
-        descriptorPool = kernel.context.device->createDescriptorPool(
+        descriptorPool = kernel.device->createDescriptorPool(
                 vk::DescriptorPoolCreateInfo()
                         .setMaxSets(1)
                         .setPoolSizes(
@@ -44,21 +44,21 @@ namespace Vulkan {
                                         .setDescriptorCount(1))
         );
 
-        descriptorSets = kernel.context.device->allocateDescriptorSetsUnique(
+        descriptorSets = kernel.device->allocateDescriptorSetsUnique(
                 vk::DescriptorSetAllocateInfo()
                         .setDescriptorSetCount(1)
                         .setDescriptorPool(descriptorPool)
                         .setSetLayouts(descriptorSetLayout)
         );
 
-        pipelineLayout = kernel.context.device->createPipelineLayout(
+        pipelineLayout = kernel.device->createPipelineLayout(
                 vk::PipelineLayoutCreateInfo()
                         .setSetLayoutCount(1)
                         .setSetLayouts(
                                 descriptorSetLayout)
         );
 
-        pipelineCache = kernel.context.device->createPipelineCache(vk::PipelineCacheCreateInfo());
+        pipelineCache = kernel.device->createPipelineCache(vk::PipelineCacheCreateInfo());
 
         const auto vert = kernel.LoadShader("shaders/main.vert.spv");
         const auto frag = kernel.LoadShader("shaders/main.frag.spv");
@@ -101,7 +101,7 @@ namespace Vulkan {
                         )
         };
 
-        pipeline = kernel.context.device->createGraphicsPipelineUnique(
+        pipeline = kernel.device->createGraphicsPipelineUnique(
                 pipelineCache,
                 vk::GraphicsPipelineCreateInfo()
                         .setStageCount(shaderStages.size())
@@ -163,8 +163,8 @@ namespace Vulkan {
                         .setRenderPass(kernel.swapChain.renderPass.get())
         );
 
-        kernel.context.device->destroy(vert);
-        kernel.context.device->destroy(frag);
+        kernel.device->destroy(vert);
+        kernel.device->destroy(frag);
     }
 
     void Pipeline::TearDown(Kernel &kernel) {

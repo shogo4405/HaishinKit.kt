@@ -3,9 +3,9 @@
 
 namespace Vulkan {
     void SwapChain::SetUp(Kernel &kernel) {
-        const auto capabilities = kernel.context.physicalDevice.getSurfaceCapabilitiesKHR(
+        const auto capabilities = kernel.physicalDevice.getSurfaceCapabilitiesKHR(
                 kernel.surface.get());
-        const auto formats = kernel.context.physicalDevice.getSurfaceFormatsKHR(
+        const auto formats = kernel.physicalDevice.getSurfaceFormatsKHR(
                 kernel.surface.get());
 
         uint32_t chosenFormat;
@@ -18,7 +18,7 @@ namespace Vulkan {
         size = capabilities.currentExtent;
         format = formats[chosenFormat].format;
 
-        swapchain = kernel.context.device->createSwapchainKHRUnique(
+        swapchain = kernel.device->createSwapchainKHRUnique(
                 vk::SwapchainCreateInfoKHR()
                         .setSurface(kernel.surface.get())
                         .setMinImageCount(capabilities.minImageCount)
@@ -36,12 +36,12 @@ namespace Vulkan {
                         .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit)
                         .setOldSwapchain(nullptr));
 
-        images = kernel.context.device->getSwapchainImagesKHR(swapchain.get());
+        images = kernel.device->getSwapchainImagesKHR(swapchain.get());
 
         const auto imagesCount = images.size();
         imageViews.resize(imagesCount);
         for (uint32_t i = 0; i < imagesCount; i++) {
-            imageViews[i] = kernel.context.CreateImageView(images[i], format);
+            imageViews[i] = kernel.CreateImageView(images[i], format);
         }
 
         const auto attachmentDescription = vk::AttachmentDescription()
@@ -68,7 +68,7 @@ namespace Vulkan {
                 .setPreserveAttachmentCount(0)
                 .setPPreserveAttachments(nullptr);
 
-        renderPass = kernel.context.device->createRenderPassUnique(
+        renderPass = kernel.device->createRenderPassUnique(
                 vk::RenderPassCreateInfo()
                         .setAttachmentCount(1)
                         .setAttachments(attachmentDescription)
@@ -82,7 +82,7 @@ namespace Vulkan {
     void SwapChain::TearDown(Kernel &kernel) {
         const auto imagesCount = images.size();
         for (auto i = 0; i < imagesCount; i++) {
-            kernel.context.device->destroy(images[i]);
+            kernel.device->destroy(images[i]);
         }
     }
 
@@ -94,7 +94,7 @@ namespace Vulkan {
         vk::ImageView attachments[] = {
                 imageViews[index].get()
         };
-        return kernel.context.device->createFramebuffer(
+        return kernel.device->createFramebuffer(
                 vk::FramebufferCreateInfo()
                         .setRenderPass(renderPass.get())
                         .setAttachmentCount(1)

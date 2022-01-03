@@ -53,7 +53,7 @@ namespace Vulkan {
         switch (mode) {
             case Linear: {
                 LOGI("%s", "This device has a linear tiling feature.");
-                rowPitch = kernel.context.device->getImageSubresourceLayout(
+                rowPitch = kernel.device->getImageSubresourceLayout(
                         image.image.get(),
                         vk::ImageSubresource()
                                 .setMipLevel(0)
@@ -70,8 +70,8 @@ namespace Vulkan {
                 );
                 commandBuffer.end();
                 kernel.Submit(commandBuffer);
-                memory = kernel.context.device->mapMemory(image.memory.get(), 0,
-                                                          allocationSize);
+                memory = kernel.device->mapMemory(image.memory.get(), 0,
+                                                  allocationSize);
                 break;
             }
             case Stage: {
@@ -82,20 +82,20 @@ namespace Vulkan {
                 );
                 allocationSize = BindImageMemory(kernel, stage.memory, stage.image.get(),
                                                  vk::MemoryPropertyFlagBits::eHostVisible);
-                rowPitch = kernel.context.device->getImageSubresourceLayout(
+                rowPitch = kernel.device->getImageSubresourceLayout(
                         stage.image.get(),
                         vk::ImageSubresource()
                                 .setMipLevel(0)
                                 .setArrayLayer(0)
                                 .setAspectMask(vk::ImageAspectFlagBits::eColor)
                 ).rowPitch;
-                memory = kernel.context.device->mapMemory(stage.memory.get(), 0,
-                                                          allocationSize);
+                memory = kernel.device->mapMemory(stage.memory.get(), 0,
+                                                  allocationSize);
                 break;
             }
         }
 
-        sampler = kernel.context.device->createSamplerUnique(
+        sampler = kernel.device->createSamplerUnique(
                 vk::SamplerCreateInfo()
                         .setMagFilter(vk::Filter::eNearest)
                         .setMinFilter(vk::Filter::eNearest)
@@ -111,7 +111,7 @@ namespace Vulkan {
                         .setUnnormalizedCoordinates(false)
         );
 
-        imageView = kernel.context.CreateImageView(image.image.get(), image.format);
+        imageView = kernel.CreateImageView(image.image.get(), image.format);
     }
 
     void Texture::TearDown(Kernel &kernel) {
@@ -174,7 +174,7 @@ namespace Vulkan {
     }
 
     bool Texture::HasLinearTilingFeatures(Kernel &kernel) const {
-        auto properties = kernel.context.physicalDevice.getFormatProperties(image.format);
+        auto properties = kernel.physicalDevice.getFormatProperties(image.format);
         if (properties.linearTilingFeatures & vk::FormatFeatureFlagBits::eSampledImage) {
             return true;
         }
@@ -184,17 +184,17 @@ namespace Vulkan {
     int32_t
     Texture::BindImageMemory(Kernel &kernel, vk::UniqueDeviceMemory &memory, vk::Image image,
                              vk::MemoryPropertyFlags properties) {
-        const auto requirements = kernel.context.device->getImageMemoryRequirements(image);
-        memory = kernel.context.device->allocateMemoryUnique(
+        const auto requirements = kernel.device->getImageMemoryRequirements(image);
+        memory = kernel.device->allocateMemoryUnique(
                 vk::MemoryAllocateInfo()
                         .setAllocationSize(requirements.size)
                         .setMemoryTypeIndex(
-                                kernel.context.FindMemoryType(
+                                kernel.FindMemoryType(
                                         requirements.memoryTypeBits,
                                         properties
                                 ))
         );
-        kernel.context.device->bindImageMemory(image, memory.get(), 0);
+        kernel.device->bindImageMemory(image, memory.get(), 0);
         return requirements.size;
     }
 

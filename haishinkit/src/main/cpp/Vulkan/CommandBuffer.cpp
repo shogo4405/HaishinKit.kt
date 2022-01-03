@@ -18,7 +18,7 @@ namespace Vulkan {
     CommandBuffer::~CommandBuffer() = default;
 
     void CommandBuffer::SetUp(Kernel &kernel) {
-        commandPool = kernel.context.device->createCommandPoolUnique(
+        commandPool = kernel.device->createCommandPoolUnique(
                 vk::CommandPoolCreateInfo()
                         .setPNext(nullptr)
                         .setFlags(
@@ -28,7 +28,7 @@ namespace Vulkan {
         );
 
         auto imagesCount = kernel.swapChain.GetImagesCount();
-        commandBuffers = kernel.context.device->allocateCommandBuffersUnique(
+        commandBuffers = kernel.device->allocateCommandBuffersUnique(
                 vk::CommandBufferAllocateInfo()
                         .setPNext(nullptr)
                         .setCommandPool(commandPool.get())
@@ -51,10 +51,10 @@ namespace Vulkan {
 
     void CommandBuffer::TearDown(Kernel &kernel) {
         for (auto &buffer : buffers) {
-            kernel.context.device->destroy(buffer);
+            kernel.device->destroy(buffer);
         }
         for (auto &framebuffer : framebuffers) {
-            kernel.context.device->destroy(framebuffer);
+            kernel.device->destroy(framebuffer);
         }
     }
 
@@ -97,7 +97,7 @@ namespace Vulkan {
     }
 
     vk::CommandBuffer CommandBuffer::Allocate(Kernel &kernel) {
-        const auto commandBuffers = kernel.context.device->allocateCommandBuffers(
+        const auto commandBuffers = kernel.device->allocateCommandBuffers(
                 vk::CommandBufferAllocateInfo()
                         .setCommandBufferCount(1)
                         .setCommandPool(commandPool.get())
@@ -107,28 +107,28 @@ namespace Vulkan {
     }
 
     vk::Buffer CommandBuffer::CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size) {
-        const auto result = kernel.context.device->createBuffer(
+        const auto result = kernel.device->createBuffer(
                 vk::BufferCreateInfo()
                         .setSize(size)
                         .setUsage(vk::BufferUsageFlagBits::eVertexBuffer)
                         .setQueueFamilyIndexCount(1)
                         .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
         );
-        const auto memoryRequirements = kernel.context.device->getBufferMemoryRequirements(
+        const auto memoryRequirements = kernel.device->getBufferMemoryRequirements(
                 result);
-        const auto memory = kernel.context.device->allocateMemory(
+        const auto memory = kernel.device->allocateMemory(
                 vk::MemoryAllocateInfo()
                         .setAllocationSize(
                                 memoryRequirements.size)
                         .setMemoryTypeIndex(
-                                kernel.context.FindMemoryType(memoryRequirements.memoryTypeBits,
-                                                              vk::MemoryPropertyFlagBits::eHostVisible |
-                                                              vk::MemoryPropertyFlagBits::eHostCoherent))
+                                kernel.FindMemoryType(memoryRequirements.memoryTypeBits,
+                                                      vk::MemoryPropertyFlagBits::eHostVisible |
+                                                      vk::MemoryPropertyFlagBits::eHostCoherent))
         );
-        void *map = kernel.context.device->mapMemory(memory, 0, memoryRequirements.size);
+        void *map = kernel.device->mapMemory(memory, 0, memoryRequirements.size);
         memcpy(map, data, size);
-        kernel.context.device->unmapMemory(memory);
-        kernel.context.device->bindBufferMemory(result, memory, 0);
+        kernel.device->unmapMemory(memory);
+        kernel.device->bindBufferMemory(result, memory, 0);
         return result;
     }
 }

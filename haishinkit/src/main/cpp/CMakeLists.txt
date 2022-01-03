@@ -28,7 +28,6 @@ add_library(
         Vulkan/ImageStorage.cpp
         Vulkan/DynamicLoader.cpp
         Vulkan/CommandBuffer.cpp
-        Vulkan/Context.cpp
         Vulkan/Queue.cpp
         Vulkan/PixelTransform.cpp
         Vulkan/SwapChain.cpp

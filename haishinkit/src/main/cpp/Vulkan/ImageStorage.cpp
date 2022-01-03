@@ -5,7 +5,7 @@
 namespace Vulkan {
     void ImageStorage::SetUp(Kernel &kernel, vk::ImageCreateInfo info) {
         layout = info.initialLayout;
-        image = kernel.context.device->createImageUnique(info);
+        image = kernel.device->createImageUnique(info);
     }
 
     void ImageStorage::TearDown(Kernel &kernel) {
