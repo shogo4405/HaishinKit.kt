@@ -15,6 +15,8 @@ import java.lang.Exception
 class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
     private lateinit var holderA: SurfaceHolder
     private lateinit var holderB: SurfaceHolder
+    private lateinit var surfaceHolderA: SurfaceHolder
+    private lateinit var surfaceHolderB: SurfaceHolder
     private var renderer: VkPixelTransform? = VkPixelTransform()
     private val choreographer = Choreographer.getInstance()
 
@@ -46,11 +48,31 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
     ): View? {
         val v = inflater.inflate(R.layout.fragment_preference, container, false)
 
-        val surfaceView = v.findViewById<SurfaceView>(R.id.surface_view)
-        surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
+        val surfaceViewA = v.findViewById<SurfaceView>(R.id.surface_view_a)
+        surfaceViewA.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 Log.d(TAG, "surfaceCreated")
+                surfaceHolderA = holder
                 renderer?.surface = holder.surface
+            }
+
+            override fun surfaceChanged(
+                holder: SurfaceHolder,
+                format: Int,
+                width: Int,
+                height: Int
+            ) {
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+            }
+        })
+
+        val surfaceViewB = v.findViewById<SurfaceView>(R.id.surface_view_b)
+        surfaceViewB.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                Log.d(TAG, "surfaceCreated")
+                surfaceHolderB = holder
             }
 
             override fun surfaceChanged(
@@ -119,6 +141,24 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
                 "NULL" -> {
                     button.text = "RED"
                     renderer?.inputSurface = inputSurfaceViewA.holder.surface
+                }
+            }
+        }
+
+        val button2 = v.findViewById<Button>(R.id.button2)
+        button2.setOnClickListener { _ ->
+            when (button2.text) {
+                "LEFT" -> {
+                    button2.text = "RIGHT"
+                    renderer?.surface = surfaceViewB.holder.surface
+                }
+                "RIGHT" -> {
+                    button2.text = "NULL"
+                    renderer?.surface = null
+                }
+                "NULL" -> {
+                    button2.text = "LEFT"
+                    renderer?.surface = surfaceViewA.holder.surface
                 }
             }
         }

@@ -134,6 +134,7 @@ namespace Vulkan {
         if (!isAvailable) {
             return;
         }
+        device->waitIdle();
         commandBuffer.TearDown(*this);
         pipeline.TearDown(*this);
         swapChain.TearDown(*this);

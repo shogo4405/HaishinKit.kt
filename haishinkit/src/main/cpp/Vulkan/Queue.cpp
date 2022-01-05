@@ -3,9 +3,7 @@
 
 namespace Vulkan {
     void Queue::SetImagesCount(Kernel &kernel, int32_t imagesCount) {
-        for (auto &image : images) {
-            kernel.device->destroy(image);
-        }
+        currentFrame = 0;
         images.resize(imagesCount);
     }
 

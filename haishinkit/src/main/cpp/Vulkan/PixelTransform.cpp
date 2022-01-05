@@ -54,22 +54,24 @@ namespace Vulkan {
         this->inputNativeWindow = inputNativeWindow;
     }
 
-    void PixelTransform::SetNativeWindow(ANativeWindow *nativeWindow) {
-        if (nativeWindow == nullptr) {
+    void PixelTransform::SetNativeWindow(ANativeWindow *newNativeWindow) {
+        ANativeWindow *oldNativeWindow = nativeWindow;
+        nativeWindow = nullptr;
+        if (oldNativeWindow != nullptr && newNativeWindow == nullptr) {
             kernel->TearDown();
         } else {
-            if (this->nativeWindow != nativeWindow) {
+            if (oldNativeWindow != nullptr && oldNativeWindow != newNativeWindow) {
                 kernel->TearDown();
             }
-            kernel->SetUp(nativeWindow);
+            kernel->SetUp(newNativeWindow);
             if (!textures.empty()) {
                 kernel->SetTextures(textures);
             }
         }
-        if (this->nativeWindow != nullptr) {
-            ANativeWindow_release(this->nativeWindow);
+        if (oldNativeWindow != nullptr) {
+            ANativeWindow_release(oldNativeWindow);
         }
-        this->nativeWindow = nativeWindow;
+        nativeWindow = newNativeWindow;
     }
 
     void PixelTransform::UpdateTexture() {
@@ -112,7 +114,10 @@ Java_com_haishinkit_vk_VkPixelTransform_getSurface(JNIEnv *env, jobject thiz) {
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vk_VkPixelTransform_setSurface(JNIEnv *env, jobject thiz, jobject surface) {
-    ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
+    ANativeWindow *window = nullptr;
+    if (surface != nullptr) {
+        window = ANativeWindow_fromSurface(env, surface);
+    }
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
                 self->surface = surface;

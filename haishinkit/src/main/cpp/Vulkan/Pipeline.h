@@ -11,11 +11,11 @@ namespace Vulkan {
     struct Texture;
 
     struct Pipeline {
-        vk::DescriptorSetLayout descriptorSetLayout;
-        vk::DescriptorPool descriptorPool;
+        vk::UniqueDescriptorSetLayout descriptorSetLayout;
+        vk::UniqueDescriptorPool descriptorPool;
         std::vector<vk::UniqueDescriptorSet> descriptorSets;
-        vk::PipelineLayout pipelineLayout;
-        vk::PipelineCache pipelineCache;
+        vk::UniquePipelineLayout pipelineLayout;
+        vk::UniquePipelineCache pipelineCache;
         vk::UniquePipeline pipeline;
 
         void SetTextures(Kernel &kernel, std::vector<Texture *> textures);

@@ -80,10 +80,6 @@ namespace Vulkan {
     }
 
     void SwapChain::TearDown(Kernel &kernel) {
-        const auto imagesCount = images.size();
-        for (auto i = 0; i < imagesCount; i++) {
-            kernel.device->destroy(images[i]);
-        }
     }
 
     int32_t SwapChain::GetImagesCount() {

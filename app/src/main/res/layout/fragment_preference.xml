@@ -7,47 +7,81 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="horizontal"
-        >
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <SurfaceView
-            android:id="@+id/input_surface_view_a"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
-            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal">
 
-        <SurfaceView
-            android:id="@+id/input_surface_view_b"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
-            />
+            <SurfaceView
+                android:id="@+id/input_surface_view_a"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1" />
 
-        <SurfaceView
-            android:id="@+id/surface_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1" />
+            <SurfaceView
+                android:id="@+id/input_surface_view_b"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal">
+
+            <SurfaceView
+                android:id="@+id/surface_view_a"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1" />
+
+            <SurfaceView
+                android:id="@+id/surface_view_b"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="RED"
-            android:layout_margin="16px"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true" />
+            android:layout_marginStart="16px"
+            android:layout_marginTop="16px"
+            android:layout_marginEnd="16px"
+            android:layout_marginBottom="200px"
+            android:text="RED" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="16px"
+            android:layout_marginTop="16px"
+            android:layout_marginEnd="16px"
+            android:layout_marginBottom="16px"
+            android:text="LEFT" />
+
     </RelativeLayout>
 
 </FrameLayout>

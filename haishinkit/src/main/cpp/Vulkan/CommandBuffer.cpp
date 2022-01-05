@@ -50,6 +50,8 @@ namespace Vulkan {
     }
 
     void CommandBuffer::TearDown(Kernel &kernel) {
+        commandBuffers.clear();
+        commandBuffers.shrink_to_fit();
         for (auto &buffer : buffers) {
             kernel.device->destroy(buffer);
         }
@@ -83,7 +85,7 @@ namespace Vulkan {
             commandBuffer.bindVertexBuffers(0, buffers, offsets);
             commandBuffer.bindDescriptorSets(
                     vk::PipelineBindPoint::eGraphics,
-                    kernel.pipeline.pipelineLayout,
+                    kernel.pipeline.pipelineLayout.get(),
                     0,
                     1,
                     &kernel.pipeline.descriptorSets[0].get(),

@@ -22,7 +22,7 @@ namespace Vulkan {
     }
 
     void Pipeline::SetUp(Kernel &kernel) {
-        descriptorSetLayout = kernel.device->createDescriptorSetLayout(
+        descriptorSetLayout = kernel.device->createDescriptorSetLayoutUnique(
                 vk::DescriptorSetLayoutCreateInfo()
                         .setBindingCount(1)
                         .setBindings(
@@ -35,7 +35,7 @@ namespace Vulkan {
                         )
         );
 
-        descriptorPool = kernel.device->createDescriptorPool(
+        descriptorPool = kernel.device->createDescriptorPoolUnique(
                 vk::DescriptorPoolCreateInfo()
                         .setMaxSets(1)
                         .setPoolSizes(
@@ -47,18 +47,18 @@ namespace Vulkan {
         descriptorSets = kernel.device->allocateDescriptorSetsUnique(
                 vk::DescriptorSetAllocateInfo()
                         .setDescriptorSetCount(1)
-                        .setDescriptorPool(descriptorPool)
-                        .setSetLayouts(descriptorSetLayout)
+                        .setDescriptorPool(descriptorPool.get())
+                        .setSetLayouts(descriptorSetLayout.get())
         );
 
-        pipelineLayout = kernel.device->createPipelineLayout(
+        pipelineLayout = kernel.device->createPipelineLayoutUnique(
                 vk::PipelineLayoutCreateInfo()
                         .setSetLayoutCount(1)
                         .setSetLayouts(
-                                descriptorSetLayout)
+                                descriptorSetLayout.get())
         );
 
-        pipelineCache = kernel.device->createPipelineCache(vk::PipelineCacheCreateInfo());
+        pipelineCache = kernel.device->createPipelineCacheUnique(vk::PipelineCacheCreateInfo());
 
         const auto vert = kernel.LoadShader("shaders/main.vert.spv");
         const auto frag = kernel.LoadShader("shaders/main.frag.spv");
@@ -102,7 +102,7 @@ namespace Vulkan {
         };
 
         pipeline = kernel.device->createGraphicsPipelineUnique(
-                pipelineCache,
+                pipelineCache.get(),
                 vk::GraphicsPipelineCreateInfo()
                         .setStageCount(shaderStages.size())
                         .setStages(shaderStages)
@@ -159,7 +159,7 @@ namespace Vulkan {
                         .setPDynamicState(&vk::PipelineDynamicStateCreateInfo()
                                 .setDynamicStateCount(0)
                         )
-                        .setLayout(pipelineLayout)
+                        .setLayout(pipelineLayout.get())
                         .setRenderPass(kernel.swapChain.renderPass.get())
         );
 
