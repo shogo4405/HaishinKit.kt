@@ -25,6 +25,10 @@ class VkPixelTransform : PixelTransform, Choreographer.FrameCallback {
         external get
         external set
 
+    var videoGravity: Int
+        external get
+        external set
+
     @Suppress("unused")
     private var memory: Long = 0
     private var isRunning: Boolean = false

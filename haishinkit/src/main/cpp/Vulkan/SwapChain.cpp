@@ -30,7 +30,7 @@ namespace Vulkan {
                         .setImageSharingMode(vk::SharingMode::eExclusive)
                         .setQueueFamilyIndexCount(1)
                         .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
-                        .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
+                        .setPreTransform(capabilities.currentTransform)
                         .setPresentMode(vk::PresentModeKHR::eFifo)
                         .setClipped(false)
                         .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit)

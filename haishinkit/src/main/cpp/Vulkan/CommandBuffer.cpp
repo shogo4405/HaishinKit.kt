@@ -64,11 +64,22 @@ namespace Vulkan {
         const auto colors = {vk::ClearValue().setColor(
                 vk::ClearColorValue().setFloat32({0.f, 0.f, 0.f, 1.f}))};
 
+        const std::vector<vk::Rect2D> scissors = {
+                vk::Rect2D().setExtent(kernel.swapChain.size).setOffset({0, 0})
+        };
+
+        const std::vector<vk::Viewport> viewports = {
+                textures[0]->GetViewport(kernel.swapChain.size)
+        };
+
         for (auto i = 0; i < commandBuffers.size(); ++i) {
             auto &commandBuffer = commandBuffers[i].get();
             commandBuffer.begin(
                     vk::CommandBufferBeginInfo()
                             .setFlags(vk::CommandBufferUsageFlagBits::eRenderPassContinue));
+
+            commandBuffer.setViewport(0, viewports);
+            commandBuffer.setScissor(0, scissors);
 
             commandBuffer.beginRenderPass(
                     vk::RenderPassBeginInfo()

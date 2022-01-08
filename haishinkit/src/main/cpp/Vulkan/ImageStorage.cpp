@@ -32,7 +32,7 @@ namespace Vulkan {
         layout = newImageLayout;
     }
 
-    vk::ImageCreateInfo ImageStorage::CreateImageCreateInfo() {
+    vk::ImageCreateInfo ImageStorage::CreateImageCreateInfo() const {
         return vk::ImageCreateInfo()
                 .setImageType(vk::ImageType::e2D)
                 .setExtent(vk::Extent3D(extent.width, extent.height, 1))

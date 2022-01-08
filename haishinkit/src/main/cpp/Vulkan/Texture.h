@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.hpp>
 #include <android/native_window.h>
 #include "ImageStorage.h"
+#include "VideoGravity.h"
 
 namespace Vulkan {
     class Kernel;
@@ -18,6 +19,8 @@ namespace Vulkan {
             Stage
         };
 
+        VideoGravity videoGravity = RESIZE_ASPECT;
+
         static vk::Format GetFormat(int32_t format);
 
         Texture(vk::Extent2D extent, vk::Format format);
@@ -29,6 +32,8 @@ namespace Vulkan {
         void TearDown(Kernel &kernel);
 
         void Update(Kernel &kernel, ANativeWindow_Buffer *buffer);
+
+        vk::Viewport GetViewport(const vk::Extent2D surface) const;
 
         vk::DescriptorImageInfo CreateDescriptorImageInfo();
 

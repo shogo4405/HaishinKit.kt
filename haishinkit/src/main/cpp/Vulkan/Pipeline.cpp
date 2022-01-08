@@ -101,6 +101,11 @@ namespace Vulkan {
                         )
         };
 
+        std::vector<vk::DynamicState> dynamicStates = {
+                vk::DynamicState::eViewport,
+                vk::DynamicState::eScissor,
+        };
+
         pipeline = kernel.device->createGraphicsPipelineUnique(
                 pipelineCache.get(),
                 vk::GraphicsPipelineCreateInfo()
@@ -157,7 +162,7 @@ namespace Vulkan {
                                 .setAttachments(colorBlendAttachmentStates)
                         )
                         .setPDynamicState(&vk::PipelineDynamicStateCreateInfo()
-                                .setDynamicStateCount(0)
+                                .setDynamicStates(dynamicStates)
                         )
                         .setLayout(pipelineLayout.get())
                         .setRenderPass(kernel.swapChain.renderPass.get())

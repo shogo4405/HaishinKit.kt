@@ -20,38 +20,50 @@ namespace Vulkan {
         if (inputNativeWindow != nullptr) {
             ANativeWindow_release(inputNativeWindow);
         }
-        if (inputNativeWindow != nullptr) {
+        if (nativeWindow != nullptr) {
             ANativeWindow_release(nativeWindow);
         }
     }
 
-    void PixelTransform::SetAssetManager(AAssetManager *assetManager) {
-        this->kernel->SetAssetManager(assetManager);
+    void PixelTransform::SetVideoGravity(VideoGravity newVideoGravity) {
+        videoGravity = newVideoGravity;
+        if (!textures.empty()) {
+            textures[0]->videoGravity = newVideoGravity;
+        }
     }
 
-    void PixelTransform::SetInputNativeWindow(ANativeWindow *inputNativeWindow) {
-        if (inputNativeWindow == nullptr) {
+    VideoGravity PixelTransform::GetVideoGravity() {
+        return videoGravity;
+    }
+
+    void PixelTransform::SetAssetManager(AAssetManager *assetManager) {
+        kernel->SetAssetManager(assetManager);
+    }
+
+    void PixelTransform::SetInputNativeWindow(ANativeWindow *newInputNativeWindow) {
+        if (newInputNativeWindow == nullptr) {
             for (auto &texture: textures) {
                 texture->TearDown(*kernel);
             }
         } else {
-            if (this->inputNativeWindow != inputNativeWindow) {
+            if (inputNativeWindow != newInputNativeWindow) {
                 for (auto &texture: textures) {
                     texture->TearDown(*kernel);
                 }
             }
-            const auto width = ANativeWindow_getWidth(inputNativeWindow);
-            const auto height = ANativeWindow_getHeight(inputNativeWindow);
-            const auto format = ANativeWindow_getFormat(inputNativeWindow);
+            const auto width = ANativeWindow_getWidth(newInputNativeWindow);
+            const auto height = ANativeWindow_getHeight(newInputNativeWindow);
+            const auto format = ANativeWindow_getFormat(newInputNativeWindow);
+            auto texture = new Texture(vk::Extent2D(width, height), Texture::GetFormat(format));
+            texture->videoGravity = videoGravity;
             textures.clear();
-            textures.push_back(
-                    new Texture(vk::Extent2D(width, height), Texture::GetFormat(format)));
+            textures.push_back(texture);
             kernel->SetTextures(textures);
         }
-        if (this->inputNativeWindow != nullptr) {
-            ANativeWindow_release(this->inputNativeWindow);
+        if (inputNativeWindow != nullptr) {
+            ANativeWindow_release(inputNativeWindow);
         }
-        this->inputNativeWindow = inputNativeWindow;
+        inputNativeWindow = newInputNativeWindow;
     }
 
     void PixelTransform::SetNativeWindow(ANativeWindow *newNativeWindow) {
@@ -106,6 +118,19 @@ JNIEXPORT jboolean JNICALL
 Java_com_haishinkit_vk_VkPixelTransform_00024Companion_isSupported(JNIEnv *env, jobject thiz) {
     return Vulkan::DynamicLoader::GetInstance().Load();
 }
+
+JNIEXPORT jint JNICALL
+Java_com_haishinkit_vk_VkPixelTransform_getVideoGravity(JNIEnv *env, jobject thiz) {
+    return static_cast<jint>(Unmanaged<Vulkan::PixelTransform>::fromOpaque(env,
+                                                                           thiz)->takeRetainedValue()->GetVideoGravity());
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_vk_VkPixelTransform_setVideoGravity(JNIEnv *env, jobject thiz, jint value) {
+    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->SetVideoGravity(
+            static_cast<Vulkan::VideoGravity>(value));
+}
+
 
 JNIEXPORT jobject JNICALL
 Java_com_haishinkit_vk_VkPixelTransform_getSurface(JNIEnv *env, jobject thiz) {

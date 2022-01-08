@@ -25,7 +25,7 @@ namespace Vulkan {
                 vk::PipelineStageFlagBits srcStageMask,
                 vk::PipelineStageFlagBits dstStageMask);
 
-        vk::ImageCreateInfo CreateImageCreateInfo();
+        vk::ImageCreateInfo CreateImageCreateInfo() const;
     };
 }
 

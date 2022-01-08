@@ -15,6 +15,10 @@ namespace Vulkan {
 
         ~PixelTransform();
 
+        void SetVideoGravity(VideoGravity newVideoGravity);
+
+        VideoGravity GetVideoGravity();
+
         void SetAssetManager(AAssetManager *assetManager);
 
         void SetNativeWindow(ANativeWindow *nativeWindow);
@@ -32,6 +36,7 @@ namespace Vulkan {
         ANativeWindow *nativeWindow;
         std::vector<Texture *> textures;
         Kernel *kernel;
+        VideoGravity videoGravity = VideoGravity::RESIZE_ASPECT;
     };
 }
 

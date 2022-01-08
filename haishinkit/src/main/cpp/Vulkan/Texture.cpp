@@ -26,6 +26,36 @@ namespace Vulkan {
 
     Texture::~Texture() = default;
 
+    vk::Viewport Texture::GetViewport(const vk::Extent2D surface) const {
+        vk::Viewport viewport = vk::Viewport();
+        switch (videoGravity) {
+            case RESIZE_ASPECT: {
+                const float scale = std::min(surface.height / image.extent.height,
+                                             surface.width / image.extent.width);
+                viewport.setX((surface.width - image.extent.width * scale) / scale / 2);
+                viewport.setY((surface.height - image.extent.height * scale) / scale / 2);
+                viewport.setWidth(surface.width * scale);
+                viewport.setHeight(surface.height * scale);
+                break;
+            }
+            case RESIZE_ASPECT_FILL: {
+                const float scale = std::min(surface.height / image.extent.height,
+                                             surface.width / image.extent.width);
+                viewport.setX((surface.width - image.extent.width * scale) / scale / 2);
+                viewport.setY((surface.height - image.extent.width * scale) / scale / 2);
+                viewport.setWidth(surface.width * scale);
+                viewport.setHeight(surface.height * scale);
+                break;
+            }
+            case RESIZE: {
+                viewport.setWidth(surface.width);
+                viewport.setHeight(surface.height);
+                break;
+            }
+        }
+        return viewport;
+    }
+
     void Texture::SetUp(Kernel &kernel) {
         mode = HasLinearTilingFeatures(kernel) ? Mode::Linear : Mode::Stage;
 
