@@ -1,14 +1,15 @@
 package com.haishinkit.codec
 
-import android.graphics.SurfaceTexture
+import android.content.res.AssetManager
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
+import android.view.Surface
 import com.haishinkit.flv.tag.FlvTag
-import com.haishinkit.gles.GlPixelContext
 import com.haishinkit.gles.GlPixelReader
-import com.haishinkit.gles.GlPixelTransform
+import com.haishinkit.graphics.PixelTransform
+import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.util.FeatureUtil
 import java.nio.ByteBuffer
 import kotlin.properties.Delegates
@@ -31,9 +32,6 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
         var frameRate: Int by Delegates.observable(DEFAULT_FRAME_RATE) { _, _, newValue ->
             codec?.frameRate = newValue
         }
-        var pixelRendererClass: Class<*>? by Delegates.observable(null) { _, _, newValue ->
-            codec?.pixelRendererClass = newValue
-        }
     }
 
     var bitRate = DEFAULT_BIT_RATE
@@ -53,27 +51,22 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
     var profile = DEFAULT_PROFILE
     var level = DEFAULT_LEVEL
     var colorFormat = DEFAULT_COLOR_FORMAT
-    var context: GlPixelContext
-        get() = pixelTransform.context
-        set(value) {
-            pixelTransform.context = value
-        }
     var fpsControllerClass: Class<*>? = null
-    var pixelRendererClass: Class<*>? = null
 
-    private val pixelTransform: GlPixelTransform by lazy {
-        val transform = GlPixelTransform()
-        transform.reader.listener = this
-        transform
+    val pixelTransform: PixelTransform by lazy {
+        PixelTransformFactory().create(true)
     }
 
-    internal fun setListener(listener: GlPixelTransform.Listener?) {
-        pixelTransform.setListener(listener)
+    internal fun setListener(listener: PixelTransform.Listener?) {
+        pixelTransform.listener = listener
     }
 
-    fun frameAvailable(surfaceTexture: SurfaceTexture) {
-        if (!isRunning.get() || mode == MODE_DECODE) return
-        pixelTransform.frameAvailable(surfaceTexture)
+    internal fun setAssetManager(assetManager: AssetManager?) {
+        pixelTransform.assetManager = assetManager
+    }
+
+    internal fun createInputSurface(width: Int, height: Int, format: Int) {
+        pixelTransform.createInputSurface(width, height, format)
     }
 
     override fun createOutputFormat(): MediaFormat {
@@ -104,8 +97,7 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
         super.configure(codec)
         if (mode == MODE_ENCODE) {
             pixelTransform.fpsControllerClass = fpsControllerClass
-            pixelTransform.pixelRendererClass = pixelRendererClass
-            pixelTransform.configure(codec.createInputSurface(), width, height)
+            pixelTransform.setUp(codec.createInputSurface(), width, height)
         }
     }
 

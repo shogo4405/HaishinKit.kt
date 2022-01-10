@@ -25,13 +25,8 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
         Log.i(TAG, "VkPixelTransform::isSupported() = ${VkPixelTransform.isSupported()}")
         context?.let {
             Log.d(TAG, "setAssetManager")
-            renderer?.setAssetManager(it.assets)
+            renderer?.assetManager = it.assets
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        renderer?.stopRunning()
     }
 
     override fun onDestroy() {
@@ -162,7 +157,6 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
                 }
             }
         }
-        renderer?.startRunning()
 
         return v
     }
@@ -171,6 +165,7 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
         try {
             drawFrame(holderA, Color.RED)
             drawFrame(holderB, Color.BLUE)
+            // renderer?.frameAvailable(null)
         } catch (e: Exception) {
         }
         choreographer.postFrameCallback(this)

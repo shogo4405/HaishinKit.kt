@@ -2,15 +2,19 @@ package com.haishinkit.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Surface
+import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
+import com.haishinkit.graphics.PixelTransform
+import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.util.MediaFormatUtil
-import com.haishinkit.util.VideoGravity
+import com.haishinkit.graphics.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -26,12 +30,37 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             (field as? IEventDispatcher)?.removeEventListener(Event.RTMP_STATUS, this)
             (value as? IEventDispatcher)?.addEventListener(Event.RTMP_STATUS, this)
             field = value
+            field?.renderer = this
         }
+    override val pixelTransform: PixelTransform by lazy {
+        PixelTransformFactory().create(true)
+    }
     private var videoAspectRatio = 0f
         set(value) {
             field = value
             requestLayout()
         }
+
+    init {
+        pixelTransform.assetManager = context.assets
+
+        holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+            }
+
+            override fun surfaceChanged(
+                holder: SurfaceHolder,
+                format: Int,
+                width: Int,
+                height: Int
+            ) {
+                pixelTransform.setUp(holder.surface, width, height)
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+            }
+        })
+    }
 
     override fun attachStream(stream: NetStream?) {
         this.stream = stream
@@ -44,12 +73,13 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
 
     override fun startRunning() {
         if (isRunning.get()) return
-        stream?.surface = holder.surface
+        stream?.video?.startRunning()
         isRunning.set(true)
     }
 
     override fun stopRunning() {
         if (!isRunning.get()) return
+        stream?.video?.stopRunning()
         isRunning.set(false)
     }
 
@@ -68,22 +98,6 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             else -> {
             }
         }
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        var width = measuredWidth
-        var height = measuredHeight
-        if (videoAspectRatio != 0f) {
-            val viewAspectRatio = width.toFloat() / height
-            val aspectDeformation = videoAspectRatio / viewAspectRatio - 1
-            if (aspectDeformation > MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
-                height = (width / videoAspectRatio).toInt()
-            } else if (aspectDeformation < -MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
-                width = (height * videoAspectRatio).toInt()
-            }
-        }
-        setMeasuredDimension(width, height)
     }
 
     override fun toString(): String {

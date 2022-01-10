@@ -12,10 +12,12 @@ import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
+import com.haishinkit.graphics.PixelTransform
+import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.util.MediaFormatUtil
-import com.haishinkit.util.VideoGravity
+import com.haishinkit.graphics.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -32,6 +34,9 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
             (value as? IEventDispatcher)?.addEventListener(Event.RTMP_STATUS, this)
             field = value
         }
+    override val pixelTransform: PixelTransform by lazy {
+        PixelTransformFactory().create()
+    }
     private var resolution = Size(0, 0)
 
     init {

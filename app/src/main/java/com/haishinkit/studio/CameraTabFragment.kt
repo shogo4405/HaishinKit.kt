@@ -19,13 +19,13 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.haishinkit.media.AudioRecordSource
-import com.haishinkit.view.HkGLSurfaceView
 import androidx.fragment.app.Fragment
+import com.haishinkit.view.HkSurfaceView
 
 class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var cameraView: HkGLSurfaceView
+    private lateinit var cameraView: HkSurfaceView
     private lateinit var cameraSource: Camera2Source
 
     override fun onCreate(savedInstanceState: Bundle?) {

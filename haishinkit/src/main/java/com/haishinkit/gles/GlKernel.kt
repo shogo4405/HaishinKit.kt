@@ -1,26 +1,35 @@
-package com.haishinkit.gles.renderer
+package com.haishinkit.gles
 
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
+import android.util.Log
 import android.util.Size
-import com.haishinkit.gles.GlPixelContext
-import com.haishinkit.gles.GlUtil
-import com.haishinkit.util.VideoGravity
+import com.haishinkit.graphics.VideoGravity
+import com.haishinkit.lang.Utilize
 import com.haishinkit.util.aspectRatio
-import com.haishinkit.util.swap
 import javax.microedition.khronos.opengles.GL10
 
-class GlFramePixelRenderer(
-    override var utilizable: Boolean = false,
-    override var resolution: Size = Size(0, 0),
-    override var videoGravity: Int = VideoGravity.RESIZE_ASPECT_FILL
-) : GlPixelRenderer {
+internal class GlKernel(
+    override var utilizable: Boolean = false
+) : Utilize {
+    var orientation: Int = ROTATION_0
+        set(value) {
+            field = value
+            invalidateLayout = true
+        }
+    var videoGravity: Int = VideoGravity.RESIZE_ASPECT
+        set(value) {
+            field = value
+            invalidateLayout = true
+        }
+    var resolution: Size = Size(0, 0)
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private var program = INVALID_VALUE
     private var positionHandle = INVALID_VALUE
     private var texCoordHandle = INVALID_VALUE
     private var textureHandle = INVALID_VALUE
+    private var invalidateLayout = true
 
     override fun setUp() {
         if (utilizable) return
@@ -46,7 +55,7 @@ class GlFramePixelRenderer(
             GL10.GL_CLAMP_TO_EDGE
         )
 
-        program = GlUtil.createProgram(VERTEX_SHADER, FRAGMENT_SHADER)
+        program = GlUtil.createProgram(GlShader.VERTEX, GlShader.FRAGMENT)
         positionHandle = GLES20.glGetAttribLocation(program, "position")
         GLES20.glEnableVertexAttribArray(positionHandle)
         texCoordHandle = GLES20.glGetAttribLocation(program, "texcoord")
@@ -67,8 +76,11 @@ class GlFramePixelRenderer(
         utilizable = false
     }
 
-    override fun render(context: GlPixelContext, matrix: FloatArray) {
-        configuration(context)
+    fun render(textureId: Int, textureSize: Size, matrix: FloatArray) {
+        if (invalidateLayout) {
+            layout(textureSize)
+            invalidateLayout = false
+        }
 
         GLES20.glUseProgram(program)
 
@@ -80,7 +92,7 @@ class GlFramePixelRenderer(
         GlUtil.checkGlError("glUniform1i")
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, context.textureId)
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
         GlUtil.checkGlError("glBindTexture")
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
@@ -89,27 +101,22 @@ class GlFramePixelRenderer(
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
     }
 
-    private fun configuration(context: GlPixelContext) {
-        var swapped = false
-        when (context.orientation) {
-            GlPixelContext.ROTATION_0 -> {
+    private fun layout(textureSize: Size) {
+        when (orientation) {
+            ROTATION_0 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_0)
             }
-            GlPixelContext.ROTATION_90 -> {
-                swapped = true
+            ROTATION_90 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_90)
             }
-            GlPixelContext.ROTATION_180 -> {
+            ROTATION_180 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_180)
             }
-            GlPixelContext.ROTATION_270 -> {
-                swapped = true
+            ROTATION_270 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_270)
             }
         }
         texCoordBuffer.position(0)
-
-        val textureSize = context.textureSize.swap(swapped)
 
         when (videoGravity) {
             VideoGravity.RESIZE_ASPECT -> {
@@ -156,6 +163,11 @@ class GlFramePixelRenderer(
     companion object {
         private const val INVALID_VALUE = 0
 
+        const val ROTATION_0 = 0
+        const val ROTATION_90 = 1
+        const val ROTATION_180 = 2
+        const val ROTATION_270 = 3
+
         private val VERTECES = floatArrayOf(
             -1.0f, 1.0f, 0.0f,
             -1.0f, -1.0f, 0.0f,
@@ -186,21 +198,5 @@ class GlFramePixelRenderer(
             0.0f, 0.0f,
             1.0f, 0.0f
         )
-        private const val VERTEX_SHADER = "attribute vec4 position;\n" +
-            "attribute vec2 texcoord;\n" +
-            "varying vec2 texcoordVarying;\n" +
-            "void main() {\n" +
-            "    gl_Position = position;\n" +
-            "    texcoordVarying = texcoord;\n" +
-            "}\n"
-        private const val FRAGMENT_SHADER = "#extension GL_OES_EGL_image_external : require\n" +
-            "precision mediump float;\n" +
-            "varying vec2 texcoordVarying;\n" +
-            "uniform samplerExternalOES texture;\n" +
-            "void main() {\n" +
-            "  gl_FragColor = texture2D(texture, texcoordVarying);\n" +
-            "}\n"
-
-        private val TAG = GlFramePixelRenderer::class.java.simpleName
     }
 }

@@ -2,7 +2,6 @@ package com.haishinkit.rtmp.message
 
 import androidx.core.util.Pools
 import com.haishinkit.rtmp.RtmpObjectEncoding
-import java.lang.IllegalArgumentException
 
 internal class RtmpMessageFactory(maxPoolSize: Int) {
     private val user = Pools.SimplePool<RtmpMessage>(maxPoolSize)

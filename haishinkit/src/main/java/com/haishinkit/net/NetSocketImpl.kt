@@ -44,6 +44,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         }
     private var outputQueue = LinkedBlockingDeque<ByteBuffer>()
     private var outputBufferPool = Pools.SimplePool<ByteBuffer>(1024)
+
     @Volatile
     private var keepAlive = false
 

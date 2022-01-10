@@ -25,7 +25,7 @@ abstract class MediaCodec(private val mime: String) : Running {
             codec?.options = newValue
         }
         var capturing: Boolean by Delegates.observable(false) { _, _, newValue ->
-            codec?.capturing = capturing
+            codec?.capturing = newValue
         }
     }
 
@@ -109,6 +109,7 @@ abstract class MediaCodec(private val mime: String) : Running {
     var mode = MODE_ENCODE
     var options = listOf<CodecOption>()
     var inputSurface: Surface? = null
+
     @Volatile
     var capturing = false
     override val isRunning = AtomicBoolean(false)

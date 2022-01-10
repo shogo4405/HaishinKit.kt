@@ -8,6 +8,7 @@
 #include "DynamicLoader.h"
 
 namespace Vulkan {
+
     PixelTransform::PixelTransform() :
             kernel(new Kernel()),
             textures(std::vector<Texture *>(0)),
@@ -30,6 +31,14 @@ namespace Vulkan {
         if (!textures.empty()) {
             textures[0]->videoGravity = newVideoGravity;
         }
+    }
+
+    void PixelTransform::SetUpTexture(int32_t width, int32_t height) {
+        auto texture = new Texture(vk::Extent2D(width, height), vk::Format::eR8G8B8A8Unorm);
+        texture->videoGravity = videoGravity;
+        textures.clear();
+        textures.push_back(texture);
+        kernel->SetTextures(textures);
     }
 
     VideoGravity PixelTransform::GetVideoGravity() {
@@ -86,25 +95,30 @@ namespace Vulkan {
         nativeWindow = newNativeWindow;
     }
 
-    void PixelTransform::UpdateTexture() {
-        if (IsReady()) {
+    void PixelTransform::UpdateTexture(void *data, int32_t format, int32_t stride) {
+        if (!IsReady()) {
             return;
         }
-        ANativeWindow_acquire(inputNativeWindow);
-        ANativeWindow_Buffer buffer;
-        int result = ANativeWindow_lock(inputNativeWindow, &buffer, nullptr);
-        if (result == 0) {
-            ANativeWindow_unlockAndPost(inputNativeWindow);
-            ANativeWindow_release(inputNativeWindow);
-            textures[0]->Update(*kernel, &buffer);
-            kernel->DrawFrame();
+        if (data == nullptr) {
+            ANativeWindow_acquire(inputNativeWindow);
+            ANativeWindow_Buffer buffer;
+            int result = ANativeWindow_lock(inputNativeWindow, &buffer, nullptr);
+            if (result == 0) {
+                ANativeWindow_unlockAndPost(inputNativeWindow);
+                textures[0]->Update(*kernel, buffer.bits, buffer.format, buffer.stride);
+                kernel->DrawFrame();
+                ANativeWindow_release(inputNativeWindow);
+            } else {
+                ANativeWindow_release(inputNativeWindow);
+            }
         } else {
-            ANativeWindow_release(inputNativeWindow);
+            textures[0]->Update(*kernel, data, format, stride);
+            kernel->DrawFrame();
         }
     }
 
     bool PixelTransform::IsReady() {
-        return kernel->IsAvailable() && inputNativeWindow == nullptr || nativeWindow == nullptr;
+        return kernel->IsAvailable() && nativeWindow != nullptr;
     }
 
     std::string PixelTransform::InspectDevices() {
@@ -157,6 +171,15 @@ Java_com_haishinkit_vk_VkPixelTransform_getInputSurface(JNIEnv *env, jobject thi
 }
 
 JNIEXPORT void JNICALL
+Java_com_haishinkit_vk_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
+                                                   jint height) {
+    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Vulkan::PixelTransform *self) {
+                self->SetUpTexture(width, height);
+            });
+}
+
+JNIEXPORT void JNICALL
 Java_com_haishinkit_vk_VkPixelTransform_setInputSurface(JNIEnv *env, jobject thiz,
                                                         jobject surface) {
     ANativeWindow *window = nullptr;
@@ -188,10 +211,16 @@ Java_com_haishinkit_vk_VkPixelTransform_inspectDevices(JNIEnv *env, jobject thiz
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_vk_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz, jobject buffer,
+                                                      jint format, jint stride) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
-                self->UpdateTexture();
+                if (buffer == nullptr) {
+                    self->UpdateTexture(nullptr, 0, 0);
+                } else {
+                    void *data = env->GetDirectBufferAddress(buffer);
+                    self->UpdateTexture(data, format, stride);
+                }
             });
 }
 

@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.atomic.AtomicBoolean
@@ -108,6 +107,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
             field?.looper?.quitSafely()
             field = value
         }
+
     @Volatile
     private var keepAlive = true
     private var frameTracker: FrameTracker? = null

@@ -15,6 +15,8 @@ namespace Vulkan {
 
         ~PixelTransform();
 
+        void SetUpTexture(int32_t width, int32_t height);
+
         void SetVideoGravity(VideoGravity newVideoGravity);
 
         VideoGravity GetVideoGravity();
@@ -25,7 +27,7 @@ namespace Vulkan {
 
         void SetInputNativeWindow(ANativeWindow *inputNativeWindow);
 
-        void UpdateTexture();
+        void UpdateTexture(void *data, int32_t format, int32_t stride);
 
         std::string InspectDevices();
 

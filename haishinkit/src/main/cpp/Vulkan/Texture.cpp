@@ -30,21 +30,39 @@ namespace Vulkan {
         vk::Viewport viewport = vk::Viewport();
         switch (videoGravity) {
             case RESIZE_ASPECT: {
-                const float scale = std::min(surface.height / image.extent.height,
-                                             surface.width / image.extent.width);
-                viewport.setX((surface.width - image.extent.width * scale) / scale / 2);
-                viewport.setY((surface.height - image.extent.height * scale) / scale / 2);
-                viewport.setWidth(surface.width * scale);
-                viewport.setHeight(surface.height * scale);
+                const float xRatio = (float) surface.width / (float) image.extent.width;
+                const float yRatio = (float) surface.height / (float) image.extent.height;
+                if (yRatio < xRatio) {
+                    viewport
+                            .setX((surface.width - image.extent.width * yRatio) / 2)
+                            .setY(0)
+                            .setWidth(image.extent.width * yRatio)
+                            .setHeight(surface.height);
+                } else {
+                    viewport
+                            .setX(0)
+                            .setY((surface.height - image.extent.height * xRatio) / 2)
+                            .setWidth(surface.width)
+                            .setHeight(image.extent.height * xRatio);
+                }
                 break;
             }
             case RESIZE_ASPECT_FILL: {
-                const float scale = std::min(surface.height / image.extent.height,
-                                             surface.width / image.extent.width);
-                viewport.setX((surface.width - image.extent.width * scale) / scale / 2);
-                viewport.setY((surface.height - image.extent.width * scale) / scale / 2);
-                viewport.setWidth(surface.width * scale);
-                viewport.setHeight(surface.height * scale);
+                const float iRatio = (float) surface.width / (float) surface.height;
+                const float fRatio = (float) image.extent.width / (float) image.extent.height;
+                if (iRatio < fRatio) {
+                    viewport
+                            .setX(((float) surface.width - (float) surface.height * fRatio) / 2)
+                            .setY(0)
+                            .setWidth(surface.height * fRatio)
+                            .setHeight(surface.height);
+                } else {
+                    viewport
+                            .setX(0)
+                            .setY(((float) surface.height - (float) surface.width / fRatio) / 2)
+                            .setWidth(surface.width)
+                            .setHeight(surface.width / fRatio);
+                }
                 break;
             }
             case RESIZE: {
@@ -151,13 +169,13 @@ namespace Vulkan {
         memory = nullptr;
     }
 
-    void Texture::Update(Kernel &kernel, ANativeWindow_Buffer *buffer) {
-        if (buffer->bits == nullptr || memory == nullptr) {
+    void Texture::Update(Kernel &kernel, void *data, int32_t format, int32_t stride) {
+        if (data == nullptr || memory == nullptr) {
             return;
         }
         switch (image.format) {
             case vk::Format::eR5G6B5UnormPack16:
-                switch (buffer->format) {
+                switch (format) {
                     case WINDOW_FORMAT_RGBA_8888:
                         throw std::runtime_error(
                                 "unsupported formats eR5G6B5UnormPack16:WINDOW_FORMAT_RGBA_8888");
@@ -165,20 +183,20 @@ namespace Vulkan {
                         throw std::runtime_error(
                                 "unsupported formats eR5G6B5UnormPack16:WINDOW_FORMAT_RGBX_8888");
                     case WINDOW_FORMAT_RGB_565:
-                        memcpy(memory, buffer->bits, allocationSize);
+                        memcpy(memory, data, allocationSize);
                         break;
                 }
                 break;
             case vk::Format::eR8G8B8A8Unorm:
-                switch (buffer->format) {
+                switch (format) {
                     case WINDOW_FORMAT_RGBA_8888:
-                        for (int32_t y = 0; y < image.extent.height; y++) {
+                        for (int32_t y = 0; y < image.extent.height; ++y) {
                             auto *row = reinterpret_cast<unsigned char *>((char *) memory +
                                                                           rowPitch *
                                                                           y);
-                            auto *src = reinterpret_cast<unsigned char *>((char *) buffer->bits +
-                                                                          4 * buffer->stride * y);
-                            memcpy(row, src, (size_t) (4 * buffer->stride));
+                            auto *src = reinterpret_cast<unsigned char *>((char *) data +
+                                                                          stride * y);
+                            memcpy(row, src, (size_t) (4 * image.extent.width));
                         }
                         break;
                     case WINDOW_FORMAT_RGBX_8888:

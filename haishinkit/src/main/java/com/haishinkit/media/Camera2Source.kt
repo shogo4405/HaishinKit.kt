@@ -2,6 +2,7 @@ package com.haishinkit.media
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.ImageFormat
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
@@ -14,24 +15,20 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
-import com.haishinkit.gles.GlPixelContext
-import com.haishinkit.gles.renderer.GlFramePixelRenderer
+import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
-import com.haishinkit.view.HkGLSurfaceView
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.microedition.khronos.egl.EGLConfig
-import javax.microedition.khronos.opengles.GL10
 
 /**
  * A video source that captures a camera by the Camera2 API.
  */
 class Camera2Source(
-    context: Context,
+    private val context: Context,
     override val fpsControllerClass: Class<*>? = null,
     override var utilizable: Boolean = false
-) : VideoSource {
+) : VideoSource, PixelTransform.Listener {
     var device: CameraDevice? = null
     var characteristics: CameraCharacteristics? = null
         private set
@@ -57,19 +54,27 @@ class Camera2Source(
             stream?.videoSetting?.width = value.width
             stream?.videoSetting?.height = value.height
         }
-    internal var surface: Surface? = null
     private var cameraId: String = DEFAULT_CAMERA_ID
-    private var request: CaptureRequest.Builder? = null
     private var manager: CameraManager =
         context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-    private val backgroundHandler by lazy {
-        val thread = HandlerThread(TAG)
-        thread.start()
-        Handler(thread.looper)
-    }
+    private var handler: Handler? = null
+        get() {
+            if (field == null) {
+                val thread = HandlerThread(TAG)
+                thread.start()
+                field = Handler(thread.looper)
+            }
+            return field
+        }
+        set(value) {
+            field?.looper?.quitSafely()
+            field = value
+        }
     private val resolver: CameraResolver by lazy {
         CameraResolver(manager)
     }
+    private var requests = mutableListOf<CaptureRequest.Builder>()
+    private var surfaceList = mutableListOf<Surface>()
 
     @SuppressLint("MissingPermission")
     fun open(position: Int? = null) {
@@ -86,9 +91,12 @@ class Camera2Source(
                 override fun onOpened(camera: CameraDevice) {
                     this@Camera2Source.device = camera
                     this@Camera2Source.setUp()
-                    surface?.let { it ->
-                        this@Camera2Source.createCaptureSession(it, camera)
-                    }
+                    stream?.renderer?.pixelTransform?.listener = this@Camera2Source
+                    stream?.renderer?.pixelTransform?.createInputSurface(
+                        resolution.width,
+                        resolution.height,
+                        0x1
+                    )
                 }
 
                 override fun onDisconnected(camera: CameraDevice) {
@@ -119,26 +127,25 @@ class Camera2Source(
 
     override fun setUp() {
         if (utilizable) return
+        stream?.videoCodec?.setAssetManager(context.assets)
+        stream?.videoCodec?.setListener(this)
         stream?.renderer?.startRunning()
         super.setUp()
     }
 
     override fun tearDown() {
         if (!utilizable) return
-        request = null
         session = null
         device = null
         super.tearDown()
     }
 
     override fun startRunning() {
-        Log.d(TAG, "${this::startRunning.name}: $device, $surface")
+        Log.d(TAG, "${this::startRunning.name}: $device")
         if (isRunning.get()) {
             return
         }
         val device = device ?: return
-        val surface = surface ?: return
-        createCaptureSession(surface, device)
         isRunning.set(true)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -165,34 +172,15 @@ class Camera2Source(
         }
     }
 
-    override fun createGLSurfaceViewRenderer(): VideoSource.GlRenderer {
-        return object : VideoSource.GlRenderer {
-            override var context: GlPixelContext = GlPixelContext.instance
+    override fun onSetUp(pixelTransform: PixelTransform) {
+        if (stream?.videoCodec?.pixelTransform == pixelTransform) {
+            pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
+        }
+    }
 
-            override var videoGravity: Int
-                get() {
-                    return renderer.videoGravity
-                }
-                set(value) {
-                    renderer.videoGravity = value
-                }
-
-            private var renderer: GlFramePixelRenderer = GlFramePixelRenderer()
-
-            override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-                renderer.setUp()
-                this@Camera2Source.startRunning()
-                context.textureSize =
-                    this@Camera2Source.resolver.getCameraSize(this@Camera2Source.characteristics)
-            }
-
-            override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-                renderer.resolution = Size(width, height)
-            }
-
-            override fun onDrawFrame(gl: GL10) {
-                renderer.render(context, FloatArray(16))
-            }
+    override fun onCreateInputSurface(pixelTransform: PixelTransform, surface: Surface) {
+        device?.let {
+            createCaptureSession(surface, it)
         }
     }
 
@@ -201,28 +189,27 @@ class Camera2Source(
     }
 
     private fun createCaptureSession(surface: Surface, device: CameraDevice) {
-        request = device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-            addTarget(surface)
-        }
-        val surfaceList = mutableListOf(surface)
+        surfaceList.add(surface)
+        requests.add(device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
+            surfaceList.forEach {
+                addTarget(it)
+            }
+        })
         device.createCaptureSession(
             surfaceList,
             object : CameraCaptureSession.StateCallback() {
                 override fun onConfigured(session: CameraCaptureSession) {
                     this@Camera2Source.session = session
-                    val request = request ?: return
-                    (this@Camera2Source.stream?.renderer as HkGLSurfaceView).let { view ->
-                        val facing = resolver.getFacing(characteristics!!)
-                        view.isFront = facing == CameraCharacteristics.LENS_FACING_FRONT
+                    for (request in requests) {
+                        session.setRepeatingRequest(request.build(), null, handler)
                     }
-                    session.setRepeatingRequest(request.build(), null, backgroundHandler)
                 }
 
                 override fun onConfigureFailed(session: CameraCaptureSession) {
                     this@Camera2Source.session = null
                 }
             },
-            backgroundHandler
+            handler
         )
     }
 

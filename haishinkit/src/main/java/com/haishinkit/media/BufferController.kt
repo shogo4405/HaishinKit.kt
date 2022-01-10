@@ -13,6 +13,7 @@ internal class BufferController<T>(suffix: String) : Object() {
 
     var listener: Listener? = null
     var bufferTime: Int = DEFAULT_BUFFER_TIME
+
     @Volatile
     private var waiting = true
     private var messages = LinkedBlockingDeque<T>()

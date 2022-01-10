@@ -1,11 +1,13 @@
 package com.haishinkit.vk
 
 import android.content.res.AssetManager
-import android.view.Choreographer
+import android.media.ImageReader
 import android.view.Surface
-import com.haishinkit.lang.PixelTransform
+import com.haishinkit.graphics.PixelTransform
+import java.nio.ByteBuffer
 
-class VkPixelTransform : PixelTransform, Choreographer.FrameCallback {
+class VkPixelTransform(override var listener: PixelTransform.Listener? = null) : PixelTransform,
+    ImageReader.OnImageAvailableListener {
     companion object {
         init {
             System.loadLibrary("haishinkit")
@@ -15,54 +17,54 @@ class VkPixelTransform : PixelTransform, Choreographer.FrameCallback {
          * A Boolean value indicating whether the current device supports the Vulkan API.
          */
         external fun isSupported(): Boolean
+
+        private const val MAX_IMAGES = 2
     }
 
-    var surface: Surface?
+    override var surface: Surface?
         external get
         external set
 
-    var inputSurface: Surface?
+    override var inputSurface: Surface?
         external get
         external set
+
+    override var fpsControllerClass: Class<*>? = null
 
     var videoGravity: Int
         external get
         external set
 
+    override var assetManager: AssetManager? = null
+
     @Suppress("unused")
     private var memory: Long = 0
-    private var isRunning: Boolean = false
-    private var choreographer: Choreographer? = null
-
+    private lateinit var reader: ImageReader
     external fun inspectDevices(): String
-    external fun setAssetManager(assetManager: AssetManager)
+    // external override fun setAssetManager(assetManager: AssetManager?)
 
-    fun startRunning() {
-        if (isRunning) {
-            return
-        }
-        choreographer = Choreographer.getInstance()
-        choreographer?.postFrameCallback(this)
-        isRunning = true
+    override fun setUp(surface: Surface?, width: Int, height: Int) {
+        this.surface = surface
+        listener?.onSetUp(this)
     }
 
-    fun stopRunning() {
-        if (!isRunning) {
-            return
-        }
-        choreographer?.removeFrameCallback(this)
-        isRunning = false
+    override fun createInputSurface(width: Int, height: Int, format: Int) {
+        reader = ImageReader.newInstance(width, height, format, MAX_IMAGES)
+        setTexture(width, height)
+        reader.setOnImageAvailableListener(this, null)
+        listener?.onCreateInputSurface(this, reader.surface)
     }
 
-    override fun doFrame(frameTimeNanos: Long) {
-        updateTexture()
-        choreographer?.postFrameCallback(this)
+    override fun onImageAvailable(reader: ImageReader) {
+        val image = reader.acquireNextImage()
+        image.close()
     }
 
     protected fun finalize() {
         dispose()
     }
 
-    private external fun updateTexture()
+    private external fun setTexture(width: Int, height: Int);
+    private external fun updateTexture(buffer: ByteBuffer? = null, format: Int, stride: Int)
     private external fun dispose()
 }
