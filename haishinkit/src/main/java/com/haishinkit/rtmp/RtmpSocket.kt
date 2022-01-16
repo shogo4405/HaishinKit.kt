@@ -5,7 +5,6 @@ import com.haishinkit.event.Event
 import com.haishinkit.net.NetSocket
 import com.haishinkit.net.NetSocketImpl
 import org.apache.commons.lang3.builder.ToStringBuilder
-import java.lang.IllegalArgumentException
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 

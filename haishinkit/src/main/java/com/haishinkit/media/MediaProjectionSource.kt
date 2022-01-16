@@ -1,35 +1,32 @@
 package com.haishinkit.media
 
 import android.content.Context
-import android.graphics.SurfaceTexture
+import android.graphics.ImageFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
-import android.view.Choreographer
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.util.ScheduledFpsController
-import com.haishinkit.gles.GlPixelContext
-import com.haishinkit.gles.GlPixelTransform
+import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.net.NetStream
 import org.apache.commons.lang3.builder.ToStringBuilder
-import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A video source that captures a display by the MediaProjection API.
  */
 class MediaProjectionSource(
-    context: Context,
+    private val context: Context,
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
     override val fpsControllerClass: Class<*>? = ScheduledFpsController::class.java,
     override var utilizable: Boolean = false
 ) :
-    VideoSource, Choreographer.FrameCallback, GlPixelTransform.Listener {
+    VideoSource, PixelTransform.Listener {
     var scale = 0.5F
     override var stream: NetStream? = null
         set(value) {
@@ -43,17 +40,14 @@ class MediaProjectionSource(
             stream?.videoSetting?.width = value.width
             stream?.videoSetting?.height = value.height
         }
-    private var virtualDisplay: VirtualDisplay? = null
-    private lateinit var choreographer: Choreographer
     private var surface: Surface? = null
-    private var surfaceTexture: SurfaceTexture? = null
-    private var pixelContext = GlPixelContext(context, false)
+    private var virtualDisplay: VirtualDisplay? = null
 
     override fun setUp() {
         if (utilizable) return
-        stream?.videoCodec?.context = pixelContext
         resolution =
             Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
+        stream?.videoCodec?.setAssetManager(context.assets)
         stream?.videoCodec?.setListener(this)
         super.setUp()
     }
@@ -77,19 +71,15 @@ class MediaProjectionSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        choreographer.removeFrameCallback(this)
-        pixelContext.tearDown()
         virtualDisplay?.release()
         isRunning.set(false)
     }
 
-    override fun onConfiguration() {
-        pixelContext.textureSize = resolution
+    override fun onSetUp(pixelTransform: PixelTransform) {
+        pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
+    }
 
-        pixelContext.setUp()
-        surfaceTexture = pixelContext.createSurfaceTexture(resolution.width, resolution.height)
-        surface = Surface(surfaceTexture)
-
+    override fun onCreateInputSurface(pixelTransform: PixelTransform, surface: Surface) {
         virtualDisplay = mediaProjection.createVirtualDisplay(
             DEFAULT_DISPLAY_NAME,
             resolution.width,
@@ -100,21 +90,6 @@ class MediaProjectionSource(
             null,
             null
         )
-
-        choreographer = Choreographer.getInstance()
-        choreographer.postFrameCallback(this)
-    }
-
-    override fun doFrame(timestamp: Long) {
-        try {
-            surfaceTexture?.let {
-                it.updateTexImage()
-                stream?.videoCodec?.frameAvailable(it)
-            }
-        } catch (e: Exception) {
-            Log.d(TAG, "", e)
-        }
-        choreographer.postFrameCallback(this)
     }
 
     override fun toString(): String {

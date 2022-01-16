@@ -9,7 +9,7 @@ namespace Vulkan {
                 kernel.surface.get());
 
         uint32_t chosenFormat;
-        for (chosenFormat = 0; chosenFormat < formats.size(); chosenFormat++) {
+        for (chosenFormat = 0; chosenFormat < formats.size(); ++chosenFormat) {
             if (formats[chosenFormat].format == vk::Format::eR8G8B8A8Unorm) {
                 break;
             }

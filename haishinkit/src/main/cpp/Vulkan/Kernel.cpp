@@ -283,6 +283,9 @@ namespace Vulkan {
     }
 
     std::vector<char> Kernel::ReadFile(const std::string &fileName) {
+        if (assetManager == nullptr) {
+            throw std::runtime_error("");
+        }
         AAsset *file = AAssetManager_open(assetManager, fileName.c_str(), AASSET_MODE_BUFFER);
         if (file == nullptr) {
             throw std::runtime_error("");
