@@ -31,7 +31,7 @@ namespace Vulkan {
 
         void TearDown(Kernel &kernel);
 
-        void Update(Kernel &kernel, void *data, int32_t format, int32_t stride);
+        void Update(Kernel &kernel, void *data, int32_t stride);
 
         vk::Viewport GetViewport(const vk::Extent2D surface) const;
 

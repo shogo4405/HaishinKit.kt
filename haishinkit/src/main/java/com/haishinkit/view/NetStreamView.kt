@@ -1,11 +1,12 @@
 package com.haishinkit.view
 
-import com.haishinkit.lang.Running
 import com.haishinkit.graphics.PixelTransform
+import com.haishinkit.graphics.VideoGravity
+import com.haishinkit.lang.Running
 import com.haishinkit.net.NetStream
 
 internal interface NetStreamView : Running {
-    var videoGravity: Int
+    var videoGravity: VideoGravity
     var stream: NetStream?
     val pixelTransform: PixelTransform
 

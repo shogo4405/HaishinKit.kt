@@ -95,7 +95,7 @@ class Camera2Source(
                     stream?.renderer?.pixelTransform?.createInputSurface(
                         resolution.width,
                         resolution.height,
-                        0x1
+                        IMAGE_FORMAT
                     )
                 }
 
@@ -174,7 +174,7 @@ class Camera2Source(
 
     override fun onSetUp(pixelTransform: PixelTransform) {
         if (stream?.videoCodec?.pixelTransform == pixelTransform) {
-            pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
+            pixelTransform.createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
         }
     }
 
@@ -216,6 +216,8 @@ class Camera2Source(
     companion object {
         const val DEFAULT_WIDTH: Int = 640
         const val DEFAULT_HEIGHT: Int = 480
+
+        private const val IMAGE_FORMAT = ImageFormat.YUV_420_888
 
         private const val DEFAULT_CAMERA_ID = "0"
         private val TAG = Camera2Source::class.java.simpleName

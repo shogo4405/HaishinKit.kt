@@ -1,8 +1,10 @@
 package com.haishinkit.graphics.gles
 
+import android.opengl.GLES10
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Size
+import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.lang.Utilize
 import com.haishinkit.util.aspectRatio
@@ -17,12 +19,24 @@ internal class GlKernel(
             field = value
             invalidateLayout = true
         }
-    var videoGravity: Int = VideoGravity.RESIZE_ASPECT
+    var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT
         set(value) {
             field = value
             invalidateLayout = true
         }
-    var resolution: Size = Size(0, 0)
+    var extent: Size = Size(0, 0)
+        set(value) {
+            field = value
+            GLES10.glOrthof(
+                0.0f,
+                field.width.toFloat(),
+                field.height.toFloat(),
+                0.0f,
+                -1.0f,
+                1.0f
+            )
+        }
+    var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private var program = INVALID_VALUE
@@ -34,15 +48,15 @@ internal class GlKernel(
     override fun setUp() {
         if (utilizable) return
 
-        GLES20.glTexParameterf(
+        GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
             GL10.GL_TEXTURE_MIN_FILTER,
-            GL10.GL_LINEAR.toFloat()
+            resampleFilter.glValue
         )
-        GLES20.glTexParameterf(
+        GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
             GL10.GL_TEXTURE_MAG_FILTER,
-            GL10.GL_LINEAR.toFloat()
+            resampleFilter.glValue
         )
         GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
@@ -125,40 +139,40 @@ internal class GlKernel(
 
         when (videoGravity) {
             VideoGravity.RESIZE_ASPECT -> {
-                val xRatio = resolution.width.toFloat() / textureSize.width.toFloat()
-                val yRatio = resolution.height.toFloat() / textureSize.height.toFloat()
+                val xRatio = extent.width.toFloat() / textureSize.width.toFloat()
+                val yRatio = extent.height.toFloat() / textureSize.height.toFloat()
                 if (yRatio < xRatio) {
                     GLES20.glViewport(
-                        ((resolution.width - textureSize.width * yRatio) / 2).toInt(),
+                        ((extent.width - textureSize.width * yRatio) / 2).toInt(),
                         0,
                         (textureSize.width * yRatio).toInt(),
-                        resolution.height
+                        extent.height
                     )
                 } else {
                     GLES20.glViewport(
                         0,
-                        ((resolution.height - textureSize.height * xRatio) / 2).toInt(),
-                        resolution.width,
+                        ((extent.height - textureSize.height * xRatio) / 2).toInt(),
+                        extent.width,
                         (textureSize.height * xRatio).toInt()
                     )
                 }
             }
             VideoGravity.RESIZE_ASPECT_FILL -> {
-                val iRatio = resolution.aspectRatio
+                val iRatio = extent.aspectRatio
                 val fRatio = textureSize.aspectRatio
                 if (iRatio < fRatio) {
                     GLES20.glViewport(
-                        ((resolution.width - resolution.height * fRatio) / 2).toInt(),
+                        ((extent.width - extent.height * fRatio) / 2).toInt(),
                         0,
-                        (resolution.height * fRatio).toInt(),
-                        resolution.height
+                        (extent.height * fRatio).toInt(),
+                        extent.height
                     )
                 } else {
                     GLES20.glViewport(
                         0,
-                        ((resolution.height - resolution.width / fRatio) / 2).toInt(),
-                        resolution.width,
-                        (resolution.width / fRatio).toInt()
+                        ((extent.height - extent.width / fRatio) / 2).toInt(),
+                        extent.width,
+                        (extent.width / fRatio).toInt()
                     )
                 }
             }

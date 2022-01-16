@@ -3,7 +3,7 @@ package com.haishinkit.view
 import android.content.Context
 import android.content.res.Configuration
 import android.util.AttributeSet
-import android.util.Log
+import android.util.Size
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -14,14 +14,14 @@ import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
-import com.haishinkit.net.NetStream
-import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.util.MediaFormatUtil
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_0
 import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_180
 import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_270
 import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_90
+import com.haishinkit.net.NetStream
+import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.util.MediaFormatUtil
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -37,7 +37,11 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             stream?.videoCodec?.pixelTransform?.orientation = field
         }
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    override var videoGravity: Int = VideoGravity.RESIZE_ASPECT_FILL
+    override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
+        set(value) {
+            field = value
+            pixelTransform.videoGravity = field
+        }
     override var stream: NetStream? = null
         set(value) {
             (field as? IEventDispatcher)?.removeEventListener(Event.RTMP_STATUS, this)
@@ -46,7 +50,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             field?.renderer = this
         }
     override val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create(true)
+        PixelTransformFactory().create()
     }
     private var isPortrait = false
     private var videoAspectRatio = 0f
@@ -60,6 +64,8 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
 
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
+                pixelTransform.extent = Size(width, height)
+                pixelTransform.setUp(holder.surface, width, height)
             }
 
             override fun surfaceChanged(
@@ -68,14 +74,16 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
                 width: Int,
                 height: Int
             ) {
-                val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                val windowManager =
+                    context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 val defaultDisplay = windowManager.defaultDisplay
                 val orientation = defaultDisplay.orientation
-                isPortrait = if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    (orientation == Surface.ROTATION_0 || orientation == Surface.ROTATION_180)
-                } else {
-                    (orientation == Surface.ROTATION_90 || orientation == Surface.ROTATION_270)
-                }
+                isPortrait =
+                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        (orientation == Surface.ROTATION_0 || orientation == Surface.ROTATION_180)
+                    } else {
+                        (orientation == Surface.ROTATION_90 || orientation == Surface.ROTATION_270)
+                    }
                 videoOrientation = when (defaultDisplay.orientation) {
                     Surface.ROTATION_0 -> if (isPortrait) ROTATION_270 else ROTATION_0
                     Surface.ROTATION_90 -> if (isPortrait) ROTATION_0 else ROTATION_90
@@ -83,7 +91,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
                     Surface.ROTATION_270 -> if (isPortrait) ROTATION_180 else ROTATION_270
                     else -> 0
                 }
-                pixelTransform.setUp(holder.surface, width, height)
+                pixelTransform.extent = Size(width, height)
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {

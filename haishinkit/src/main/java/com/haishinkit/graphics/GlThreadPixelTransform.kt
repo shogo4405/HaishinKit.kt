@@ -4,6 +4,7 @@ import android.content.res.AssetManager
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
+import android.util.Size
 import android.view.Surface
 import java.lang.ref.WeakReference
 
@@ -21,11 +22,34 @@ class GlThreadPixelTransform(
                 it.sendMessage(it.obtainMessage(MSG_SET_ORIENTATION, value))
             }
         }
-    override var videoGravity: Int
+    override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity
         set(value) {
             handler?.let {
                 it.sendMessage(it.obtainMessage(MSG_SET_VIDEO_GRAVITY, value))
+            }
+        }
+    override var extent: Size
+        get() = pixelTransform.extent
+        set(value) {
+            handler?.let {
+                it.sendMessage(
+                    it.obtainMessage(
+                        MSG_SET_CURRENT_EXTENT,
+                        value.width,
+                        value.height,
+                        null
+                    )
+                )
+            }
+        }
+    override var resampleFilter: ResampleFilter
+        get() = pixelTransform.resampleFilter
+        set(value) {
+            handler?.let {
+                it.sendMessage(
+                    it.obtainMessage(MSG_SET_RESAMPLE_FILTER, value)
+                )
             }
         }
     private var handler: Handler? = null
@@ -75,11 +99,17 @@ class GlThreadPixelTransform(
                     transform.orientation = message.obj as Int
                 }
                 MSG_SET_VIDEO_GRAVITY -> {
-                    transform.videoGravity = message.obj as Int
+                    transform.videoGravity = message.obj as VideoGravity
+                }
+                MSG_SET_CURRENT_EXTENT -> {
+                    transform.extent = Size(message.arg1, message.arg2)
                 }
                 MSG_CREATE_INPUT_SURFACE -> {
                     val obj = message.obj
                     transform.createInputSurface(message.arg1, message.arg2, obj as Int)
+                }
+                MSG_SET_RESAMPLE_FILTER -> {
+                    transform.resampleFilter = message.obj as ResampleFilter
                 }
                 else ->
                     throw RuntimeException("Unhandled msg what=$message.what")
@@ -100,6 +130,8 @@ class GlThreadPixelTransform(
         private const val MSG_CREATE_INPUT_SURFACE = 1
         private const val MSG_SET_ORIENTATION = 2
         private const val MSG_SET_VIDEO_GRAVITY = 3
+        private const val MSG_SET_CURRENT_EXTENT = 4
+        private const val MSG_SET_RESAMPLE_FILTER = 5
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

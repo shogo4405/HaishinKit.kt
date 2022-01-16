@@ -36,7 +36,7 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
     var bitRate = DEFAULT_BIT_RATE
         set(value) {
             field = value
-            if (FeatureUtil.has(FeatureUtil.FEATURE_BITRATE_CHANGE) && isRunning.get()) {
+            if (FeatureUtil.isEnabled(FeatureUtil.FEATURE_BITRATE_CHANGE) && isRunning.get()) {
                 val bundle = Bundle().apply {
                     putInt(android.media.MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
                 }
@@ -53,7 +53,7 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
     var fpsControllerClass: Class<*>? = null
 
     val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create(true)
+        PixelTransformFactory().create()
     }
 
     internal fun setListener(listener: PixelTransform.Listener?) {

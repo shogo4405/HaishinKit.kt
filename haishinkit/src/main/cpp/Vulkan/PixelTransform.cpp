@@ -33,8 +33,8 @@ namespace Vulkan {
         }
     }
 
-    void PixelTransform::SetUpTexture(int32_t width, int32_t height) {
-        auto texture = new Texture(vk::Extent2D(width, height), vk::Format::eR8G8B8A8Unorm);
+    void PixelTransform::SetUpTexture(int32_t width, int32_t height, int32_t format) {
+        auto texture = new Texture(vk::Extent2D(width, height), Texture::GetFormat(format));
         texture->videoGravity = videoGravity;
         textures.clear();
         textures.push_back(texture);
@@ -95,7 +95,7 @@ namespace Vulkan {
         nativeWindow = newNativeWindow;
     }
 
-    void PixelTransform::UpdateTexture(void *data, int32_t format, int32_t stride) {
+    void PixelTransform::UpdateTexture(void *data, int32_t stride) {
         if (!IsReady()) {
             return;
         }
@@ -105,14 +105,14 @@ namespace Vulkan {
             int result = ANativeWindow_lock(inputNativeWindow, &buffer, nullptr);
             if (result == 0) {
                 ANativeWindow_unlockAndPost(inputNativeWindow);
-                textures[0]->Update(*kernel, buffer.bits, buffer.format, buffer.stride);
+                textures[0]->Update(*kernel, buffer.bits, buffer.stride);
                 kernel->DrawFrame();
                 ANativeWindow_release(inputNativeWindow);
             } else {
                 ANativeWindow_release(inputNativeWindow);
             }
         } else {
-            textures[0]->Update(*kernel, data, format, stride);
+            textures[0]->Update(*kernel, data, stride);
             kernel->DrawFrame();
         }
     }
@@ -129,18 +129,14 @@ namespace Vulkan {
 extern "C"
 {
 JNIEXPORT jboolean JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_00024Companion_isSupported(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_00024Companion_isSupported(JNIEnv *env,
+                                                                         jobject thiz) {
     return Vulkan::DynamicLoader::GetInstance().Load();
 }
 
-JNIEXPORT jint JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_getVideoGravity(JNIEnv *env, jobject thiz) {
-    return static_cast<jint>(Unmanaged<Vulkan::PixelTransform>::fromOpaque(env,
-                                                                           thiz)->takeRetainedValue()->GetVideoGravity());
-}
-
 JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_setVideoGravity(JNIEnv *env, jobject thiz, jint value) {
+Java_com_haishinkit_graphics_VkPixelTransform_nativeSetVideoGravity(JNIEnv *env, jobject thiz,
+                                                                    jint value) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->SetVideoGravity(
             static_cast<Vulkan::VideoGravity>(value));
 }
@@ -152,7 +148,8 @@ Java_com_haishinkit_graphics_VkPixelTransform_getSurface(JNIEnv *env, jobject th
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_setSurface(JNIEnv *env, jobject thiz, jobject surface) {
+Java_com_haishinkit_graphics_VkPixelTransform_setSurface(JNIEnv *env, jobject thiz,
+                                                         jobject surface) {
     ANativeWindow *window = nullptr;
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
@@ -172,16 +169,16 @@ Java_com_haishinkit_graphics_VkPixelTransform_getInputSurface(JNIEnv *env, jobje
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
-                                                   jint height) {
+                                                         jint height, jint format) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
-                self->SetUpTexture(width, height);
+                self->SetUpTexture(width, height, format);
             });
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_setInputSurface(JNIEnv *env, jobject thiz,
-                                                        jobject surface) {
+                                                              jobject surface) {
     ANativeWindow *window = nullptr;
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
@@ -194,8 +191,13 @@ Java_com_haishinkit_graphics_VkPixelTransform_setInputSurface(JNIEnv *env, jobje
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_setAssetManager(JNIEnv *env, jobject thiz,
-                                                        jobject asset_manager) {
+Java_com_haishinkit_graphics_VkPixelTransform_nativeSetResampleFilter(JNIEnv *env, jobject thiz,
+                                                                      jint resampleFilter) {
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_graphics_VkPixelTransform_nativeSetAssetManager(JNIEnv *env, jobject thiz,
+                                                                    jobject asset_manager) {
     AAssetManager *manager = AAssetManager_fromJava(env, asset_manager);
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
@@ -211,15 +213,15 @@ Java_com_haishinkit_graphics_VkPixelTransform_inspectDevices(JNIEnv *env, jobjec
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz, jobject buffer,
-                                                      jint format, jint stride) {
+Java_com_haishinkit_graphics_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz,
+                                                            jobject buffer, jint stride) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
                 if (buffer == nullptr) {
-                    self->UpdateTexture(nullptr, 0, 0);
+                    self->UpdateTexture(nullptr, 0);
                 } else {
                     void *data = env->GetDirectBufferAddress(buffer);
-                    self->UpdateTexture(data, format, stride);
+                    self->UpdateTexture(data, stride);
                 }
             });
 }

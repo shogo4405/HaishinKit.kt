@@ -12,6 +12,8 @@ namespace Vulkan {
                 return vk::Format::eR8G8B8A8Unorm;
             case WINDOW_FORMAT_RGB_565:
                 return vk::Format::eR5G6B5UnormPack16;
+            case 35: // ImageFormat.YUV_420_888
+                return vk::Format::eR8G8B8A8Unorm;
             default:
                 return vk::Format::eR8G8B8A8Unorm;
         }
@@ -169,42 +171,22 @@ namespace Vulkan {
         memory = nullptr;
     }
 
-    void Texture::Update(Kernel &kernel, void *data, int32_t format, int32_t stride) {
+    void Texture::Update(Kernel &kernel, void *data, int32_t stride) {
         if (data == nullptr || memory == nullptr) {
             return;
         }
         switch (image.format) {
             case vk::Format::eR5G6B5UnormPack16:
-                switch (format) {
-                    case WINDOW_FORMAT_RGBA_8888:
-                        throw std::runtime_error(
-                                "unsupported formats eR5G6B5UnormPack16:WINDOW_FORMAT_RGBA_8888");
-                    case WINDOW_FORMAT_RGBX_8888:
-                        throw std::runtime_error(
-                                "unsupported formats eR5G6B5UnormPack16:WINDOW_FORMAT_RGBX_8888");
-                    case WINDOW_FORMAT_RGB_565:
-                        memcpy(memory, data, allocationSize);
-                        break;
-                }
+                memcpy(memory, data, allocationSize);
                 break;
             case vk::Format::eR8G8B8A8Unorm:
-                switch (format) {
-                    case WINDOW_FORMAT_RGBA_8888:
-                        for (int32_t y = 0; y < image.extent.height; ++y) {
-                            auto *row = reinterpret_cast<unsigned char *>((char *) memory +
-                                                                          rowPitch *
-                                                                          y);
-                            auto *src = reinterpret_cast<unsigned char *>((char *) data +
-                                                                          stride * y);
-                            memcpy(row, src, (size_t) (4 * image.extent.width));
-                        }
-                        break;
-                    case WINDOW_FORMAT_RGBX_8888:
-                        throw std::runtime_error(
-                                "unsupported formats eR8G8B8A8Unorm:WINDOW_FORMAT_RGBX_8888");
-                    case WINDOW_FORMAT_RGB_565:
-                        throw std::runtime_error(
-                                "unsupported formats eR8G8B8A8Unorm:WINDOW_FORMAT_RGB_565");
+                for (int32_t y = 0; y < image.extent.height; ++y) {
+                    auto *row = reinterpret_cast<unsigned char *>((char *) memory +
+                                                                  rowPitch *
+                                                                  y);
+                    auto *src = reinterpret_cast<unsigned char *>((char *) data +
+                                                                  stride * y);
+                    memcpy(row, src, (size_t) (4 * image.extent.width));
                 }
                 break;
             default:

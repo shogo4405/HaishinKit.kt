@@ -27,7 +27,7 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
     IEventListener,
     TextureView.SurfaceTextureListener {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    override var videoGravity: Int = VideoGravity.RESIZE_ASPECT_FILL
+    override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
     override var stream: NetStream? = null
         set(value) {
             (field as? IEventDispatcher)?.removeEventListener(Event.RTMP_STATUS, this)

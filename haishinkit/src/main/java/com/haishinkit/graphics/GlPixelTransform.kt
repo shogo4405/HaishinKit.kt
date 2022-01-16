@@ -4,14 +4,13 @@ import android.content.res.AssetManager
 import android.graphics.SurfaceTexture
 import android.opengl.GLES10
 import android.opengl.GLES20
+import android.os.Handler
 import android.util.Log
+import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
-import java.lang.ClassCastException
-import android.os.Handler
-import android.util.Size
 import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlPixelReader
 import com.haishinkit.graphics.gles.GlWindowSurface
@@ -29,12 +28,18 @@ internal class GlPixelTransform(
             field = value
             kernel.orientation = value
         }
-    override var videoGravity: Int = 0
+    override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_RESIZE
         get() = kernel.videoGravity
         set(value) {
             field = value
             kernel.videoGravity = value
         }
+    override var extent: Size = Size(0, 0)
+        set(value) {
+            field = value
+            kernel.extent = field
+        }
+    override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     val reader = GlPixelReader()
     var handler: Handler? = null
     private var kernel: GlKernel = GlKernel()
@@ -66,9 +71,8 @@ internal class GlPixelTransform(
         inputWindowSurface.setUp(surface, null)
         inputWindowSurface.makeCurrent()
         kernel.tearDown()
-        kernel.resolution = Size(width, height)
+        kernel.extent = Size(width, height)
         kernel.setUp()
-        GLES10.glOrthof(0.0f, width.toFloat(), height.toFloat(), 0.0f, -1.0f, 1.0f)
         listener?.onSetUp(this)
     }
 
