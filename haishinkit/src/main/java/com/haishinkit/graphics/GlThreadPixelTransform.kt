@@ -14,6 +14,20 @@ class GlThreadPixelTransform(
     override var fpsControllerClass: Class<*>? = null,
 ) : PixelTransform, PixelTransform.Listener {
     override var listener: PixelTransform.Listener? = null
+    override var orientation: Int
+        get() = pixelTransform.orientation
+        set(value) {
+            handler?.let {
+                it.sendMessage(it.obtainMessage(MSG_SET_ORIENTATION, value))
+            }
+        }
+    override var videoGravity: Int
+        get() = pixelTransform.videoGravity
+        set(value) {
+            handler?.let {
+                it.sendMessage(it.obtainMessage(MSG_SET_VIDEO_GRAVITY, value))
+            }
+        }
     private var handler: Handler? = null
         get() {
             if (field == null) {
@@ -57,6 +71,12 @@ class GlThreadPixelTransform(
                     val obj = message.obj
                     transform.setUp(obj as Surface, message.arg1, message.arg2)
                 }
+                MSG_SET_ORIENTATION -> {
+                    transform.orientation = message.obj as Int
+                }
+                MSG_SET_VIDEO_GRAVITY -> {
+                    transform.videoGravity = message.obj as Int
+                }
                 MSG_CREATE_INPUT_SURFACE -> {
                     val obj = message.obj
                     transform.createInputSurface(message.arg1, message.arg2, obj as Int)
@@ -78,6 +98,8 @@ class GlThreadPixelTransform(
     companion object {
         private const val MSG_SET_UP = 0
         private const val MSG_CREATE_INPUT_SURFACE = 1
+        private const val MSG_SET_ORIENTATION = 2
+        private const val MSG_SET_VIDEO_GRAVITY = 3
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

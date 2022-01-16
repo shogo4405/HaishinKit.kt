@@ -28,9 +28,11 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         external get
         external set
 
+    override var orientation: Int = 0
+
     override var fpsControllerClass: Class<*>? = null
 
-    var videoGravity: Int
+    override var videoGravity: Int
         external get
         external set
 

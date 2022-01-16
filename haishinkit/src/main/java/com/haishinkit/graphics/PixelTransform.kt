@@ -11,6 +11,8 @@ interface PixelTransform {
 
     var surface: Surface?
     var listener: Listener?
+    var orientation: Int
+    var videoGravity: Int
     var inputSurface: Surface?
     var assetManager: AssetManager?
     var fpsControllerClass: Class<*>?

@@ -6,6 +6,7 @@ import android.util.Size
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.lang.Utilize
 import com.haishinkit.util.aspectRatio
+import com.haishinkit.util.swap
 import javax.microedition.khronos.opengles.GL10
 
 internal class GlKernel(
@@ -100,22 +101,27 @@ internal class GlKernel(
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
     }
 
-    private fun layout(textureSize: Size) {
+    private fun layout(newTextureSize: Size) {
+        var swapped = false
         when (orientation) {
             ROTATION_0 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_0)
             }
             ROTATION_90 -> {
+                swapped = true
                 texCoordBuffer.put(TEX_COORDS_ROTATION_90)
             }
             ROTATION_180 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_180)
             }
             ROTATION_270 -> {
+                swapped = true
                 texCoordBuffer.put(TEX_COORDS_ROTATION_270)
             }
         }
         texCoordBuffer.position(0)
+
+        val textureSize = newTextureSize.swap(swapped)
 
         when (videoGravity) {
             VideoGravity.RESIZE_ASPECT -> {

@@ -23,6 +23,18 @@ internal class GlPixelTransform(
     override var assetManager: AssetManager? = null,
     override var listener: PixelTransform.Listener? = null,
 ) : PixelTransform, SurfaceTexture.OnFrameAvailableListener {
+    override var orientation: Int = 0
+        get() = kernel.orientation
+        set(value) {
+            field = value
+            kernel.orientation = value
+        }
+    override var videoGravity: Int = 0
+        get() = kernel.videoGravity
+        set(value) {
+            field = value
+            kernel.videoGravity = value
+        }
     val reader = GlPixelReader()
     var handler: Handler? = null
     private var kernel: GlKernel = GlKernel()
@@ -72,6 +84,9 @@ internal class GlPixelTransform(
     }
 
     override fun onFrameAvailable(surfaceTexture: SurfaceTexture) {
+        if (surface == null) {
+            return
+        }
         surfaceTexture.updateTexImage()
         var timestamp = surfaceTexture.timestamp
         if (timestamp <= 0L) {

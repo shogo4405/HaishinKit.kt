@@ -1,10 +1,13 @@
 package com.haishinkit.view
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.WindowManager
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
@@ -15,6 +18,10 @@ import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.util.MediaFormatUtil
 import com.haishinkit.graphics.VideoGravity
+import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_0
+import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_180
+import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_270
+import com.haishinkit.graphics.gles.GlKernel.Companion.ROTATION_90
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -23,6 +30,12 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
     SurfaceView(context, attributes),
     NetStreamView,
     IEventListener {
+    var videoOrientation: Int = Surface.ROTATION_0
+        set(value) {
+            field = value
+            pixelTransform.orientation = field
+            stream?.videoCodec?.pixelTransform?.orientation = field
+        }
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var videoGravity: Int = VideoGravity.RESIZE_ASPECT_FILL
     override var stream: NetStream? = null
@@ -35,6 +48,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
     override val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create(true)
     }
+    private var isPortrait = false
     private var videoAspectRatio = 0f
         set(value) {
             field = value
@@ -54,6 +68,21 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
                 width: Int,
                 height: Int
             ) {
+                val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                val defaultDisplay = windowManager.defaultDisplay
+                val orientation = defaultDisplay.orientation
+                isPortrait = if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    (orientation == Surface.ROTATION_0 || orientation == Surface.ROTATION_180)
+                } else {
+                    (orientation == Surface.ROTATION_90 || orientation == Surface.ROTATION_270)
+                }
+                videoOrientation = when (defaultDisplay.orientation) {
+                    Surface.ROTATION_0 -> if (isPortrait) ROTATION_270 else ROTATION_0
+                    Surface.ROTATION_90 -> if (isPortrait) ROTATION_0 else ROTATION_90
+                    Surface.ROTATION_180 -> if (isPortrait) ROTATION_90 else ROTATION_180
+                    Surface.ROTATION_270 -> if (isPortrait) ROTATION_180 else ROTATION_270
+                    else -> 0
+                }
                 pixelTransform.setUp(holder.surface, width, height)
             }
 
