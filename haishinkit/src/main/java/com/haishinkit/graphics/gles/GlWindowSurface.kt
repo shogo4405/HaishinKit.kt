@@ -1,4 +1,4 @@
-package com.haishinkit.gles
+package com.haishinkit.graphics.gles
 
 import android.opengl.EGL14
 import android.opengl.EGLConfig

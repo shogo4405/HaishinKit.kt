@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.haishinkit.vk.VkPixelTransform
+import com.haishinkit.graphics.VkPixelTransform
 import java.lang.Exception
 
 class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {

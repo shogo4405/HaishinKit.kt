@@ -1,9 +1,8 @@
-package com.haishinkit.vk
+package com.haishinkit.graphics
 
 import android.content.res.AssetManager
 import android.media.ImageReader
 import android.view.Surface
-import com.haishinkit.graphics.PixelTransform
 import java.nio.ByteBuffer
 
 class VkPixelTransform(override var listener: PixelTransform.Listener? = null) : PixelTransform,

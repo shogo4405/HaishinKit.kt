@@ -1,4 +1,4 @@
-package com.haishinkit.gles
+package com.haishinkit.graphics.gles
 
 import com.haishinkit.lang.Utilize
 import kotlinx.coroutines.CoroutineScope

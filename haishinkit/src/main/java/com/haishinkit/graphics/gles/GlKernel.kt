@@ -1,8 +1,7 @@
-package com.haishinkit.gles
+package com.haishinkit.graphics.gles
 
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
-import android.util.Log
 import android.util.Size
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.lang.Utilize

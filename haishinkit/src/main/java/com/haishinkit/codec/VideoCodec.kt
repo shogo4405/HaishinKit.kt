@@ -5,9 +5,8 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
-import android.view.Surface
 import com.haishinkit.flv.tag.FlvTag
-import com.haishinkit.gles.GlPixelReader
+import com.haishinkit.graphics.gles.GlPixelReader
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.util.FeatureUtil

@@ -1,4 +1,4 @@
-package com.haishinkit.gles
+package com.haishinkit.graphics
 
 import android.content.res.AssetManager
 import android.graphics.SurfaceTexture
@@ -9,10 +9,12 @@ import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
-import com.haishinkit.graphics.PixelTransform
 import java.lang.ClassCastException
 import android.os.Handler
 import android.util.Size
+import com.haishinkit.graphics.gles.GlKernel
+import com.haishinkit.graphics.gles.GlPixelReader
+import com.haishinkit.graphics.gles.GlWindowSurface
 
 internal class GlPixelTransform(
     override var surface: Surface? = null,

@@ -1,4 +1,4 @@
-package com.haishinkit.gles
+package com.haishinkit.graphics.gles
 
 object GlShader {
     const val VERTEX: String = """attribute vec4 position;

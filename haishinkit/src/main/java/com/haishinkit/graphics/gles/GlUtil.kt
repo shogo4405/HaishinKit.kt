@@ -1,4 +1,4 @@
-package com.haishinkit.gles
+package com.haishinkit.graphics.gles
 
 import android.opengl.GLES20
 import android.util.Log

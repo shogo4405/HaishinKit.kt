@@ -129,30 +129,30 @@ namespace Vulkan {
 extern "C"
 {
 JNIEXPORT jboolean JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_00024Companion_isSupported(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_00024Companion_isSupported(JNIEnv *env, jobject thiz) {
     return Vulkan::DynamicLoader::GetInstance().Load();
 }
 
 JNIEXPORT jint JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_getVideoGravity(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_getVideoGravity(JNIEnv *env, jobject thiz) {
     return static_cast<jint>(Unmanaged<Vulkan::PixelTransform>::fromOpaque(env,
                                                                            thiz)->takeRetainedValue()->GetVideoGravity());
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_setVideoGravity(JNIEnv *env, jobject thiz, jint value) {
+Java_com_haishinkit_graphics_VkPixelTransform_setVideoGravity(JNIEnv *env, jobject thiz, jint value) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->SetVideoGravity(
             static_cast<Vulkan::VideoGravity>(value));
 }
 
 
 JNIEXPORT jobject JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_getSurface(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_getSurface(JNIEnv *env, jobject thiz) {
     return Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->surface;
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_setSurface(JNIEnv *env, jobject thiz, jobject surface) {
+Java_com_haishinkit_graphics_VkPixelTransform_setSurface(JNIEnv *env, jobject thiz, jobject surface) {
     ANativeWindow *window = nullptr;
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
@@ -165,13 +165,13 @@ Java_com_haishinkit_vk_VkPixelTransform_setSurface(JNIEnv *env, jobject thiz, jo
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_getInputSurface(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_getInputSurface(JNIEnv *env, jobject thiz) {
     return Unmanaged<Vulkan::PixelTransform>::fromOpaque(env,
                                                          thiz)->takeRetainedValue()->inputSurface;
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
+Java_com_haishinkit_graphics_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
                                                    jint height) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
@@ -180,7 +180,7 @@ Java_com_haishinkit_vk_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, ji
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_setInputSurface(JNIEnv *env, jobject thiz,
+Java_com_haishinkit_graphics_VkPixelTransform_setInputSurface(JNIEnv *env, jobject thiz,
                                                         jobject surface) {
     ANativeWindow *window = nullptr;
     if (surface != nullptr) {
@@ -194,7 +194,7 @@ Java_com_haishinkit_vk_VkPixelTransform_setInputSurface(JNIEnv *env, jobject thi
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_setAssetManager(JNIEnv *env, jobject thiz,
+Java_com_haishinkit_graphics_VkPixelTransform_setAssetManager(JNIEnv *env, jobject thiz,
                                                         jobject asset_manager) {
     AAssetManager *manager = AAssetManager_fromJava(env, asset_manager);
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
@@ -204,14 +204,14 @@ Java_com_haishinkit_vk_VkPixelTransform_setAssetManager(JNIEnv *env, jobject thi
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_inspectDevices(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_inspectDevices(JNIEnv *env, jobject thiz) {
     std::string string = Unmanaged<Vulkan::PixelTransform>::fromOpaque(env,
                                                                        thiz)->takeRetainedValue()->InspectDevices();
     return env->NewStringUTF(string.c_str());
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz, jobject buffer,
+Java_com_haishinkit_graphics_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz, jobject buffer,
                                                       jint format, jint stride) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
@@ -225,7 +225,7 @@ Java_com_haishinkit_vk_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz,
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vk_VkPixelTransform_dispose(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_dispose(JNIEnv *env, jobject thiz) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->release();
 }
 }

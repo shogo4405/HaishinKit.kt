@@ -1,12 +1,10 @@
-package com.haishinkit.gles
+package com.haishinkit.graphics
 
 import android.content.res.AssetManager
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
-import android.util.Log
 import android.view.Surface
-import com.haishinkit.graphics.PixelTransform
 import java.lang.ref.WeakReference
 
 class GlThreadPixelTransform(
