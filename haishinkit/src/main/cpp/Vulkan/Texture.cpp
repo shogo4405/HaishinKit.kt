@@ -145,10 +145,23 @@ namespace Vulkan {
             }
         }
 
+        vk::Filter filter = vk::Filter::eLinear;
+        switch (resampleFilter) {
+            case LINEAR:
+                filter = vk::Filter::eLinear;
+                break;
+            case NEAREST:
+                filter = vk::Filter::eNearest;
+                break;
+            case CUBIC:
+                filter = vk::Filter::eCubicIMG;
+                break;
+        }
+
         sampler = kernel.device->createSamplerUnique(
                 vk::SamplerCreateInfo()
-                        .setMagFilter(vk::Filter::eNearest)
-                        .setMinFilter(vk::Filter::eNearest)
+                        .setMagFilter(filter)
+                        .setMinFilter(filter)
                         .setAddressModeU(vk::SamplerAddressMode::eRepeat)
                         .setAddressModeV(vk::SamplerAddressMode::eRepeat)
                         .setAddressModeW(vk::SamplerAddressMode::eRepeat)

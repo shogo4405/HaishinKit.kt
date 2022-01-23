@@ -28,21 +28,25 @@ namespace Vulkan {
 
     void PixelTransform::SetVideoGravity(VideoGravity newVideoGravity) {
         videoGravity = newVideoGravity;
-        if (!textures.empty()) {
-            textures[0]->videoGravity = newVideoGravity;
+        for (auto &texture: textures) {
+            texture->videoGravity = newVideoGravity;
+        }
+    }
+
+    void PixelTransform::SetResampleFilter(ResampleFilter newResampleFilter) {
+        resampleFilter = newResampleFilter;
+        for (auto &texture : textures) {
+            texture->resampleFilter = newResampleFilter;
         }
     }
 
     void PixelTransform::SetUpTexture(int32_t width, int32_t height, int32_t format) {
         auto texture = new Texture(vk::Extent2D(width, height), Texture::GetFormat(format));
         texture->videoGravity = videoGravity;
+        texture->resampleFilter = resampleFilter;
         textures.clear();
         textures.push_back(texture);
         kernel->SetTextures(textures);
-    }
-
-    VideoGravity PixelTransform::GetVideoGravity() {
-        return videoGravity;
     }
 
     void PixelTransform::SetAssetManager(AAssetManager *assetManager) {
@@ -141,30 +145,17 @@ Java_com_haishinkit_graphics_VkPixelTransform_nativeSetVideoGravity(JNIEnv *env,
             static_cast<Vulkan::VideoGravity>(value));
 }
 
-
-JNIEXPORT jobject JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_getSurface(JNIEnv *env, jobject thiz) {
-    return Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->surface;
-}
-
 JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_setSurface(JNIEnv *env, jobject thiz,
-                                                         jobject surface) {
+Java_com_haishinkit_graphics_VkPixelTransform_nativeSetSurface(JNIEnv *env, jobject thiz,
+                                                               jobject surface) {
     ANativeWindow *window = nullptr;
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
     }
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
-                self->surface = surface;
                 self->SetNativeWindow(window);
             });
-}
-
-JNIEXPORT jobject JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_getInputSurface(JNIEnv *env, jobject thiz) {
-    return Unmanaged<Vulkan::PixelTransform>::fromOpaque(env,
-                                                         thiz)->takeRetainedValue()->inputSurface;
 }
 
 JNIEXPORT void JNICALL
@@ -177,22 +168,25 @@ Java_com_haishinkit_graphics_VkPixelTransform_setTexture(JNIEnv *env, jobject th
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_setInputSurface(JNIEnv *env, jobject thiz,
-                                                              jobject surface) {
+Java_com_haishinkit_graphics_VkPixelTransform_nativeSetInputSurface(JNIEnv *env, jobject thiz,
+                                                                    jobject surface) {
     ANativeWindow *window = nullptr;
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
     }
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
-                self->inputSurface = surface;
                 self->SetInputNativeWindow(window);
             });
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_nativeSetResampleFilter(JNIEnv *env, jobject thiz,
-                                                                      jint resampleFilter) {
+                                                                      jint value) {
+    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Vulkan::PixelTransform *self) {
+                self->SetResampleFilter(static_cast<Vulkan::ResampleFilter>(value));
+            });
 }
 
 JNIEXPORT void JNICALL

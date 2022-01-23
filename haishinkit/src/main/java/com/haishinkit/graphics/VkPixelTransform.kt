@@ -2,7 +2,6 @@ package com.haishinkit.graphics
 
 import android.content.res.AssetManager
 import android.media.ImageReader
-import android.util.Log
 import android.util.Size
 import android.view.Surface
 import java.nio.ByteBuffer
@@ -22,13 +21,17 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         private const val MAX_IMAGES = 2
     }
 
-    override var surface: Surface?
-        external get
-        external set
+    override var surface: Surface? = null
+        set(value) {
+            field = value
+            nativeSetSurface(value)
+        }
 
-    override var inputSurface: Surface?
-        external get
-        external set
+    override var inputSurface: Surface? = null
+        set(value) {
+            field = value
+            nativeSetInputSurface(value)
+        }
 
     override var orientation: Int = 0
 
@@ -39,13 +42,13 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
             field = value
-            nativeSetVideoGravity(videoGravity.rawValue)
+            nativeSetVideoGravity(field.rawValue)
         }
 
-    override var resampleFilter: ResampleFilter = ResampleFilter.LINEAR
+    override var resampleFilter: ResampleFilter = ResampleFilter.CUBIC
         set(value) {
             field = value
-            nativeSetResampleFilter(resampleFilter.rawValue)
+            nativeSetResampleFilter(field.rawValue)
         }
 
     override var assetManager: AssetManager? = null
@@ -82,6 +85,8 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         dispose()
     }
 
+    private external fun nativeSetSurface(surface: Surface?)
+    private external fun nativeSetInputSurface(surface: Surface?)
     private external fun nativeSetResampleFilter(resampleFilter: Int)
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)

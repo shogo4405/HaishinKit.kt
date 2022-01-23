@@ -7,6 +7,7 @@
 #include <android/native_window.h>
 #include "ImageStorage.h"
 #include "VideoGravity.h"
+#include "ResampleFilter.h"
 
 namespace Vulkan {
     class Kernel;
@@ -20,6 +21,7 @@ namespace Vulkan {
         };
 
         VideoGravity videoGravity = RESIZE_ASPECT;
+        ResampleFilter resampleFilter = CUBIC;
 
         static vk::Format GetFormat(int32_t format);
 

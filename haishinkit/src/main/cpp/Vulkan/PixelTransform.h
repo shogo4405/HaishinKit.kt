@@ -3,14 +3,12 @@
 
 #include <jni.h>
 #include "Kernel.h"
+#include "ResampleFilter.h"
 
 namespace Vulkan {
 
     class PixelTransform {
     public:
-        jobject surface = nullptr;
-        jobject inputSurface = nullptr;
-
         PixelTransform();
 
         ~PixelTransform();
@@ -19,7 +17,7 @@ namespace Vulkan {
 
         void SetVideoGravity(VideoGravity newVideoGravity);
 
-        VideoGravity GetVideoGravity();
+        void SetResampleFilter(ResampleFilter newResampleFilter);
 
         void SetAssetManager(AAssetManager *assetManager);
 
@@ -39,6 +37,7 @@ namespace Vulkan {
         std::vector<Texture *> textures;
         Kernel *kernel;
         VideoGravity videoGravity = VideoGravity::RESIZE_ASPECT;
+        ResampleFilter resampleFilter = ResampleFilter::CUBIC;
     };
 }
 
