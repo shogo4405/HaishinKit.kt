@@ -1,6 +1,7 @@
 package com.haishinkit.graphics
 
 import android.content.res.AssetManager
+import android.graphics.ImageFormat
 import android.media.ImageReader
 import android.util.Size
 import android.view.Surface
@@ -60,6 +61,8 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     @Suppress("unused")
     private var memory: Long = 0
     private lateinit var reader: ImageReader
+    private var buffer: ByteBuffer? = null
+    private var isMultiPlanar: Boolean = false
 
     external fun inspectDevices(): String
 
@@ -69,6 +72,11 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     }
 
     override fun createInputSurface(width: Int, height: Int, format: Int) {
+        isMultiPlanar = when (format) {
+            ImageFormat.YUV_420_888 -> true
+            else -> false
+        }
+        buffer = null
         reader = ImageReader.newInstance(width, height, format, MAX_IMAGES)
         setTexture(width, height, format)
         reader.setOnImageAvailableListener(this, null)
@@ -77,7 +85,24 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     override fun onImageAvailable(reader: ImageReader) {
         val image = reader.acquireNextImage()
-        updateTexture(image.planes[0].buffer, image.planes[0].rowStride)
+        if (isMultiPlanar) {
+            if (buffer == null) {
+                buffer = ByteBuffer.allocateDirect(
+                    image.planes[0].buffer.remaining() +
+                        image.planes[1].buffer.remaining() +
+                        image.planes[2].buffer.remaining()
+                )
+            }
+            buffer?.apply {
+                position(0)
+                put(image.planes[0].buffer)
+                put(image.planes[1].buffer)
+                put(image.planes[2].buffer)
+                updateTexture(this, image.width)
+            }
+        } else {
+            updateTexture(image.planes[0].buffer, image.planes[0].rowStride)
+        }
         image.close()
     }
 
