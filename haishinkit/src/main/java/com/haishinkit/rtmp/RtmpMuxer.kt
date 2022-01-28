@@ -230,7 +230,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             }
             MediaCodec.MIME_AUDIO_MP4A -> {
                 val config = mediaFormat.getByteBuffer("csd-0") ?: return
-                config.flip()
                 val audio = stream.messageFactory.createRtmpAudioMessage()
                 audio.codec = FlvAudioCodec.AAC
                 audio.aacPacketType = FlvAacPacketType.SEQ
