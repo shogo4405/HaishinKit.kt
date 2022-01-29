@@ -25,7 +25,8 @@ namespace Vulkan {
 
         void SetInputNativeWindow(ANativeWindow *inputNativeWindow);
 
-        void UpdateTexture(void *data, int32_t stride);
+        void UpdateTexture(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
+                           int32_t uvPixelStride);
 
         std::string InspectDevices();
 

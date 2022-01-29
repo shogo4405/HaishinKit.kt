@@ -41,7 +41,7 @@ namespace Vulkan {
     }
 
     void PixelTransform::SetUpTexture(int32_t width, int32_t height, int32_t format) {
-        auto texture = new Texture(vk::Extent2D(width, height), Texture::GetFormat(format));
+        auto texture = new Texture(vk::Extent2D(width, height), format);
         texture->videoGravity = videoGravity;
         texture->resampleFilter = resampleFilter;
         textures.clear();
@@ -67,7 +67,7 @@ namespace Vulkan {
             const auto width = ANativeWindow_getWidth(newInputNativeWindow);
             const auto height = ANativeWindow_getHeight(newInputNativeWindow);
             const auto format = ANativeWindow_getFormat(newInputNativeWindow);
-            auto texture = new Texture(vk::Extent2D(width, height), Texture::GetFormat(format));
+            auto texture = new Texture(vk::Extent2D(width, height), format);
             texture->videoGravity = videoGravity;
             textures.clear();
             textures.push_back(texture);
@@ -99,24 +99,25 @@ namespace Vulkan {
         nativeWindow = newNativeWindow;
     }
 
-    void PixelTransform::UpdateTexture(void *data, int32_t stride) {
+    void PixelTransform::UpdateTexture(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
+                                       int32_t uvPixelStride) {
         if (!IsReady()) {
             return;
         }
-        if (data == nullptr) {
+        if (y == nullptr) {
             ANativeWindow_acquire(inputNativeWindow);
             ANativeWindow_Buffer buffer;
             int result = ANativeWindow_lock(inputNativeWindow, &buffer, nullptr);
             if (result == 0) {
                 ANativeWindow_unlockAndPost(inputNativeWindow);
-                textures[0]->Update(*kernel, buffer.bits, buffer.stride);
+                textures[0]->Update(*kernel, buffer.bits, nullptr, nullptr, buffer.stride, 0, 0);
                 kernel->DrawFrame();
                 ANativeWindow_release(inputNativeWindow);
             } else {
                 ANativeWindow_release(inputNativeWindow);
             }
         } else {
-            textures[0]->Update(*kernel, data, stride);
+            textures[0]->Update(*kernel, y, u, v, yStride, uvStride, uvPixelStride);
             kernel->DrawFrame();
         }
     }
@@ -208,14 +209,28 @@ Java_com_haishinkit_graphics_VkPixelTransform_inspectDevices(JNIEnv *env, jobjec
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz,
-                                                            jobject buffer, jint stride) {
+                                                            jobject buffer0,
+                                                            jobject buffer1,
+                                                            jobject buffer2,
+                                                            jint stride1,
+                                                            jint stride2,
+                                                            jint pixelStride) {
     Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Vulkan::PixelTransform *self) {
-                if (buffer == nullptr) {
-                    self->UpdateTexture(nullptr, 0);
+                if (buffer0 == nullptr) {
+                    self->UpdateTexture(nullptr, nullptr, nullptr, 0, 0, 0);
                 } else {
-                    void *data = env->GetDirectBufferAddress(buffer);
-                    self->UpdateTexture(data, stride);
+                    void *bufferAddress0 = env->GetDirectBufferAddress(buffer0);
+                    void *bufferAddress1 = nullptr;
+                    if (buffer1 != nullptr) {
+                        bufferAddress1 = env->GetDirectBufferAddress(buffer1);
+                    }
+                    void *bufferAddress2 = nullptr;
+                    if (buffer2 != nullptr) {
+                        bufferAddress2 = env->GetDirectBufferAddress(buffer2);
+                    }
+                    self->UpdateTexture(bufferAddress0, bufferAddress1, bufferAddress2, stride1,
+                                        stride2, pixelStride);
                 }
             });
 }

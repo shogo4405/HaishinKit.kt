@@ -2,28 +2,16 @@
 #include "Texture.h"
 #include "Util.h"
 #include "ImageStorage.h"
+#include "ColorSpace.h"
 
 namespace Vulkan {
-    vk::Format Texture::GetFormat(int32_t format) {
-        switch (format) {
-            case WINDOW_FORMAT_RGBA_8888:
-                return vk::Format::eR8G8B8A8Unorm;
-            case WINDOW_FORMAT_RGBX_8888:
-                return vk::Format::eR8G8B8A8Unorm;
-            case WINDOW_FORMAT_RGB_565:
-                return vk::Format::eR5G6B5UnormPack16;
-            case 35: // ImageFormat.YUV_420_888
-                return vk::Format::eR8G8B8A8Unorm;
-            default:
-                return vk::Format::eR8G8B8A8Unorm;
-        }
-    }
-
-    Texture::Texture(vk::Extent2D extent, vk::Format format) {
+    Texture::Texture(vk::Extent2D extent, int32_t format) : colorSpace(new ColorSpace()) {
+        colorSpace->format = format;
+        colorSpace->extent = extent;
         image.extent = extent;
-        image.format = format;
+        image.format = colorSpace->GetFormat();
         stage.extent = extent;
-        stage.format = format;
+        stage.format = colorSpace->GetFormat();
     }
 
     Texture::~Texture() = default;
@@ -96,20 +84,20 @@ namespace Vulkan {
                         vk::ImageTiling::eOptimal)
         );
 
-        allocationSize = BindImageMemory(kernel, image.memory, image.image.get(),
-                                         mode == Linear ? vk::MemoryPropertyFlagBits::eHostVisible
-                                                        : vk::MemoryPropertyFlagBits::eDeviceLocal);
+        colorSpace->size = BindImageMemory(kernel, image.memory, image.image.get(),
+                                           mode == Linear ? vk::MemoryPropertyFlagBits::eHostVisible
+                                                          : vk::MemoryPropertyFlagBits::eDeviceLocal);
 
         switch (mode) {
             case Linear: {
                 LOGI("%s", "This device has a linear tiling feature.");
-                rowPitch = kernel.device->getImageSubresourceLayout(
+                colorSpace->layout = kernel.device->getImageSubresourceLayout(
                         image.image.get(),
                         vk::ImageSubresource()
                                 .setMipLevel(0)
                                 .setArrayLayer(0)
                                 .setAspectMask(vk::ImageAspectFlagBits::eColor)
-                ).rowPitch;
+                );
                 auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
                 commandBuffer.begin(vk::CommandBufferBeginInfo());
                 image.SetLayout(
@@ -120,8 +108,8 @@ namespace Vulkan {
                 );
                 commandBuffer.end();
                 kernel.Submit(commandBuffer);
-                memory = kernel.device->mapMemory(image.memory.get(), 0,
-                                                  allocationSize);
+                colorSpace->memory = kernel.device->mapMemory(image.memory.get(), 0,
+                                                              colorSpace->size);
                 break;
             }
             case Stage: {
@@ -130,17 +118,16 @@ namespace Vulkan {
                         .setUsage(vk::ImageUsageFlagBits::eTransferSrc)
                         .setTiling(vk::ImageTiling::eLinear)
                 );
-                allocationSize = BindImageMemory(kernel, stage.memory, stage.image.get(),
-                                                 vk::MemoryPropertyFlagBits::eHostVisible);
-                rowPitch = kernel.device->getImageSubresourceLayout(
+                colorSpace->size = BindImageMemory(kernel, stage.memory, stage.image.get(),
+                                                   vk::MemoryPropertyFlagBits::eHostVisible);
+                colorSpace->layout = kernel.device->getImageSubresourceLayout(
                         stage.image.get(),
                         vk::ImageSubresource()
                                 .setMipLevel(0)
                                 .setArrayLayer(0)
-                                .setAspectMask(vk::ImageAspectFlagBits::eColor)
-                ).rowPitch;
-                memory = kernel.device->mapMemory(stage.memory.get(), 0,
-                                                  allocationSize);
+                                .setAspectMask(vk::ImageAspectFlagBits::eColor));
+                colorSpace->memory = kernel.device->mapMemory(stage.memory.get(), 0,
+                                                              colorSpace->size);
                 break;
             }
         }
@@ -178,35 +165,14 @@ namespace Vulkan {
     }
 
     void Texture::TearDown(Kernel &kernel) {
-        if (memory == nullptr) {
-            return;
-        }
-        memory = nullptr;
     }
 
-    void Texture::Update(Kernel &kernel, void *data, int32_t stride) {
-        if (data == nullptr || memory == nullptr) {
-            return;
+    void
+    Texture::Update(Kernel &kernel, void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
+                    int32_t uvPixelStride) {
+        if (colorSpace->convert(y, u, v, yStride, uvStride, uvPixelStride)) {
+            CopyImage(kernel);
         }
-        switch (image.format) {
-            case vk::Format::eR5G6B5UnormPack16:
-                memcpy(memory, data, allocationSize);
-                break;
-            case vk::Format::eR8G8B8A8Unorm:
-                for (int32_t y = 0; y < image.extent.height; ++y) {
-                    auto *row = reinterpret_cast<unsigned char *>((char *) memory +
-                                                                  rowPitch *
-                                                                  y);
-                    auto *src = reinterpret_cast<unsigned char *>((char *) data +
-                                                                  stride * y);
-                    memcpy(row, src, (size_t) (4 * image.extent.width));
-                }
-                break;
-            default:
-                throw std::runtime_error("unsupported formats");
-        }
-
-        CopyImage(kernel);
     }
 
     vk::DescriptorImageInfo Texture::CreateDescriptorImageInfo() {

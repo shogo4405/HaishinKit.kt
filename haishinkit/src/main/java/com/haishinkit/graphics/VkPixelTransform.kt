@@ -3,6 +3,9 @@ package com.haishinkit.graphics
 import android.content.res.AssetManager
 import android.graphics.ImageFormat
 import android.media.ImageReader
+import android.os.Handler
+import android.os.HandlerThread
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import java.nio.ByteBuffer
@@ -21,6 +24,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         external fun isSupported(): Boolean
 
         private const val MAX_IMAGES = 2
+        private const val TAG = "VkPixelTransform"
     }
 
     override var surface: Surface? = null
@@ -64,6 +68,19 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     private lateinit var reader: ImageReader
     private var buffer: ByteBuffer? = null
     private var isMultiPlanar: Boolean = false
+    private var handler: Handler? = null
+        get() {
+            if (field == null) {
+                val thread = HandlerThread(TAG)
+                thread.start()
+                field = Handler(thread.looper)
+            }
+            return field
+        }
+        set(value) {
+            field?.looper?.quitSafely()
+            field = value
+        }
 
     external fun inspectDevices(): String
 
@@ -80,29 +97,34 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         buffer = null
         reader = ImageReader.newInstance(width, height, format, MAX_IMAGES)
         setTexture(width, height, format)
-        reader.setOnImageAvailableListener(this, null)
+        reader.setOnImageAvailableListener(this, handler)
         listener?.onCreateInputSurface(this, reader.surface)
     }
 
     override fun onImageAvailable(reader: ImageReader) {
         val image = reader.acquireNextImage()
-        if (isMultiPlanar) {
-            if (buffer == null) {
-                buffer = ByteBuffer.allocateDirect(
-                    image.planes[0].buffer.remaining() +
-                        image.planes[1].buffer.remaining() +
-                        image.planes[2].buffer.remaining()
+        try {
+            if (image.planes.size == 1) {
+                updateTexture(
+                    image.planes[0].buffer,
+                    null,
+                    null,
+                    image.planes[0].rowStride,
+                    0,
+                    0
+                )
+            } else {
+                updateTexture(
+                    image.planes[0].buffer,
+                    image.planes[1].buffer,
+                    image.planes[2].buffer,
+                    image.planes[0].rowStride,
+                    image.planes[1].rowStride,
+                    image.planes[1].pixelStride
                 )
             }
-            buffer?.apply {
-                position(0)
-                put(image.planes[0].buffer)
-                put(image.planes[1].buffer)
-                put(image.planes[2].buffer)
-                updateTexture(this, image.width)
-            }
-        } else {
-            updateTexture(image.planes[0].buffer, image.planes[0].rowStride)
+        } catch (e: Exception) {
+            Log.w(TAG, "", e)
         }
         image.close()
     }
@@ -117,6 +139,14 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
     private external fun setTexture(width: Int, height: Int, format: Int)
-    private external fun updateTexture(buffer: ByteBuffer? = null, stride: Int)
+    private external fun updateTexture(
+        buffer0: ByteBuffer? = null,
+        buffer1: ByteBuffer? = null,
+        buffer2: ByteBuffer? = null,
+        buffer0Stride: Int,
+        buffer1Stride: Int,
+        uvPixelStride: Int
+    )
+
     private external fun dispose()
 }

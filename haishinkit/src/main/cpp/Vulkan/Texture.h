@@ -8,6 +8,7 @@
 #include "ImageStorage.h"
 #include "VideoGravity.h"
 #include "ResampleFilter.h"
+#include "ColorSpace.h"
 
 namespace Vulkan {
     class Kernel;
@@ -23,9 +24,7 @@ namespace Vulkan {
         VideoGravity videoGravity = RESIZE_ASPECT;
         ResampleFilter resampleFilter = CUBIC;
 
-        static vk::Format GetFormat(int32_t format);
-
-        Texture(vk::Extent2D extent, vk::Format format);
+        Texture(vk::Extent2D extent, int32_t format);
 
         ~Texture();
 
@@ -33,7 +32,8 @@ namespace Vulkan {
 
         void TearDown(Kernel &kernel);
 
-        void Update(Kernel &kernel, void *data, int32_t stride);
+        void Update(Kernel &kernel, void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
+                    int32_t uvPixelStride);
 
         vk::Viewport GetViewport(const vk::Extent2D surface) const;
 
@@ -48,9 +48,7 @@ namespace Vulkan {
         vk::UniqueSampler sampler;
         vk::UniqueImageView imageView;
 
-        vk::DeviceSize allocationSize = 0;
-        vk::DeviceSize rowPitch = 0;
-        void *memory = nullptr;
+        ColorSpace *colorSpace;
 
         bool HasLinearTilingFeatures(Kernel &kernel) const;
 
