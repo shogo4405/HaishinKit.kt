@@ -136,6 +136,7 @@ class CameraTabFragment: Fragment(), IEventListener {
 ### How can I run example project?
 ```sh
 git clone https://github.com/shogo4405/HaishinKit.kt.git
+cd HaishinKit.kt
 git submodule update --init
 
 # Open [Android Studio] -> [Open] ...
