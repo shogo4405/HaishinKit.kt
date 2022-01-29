@@ -132,6 +132,15 @@ class CameraTabFragment: Fragment(), IEventListener {
     }
 }
 ```
+## FAQ
+### How can I run example project?
+```sh
+git clone https://github.com/shogo4405/HaishinKit.kt.git
+git submodule update --init
+
+# Open [Android Studio] -> [Open] ...
+```
+
 ### RTML URL Format
 * rtmp://server-ip-address[:port]/application/[appInstance]/[prefix:[path1[/path2/]]]streamName
   - [] mark is an Optional.
