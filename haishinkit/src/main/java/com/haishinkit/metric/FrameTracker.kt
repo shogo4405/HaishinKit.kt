@@ -26,7 +26,7 @@ class FrameTracker {
                     Log.d(
                         TAG,
                         "$type stats: frames=$count, average=${average(timestamps)}, sd=${
-                            sd(timestamps)
+                        sd(timestamps)
                         }"
                     )
                 }

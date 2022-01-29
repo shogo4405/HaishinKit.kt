@@ -14,10 +14,10 @@ import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
+import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.util.MediaFormatUtil
-import com.haishinkit.graphics.VideoGravity
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 

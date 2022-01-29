@@ -7,7 +7,8 @@ import android.util.Size
 import android.view.Surface
 import java.nio.ByteBuffer
 
-class VkPixelTransform(override var listener: PixelTransform.Listener? = null) : PixelTransform,
+class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
+    PixelTransform,
     ImageReader.OnImageAvailableListener {
     companion object {
         init {

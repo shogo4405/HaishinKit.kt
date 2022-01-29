@@ -190,11 +190,13 @@ class Camera2Source(
 
     private fun createCaptureSession(surface: Surface, device: CameraDevice) {
         surfaceList.add(surface)
-        requests.add(device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-            surfaceList.forEach {
-                addTarget(it)
+        requests.add(
+            device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
+                surfaceList.forEach {
+                    addTarget(it)
+                }
             }
-        })
+        )
         device.createCaptureSession(
             surfaceList,
             object : CameraCaptureSession.StateCallback() {

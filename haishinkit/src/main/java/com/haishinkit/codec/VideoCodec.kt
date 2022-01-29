@@ -6,9 +6,9 @@ import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
 import com.haishinkit.flv.tag.FlvTag
-import com.haishinkit.graphics.gles.GlPixelReader
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
+import com.haishinkit.graphics.gles.GlPixelReader
 import com.haishinkit.util.FeatureUtil
 import java.nio.ByteBuffer
 import kotlin.properties.Delegates

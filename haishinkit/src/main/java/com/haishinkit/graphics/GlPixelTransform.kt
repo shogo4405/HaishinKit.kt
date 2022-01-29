@@ -2,7 +2,6 @@ package com.haishinkit.graphics
 
 import android.content.res.AssetManager
 import android.graphics.SurfaceTexture
-import android.opengl.GLES10
 import android.opengl.GLES20
 import android.os.Handler
 import android.util.Log

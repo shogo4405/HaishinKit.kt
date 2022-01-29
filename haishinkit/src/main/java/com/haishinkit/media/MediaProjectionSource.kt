@@ -1,7 +1,6 @@
 package com.haishinkit.media
 
 import android.content.Context
-import android.graphics.ImageFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
