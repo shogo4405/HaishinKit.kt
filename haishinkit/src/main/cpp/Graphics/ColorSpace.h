@@ -4,7 +4,7 @@
 #include <jni.h>
 #include <vulkan/vulkan.hpp>
 
-namespace Vulkan {
+namespace Graphics {
 
     class ColorSpace {
     public:

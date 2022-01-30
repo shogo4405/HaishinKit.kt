@@ -7,7 +7,7 @@
 #include "../haishinkit.hpp"
 #include "DynamicLoader.h"
 
-namespace Vulkan {
+namespace Graphics {
 
     PixelTransform::PixelTransform() :
             kernel(new Kernel()),
@@ -136,14 +136,14 @@ extern "C"
 JNIEXPORT jboolean JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_00024Companion_isSupported(JNIEnv *env,
                                                                          jobject thiz) {
-    return Vulkan::DynamicLoader::GetInstance().Load();
+    return Graphics::DynamicLoader::GetInstance().Load();
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_nativeSetVideoGravity(JNIEnv *env, jobject thiz,
                                                                     jint value) {
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->SetVideoGravity(
-            static_cast<Vulkan::VideoGravity>(value));
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->SetVideoGravity(
+            static_cast<Graphics::VideoGravity>(value));
 }
 
 JNIEXPORT void JNICALL
@@ -153,8 +153,8 @@ Java_com_haishinkit_graphics_VkPixelTransform_nativeSetSurface(JNIEnv *env, jobj
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
     }
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Vulkan::PixelTransform *self) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
                 self->SetNativeWindow(window);
             });
 }
@@ -162,8 +162,8 @@ Java_com_haishinkit_graphics_VkPixelTransform_nativeSetSurface(JNIEnv *env, jobj
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
                                                          jint height, jint format) {
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Vulkan::PixelTransform *self) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
                 self->SetUpTexture(width, height, format);
             });
 }
@@ -175,8 +175,8 @@ Java_com_haishinkit_graphics_VkPixelTransform_nativeSetInputSurface(JNIEnv *env,
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
     }
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Vulkan::PixelTransform *self) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
                 self->SetInputNativeWindow(window);
             });
 }
@@ -184,9 +184,9 @@ Java_com_haishinkit_graphics_VkPixelTransform_nativeSetInputSurface(JNIEnv *env,
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_nativeSetResampleFilter(JNIEnv *env, jobject thiz,
                                                                       jint value) {
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Vulkan::PixelTransform *self) {
-                self->SetResampleFilter(static_cast<Vulkan::ResampleFilter>(value));
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
+                self->SetResampleFilter(static_cast<Graphics::ResampleFilter>(value));
             });
 }
 
@@ -194,15 +194,15 @@ JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_nativeSetAssetManager(JNIEnv *env, jobject thiz,
                                                                     jobject asset_manager) {
     AAssetManager *manager = AAssetManager_fromJava(env, asset_manager);
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Vulkan::PixelTransform *self) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
                 self->SetAssetManager(manager);
             });
 }
 
 JNIEXPORT jstring JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_inspectDevices(JNIEnv *env, jobject thiz) {
-    std::string string = Unmanaged<Vulkan::PixelTransform>::fromOpaque(env,
+    std::string string = Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
                                                                        thiz)->takeRetainedValue()->InspectDevices();
     return env->NewStringUTF(string.c_str());
 }
@@ -215,8 +215,8 @@ Java_com_haishinkit_graphics_VkPixelTransform_updateTexture(JNIEnv *env, jobject
                                                             jint stride1,
                                                             jint stride2,
                                                             jint pixelStride) {
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Vulkan::PixelTransform *self) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
                 if (buffer0 == nullptr) {
                     self->UpdateTexture(nullptr, nullptr, nullptr, 0, 0, 0);
                 } else {
@@ -237,6 +237,6 @@ Java_com_haishinkit_graphics_VkPixelTransform_updateTexture(JNIEnv *env, jobject
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_dispose(JNIEnv *env, jobject thiz) {
-    Unmanaged<Vulkan::PixelTransform>::fromOpaque(env, thiz)->release();
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->release();
 }
 }

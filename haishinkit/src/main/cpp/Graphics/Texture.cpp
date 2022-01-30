@@ -4,7 +4,7 @@
 #include "ImageStorage.h"
 #include "ColorSpace.h"
 
-namespace Vulkan {
+namespace Graphics {
     Texture::Texture(vk::Extent2D extent, int32_t format) : colorSpace(new ColorSpace()) {
         colorSpace->format = format;
         colorSpace->extent = extent;

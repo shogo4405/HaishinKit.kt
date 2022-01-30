@@ -1,7 +1,7 @@
 #include "Kernel.h"
 #include "SwapChain.h"
 
-namespace Vulkan {
+namespace Graphics {
     void SwapChain::SetUp(Kernel &kernel) {
         const auto capabilities = kernel.physicalDevice.getSurfaceCapabilitiesKHR(
                 kernel.surface.get());

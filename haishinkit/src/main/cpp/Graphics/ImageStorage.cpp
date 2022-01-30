@@ -2,7 +2,7 @@
 #include "Util.h"
 #include "ImageStorage.h"
 
-namespace Vulkan {
+namespace Graphics {
     void ImageStorage::SetUp(Kernel &kernel, vk::ImageCreateInfo info) {
         layout = info.initialLayout;
         image = kernel.device->createImageUnique(info);

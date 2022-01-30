@@ -1,7 +1,7 @@
 #include "Kernel.h"
 #include "Queue.h"
 
-namespace Vulkan {
+namespace Graphics {
     void Queue::SetImagesCount(Kernel &kernel, int32_t imagesCount) {
         currentFrame = 0;
         images.resize(imagesCount);

@@ -10,7 +10,7 @@
 #include "ResampleFilter.h"
 #include "ColorSpace.h"
 
-namespace Vulkan {
+namespace Graphics {
     class Kernel;
 
     struct ImageStorage;

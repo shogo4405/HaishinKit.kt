@@ -1,7 +1,7 @@
 #ifndef HAISHINKIT_KT_VIDEOGRAVITY_H
 #define HAISHINKIT_KT_VIDEOGRAVITY_H
 
-namespace Vulkan {
+namespace Graphics {
     enum VideoGravity {
         RESIZE_ASPECT = 0,
         RESIZE_ASPECT_FILL = 1,

@@ -5,7 +5,7 @@
 #include "Util.h"
 #include "DynamicLoader.h"
 
-namespace Vulkan {
+namespace Graphics {
     vk::ImageMemoryBarrier Util::CreateImageMemoryBarrier(vk::ImageLayout oldImageLayout,
                                                           vk::ImageLayout newImageLayout) {
         auto imageMemoryBarrier = vk::ImageMemoryBarrier()

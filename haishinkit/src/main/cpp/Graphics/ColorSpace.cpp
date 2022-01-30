@@ -2,7 +2,7 @@
 #include <vulkan/vulkan.hpp>
 #include <android/native_window.h>
 
-using namespace Vulkan;
+using namespace Graphics;
 
 ColorSpace::ColorSpace() = default;
 

@@ -24,17 +24,17 @@ add_library(
         SHARED
         # Provides a relative path to your source file(s).
         haishinkit.hpp
-        Vulkan/Kernel.cpp
-        Vulkan/ColorSpace.cpp
-        Vulkan/ImageStorage.cpp
-        Vulkan/DynamicLoader.cpp
-        Vulkan/CommandBuffer.cpp
-        Vulkan/Queue.cpp
-        Vulkan/PixelTransform.cpp
-        Vulkan/SwapChain.cpp
-        Vulkan/Pipeline.cpp
-        Vulkan/Texture.cpp
-        Vulkan/Util.cpp
+        Graphics/Kernel.cpp
+        Graphics/ColorSpace.cpp
+        Graphics/ImageStorage.cpp
+        Graphics/DynamicLoader.cpp
+        Graphics/CommandBuffer.cpp
+        Graphics/Queue.cpp
+        Graphics/PixelTransform.cpp
+        Graphics/SwapChain.cpp
+        Graphics/Pipeline.cpp
+        Graphics/Texture.cpp
+        Graphics/Util.cpp
 )
 
 # Searches for a specified prebuilt library and stores the path as a

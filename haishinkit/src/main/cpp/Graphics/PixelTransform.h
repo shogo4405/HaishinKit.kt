@@ -5,7 +5,7 @@
 #include "Kernel.h"
 #include "ResampleFilter.h"
 
-namespace Vulkan {
+namespace Graphics {
 
     class PixelTransform {
     public:

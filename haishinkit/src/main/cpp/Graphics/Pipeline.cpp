@@ -3,7 +3,7 @@
 #include "SwapChain.h"
 #include "Texture.h"
 
-namespace Vulkan {
+namespace Graphics {
     void Pipeline::SetTextures(Kernel &kernel, std::vector<Texture *> textures) {
         std::vector<vk::DescriptorImageInfo> images(textures.size());
         for (auto i = 0; i < images.size(); ++i) {

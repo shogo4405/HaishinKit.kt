@@ -1,7 +1,7 @@
 #include "DynamicLoader.h"
 #include "Kernel.h"
 
-namespace Vulkan {
+namespace Graphics {
     bool DynamicLoader::Load() {
         try {
             if (loaded) {

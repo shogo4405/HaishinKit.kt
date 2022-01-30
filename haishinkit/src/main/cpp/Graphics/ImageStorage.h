@@ -5,7 +5,7 @@
 #include <vulkan/vulkan_android.h>
 #include <vulkan/vulkan.hpp>
 
-namespace Vulkan {
+namespace Graphics {
     class Kernel;
 
     struct ImageStorage {

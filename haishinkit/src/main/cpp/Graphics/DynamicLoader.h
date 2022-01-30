@@ -1,7 +1,7 @@
 #ifndef HAISHINKIT_KT_DYNAMICLOADER_H
 #define HAISHINKIT_KT_DYNAMICLOADER_H
 
-namespace Vulkan {
+namespace Graphics {
     class DynamicLoader {
     public:
         DynamicLoader(const DynamicLoader &) = delete;

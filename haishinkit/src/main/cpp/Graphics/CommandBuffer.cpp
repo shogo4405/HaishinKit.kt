@@ -3,7 +3,7 @@
 #include "Util.h"
 #include "CommandBuffer.h"
 
-namespace Vulkan {
+namespace Graphics {
     const float CommandBuffer::VERTICES[] = {
             -1.f, -1.f, 0, 1.f, 0.f, 0.f,
             1.f, -1.f, 0, 1.f, 1.f, 0.f,

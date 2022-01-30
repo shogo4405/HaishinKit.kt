@@ -6,7 +6,7 @@
 #include <vulkan/vulkan.hpp>
 #include <android/native_window.h>
 
-namespace Vulkan {
+namespace Graphics {
     class Kernel;
 
     struct SwapChain {

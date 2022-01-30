@@ -15,7 +15,7 @@
 #include "Texture.h"
 #include "Queue.h"
 
-namespace Vulkan {
+namespace Graphics {
     class Kernel {
     public:
         vk::UniqueInstance instance;
