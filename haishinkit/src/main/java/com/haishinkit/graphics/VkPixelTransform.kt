@@ -39,7 +39,11 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             nativeSetInputSurface(value)
         }
 
-    override var orientation: Int = 0
+    override var imageOrientation: ImageOrientation = ImageOrientation.UP
+        set(value) {
+            field = value
+            nativeSetImageOrientation(imageOrientation.rawValue)
+        }
 
     override var extent: Size = Size(0, 0)
 
@@ -62,6 +66,8 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             field = value
             nativeSetAssetManager(assetManager)
         }
+
+    override var surfaceOrientation: Int = Surface.ROTATION_0
 
     @Suppress("unused")
     private var memory: Long = 0
@@ -133,6 +139,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         dispose()
     }
 
+    private external fun nativeSetImageOrientation(imageOrientation: Int)
     private external fun nativeSetSurface(surface: Surface?)
     private external fun nativeSetInputSurface(surface: Surface?)
     private external fun nativeSetResampleFilter(resampleFilter: Int)

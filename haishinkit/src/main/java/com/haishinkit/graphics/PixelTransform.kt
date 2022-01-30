@@ -18,7 +18,8 @@ interface PixelTransform {
      */
     var extent: Size
     var resampleFilter: ResampleFilter
-    var orientation: Int
+    var imageOrientation: ImageOrientation
+    var surfaceOrientation: Int
     var videoGravity: VideoGravity
     var inputSurface: Surface?
     var assetManager: AssetManager?

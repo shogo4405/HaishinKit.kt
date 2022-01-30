@@ -4,6 +4,7 @@ import android.opengl.GLES10
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Size
+import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.lang.Utilize
@@ -14,7 +15,7 @@ import javax.microedition.khronos.opengles.GL10
 internal class GlKernel(
     override var utilizable: Boolean = false
 ) : Utilize {
-    var orientation: Int = ROTATION_0
+    var imageOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
             field = value
             invalidateLayout = true
@@ -35,6 +36,7 @@ internal class GlKernel(
                 -1.0f,
                 1.0f
             )
+            invalidateLayout = true
         }
     var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
@@ -117,20 +119,42 @@ internal class GlKernel(
 
     private fun layout(newTextureSize: Size) {
         var swapped = false
-        when (orientation) {
-            ROTATION_0 -> {
-                texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+
+        if (extent.width < extent.height) {
+            // portrait
+            when (imageOrientation) {
+                ImageOrientation.UP, ImageOrientation.UP_MIRRORED -> {
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+                }
+                ImageOrientation.LEFT, ImageOrientation.LEFT_MIRRORED -> {
+                    swapped = true
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_270)
+                }
+                ImageOrientation.DOWN, ImageOrientation.DOWN_MIRRORED -> {
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_180)
+                }
+                ImageOrientation.RIGHT, ImageOrientation.RIGHT_MIRRORED -> {
+                    swapped = true
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_90)
+                }
             }
-            ROTATION_90 -> {
-                swapped = true
-                texCoordBuffer.put(TEX_COORDS_ROTATION_90)
-            }
-            ROTATION_180 -> {
-                texCoordBuffer.put(TEX_COORDS_ROTATION_180)
-            }
-            ROTATION_270 -> {
-                swapped = true
-                texCoordBuffer.put(TEX_COORDS_ROTATION_270)
+        } else {
+            // landscape
+            when (imageOrientation) {
+                ImageOrientation.UP, ImageOrientation.UP_MIRRORED -> {
+                    swapped = true
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_90)
+                }
+                ImageOrientation.LEFT, ImageOrientation.LEFT_MIRRORED -> {
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+                }
+                ImageOrientation.DOWN, ImageOrientation.DOWN_MIRRORED -> {
+                    swapped = true
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_270)
+                }
+                ImageOrientation.RIGHT, ImageOrientation.RIGHT_MIRRORED -> {
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_180)
+                }
             }
         }
         texCoordBuffer.position(0)
@@ -181,11 +205,6 @@ internal class GlKernel(
 
     companion object {
         private const val INVALID_VALUE = 0
-
-        const val ROTATION_0 = 0
-        const val ROTATION_90 = 1
-        const val ROTATION_180 = 2
-        const val ROTATION_270 = 3
 
         private val VERTECES = floatArrayOf(
             -1.0f, 1.0f, 0.0f,

@@ -21,11 +21,11 @@ internal class GlPixelTransform(
     override var assetManager: AssetManager? = null,
     override var listener: PixelTransform.Listener? = null,
 ) : PixelTransform, SurfaceTexture.OnFrameAvailableListener {
-    override var orientation: Int = 0
-        get() = kernel.orientation
+    override var imageOrientation: ImageOrientation = ImageOrientation.UP
+        get() = kernel.imageOrientation
         set(value) {
             field = value
-            kernel.orientation = value
+            kernel.imageOrientation = value
         }
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_RESIZE
         get() = kernel.videoGravity
@@ -37,6 +37,10 @@ internal class GlPixelTransform(
         set(value) {
             field = value
             kernel.extent = field
+        }
+    override var surfaceOrientation: Int = Surface.ROTATION_0
+        set(value) {
+            field = value
         }
     override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     val reader = GlPixelReader()

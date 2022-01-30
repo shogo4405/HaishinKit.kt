@@ -9,6 +9,8 @@
 #include "VideoGravity.h"
 #include "ResampleFilter.h"
 #include "ColorSpace.h"
+#include "ImageOrientation.h"
+#include "PushConstants.hpp"
 
 namespace Graphics {
     class Kernel;
@@ -28,7 +30,11 @@ namespace Graphics {
 
         ~Texture();
 
+        bool IsInvalidateLayout();
+
         void SetUp(Kernel &kernel);
+
+        void SetImageOrientation(ImageOrientation newImageOrientation);
 
         void TearDown(Kernel &kernel);
 
@@ -37,17 +43,18 @@ namespace Graphics {
 
         vk::Viewport GetViewport(const vk::Extent2D surface) const;
 
+        PushConstants GetPushConstants() const;
+
         vk::DescriptorImageInfo CreateDescriptorImageInfo();
 
     private:
         Mode mode = Mode::Linear;
-
         ImageStorage image;
         ImageStorage stage;
-
         vk::UniqueSampler sampler;
         vk::UniqueImageView imageView;
-
+        bool invalidateLayout = true;
+        ImageOrientation imageOrientation = UP;
         ColorSpace *colorSpace;
 
         bool HasLinearTilingFeatures(Kernel &kernel) const;

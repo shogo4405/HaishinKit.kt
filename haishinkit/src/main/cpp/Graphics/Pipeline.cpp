@@ -2,6 +2,8 @@
 #include "Pipeline.h"
 #include "SwapChain.h"
 #include "Texture.h"
+#include "Vertex.hpp"
+#include "PushConstants.hpp"
 
 namespace Graphics {
     void Pipeline::SetTextures(Kernel &kernel, std::vector<Texture *> textures) {
@@ -56,6 +58,11 @@ namespace Graphics {
                         .setSetLayoutCount(1)
                         .setSetLayouts(
                                 descriptorSetLayout.get())
+                        .setPushConstantRangeCount(1)
+                        .setPPushConstantRanges(&vk::PushConstantRange()
+                                .setOffset(0)
+                                .setStageFlags(vk::ShaderStageFlagBits::eVertex)
+                                .setSize(sizeof(Graphics::PushConstants)))
         );
 
         pipelineCache = kernel.device->createPipelineCacheUnique(vk::PipelineCacheCreateInfo());
@@ -75,18 +82,7 @@ namespace Graphics {
                         .setPName("main")
         };
 
-        std::vector<vk::VertexInputAttributeDescription> vertexInputAttributeDescriptions = {
-                vk::VertexInputAttributeDescription()
-                        .setLocation(0)
-                        .setBinding(0)
-                        .setFormat(vk::Format::eR32G32B32A32Sfloat)
-                        .setOffset(0),
-                vk::VertexInputAttributeDescription()
-                        .setLocation(1)
-                        .setBinding(0)
-                        .setFormat(vk::Format::eR32G32Sfloat)
-                        .setOffset(sizeof(float) * 4)
-        };
+        std::vector<vk::VertexInputAttributeDescription> vertexInputAttributeDescriptions = Vertex::CreateAttributeDescriptions();
 
         std::vector<vk::PipelineColorBlendAttachmentState> colorBlendAttachmentStates = {
                 vk::PipelineColorBlendAttachmentState()
@@ -106,6 +102,8 @@ namespace Graphics {
                 vk::DynamicState::eScissor,
         };
 
+        const auto bindingDescription = Vertex::CreateBindingDescription();
+
         pipeline = kernel.device->createGraphicsPipelineUnique(
                 pipelineCache.get(),
                 vk::GraphicsPipelineCreateInfo()
@@ -113,15 +111,11 @@ namespace Graphics {
                         .setStages(shaderStages)
                         .setPVertexInputState(&vk::PipelineVertexInputStateCreateInfo()
                                 .setVertexBindingDescriptionCount(1)
-                                .setPVertexBindingDescriptions(&vk::VertexInputBindingDescription()
-                                        .setBinding(0)
-                                        .setStride(6 * sizeof(float))
-                                        .setInputRate(vk::VertexInputRate::eVertex)
-                                )
+                                .setPVertexBindingDescriptions(&bindingDescription)
                                 .setVertexAttributeDescriptions(vertexInputAttributeDescriptions)
                         )
                         .setPInputAssemblyState(&vk::PipelineInputAssemblyStateCreateInfo()
-                                .setTopology(vk::PrimitiveTopology::eTriangleList)
+                                .setTopology(vk::PrimitiveTopology::eTriangleStrip)
                                 .setPrimitiveRestartEnable(false)
                         )
                         .setPViewportState(&vk::PipelineViewportStateCreateInfo()

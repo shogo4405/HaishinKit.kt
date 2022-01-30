@@ -15,11 +15,18 @@ class GlThreadPixelTransform(
     override var fpsControllerClass: Class<*>? = null,
 ) : PixelTransform, PixelTransform.Listener {
     override var listener: PixelTransform.Listener? = null
-    override var orientation: Int
-        get() = pixelTransform.orientation
+    override var imageOrientation: ImageOrientation
+        get() = pixelTransform.imageOrientation
         set(value) {
             handler?.let {
-                it.sendMessage(it.obtainMessage(MSG_SET_ORIENTATION, value))
+                it.sendMessage(it.obtainMessage(MSG_SET_IMAGE_ORIENTATION, value))
+            }
+        }
+    override var surfaceOrientation: Int
+        get() = pixelTransform.surfaceOrientation
+        set(value) {
+            handler?.let {
+                it.sendMessage(it.obtainMessage(MSG_SET_SURFACE_ORIENTATION, value))
             }
         }
     override var videoGravity: VideoGravity
@@ -95,8 +102,11 @@ class GlThreadPixelTransform(
                     val obj = message.obj
                     transform.setUp(obj as Surface, message.arg1, message.arg2)
                 }
-                MSG_SET_ORIENTATION -> {
-                    transform.orientation = message.obj as Int
+                MSG_SET_IMAGE_ORIENTATION -> {
+                    transform.imageOrientation = message.obj as ImageOrientation
+                }
+                MSG_SET_SURFACE_ORIENTATION -> {
+                    transform.surfaceOrientation = message.obj as Int
                 }
                 MSG_SET_VIDEO_GRAVITY -> {
                     transform.videoGravity = message.obj as VideoGravity
@@ -128,10 +138,11 @@ class GlThreadPixelTransform(
     companion object {
         private const val MSG_SET_UP = 0
         private const val MSG_CREATE_INPUT_SURFACE = 1
-        private const val MSG_SET_ORIENTATION = 2
-        private const val MSG_SET_VIDEO_GRAVITY = 3
-        private const val MSG_SET_CURRENT_EXTENT = 4
-        private const val MSG_SET_RESAMPLE_FILTER = 5
+        private const val MSG_SET_IMAGE_ORIENTATION = 2
+        private const val MSG_SET_SURFACE_ORIENTATION = 3
+        private const val MSG_SET_VIDEO_GRAVITY = 4
+        private const val MSG_SET_CURRENT_EXTENT = 5
+        private const val MSG_SET_RESAMPLE_FILTER = 6
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

@@ -1,10 +1,16 @@
 #version 450
-#extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_shading_language_420pack : enable
-layout (location = 0) in vec4 pos;
+
+layout (push_constant) uniform PushConstants {
+    mat4 mvp;
+    mat2 preRotate;
+} pushConstants;
+
+layout (location = 0) in vec2 pos;
 layout (location = 1) in vec2 attr;
 layout (location = 0) out vec2 texcoord;
+
 void main() {
     texcoord = attr;
-    gl_Position = pos;
+    vec4 clip = pushConstants.mvp * vec4(pos, 0.0, 1.0);
+    gl_Position = vec4(pushConstants.preRotate * vec2(clip.x, clip.y), clip.z, clip.w);
 }

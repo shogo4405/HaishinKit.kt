@@ -35,6 +35,8 @@ add_library(
         Graphics/Pipeline.cpp
         Graphics/Texture.cpp
         Graphics/Util.cpp
+        Graphics/Vertex.hpp
+        Graphics/PushConstants.hpp
 )
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -65,6 +67,7 @@ target_link_libraries(
 )
 
 include_directories(
-        ${PROJECT_SOURCE_DIR}/../../../vendor/picojson
+        ${PROJECT_SOURCE_DIR}/../../../vendor
         ${PROJECT_SOURCE_DIR}/../../../vendor/Vulkan-Headers/include
+        ${PROJECT_SOURCE_DIR}/../../../vendor/glm
 )

@@ -2,7 +2,7 @@
 #include "SwapChain.h"
 #include "Texture.h"
 #include "stdexcept"
-#include <picojson.h>
+#include <picojson/picojson.h>
 #include <jni.h>
 #include "../haishinkit.hpp"
 #include "vulkan/vulkan.h"

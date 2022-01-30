@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_android.h>
 #include <vulkan/vulkan.hpp>
+#include "Vertex.hpp"
 
 namespace Graphics {
     class Kernel;
@@ -26,7 +27,7 @@ namespace Graphics {
         vk::CommandBuffer Allocate(Kernel &kernel);
 
     private:
-        static const float VERTICES[];
+        static const Vertex VERTICES[];
 
         static vk::Buffer CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size);
 

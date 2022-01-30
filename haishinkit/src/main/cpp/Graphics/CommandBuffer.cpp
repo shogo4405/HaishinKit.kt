@@ -2,15 +2,14 @@
 #include "Kernel.h"
 #include "Util.h"
 #include "CommandBuffer.h"
+#include "PushConstants.hpp"
 
 namespace Graphics {
-    const float CommandBuffer::VERTICES[] = {
-            -1.f, -1.f, 0, 1.f, 0.f, 0.f,
-            1.f, -1.f, 0, 1.f, 1.f, 0.f,
-            -1.f, 1.f, 0, 1.f, 0.f, 1.f,
-            1.f, 1.f, 0, 1.f, 1.f, 1.f,
-            1.f, -1.f, 0, 1.f, 1.f, 0.f,
-            -1.f, 1.f, 0, 1.f, 0.f, 1.f
+    const Vertex CommandBuffer::VERTICES[] = {
+            {{-1.f, 1.f},  {0.f, 1.f}},
+            {{1.f,  1.f},  {1.f, 1.f}},
+            {{-1.f, -1.f}, {0.f, 0.f}},
+            {{1.f,  -1.f}, {1.f, 0.f}},
     };
 
     CommandBuffer::CommandBuffer() = default;
@@ -43,7 +42,7 @@ namespace Graphics {
 
         buffers.resize(1);
         buffers[0] = CreateBuffer(kernel, (void *) CommandBuffer::VERTICES,
-                                  sizeof(CommandBuffer::VERTICES));
+                                  sizeof(CommandBuffer::VERTICES) * sizeof(Graphics::Vertex));
 
         offsets.resize(1);
         offsets[0] = {0};
@@ -72,6 +71,9 @@ namespace Graphics {
                 textures[0]->GetViewport(kernel.swapChain.size)
         };
 
+        const PushConstants pushConstantsBlock =
+                textures[0]->GetPushConstants();
+
         for (auto i = 0; i < commandBuffers.size(); ++i) {
             auto &commandBuffer = commandBuffers[i].get();
             commandBuffer.begin(
@@ -80,6 +82,13 @@ namespace Graphics {
 
             commandBuffer.setViewport(0, viewports);
             commandBuffer.setScissor(0, scissors);
+
+            commandBuffer.pushConstants(
+                    kernel.pipeline.pipelineLayout.get(),
+                    vk::ShaderStageFlagBits::eVertex,
+                    0,
+                    sizeof(PushConstants),
+                    &pushConstantsBlock);
 
             commandBuffer.beginRenderPass(
                     vk::RenderPassBeginInfo()
@@ -103,7 +112,7 @@ namespace Graphics {
                     0,
                     nullptr);
 
-            commandBuffer.draw(6, 1, 0, 0);
+            commandBuffer.draw(4, 1, 0, 0);
             commandBuffer.endRenderPass();
             commandBuffer.end();
         }
@@ -125,6 +134,7 @@ namespace Graphics {
                         .setSize(size)
                         .setUsage(vk::BufferUsageFlagBits::eVertexBuffer)
                         .setQueueFamilyIndexCount(1)
+                        .setSharingMode(vk::SharingMode::eExclusive)
                         .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
         );
         const auto memoryRequirements = kernel.device->getBufferMemoryRequirements(

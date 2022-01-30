@@ -4,3 +4,6 @@
 [submodule "haishinkit/vendor/Vulkan-Headers"]
 	path = haishinkit/vendor/Vulkan-Headers
 	url = git@github.com:KhronosGroup/Vulkan-Headers.git
+[submodule "haishinkit/vendor/glm"]
+	path = haishinkit/vendor/glm
+	url = git@github.com:g-truc/glm.git

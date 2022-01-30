@@ -15,6 +15,7 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
+import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
@@ -91,12 +92,19 @@ class Camera2Source(
                 override fun onOpened(camera: CameraDevice) {
                     this@Camera2Source.device = camera
                     this@Camera2Source.setUp()
-                    stream?.renderer?.pixelTransform?.listener = this@Camera2Source
-                    stream?.renderer?.pixelTransform?.createInputSurface(
-                        resolution.width,
-                        resolution.height,
-                        IMAGE_FORMAT
-                    )
+
+                    stream?.renderer?.pixelTransform?.apply {
+                        listener = this@Camera2Source
+                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
+                        imageOrientation =
+                            when (characteristics?.get(CameraCharacteristics.SENSOR_ORIENTATION)) {
+                                0 -> ImageOrientation.UP
+                                90 -> ImageOrientation.LEFT
+                                180 -> ImageOrientation.DOWN
+                                270 -> ImageOrientation.RIGHT
+                                else -> ImageOrientation.UP
+                            }
+                    }
                 }
 
                 override fun onDisconnected(camera: CameraDevice) {

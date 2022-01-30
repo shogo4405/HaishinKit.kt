@@ -33,6 +33,13 @@ namespace Graphics {
         }
     }
 
+    void PixelTransform::SetImageOrientation(ImageOrientation newImageOrientation) {
+        imageOrientation = newImageOrientation;
+        for (auto &texture : textures) {
+            texture->SetImageOrientation(newImageOrientation);
+        }
+    }
+
     void PixelTransform::SetResampleFilter(ResampleFilter newResampleFilter) {
         resampleFilter = newResampleFilter;
         for (auto &texture : textures) {
@@ -69,6 +76,7 @@ namespace Graphics {
             const auto format = ANativeWindow_getFormat(newInputNativeWindow);
             auto texture = new Texture(vk::Extent2D(width, height), format);
             texture->videoGravity = videoGravity;
+            texture->SetImageOrientation(imageOrientation);
             textures.clear();
             textures.push_back(texture);
             kernel->SetTextures(textures);
@@ -142,7 +150,8 @@ Java_com_haishinkit_graphics_VkPixelTransform_00024Companion_isSupported(JNIEnv 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_nativeSetVideoGravity(JNIEnv *env, jobject thiz,
                                                                     jint value) {
-    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->SetVideoGravity(
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
+                                                    thiz)->takeRetainedValue()->SetVideoGravity(
             static_cast<Graphics::VideoGravity>(value));
 }
 
@@ -156,6 +165,15 @@ Java_com_haishinkit_graphics_VkPixelTransform_nativeSetSurface(JNIEnv *env, jobj
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetNativeWindow(window);
+            });
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_graphics_VkPixelTransform_nativeSetImageOrientation(JNIEnv *env, jobject thiz,
+                                                                        jint value) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
+                self->SetImageOrientation(static_cast<Graphics::ImageOrientation>(value));
             });
 }
 
@@ -203,7 +221,7 @@ Java_com_haishinkit_graphics_VkPixelTransform_nativeSetAssetManager(JNIEnv *env,
 JNIEXPORT jstring JNICALL
 Java_com_haishinkit_graphics_VkPixelTransform_inspectDevices(JNIEnv *env, jobject thiz) {
     std::string string = Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
-                                                                       thiz)->takeRetainedValue()->InspectDevices();
+                                                                         thiz)->takeRetainedValue()->InspectDevices();
     return env->NewStringUTF(string.c_str());
 }
 

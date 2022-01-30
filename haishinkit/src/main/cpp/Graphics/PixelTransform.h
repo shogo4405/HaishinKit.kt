@@ -25,6 +25,8 @@ namespace Graphics {
 
         void SetInputNativeWindow(ANativeWindow *inputNativeWindow);
 
+        void SetImageOrientation(ImageOrientation imageOrientation);
+
         void UpdateTexture(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
                            int32_t uvPixelStride);
 
@@ -39,6 +41,7 @@ namespace Graphics {
         Kernel *kernel;
         VideoGravity videoGravity = VideoGravity::RESIZE_ASPECT;
         ResampleFilter resampleFilter = ResampleFilter::CUBIC;
+        ImageOrientation imageOrientation = UP;
     };
 }
 

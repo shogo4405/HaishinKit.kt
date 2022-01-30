@@ -3,6 +3,7 @@
 #include "Util.h"
 #include "ImageStorage.h"
 #include "ColorSpace.h"
+#include <glm/ext/matrix_transform.hpp>
 
 namespace Graphics {
     Texture::Texture(vk::Extent2D extent, int32_t format) : colorSpace(new ColorSpace()) {
@@ -16,30 +17,78 @@ namespace Graphics {
 
     Texture::~Texture() = default;
 
+    PushConstants Texture::GetPushConstants() const {
+        auto degrees = 0.f;
+
+        switch (imageOrientation) {
+            case UP:
+                degrees = 0.f;
+                break;
+            case DOWN:
+                degrees = 180.f;
+                break;
+            case LEFT:
+                degrees = 90.f;
+                break;
+            case RIGHT:
+                degrees = 270.f;
+                break;
+            case UP_MIRRORED:
+                degrees = 0.f;
+                break;
+            case DOWN_MIRRORED:
+                degrees = 180.0;
+                break;
+            case LEFT_MIRRORED:
+                degrees = 90.f;
+                break;
+            case RIGHT_MIRRORED:
+                degrees = 180.f;
+                break;
+        }
+
+        return {
+                .mvp = glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)),
+                .preRotate = glm::rotate(glm::mat4(1.f), glm::radians(degrees),
+                                         glm::vec3(0.f, 0.f, 1.f)),
+        };
+    }
+
     vk::Viewport Texture::GetViewport(const vk::Extent2D surface) const {
         vk::Viewport viewport = vk::Viewport();
+
+        auto newImageExtent = image.extent;
+
+        if (imageOrientation == LEFT || imageOrientation == RIGHT ||
+            imageOrientation == LEFT_MIRRORED || imageOrientation || RIGHT_MIRRORED) {
+            newImageExtent = vk::Extent2D()
+                    .setWidth(image.extent.height)
+                    .setHeight(image.extent.width);
+        }
+
         switch (videoGravity) {
             case RESIZE_ASPECT: {
-                const float xRatio = (float) surface.width / (float) image.extent.width;
-                const float yRatio = (float) surface.height / (float) image.extent.height;
+                const float xRatio = (float) surface.width / (float) newImageExtent.width;
+                const float yRatio =
+                        (float) surface.height / (float) newImageExtent.height;
                 if (yRatio < xRatio) {
                     viewport
-                            .setX((surface.width - image.extent.width * yRatio) / 2)
+                            .setX((surface.width - newImageExtent.width * yRatio) / 2)
                             .setY(0)
-                            .setWidth(image.extent.width * yRatio)
-                            .setHeight(surface.height);
+                            .setWidth(surface.width * yRatio)
+                            .setHeight(newImageExtent.height);
                 } else {
                     viewport
                             .setX(0)
-                            .setY((surface.height - image.extent.height * xRatio) / 2)
+                            .setY((surface.height - newImageExtent.height * xRatio) / 2)
                             .setWidth(surface.width)
-                            .setHeight(image.extent.height * xRatio);
+                            .setHeight(newImageExtent.height * xRatio);
                 }
                 break;
             }
             case RESIZE_ASPECT_FILL: {
                 const float iRatio = (float) surface.width / (float) surface.height;
-                const float fRatio = (float) image.extent.width / (float) image.extent.height;
+                const float fRatio = (float) newImageExtent.width / (float) newImageExtent.height;
                 if (iRatio < fRatio) {
                     viewport
                             .setX(((float) surface.width - (float) surface.height * fRatio) / 2)
@@ -62,6 +111,15 @@ namespace Graphics {
             }
         }
         return viewport;
+    }
+
+    bool Texture::IsInvalidateLayout() {
+        return invalidateLayout;
+    }
+
+    void Texture::SetImageOrientation(ImageOrientation newImageOrientation) {
+        imageOrientation = newImageOrientation;
+        invalidateLayout = true;
     }
 
     void Texture::SetUp(Kernel &kernel) {
