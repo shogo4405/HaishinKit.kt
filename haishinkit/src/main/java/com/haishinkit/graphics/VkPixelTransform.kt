@@ -90,11 +90,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     external fun inspectDevices(): String
 
-    override fun setUp(surface: Surface?, width: Int, height: Int) {
-        this.surface = surface
-        listener?.onSetUp(this)
-    }
-
     override fun createInputSurface(width: Int, height: Int, format: Int) {
         isMultiPlanar = when (format) {
             ImageFormat.YUV_420_888 -> true

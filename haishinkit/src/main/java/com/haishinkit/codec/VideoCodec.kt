@@ -5,6 +5,7 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
+import android.util.Size
 import com.haishinkit.flv.tag.FlvTag
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
@@ -96,7 +97,8 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
         super.configure(codec)
         if (mode == MODE_ENCODE) {
             pixelTransform.fpsControllerClass = fpsControllerClass
-            pixelTransform.setUp(codec.createInputSurface(), width, height)
+            pixelTransform.extent = Size(width, height)
+            pixelTransform.surface = codec.createInputSurface()
         }
     }
 

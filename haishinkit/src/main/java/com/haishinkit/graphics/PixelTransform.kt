@@ -25,6 +25,5 @@ interface PixelTransform {
     var assetManager: AssetManager?
     var fpsControllerClass: Class<*>?
 
-    fun setUp(surface: Surface?, width: Int, height: Int)
     fun createInputSurface(width: Int, height: Int, format: Int)
 }

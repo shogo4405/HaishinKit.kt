@@ -4,6 +4,7 @@ import android.opengl.GLES10
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Size
+import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
@@ -15,6 +16,15 @@ import javax.microedition.khronos.opengles.GL10
 internal class GlKernel(
     override var utilizable: Boolean = false
 ) : Utilize {
+    var surface: Surface? = null
+        set(value) {
+            field = value
+            if (value == null) {
+                tearDown()
+            } else {
+                setUp()
+            }
+        }
     var imageOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
             field = value
@@ -28,17 +38,10 @@ internal class GlKernel(
     var extent: Size = Size(0, 0)
         set(value) {
             field = value
-            GLES10.glOrthof(
-                0.0f,
-                field.width.toFloat(),
-                field.height.toFloat(),
-                0.0f,
-                -1.0f,
-                1.0f
-            )
             invalidateLayout = true
         }
     var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
+    private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private var program = INVALID_VALUE
@@ -49,6 +52,9 @@ internal class GlKernel(
 
     override fun setUp() {
         if (utilizable) return
+
+        inputSurfaceWindow.setUp(surface, null)
+        inputSurfaceWindow.makeCurrent()
 
         GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
@@ -84,6 +90,8 @@ internal class GlKernel(
     override fun tearDown() {
         if (!utilizable) return
 
+        inputSurfaceWindow.tearDown()
+
         program = INVALID_VALUE
         positionHandle = INVALID_VALUE
         texCoordHandle = INVALID_VALUE
@@ -115,10 +123,21 @@ internal class GlKernel(
 
         GLES20.glUseProgram(0)
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
+
+        inputSurfaceWindow.swapBuffers()
     }
 
     private fun layout(newTextureSize: Size) {
         var swapped = false
+
+        GLES10.glOrthof(
+            0.0f,
+            extent.width.toFloat(),
+            extent.height.toFloat(),
+            0.0f,
+            -1.0f,
+            1.0f
+        )
 
         if (extent.width < extent.height) {
             // portrait
