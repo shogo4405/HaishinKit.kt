@@ -130,15 +130,6 @@ internal class GlKernel(
     private fun layout(newTextureSize: Size) {
         var swapped = false
 
-        GLES10.glOrthof(
-            0.0f,
-            extent.width.toFloat(),
-            extent.height.toFloat(),
-            0.0f,
-            -1.0f,
-            1.0f
-        )
-
         if (extent.width < extent.height) {
             // portrait
             when (imageOrientation) {
