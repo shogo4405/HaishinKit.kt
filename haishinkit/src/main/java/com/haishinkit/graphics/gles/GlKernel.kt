@@ -100,7 +100,7 @@ internal class GlKernel(
         utilizable = false
     }
 
-    fun render(textureId: Int, textureSize: Size, matrix: FloatArray) {
+    fun render(textureId: Int, textureSize: Size, timestamp: Long) {
         if (invalidateLayout) {
             layout(textureSize)
             invalidateLayout = false

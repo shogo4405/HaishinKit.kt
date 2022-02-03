@@ -1,0 +1,51 @@
+package com.haishinkit.graphics.gles
+
+import android.graphics.SurfaceTexture
+import android.opengl.GLES20
+import android.os.Handler
+import android.util.Size
+import android.view.Surface
+
+internal class GlTexture {
+    companion object {
+        fun create(width: Int, height: Int): GlTexture {
+            return GlTexture().apply {
+                val textures = intArrayOf(1)
+                GLES20.glGenTextures(1, textures, 0)
+                id = textures[0]
+                extent = Size(width, height)
+                surfaceTexture = SurfaceTexture(textures[0]).apply {
+                    setDefaultBufferSize(width, height)
+                }
+            }
+        }
+    }
+
+    var id: Int = 0
+        private set
+    var extent: Size = Size(0, 0)
+        private set
+    var surface: Surface? = null
+        get() {
+            if (field == null) {
+                surfaceTexture?.let {
+                    field = Surface(it)
+                }
+            }
+            return field
+        }
+    private var surfaceTexture: SurfaceTexture? = null
+
+    fun updateTexImage() {
+        surfaceTexture?.updateTexImage()
+    }
+
+    fun setOnFrameAvailableListener(listener: SurfaceTexture.OnFrameAvailableListener?, handler: Handler?) {
+        surfaceTexture?.setOnFrameAvailableListener(listener, handler)
+    }
+
+    fun release() {
+        surfaceTexture?.release()
+        surfaceTexture = null
+    }
+}

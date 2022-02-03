@@ -2,13 +2,13 @@ package com.haishinkit.graphics
 
 import android.content.res.AssetManager
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
 import android.os.Handler
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
 import com.haishinkit.graphics.gles.GlKernel
+import com.haishinkit.graphics.gles.GlTexture
 
 internal class GlPixelTransform(
     override var inputSurface: Surface? = null,
@@ -46,37 +46,36 @@ internal class GlPixelTransform(
     override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     var handler: Handler? = null
     private var kernel: GlKernel = GlKernel()
-    private var transform = FloatArray(16)
     private var fpsController: FpsController = DefaultFpsController.instance
-    private var texture: SurfaceTexture? = null
-    private var textureId: Int = 0
-    private var textureSize: Size = Size(0, 0)
+    private var texture: GlTexture? = null
+        set(value) {
+            field?.release()
+            field = value
+        }
 
     override fun createInputSurface(width: Int, height: Int, format: Int) {
-        val textures = intArrayOf(1)
-        GLES20.glGenTextures(1, textures, 0)
-        textureId = textures[0]
-        textureSize = Size(width, height)
-        val texture = SurfaceTexture(textures[0])
-        texture.setOnFrameAvailableListener(this, handler)
-        this.texture = texture
-        listener?.onCreateInputSurface(this, Surface(texture))
+        texture = GlTexture.create(width, height).apply {
+            setOnFrameAvailableListener(this@GlPixelTransform, handler)
+            surface?.let {
+                listener?.onCreateInputSurface(this@GlPixelTransform, it)
+            }
+        }
     }
 
     override fun onFrameAvailable(surfaceTexture: SurfaceTexture) {
         if (surface == null) {
             return
         }
-        surfaceTexture.updateTexImage()
+        texture?.updateTexImage()
         var timestamp = surfaceTexture.timestamp
         if (timestamp <= 0L) {
             return
         }
         if (fpsController.advanced(timestamp)) {
             timestamp = fpsController.timestamp(timestamp)
-            surfaceTexture.getTransformMatrix(transform)
-            kernel.render(textureId, textureSize, transform)
-            // inputWindowSurface.setPresentationTime(timestamp)
+            texture?.let {
+                kernel.render(it.id, it.extent, timestamp)
+            }
         }
     }
 
