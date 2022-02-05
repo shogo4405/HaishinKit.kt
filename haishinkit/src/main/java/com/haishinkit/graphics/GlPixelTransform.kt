@@ -3,6 +3,7 @@ package com.haishinkit.graphics
 import android.content.res.AssetManager
 import android.graphics.SurfaceTexture
 import android.os.Handler
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.codec.util.DefaultFpsController
@@ -54,6 +55,12 @@ internal class GlPixelTransform(
         }
 
     override fun createInputSurface(width: Int, height: Int, format: Int) {
+        if (texture != null) {
+            texture?.surface?.let {
+                listener?.onPixelTransformInputSurfaceCreated(this, it)
+            }
+            return
+        }
         texture = GlTexture.create(width, height).apply {
             setOnFrameAvailableListener(this@GlPixelTransform, handler)
             surface?.let {

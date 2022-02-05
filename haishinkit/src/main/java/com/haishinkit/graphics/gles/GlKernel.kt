@@ -1,8 +1,8 @@
 package com.haishinkit.graphics.gles
 
-import android.opengl.GLES10
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -42,6 +42,10 @@ internal class GlKernel(
         }
     var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     var surfaceOrientation: Int = Surface.ROTATION_0
+        set(value) {
+            field = value
+            invalidateLayout = true
+        }
     private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
@@ -154,22 +158,30 @@ internal class GlKernel(
             when (imageOrientation) {
                 ImageOrientation.UP, ImageOrientation.UP_MIRRORED -> {
                     swapped = true
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_90)
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_270)
                 }
                 ImageOrientation.LEFT, ImageOrientation.LEFT_MIRRORED -> {
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+                    if (surfaceOrientation == Surface.ROTATION_270) {
+                        texCoordBuffer.put(TEX_COORDS_ROTATION_180)
+                    } else {
+                        texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+                    }
                 }
                 ImageOrientation.DOWN, ImageOrientation.DOWN_MIRRORED -> {
                     swapped = true
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_270)
+                    texCoordBuffer.put(TEX_COORDS_ROTATION_90)
                 }
                 ImageOrientation.RIGHT, ImageOrientation.RIGHT_MIRRORED -> {
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_180)
+                    if (surfaceOrientation == Surface.ROTATION_270) {
+                        texCoordBuffer.put(TEX_COORDS_ROTATION_180)
+                    } else {
+                        texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+                    }
                 }
             }
         }
-        texCoordBuffer.position(0)
 
+        texCoordBuffer.position(0)
         val textureSize = newTextureSize.swap(swapped)
 
         when (videoGravity) {

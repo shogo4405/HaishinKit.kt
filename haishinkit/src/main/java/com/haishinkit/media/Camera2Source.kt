@@ -30,18 +30,19 @@ class Camera2Source(
     override var utilizable: Boolean = false
 ) : VideoSource, PixelTransform.Listener {
     var device: CameraDevice? = null
+        private set(value) {
+            session = null
+            field?.close()
+            field = value
+            stream?.renderer?.pixelTransform?.apply {
+                listener = this@Camera2Source
+                createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
+                imageOrientation = this@Camera2Source.imageOrientation
+            }
+            stream?.videoCodec?.pixelTransform?.imageOrientation = imageOrientation
+        }
     var characteristics: CameraCharacteristics? = null
         private set
-    var session: CameraCaptureSession? = null
-        private set(value) {
-            session?.close()
-            field = value
-            if (value == null) {
-                stream?.renderer?.stopRunning()
-            } else {
-                stream?.renderer?.startRunning()
-            }
-        }
     override var stream: NetStream? = null
         set(value) {
             field = value
@@ -73,8 +74,28 @@ class Camera2Source(
     private val resolver: CameraResolver by lazy {
         CameraResolver(manager)
     }
+    private var session: CameraCaptureSession? = null
+        private set(value) {
+            field?.close()
+            field = value
+            field?.let {
+                for (request in requests) {
+                    it.setRepeatingRequest(request.build(), null, handler)
+                }
+            }
+        }
     private var requests = mutableListOf<CaptureRequest.Builder>()
-    private var surfaceList = mutableListOf<Surface>()
+    private var surfaces = mutableListOf<Surface>()
+    private val imageOrientation: ImageOrientation
+        get() {
+            return when (characteristics?.get(CameraCharacteristics.SENSOR_ORIENTATION)) {
+                0 -> ImageOrientation.UP
+                90 -> ImageOrientation.LEFT
+                180 -> ImageOrientation.DOWN
+                270 -> ImageOrientation.RIGHT
+                else -> ImageOrientation.UP
+            }
+        }
 
     @SuppressLint("MissingPermission")
     fun open(position: Int? = null) {
@@ -84,26 +105,13 @@ class Camera2Source(
             this.cameraId = resolver.getCameraId(position) ?: DEFAULT_CAMERA_ID
         }
         characteristics = manager.getCameraCharacteristics(cameraId)
-        device?.close()
+        device = null
         manager.openCamera(
             cameraId,
             object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
                     this@Camera2Source.device = camera
                     this@Camera2Source.setUp()
-
-                    stream?.renderer?.pixelTransform?.apply {
-                        listener = this@Camera2Source
-                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
-                        imageOrientation =
-                            when (characteristics?.get(CameraCharacteristics.SENSOR_ORIENTATION)) {
-                                0 -> ImageOrientation.UP
-                                90 -> ImageOrientation.LEFT
-                                180 -> ImageOrientation.DOWN
-                                270 -> ImageOrientation.RIGHT
-                                else -> ImageOrientation.UP
-                            }
-                    }
                 }
 
                 override fun onDisconnected(camera: CameraDevice) {
@@ -142,7 +150,6 @@ class Camera2Source(
 
     override fun tearDown() {
         if (!utilizable) return
-        session = null
         device = null
         super.tearDown()
     }
@@ -152,7 +159,6 @@ class Camera2Source(
         if (isRunning.get()) {
             return
         }
-        val device = device ?: return
         isRunning.set(true)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -185,29 +191,39 @@ class Camera2Source(
         }
     }
 
-    override fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface) {
-        device?.let {
-            createCaptureSession(surface, it)
+    override fun onPixelTransformInputSurfaceCreated(
+        pixelTransform: PixelTransform,
+        surface: Surface
+    ) {
+        if (!surfaces.contains(surface)) {
+            surfaces.add(surface)
         }
+        createCaptureSession()
     }
 
-    private fun createCaptureSession(surface: Surface, device: CameraDevice) {
-        surfaceList.add(surface)
+    private fun createCaptureSession() {
+        val device = device ?: return
+        if (surfaces.isEmpty()) {
+            return
+        }
+        for (request in requests) {
+            for (surface in surfaces) {
+                request.removeTarget(surface)
+            }
+        }
+        requests.clear()
         requests.add(
             device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-                surfaceList.forEach {
+                surfaces.forEach {
                     addTarget(it)
                 }
             }
         )
         device.createCaptureSession(
-            surfaceList,
+            surfaces,
             object : CameraCaptureSession.StateCallback() {
                 override fun onConfigured(session: CameraCaptureSession) {
                     this@Camera2Source.session = session
-                    for (request in requests) {
-                        session.setRepeatingRequest(request.build(), null, handler)
-                    }
                 }
 
                 override fun onConfigureFailed(session: CameraCaptureSession) {
