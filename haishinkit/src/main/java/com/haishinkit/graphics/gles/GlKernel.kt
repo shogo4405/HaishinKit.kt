@@ -133,52 +133,39 @@ internal class GlKernel(
     }
 
     private fun layout(newTextureSize: Size) {
-        var swapped = false
-
-        if (extent.width < extent.height) {
-            // portrait
-            when (imageOrientation) {
-                ImageOrientation.UP, ImageOrientation.UP_MIRRORED -> {
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_0)
-                }
-                ImageOrientation.LEFT, ImageOrientation.LEFT_MIRRORED -> {
-                    swapped = true
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_270)
-                }
-                ImageOrientation.DOWN, ImageOrientation.DOWN_MIRRORED -> {
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_180)
-                }
-                ImageOrientation.RIGHT, ImageOrientation.RIGHT_MIRRORED -> {
-                    swapped = true
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_90)
-                }
-            }
+        val swapped = if (extent.width < extent.height) {
+            newTextureSize.height < newTextureSize.width
         } else {
-            // landscape
-            when (imageOrientation) {
-                ImageOrientation.UP, ImageOrientation.UP_MIRRORED -> {
-                    swapped = true
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_270)
-                }
-                ImageOrientation.LEFT, ImageOrientation.LEFT_MIRRORED -> {
-                    if (surfaceOrientation == Surface.ROTATION_270) {
-                        texCoordBuffer.put(TEX_COORDS_ROTATION_180)
-                    } else {
-                        texCoordBuffer.put(TEX_COORDS_ROTATION_0)
-                    }
-                }
-                ImageOrientation.DOWN, ImageOrientation.DOWN_MIRRORED -> {
-                    swapped = true
-                    texCoordBuffer.put(TEX_COORDS_ROTATION_90)
-                }
-                ImageOrientation.RIGHT, ImageOrientation.RIGHT_MIRRORED -> {
-                    if (surfaceOrientation == Surface.ROTATION_270) {
-                        texCoordBuffer.put(TEX_COORDS_ROTATION_180)
-                    } else {
-                        texCoordBuffer.put(TEX_COORDS_ROTATION_0)
-                    }
-                }
-            }
+            newTextureSize.width < newTextureSize.height
+        }
+
+        var degrees = when(imageOrientation) {
+            ImageOrientation.UP -> 0
+            ImageOrientation.DOWN -> 180
+            ImageOrientation.LEFT -> 270
+            ImageOrientation.RIGHT -> 90
+            ImageOrientation.UP_MIRRORED -> 0
+            ImageOrientation.DOWN_MIRRORED -> 180
+            ImageOrientation.LEFT_MIRRORED -> 270
+            ImageOrientation.RIGHT_MIRRORED -> 90
+        }
+        degrees += when (surfaceOrientation) {
+            0 -> 0
+            1 -> 90
+            2 -> 180
+            3 -> 270
+            else -> 0
+        }
+
+        if (degrees.rem(180) == 0 && (imageOrientation == ImageOrientation.RIGHT || imageOrientation == ImageOrientation.RIGHT_MIRRORED)) {
+            degrees += 180
+        }
+
+        when (degrees.rem(360)) {
+            0 -> texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+            90 -> texCoordBuffer.put(TEX_COORDS_ROTATION_90)
+            180 -> texCoordBuffer.put(TEX_COORDS_ROTATION_180)
+            270 -> texCoordBuffer.put(TEX_COORDS_ROTATION_270)
         }
 
         texCoordBuffer.position(0)
