@@ -85,8 +85,6 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
         val inputSurfaceViewA = v.findViewById<SurfaceView>(R.id.input_surface_view_a)
         inputSurfaceViewA.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
-                Log.d(TAG, "inputSurfaceCreated")
-                renderer?.inputSurface = holder.surface
                 this@PreferenceTagFragment.holderA = holder
                 this@PreferenceTagFragment.choreographer.postFrameCallback(this@PreferenceTagFragment)
             }
@@ -127,15 +125,12 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             when (button.text) {
                 "RED" -> {
                     button.text = "BLUE"
-                    renderer?.inputSurface = inputSurfaceViewB.holder.surface
                 }
                 "BLUE" -> {
                     button.text = "NULL"
-                    renderer?.inputSurface = null
                 }
                 "NULL" -> {
                     button.text = "RED"
-                    renderer?.inputSurface = inputSurfaceViewA.holder.surface
                 }
             }
         }

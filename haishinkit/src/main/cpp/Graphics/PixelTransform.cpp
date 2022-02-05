@@ -12,15 +12,11 @@ namespace Graphics {
     PixelTransform::PixelTransform() :
             kernel(new Kernel()),
             textures(std::vector<Texture *>(0)),
-            inputNativeWindow(nullptr),
             nativeWindow(nullptr) {
     }
 
     PixelTransform::~PixelTransform() {
         delete kernel;
-        if (inputNativeWindow != nullptr) {
-            ANativeWindow_release(inputNativeWindow);
-        }
         if (nativeWindow != nullptr) {
             ANativeWindow_release(nativeWindow);
         }
@@ -60,33 +56,6 @@ namespace Graphics {
         kernel->SetAssetManager(assetManager);
     }
 
-    void PixelTransform::SetInputNativeWindow(ANativeWindow *newInputNativeWindow) {
-        if (newInputNativeWindow == nullptr) {
-            for (auto &texture: textures) {
-                texture->TearDown(*kernel);
-            }
-        } else {
-            if (inputNativeWindow != newInputNativeWindow) {
-                for (auto &texture: textures) {
-                    texture->TearDown(*kernel);
-                }
-            }
-            const auto width = ANativeWindow_getWidth(newInputNativeWindow);
-            const auto height = ANativeWindow_getHeight(newInputNativeWindow);
-            const auto format = ANativeWindow_getFormat(newInputNativeWindow);
-            auto texture = new Texture(vk::Extent2D(width, height), format);
-            texture->videoGravity = videoGravity;
-            texture->SetImageOrientation(imageOrientation);
-            textures.clear();
-            textures.push_back(texture);
-            kernel->SetTextures(textures);
-        }
-        if (inputNativeWindow != nullptr) {
-            ANativeWindow_release(inputNativeWindow);
-        }
-        inputNativeWindow = newInputNativeWindow;
-    }
-
     void PixelTransform::SetNativeWindow(ANativeWindow *newNativeWindow) {
         ANativeWindow *oldNativeWindow = nativeWindow;
         nativeWindow = nullptr;
@@ -112,22 +81,8 @@ namespace Graphics {
         if (!IsReady()) {
             return;
         }
-        if (y == nullptr) {
-            ANativeWindow_acquire(inputNativeWindow);
-            ANativeWindow_Buffer buffer;
-            int result = ANativeWindow_lock(inputNativeWindow, &buffer, nullptr);
-            if (result == 0) {
-                ANativeWindow_unlockAndPost(inputNativeWindow);
-                textures[0]->Update(*kernel, buffer.bits, nullptr, nullptr, buffer.stride, 0, 0);
-                kernel->DrawFrame();
-                ANativeWindow_release(inputNativeWindow);
-            } else {
-                ANativeWindow_release(inputNativeWindow);
-            }
-        } else {
-            textures[0]->Update(*kernel, y, u, v, yStride, uvStride, uvPixelStride);
-            kernel->DrawFrame();
-        }
+        textures[0]->Update(*kernel, y, u, v, yStride, uvStride, uvPixelStride);
+        kernel->DrawFrame();
     }
 
     bool PixelTransform::IsReady() {
@@ -183,19 +138,6 @@ Java_com_haishinkit_graphics_VkPixelTransform_setTexture(JNIEnv *env, jobject th
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetUpTexture(width, height, format);
-            });
-}
-
-JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_nativeSetInputSurface(JNIEnv *env, jobject thiz,
-                                                                    jobject surface) {
-    ANativeWindow *window = nullptr;
-    if (surface != nullptr) {
-        window = ANativeWindow_fromSurface(env, surface);
-    }
-    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Graphics::PixelTransform *self) {
-                self->SetInputNativeWindow(window);
             });
 }
 

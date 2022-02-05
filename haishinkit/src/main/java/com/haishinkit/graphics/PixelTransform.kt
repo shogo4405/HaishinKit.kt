@@ -21,7 +21,6 @@ interface PixelTransform {
     var imageOrientation: ImageOrientation
     var surfaceOrientation: Int
     var videoGravity: VideoGravity
-    var inputSurface: Surface?
     var assetManager: AssetManager?
     var fpsControllerClass: Class<*>?
 

@@ -33,12 +33,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             nativeSetSurface(value)
         }
 
-    override var inputSurface: Surface? = null
-        set(value) {
-            field = value
-            nativeSetInputSurface(value)
-        }
-
     override var imageOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
             field = value
@@ -136,7 +130,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     private external fun nativeSetImageOrientation(imageOrientation: Int)
     private external fun nativeSetSurface(surface: Surface?)
-    private external fun nativeSetInputSurface(surface: Surface?)
     private external fun nativeSetResampleFilter(resampleFilter: Int)
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)

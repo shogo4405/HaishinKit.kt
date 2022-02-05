@@ -23,8 +23,6 @@ namespace Graphics {
 
         void SetNativeWindow(ANativeWindow *nativeWindow);
 
-        void SetInputNativeWindow(ANativeWindow *inputNativeWindow);
-
         void SetImageOrientation(ImageOrientation imageOrientation);
 
         void UpdateTexture(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
@@ -35,12 +33,11 @@ namespace Graphics {
         bool IsReady();
 
     private:
-        ANativeWindow *inputNativeWindow;
         ANativeWindow *nativeWindow;
         std::vector<Texture *> textures;
         Kernel *kernel;
-        VideoGravity videoGravity = VideoGravity::RESIZE_ASPECT;
-        ResampleFilter resampleFilter = ResampleFilter::CUBIC;
+        VideoGravity videoGravity = RESIZE_ASPECT_FILL;
+        ResampleFilter resampleFilter = NEAREST;
         ImageOrientation imageOrientation = UP;
     };
 }

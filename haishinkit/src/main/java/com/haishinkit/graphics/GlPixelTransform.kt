@@ -12,7 +12,6 @@ import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlTexture
 
 internal class GlPixelTransform(
-    override var inputSurface: Surface? = null,
     override var fpsControllerClass: Class<*>? = null,
     override var assetManager: AssetManager? = null,
     override var listener: PixelTransform.Listener? = null,
