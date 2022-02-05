@@ -2,8 +2,6 @@ package com.haishinkit.rtmp.message
 
 import androidx.core.util.Pools
 import com.haishinkit.rtmp.RtmpConnection
-import org.apache.commons.lang3.NotImplementedException
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 
 internal open class RtmpMessage(val type: Byte, private val pool: Pools.Pool<RtmpMessage>? = null) {
@@ -22,23 +20,19 @@ internal open class RtmpMessage(val type: Byte, private val pool: Pools.Pool<Rtm
     open var length: Int = -1
 
     open fun encode(buffer: ByteBuffer): RtmpMessage {
-        throw NotImplementedException("$TAG#encode")
+        TODO("$TAG#encode")
     }
 
     open fun decode(buffer: ByteBuffer): RtmpMessage {
-        throw NotImplementedException("$TAG#decode")
+        TODO("$TAG#encode")
     }
 
     open fun execute(connection: RtmpConnection): RtmpMessage {
-        throw NotImplementedException("$TAG#execute")
+        TODO("$TAG#encode")
     }
 
     open fun release(): Boolean {
         return pool?.release(this) ?: false
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

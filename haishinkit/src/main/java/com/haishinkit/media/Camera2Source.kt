@@ -19,7 +19,6 @@ import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -180,20 +179,16 @@ class Camera2Source(
         }
     }
 
-    override fun onSetUp(pixelTransform: PixelTransform) {
+    override fun onPixelTransformSetUp(pixelTransform: PixelTransform) {
         if (stream?.videoCodec?.pixelTransform == pixelTransform) {
             pixelTransform.createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
         }
     }
 
-    override fun onCreateInputSurface(pixelTransform: PixelTransform, surface: Surface) {
+    override fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface) {
         device?.let {
             createCaptureSession(surface, it)
         }
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     private fun createCaptureSession(surface: Surface, device: CameraDevice) {

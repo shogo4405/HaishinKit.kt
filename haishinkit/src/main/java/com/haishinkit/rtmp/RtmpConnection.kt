@@ -10,7 +10,6 @@ import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpMessage
 import com.haishinkit.rtmp.message.RtmpMessageFactory
 import com.haishinkit.util.URIUtil
-import org.apache.commons.lang3.StringUtils
 import java.net.URI
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
@@ -57,7 +56,7 @@ open class RtmpConnection : EventDispatcher(null) {
             val data = HashMap<String, Any>()
             data["code"] = rawValue
             data["level"] = level
-            if (StringUtils.isNoneEmpty(description)) {
+            if (description.isNotEmpty()) {
                 data["description"] = description
             }
             return data

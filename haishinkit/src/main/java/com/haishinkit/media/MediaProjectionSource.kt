@@ -12,7 +12,6 @@ import com.haishinkit.BuildConfig
 import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.net.NetStream
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -74,11 +73,11 @@ class MediaProjectionSource(
         isRunning.set(false)
     }
 
-    override fun onSetUp(pixelTransform: PixelTransform) {
+    override fun onPixelTransformSetUp(pixelTransform: PixelTransform) {
         pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
     }
 
-    override fun onCreateInputSurface(pixelTransform: PixelTransform, surface: Surface) {
+    override fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface) {
         virtualDisplay = mediaProjection.createVirtualDisplay(
             DEFAULT_DISPLAY_NAME,
             resolution.width,
@@ -89,10 +88,6 @@ class MediaProjectionSource(
             null,
             null
         )
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

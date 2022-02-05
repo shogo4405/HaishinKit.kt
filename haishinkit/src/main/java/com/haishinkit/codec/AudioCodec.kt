@@ -2,7 +2,6 @@ package com.haishinkit.codec
 
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
-import org.apache.commons.lang3.builder.ToStringBuilder
 import kotlin.properties.Delegates
 
 class AudioCodec : MediaCodec(MIME) {
@@ -16,10 +15,6 @@ class AudioCodec : MediaCodec(MIME) {
         }
         var sampleRate: Int by Delegates.observable(DEFAULT_SAMPLE_RATE) { _, _, newValue ->
             codec?.sampleRate = newValue
-        }
-
-        override fun toString(): String {
-            return ToStringBuilder.reflectionToString(this)
         }
     }
 

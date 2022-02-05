@@ -30,7 +30,7 @@ internal class GlKernel(
             field = value
             invalidateLayout = true
         }
-    var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT
+    var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
             field = value
             invalidateLayout = true
@@ -41,6 +41,7 @@ internal class GlKernel(
             invalidateLayout = true
         }
     var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
+    var surfaceOrientation: Int = Surface.ROTATION_0
     private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)

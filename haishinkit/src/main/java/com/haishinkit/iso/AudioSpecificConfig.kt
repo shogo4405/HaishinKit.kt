@@ -5,7 +5,6 @@ import android.util.Log
 import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.CodecOption
 import com.haishinkit.util.toPositiveInt
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 
 /**
@@ -98,10 +97,6 @@ data class AudioSpecificConfig(
         buffer.flip()
         codec.options = listOf(CodecOption(CSD0, buffer))
         Log.i(TAG, "apply value=$this for an audioCodec")
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

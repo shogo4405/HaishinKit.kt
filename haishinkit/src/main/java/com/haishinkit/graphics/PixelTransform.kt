@@ -6,8 +6,8 @@ import android.view.Surface
 
 interface PixelTransform {
     interface Listener {
-        fun onSetUp(pixelTransform: PixelTransform)
-        fun onCreateInputSurface(pixelTransform: PixelTransform, surface: Surface)
+        fun onPixelTransformSetUp(pixelTransform: PixelTransform)
+        fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface)
     }
 
     var surface: Surface?

@@ -10,7 +10,6 @@ import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.lang.Running
 import com.haishinkit.media.MediaLink
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.Deque
@@ -160,7 +159,6 @@ abstract class MediaCodec(private val mime: String) : Running {
             codec.start()
             isRunning.set(true)
         } catch (e: MediaCodec.CodecException) {
-            Log.w(TAG, ToStringBuilder.reflectionToString(outputFormat), e)
         }
     }
 
@@ -222,10 +220,6 @@ abstract class MediaCodec(private val mime: String) : Running {
     }
 
     protected abstract fun createOutputFormat(): MediaFormat
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
-    }
 
     companion object {
         const val MIME_VIDEO_VP8 = "video/x-vnd.on2.vp8"

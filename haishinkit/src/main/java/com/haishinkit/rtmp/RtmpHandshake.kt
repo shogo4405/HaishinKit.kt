@@ -1,6 +1,5 @@
 package com.haishinkit.rtmp
 
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.ByteBuffer
 import java.util.Random
 
@@ -39,10 +38,6 @@ internal class RtmpHandshake {
         s0S1Packet.clear()
         c2Packet.clear()
         s2Packet.clear()
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

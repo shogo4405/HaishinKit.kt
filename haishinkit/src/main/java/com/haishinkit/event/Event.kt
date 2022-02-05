@@ -1,7 +1,5 @@
 package com.haishinkit.event
 
-import org.apache.commons.lang3.builder.ToStringBuilder
-
 open class Event(type: String, bubbles: Boolean, data: Any?) {
     var type: String? = null
         internal set
@@ -24,10 +22,6 @@ open class Event(type: String, bubbles: Boolean, data: Any?) {
 
     fun stopPropagation() {
         propagationStopped = true
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

@@ -17,7 +17,6 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.util.MediaFormatUtil
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Suppress("unused")
@@ -117,10 +116,6 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             else -> {
             }
         }
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

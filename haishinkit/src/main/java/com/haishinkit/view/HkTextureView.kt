@@ -18,7 +18,6 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.util.MediaFormatUtil
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
 class HkTextureView(context: Context, attributes: AttributeSet) :
@@ -123,10 +122,6 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
     }
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

@@ -4,7 +4,6 @@ import android.util.Log
 import com.haishinkit.event.Event
 import com.haishinkit.net.NetSocket
 import com.haishinkit.net.NetSocketImpl
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 
@@ -131,10 +130,6 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
                 }
             else -> {}
         }
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     companion object {

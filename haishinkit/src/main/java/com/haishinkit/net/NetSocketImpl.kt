@@ -5,7 +5,6 @@ import androidx.core.util.Pools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -86,10 +85,6 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
             }
             return byteBuffer
         }
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     private fun doInput() {

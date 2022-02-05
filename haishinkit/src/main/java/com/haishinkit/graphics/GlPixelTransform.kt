@@ -20,18 +20,16 @@ internal class GlPixelTransform(
         get() = kernel.surface
         set(value) {
             kernel.surface = value
-            listener?.onSetUp(this)
+            listener?.onPixelTransformSetUp(this)
         }
-    override var imageOrientation: ImageOrientation = ImageOrientation.UP
+    override var imageOrientation: ImageOrientation
         get() = kernel.imageOrientation
         set(value) {
-            field = value
             kernel.imageOrientation = value
         }
-    override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_RESIZE
+    override var videoGravity: VideoGravity
         get() = kernel.videoGravity
         set(value) {
-            field = value
             kernel.videoGravity = value
         }
     override var extent: Size
@@ -39,12 +37,14 @@ internal class GlPixelTransform(
         set(value) {
             kernel.extent = value
         }
-    override var surfaceOrientation: Int = Surface.ROTATION_0
+    override var surfaceOrientation: Int
+        get() = kernel.surfaceOrientation
         set(value) {
-            field = value
+            kernel.surfaceOrientation = value
         }
     override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     var handler: Handler? = null
+
     private var kernel: GlKernel = GlKernel()
     private var fpsController: FpsController = DefaultFpsController.instance
     private var texture: GlTexture? = null
@@ -57,7 +57,7 @@ internal class GlPixelTransform(
         texture = GlTexture.create(width, height).apply {
             setOnFrameAvailableListener(this@GlPixelTransform, handler)
             surface?.let {
-                listener?.onCreateInputSurface(this@GlPixelTransform, it)
+                listener?.onPixelTransformInputSurfaceCreated(this@GlPixelTransform, it)
             }
         }
     }

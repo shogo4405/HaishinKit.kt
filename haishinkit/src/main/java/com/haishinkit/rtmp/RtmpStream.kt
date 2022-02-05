@@ -12,8 +12,6 @@ import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpDataMessage
 import com.haishinkit.rtmp.message.RtmpMessage
 import com.haishinkit.rtmp.message.RtmpMessageFactory
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -73,7 +71,7 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
             val data = HashMap<String, Any>()
             data["code"] = rawValue
             data["level"] = level
-            if (StringUtils.isNoneEmpty(description)) {
+            if (description.isNotEmpty()) {
                 data["description"] = description
             }
             return data
@@ -103,10 +101,6 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                 else -> {
                 }
             }
-        }
-
-        override fun toString(): String {
-            return ToStringBuilder.reflectionToString(this)
         }
     }
 

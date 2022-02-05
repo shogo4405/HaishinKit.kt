@@ -130,12 +130,12 @@ class GlThreadPixelTransform(
         }
     }
 
-    override fun onSetUp(pixelTransform: PixelTransform) {
-        listener?.onSetUp(this)
+    override fun onPixelTransformSetUp(pixelTransform: PixelTransform) {
+        listener?.onPixelTransformSetUp(this)
     }
 
-    override fun onCreateInputSurface(pixelTransform: PixelTransform, surface: Surface) {
-        listener?.onCreateInputSurface(this, surface)
+    override fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface) {
+        listener?.onPixelTransformInputSurfaceCreated(this, surface)
     }
 
     companion object {

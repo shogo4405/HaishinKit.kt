@@ -99,7 +99,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         reader = ImageReader.newInstance(width, height, format, MAX_IMAGES)
         setTexture(width, height, format)
         reader.setOnImageAvailableListener(this, handler)
-        listener?.onCreateInputSurface(this, reader.surface)
+        listener?.onPixelTransformInputSurfaceCreated(this, reader.surface)
     }
 
     override fun onImageAvailable(reader: ImageReader) {

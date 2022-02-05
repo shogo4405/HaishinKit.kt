@@ -6,9 +6,7 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.util.Log
 import com.haishinkit.BuildConfig
-import com.haishinkit.codec.MediaCodec
 import com.haishinkit.net.NetStream
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.Arrays
@@ -109,10 +107,6 @@ class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource 
         } catch (e: IllegalStateException) {
             Log.w(TAG, e)
         }
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
     }
 
     private fun read(audioBuffer: ByteBuffer): Int {
