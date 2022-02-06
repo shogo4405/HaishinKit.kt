@@ -2,7 +2,6 @@ package com.haishinkit.graphics.gles
 
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
-import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -139,7 +138,7 @@ internal class GlKernel(
             newTextureSize.width < newTextureSize.height
         }
 
-        var degrees = when(imageOrientation) {
+        var degrees = when (imageOrientation) {
             ImageOrientation.UP -> 0
             ImageOrientation.DOWN -> 180
             ImageOrientation.LEFT -> 270
