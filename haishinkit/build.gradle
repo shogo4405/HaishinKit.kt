@@ -12,7 +12,6 @@ task sourceJar(type: Jar) {
 
 buildscript {
     ext.kotlin_version = '1.6.10'
-    ext.version = '0.5.1'
 
     repositories {
         mavenCentral()
@@ -24,7 +23,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
-
 
 android {
     compileSdkVersion 31
