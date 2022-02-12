@@ -128,6 +128,7 @@ internal class GlKernel(
         GLES20.glUseProgram(0)
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
 
+        inputSurfaceWindow.setPresentationTime(timestamp)
         inputSurfaceWindow.swapBuffers()
     }
 
