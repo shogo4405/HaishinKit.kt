@@ -1,24 +1,42 @@
 #include "Feature.h"
 #include "FeatureManager.h"
+#include "vulkan/vulkan.h"
+#include "vulkan/vulkan.hpp"
+#include "vulkan/vulkan_android.h"
+#include "PhysicalDeviceFeature.h"
+#include "PhysicalDeviceSamplerYcbcrConversionFeature.h"
 
 using namespace Graphics;
 
-FeatureManager::FeatureManager() = default;
+FeatureManager::FeatureManager() {
+    // INSTANCE
+    features.emplace_back(new Feature(INSTANCE, VK_KHR_SURFACE_EXTENSION_NAME));
+    features.emplace_back(new Feature(INSTANCE, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME));
+    // DEVICE
+    features.emplace_back(new Feature(DEVICE, VK_KHR_SWAPCHAIN_EXTENSION_NAME));
+    // FEATURE
+    // features.emplace_back(new PhysicalDeviceFeature());
+    // features.emplace_back(new PhysicalDeviceSamplerYcbcrConversionFeature());
+}
 
 FeatureManager::~FeatureManager() = default;
 
-std::vector<const char *> FeatureManager::GetExtensions() {
+std::vector<const char *> FeatureManager::GetExtensions(FeatureType type) {
     std::vector<const char *> extensions;
-    for (const auto feature : features) {
-        extensions.push_back(feature->name);
+    for (auto &feature : features) {
+        if (feature->type == type) {
+            extensions.push_back(feature->name);
+        }
     }
     return extensions;
 }
 
-const void *FeatureManager::GetNext() {
-    const void *next = nullptr;
+void *FeatureManager::GetNext(FeatureType type) {
+    void *next = nullptr;
     for (auto &feature : features) {
-        feature->Create(&next);
+        if (feature->type == type) {
+            feature->Create(&next);
+        }
     }
     return next;
 }

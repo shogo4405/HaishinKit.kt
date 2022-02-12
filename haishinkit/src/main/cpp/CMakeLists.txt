@@ -39,6 +39,8 @@ add_library(
         Graphics/PushConstants.hpp
         Graphics/Feature/Feature.cpp
         Graphics/Feature/FeatureManager.cpp
+        Graphics/Feature/PhysicalDeviceFeature.cpp
+        Graphics/Feature/PhysicalDeviceSamplerYcbcrConversionFeature.cpp
         Graphics/Feature/DebugUtilsMessengerFeature.cpp
 )
 

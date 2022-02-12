@@ -11,9 +11,9 @@ namespace Graphics {
     public:
         std::vector<Feature *> features;
 
-        std::vector<const char *> GetExtensions();
+        std::vector<const char *> GetExtensions(FeatureType type);
 
-        const void *GetNext();
+        void *GetNext(FeatureType type);
 
         FeatureManager();
 

@@ -2,8 +2,8 @@
 
 using namespace Graphics;
 
-Feature::Feature(const char *name) : name(name) {
+Feature::Feature(FeatureType type, const char *name) : type(type), name(name) {
 }
 
-void Feature::Create(const void **next) {
+void Feature::Create(void **next) {
 }

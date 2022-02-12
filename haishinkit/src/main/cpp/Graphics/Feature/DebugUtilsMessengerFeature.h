@@ -9,7 +9,7 @@ namespace Graphics {
     public:
         DebugUtilsMessengerFeature();
 
-        void Create(const void **next) override;
+        void Create(void **next) override;
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL
         callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

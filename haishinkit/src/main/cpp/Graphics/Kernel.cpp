@@ -22,9 +22,6 @@ Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr),
     }
 
     const auto useValidationLayers = isValidationLayersEnabled && IsValidationLayersSupported();
-
-    featureManager->features.emplace_back(new Feature(VK_KHR_SURFACE_EXTENSION_NAME));
-    featureManager->features.emplace_back(new Feature(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME));
     if (useValidationLayers) {
         featureManager->features.emplace_back(new DebugUtilsMessengerFeature());
     }
@@ -37,7 +34,7 @@ Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr),
             .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
             .setApiVersion(VK_API_VERSION_1_2);
 
-    std::vector<const char *> extensions = featureManager->GetExtensions();
+    std::vector<const char *> extensions = featureManager->GetExtensions(INSTANCE);
 
     auto createInfo = vk::InstanceCreateInfo()
             .setFlags(vk::InstanceCreateFlags())
@@ -46,7 +43,7 @@ Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr),
             .setPEnabledLayerNames(nullptr)
             .setEnabledExtensionCount(extensions.size())
             .setPEnabledExtensionNames(extensions)
-            .setPNext(featureManager->GetNext());
+            .setPNext(featureManager->GetNext(INSTANCE));
 
     if (useValidationLayers) {
         createInfo
@@ -167,11 +164,11 @@ void Kernel::SelectPhysicalDevice() {
     assert(graphicsQueueFamilyIndex < queueFamilyProperties.size());
 
     std::vector<float> queuePriorities{1.0f};
-    std::vector<const char *> extensions;
-    extensions.push_back("VK_KHR_swapchain");
+    std::vector<const char *> extensions = featureManager->GetExtensions(DEVICE);
 
     device = physicalDevice.createDeviceUnique(
             vk::DeviceCreateInfo()
+                    .setPNext(featureManager->GetNext(FEATURE))
                     .setEnabledExtensionCount(extensions.size())
                     .setPpEnabledExtensionNames(extensions.data())
                     .setQueueCreateInfoCount(1)
@@ -226,9 +223,9 @@ Kernel::FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) 
 }
 
 std::string Kernel::InspectDevices() {
-    picojson::array inspect;
-    auto devices = instance->enumeratePhysicalDevices();
-    for (const auto &device: devices) {
+    picojson::object inspect;
+    picojson::array devices;
+    for (const auto &device: instance->enumeratePhysicalDevices()) {
         picojson::object data;
         const auto properties = device.getProperties();
         data.emplace(std::make_pair("device_name", (std::string) properties.deviceName));
@@ -247,8 +244,14 @@ std::string Kernel::InspectDevices() {
         data.emplace(std::make_pair("driver_version", (double) properties.driverVersion));
         data.emplace(std::make_pair("vendor_id", (double) properties.vendorID));
         data.emplace(std::make_pair("device_id", (double) properties.deviceID));
-        inspect.push_back(picojson::value(data));
+        picojson::array extensions;
+        for (const auto extension : device.enumerateDeviceExtensionProperties()) {
+            extensions.emplace_back((std::string) extension.extensionName);
+        }
+        data.emplace(std::make_pair("extensions", extensions));
+        devices.push_back(picojson::value(data));
     }
+    inspect.emplace(std::make_pair("devices", devices));
     return picojson::value(inspect).serialize();
 }
 

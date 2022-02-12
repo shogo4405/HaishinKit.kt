@@ -1,5 +1,6 @@
 #include "../../haishinkit.hpp"
 #include <vulkan/vulkan.hpp>
+#include "Feature.h"
 #include "DebugUtilsMessengerFeature.h"
 
 using namespace Graphics;
@@ -23,11 +24,11 @@ DebugUtilsMessengerFeature::callback(VkDebugUtilsMessageSeverityFlagBitsEXT mess
     return false;
 }
 
-DebugUtilsMessengerFeature::DebugUtilsMessengerFeature() : Feature(
-        VK_EXT_DEBUG_UTILS_EXTENSION_NAME) {
+DebugUtilsMessengerFeature::DebugUtilsMessengerFeature() : Feature(INSTANCE,
+                                                                   VK_EXT_DEBUG_UTILS_EXTENSION_NAME) {
 }
 
-void DebugUtilsMessengerFeature::Create(const void **next) {
+void DebugUtilsMessengerFeature::Create(void **next) {
     info = vk::DebugUtilsMessengerCreateInfoEXT()
             .setPNext(*next)
             .setFlags(vk::DebugUtilsMessengerCreateFlagsEXT())
