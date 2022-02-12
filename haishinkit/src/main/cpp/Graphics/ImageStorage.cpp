@@ -2,45 +2,45 @@
 #include "Util.h"
 #include "ImageStorage.h"
 
-namespace Graphics {
-    void ImageStorage::SetUp(Kernel &kernel, vk::ImageCreateInfo info) {
-        layout = info.initialLayout;
-        image = kernel.device->createImageUnique(info);
-    }
+using namespace Graphics;
 
-    void ImageStorage::TearDown(Kernel &kernel) {
-    }
+void ImageStorage::SetUp(Kernel &kernel, vk::ImageCreateInfo info) {
+    layout = info.initialLayout;
+    image = kernel.device->createImageUnique(info);
+}
 
-    void ImageStorage::SetLayout(vk::CommandBuffer &commandBuffer,
-                                 vk::ImageLayout newImageLayout,
-                                 vk::PipelineStageFlagBits srcStageMask,
-                                 vk::PipelineStageFlagBits dstStageMask) {
+void ImageStorage::TearDown(Kernel &kernel) {
+}
 
-        const auto barrier = Util::CreateImageMemoryBarrier(layout, newImageLayout)
-                .setImage(image.get())
-                .setSubresourceRange({vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1});
+void ImageStorage::SetLayout(vk::CommandBuffer &commandBuffer,
+                             vk::ImageLayout newImageLayout,
+                             vk::PipelineStageFlagBits srcStageMask,
+                             vk::PipelineStageFlagBits dstStageMask) {
 
-        commandBuffer.pipelineBarrier(
-                srcStageMask,
-                dstStageMask,
-                vk::DependencyFlags(),
-                nullptr,
-                nullptr,
-                barrier
-        );
+    const auto barrier = Util::CreateImageMemoryBarrier(layout, newImageLayout)
+            .setImage(image.get())
+            .setSubresourceRange({vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1});
 
-        layout = newImageLayout;
-    }
+    commandBuffer.pipelineBarrier(
+            srcStageMask,
+            dstStageMask,
+            vk::DependencyFlags(),
+            nullptr,
+            nullptr,
+            barrier
+    );
 
-    vk::ImageCreateInfo ImageStorage::CreateImageCreateInfo() const {
-        return vk::ImageCreateInfo()
-                .setImageType(vk::ImageType::e2D)
-                .setExtent(vk::Extent3D(extent.width, extent.height, 1))
-                .setMipLevels(1)
-                .setArrayLayers(1)
-                .setFormat(format)
-                .setInitialLayout(layout)
-                .setSharingMode(vk::SharingMode::eExclusive)
-                .setSamples(vk::SampleCountFlagBits::e1);
-    }
+    layout = newImageLayout;
+}
+
+vk::ImageCreateInfo ImageStorage::CreateImageCreateInfo() const {
+    return vk::ImageCreateInfo()
+            .setImageType(vk::ImageType::e2D)
+            .setExtent(vk::Extent3D(extent.width, extent.height, 1))
+            .setMipLevels(1)
+            .setArrayLayers(1)
+            .setFormat(format)
+            .setInitialLayout(layout)
+            .setSharingMode(vk::SharingMode::eExclusive)
+            .setSamples(vk::SampleCountFlagBits::e1);
 }
