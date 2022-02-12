@@ -14,6 +14,7 @@
 #include "Pipeline.h"
 #include "Texture.h"
 #include "Queue.h"
+#include "Feature/FeatureManager.h"
 
 namespace Graphics {
     class Kernel {
@@ -57,11 +58,6 @@ namespace Graphics {
 
         uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) const;
 
-        static VKAPI_ATTR VkBool32 VKAPI_CALL
-        callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                 VkDebugUtilsMessageTypeFlagsEXT messageType,
-                 const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData);
-
     private:
         const std::string applicationName = "HaishinKit";
         const std::string engineName = "Vulkan::Kernel";
@@ -73,6 +69,7 @@ namespace Graphics {
         bool isAvailable = false;
 
         AAssetManager *assetManager;
+        FeatureManager *featureManager;
 
         std::vector<char> ReadFile(const std::string &fileName);
 

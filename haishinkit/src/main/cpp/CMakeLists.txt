@@ -37,6 +37,9 @@ add_library(
         Graphics/Util.cpp
         Graphics/Vertex.hpp
         Graphics/PushConstants.hpp
+        Graphics/Feature/Feature.cpp
+        Graphics/Feature/FeatureManager.cpp
+        Graphics/Feature/DebugUtilsMessengerFeature.cpp
 )
 
 # Searches for a specified prebuilt library and stores the path as a

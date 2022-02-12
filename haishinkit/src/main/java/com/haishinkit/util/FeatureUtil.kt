@@ -13,7 +13,7 @@ object FeatureUtil {
     private var flags = ConcurrentHashMap(
         mutableMapOf(
             FEATURE_BITRATE_CHANGE to true,
-            FEATURE_VULKAN_PIXEL_TRANSFORM to false
+            FEATURE_VULKAN_PIXEL_TRANSFORM to true
         )
     )
 

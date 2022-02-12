@@ -15,30 +15,19 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 using namespace Graphics;
 
-VkBool32 Kernel::callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                          VkDebugUtilsMessageTypeFlagsEXT messageType,
-                          const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-                          void *pUserData) {
-    switch (messageSeverity) {
-        case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-            LOGI("%s", pCallbackData->pMessage);
-            break;
-        case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-            LOGE("%s", pCallbackData->pMessage);
-            break;
-        default:
-            LOGI("%s", pCallbackData->pMessage);
-            break;
-    }
-    return false;
-}
-
-Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr) {
+Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr),
+                   featureManager(new FeatureManager()) {
     if (!DynamicLoader::GetInstance().Load()) {
         return;
     }
 
     const auto useValidationLayers = isValidationLayersEnabled && IsValidationLayersSupported();
+
+    featureManager->features.emplace_back(new Feature(VK_KHR_SURFACE_EXTENSION_NAME));
+    featureManager->features.emplace_back(new Feature(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME));
+    if (useValidationLayers) {
+        featureManager->features.emplace_back(new DebugUtilsMessengerFeature());
+    }
 
     const auto appInfo = vk::ApplicationInfo()
             .setPNext(nullptr)
@@ -48,12 +37,7 @@ Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr) {
             .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
             .setApiVersion(VK_API_VERSION_1_2);
 
-    std::vector<const char *> extensions;
-    extensions.push_back("VK_KHR_surface");
-    extensions.push_back("VK_KHR_android_surface");
-    if (useValidationLayers) {
-        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
+    std::vector<const char *> extensions = featureManager->GetExtensions();
 
     auto createInfo = vk::InstanceCreateInfo()
             .setFlags(vk::InstanceCreateFlags())
@@ -61,32 +45,17 @@ Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr) {
             .setEnabledLayerCount(0)
             .setPEnabledLayerNames(nullptr)
             .setEnabledExtensionCount(extensions.size())
-            .setPEnabledExtensionNames(extensions);
+            .setPEnabledExtensionNames(extensions)
+            .setPNext(featureManager->GetNext());
 
     if (useValidationLayers) {
-        const auto messengerCreateInfo = vk::DebugUtilsMessengerCreateInfoEXT()
-                .setFlags(vk::DebugUtilsMessengerCreateFlagsEXT())
-                .setMessageSeverity(
-                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
-                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
-                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
-                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
-                )
-                .setMessageType(
-                        vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-                        vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
-                        vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance
-                )
-                .setPfnUserCallback(callback)
-                .setPUserData(nullptr);
-
         createInfo
-                .setPNext(&messengerCreateInfo)
                 .setEnabledLayerCount(validationLayers.size())
                 .setPpEnabledLayerNames(validationLayers.data());
     }
 
     instance = vk::createInstanceUnique(createInfo);
+
     VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
     isAvailable = true;
 }
