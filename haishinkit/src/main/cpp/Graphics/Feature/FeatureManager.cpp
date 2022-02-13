@@ -15,8 +15,8 @@ FeatureManager::FeatureManager() {
     // DEVICE
     features.emplace_back(new Feature(DEVICE, VK_KHR_SWAPCHAIN_EXTENSION_NAME));
     // FEATURE
-    // features.emplace_back(new PhysicalDeviceFeature());
-    // features.emplace_back(new PhysicalDeviceSamplerYcbcrConversionFeature());
+    features.emplace_back(new PhysicalDeviceFeature());
+    features.emplace_back(new PhysicalDeviceSamplerYcbcrConversionFeature());
 }
 
 FeatureManager::~FeatureManager() = default;

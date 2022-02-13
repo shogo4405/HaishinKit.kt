@@ -15,6 +15,7 @@
 #include "Texture.h"
 #include "Queue.h"
 #include "Feature/FeatureManager.h"
+#include "SurfaceRotation.hpp"
 
 namespace Graphics {
     class Kernel {
@@ -24,7 +25,7 @@ namespace Graphics {
         vk::UniqueDevice device;
         vk::PhysicalDevice physicalDevice;
         int32_t selectedPhysicalDevice = -1;
-
+        bool invalidateSurfaceRotation = true;
         SwapChain swapChain;
         Pipeline pipeline;
         Queue queue;
@@ -33,6 +34,10 @@ namespace Graphics {
         Kernel();
 
         ~Kernel();
+
+        SurfaceRotation GetSurfaceRotation();
+
+        void SetSurfaceRotation(SurfaceRotation surfaceRotation);
 
         void SetTextures(const std::vector<Texture *> &textures);
 
@@ -64,10 +69,9 @@ namespace Graphics {
         const std::vector<const char *> validationLayers = {
                 "VK_LAYER_KHRONOS_validation"
         };
-
+        SurfaceRotation surfaceRotation = ROTATION_0;
         bool isValidationLayersEnabled;
         bool isAvailable = false;
-
         AAssetManager *assetManager;
         FeatureManager *featureManager;
 

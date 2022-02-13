@@ -119,6 +119,15 @@ bool Kernel::IsAvailable() const {
     return isAvailable;
 }
 
+SurfaceRotation Kernel::GetSurfaceRotation() {
+    return surfaceRotation;
+}
+
+void Kernel::SetSurfaceRotation(SurfaceRotation newSurfaceRotation) {
+    surfaceRotation = newSurfaceRotation;
+    invalidateSurfaceRotation = true;
+}
+
 vk::ShaderModule Kernel::LoadShader(const std::string &fileName) {
     const auto code = ReadFile(fileName);
     return device->createShaderModule(
@@ -269,3 +278,4 @@ std::vector<char> Kernel::ReadFile(const std::string &fileName) {
     AAsset_close(file);
     return contents;
 }
+

@@ -8,6 +8,7 @@
 namespace Graphics {
 
     class Kernel;
+
     struct ImageStorage;
 
     class ColorSpace {

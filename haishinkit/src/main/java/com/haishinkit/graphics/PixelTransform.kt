@@ -19,7 +19,7 @@ interface PixelTransform {
     var extent: Size
     var resampleFilter: ResampleFilter
     var imageOrientation: ImageOrientation
-    var surfaceOrientation: Int
+    var surfaceRotation: Int
     var videoGravity: VideoGravity
     var assetManager: AssetManager?
     var fpsControllerClass: Class<*>?

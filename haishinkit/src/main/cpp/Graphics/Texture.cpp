@@ -18,7 +18,7 @@ Texture::Texture(vk::Extent2D extent, int32_t format) : colorSpace(new ColorSpac
 
 Texture::~Texture() = default;
 
-PushConstants Texture::GetPushConstants() const {
+PushConstants Texture::GetPushConstants(Kernel &kernel) const {
     auto degrees = 0.f;
 
     switch (imageOrientation) {
@@ -48,6 +48,26 @@ PushConstants Texture::GetPushConstants() const {
             break;
     }
 
+    switch (kernel.GetSurfaceRotation()) {
+        case ROTATION_0:
+            degrees += 0.f;
+            break;
+        case ROTATION_90:
+            degrees += 90.f;
+            break;
+        case ROTATION_180:
+            degrees += 180.f;
+            break;
+        case ROTATION_270:
+            degrees += 270.f;
+            break;
+    }
+
+    if (((int) degrees % 180) == 0 &&
+        (imageOrientation == LEFT || imageOrientation == LEFT_MIRRORED)) {
+        degrees += 180.f;
+    }
+
     return {
             .mvp = glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)),
             .preRotate = glm::rotate(glm::mat4(1.f), glm::radians(degrees),
@@ -55,18 +75,19 @@ PushConstants Texture::GetPushConstants() const {
     };
 }
 
-vk::Viewport Texture::GetViewport(const vk::Extent2D surface) const {
+vk::Viewport Texture::GetViewport(Kernel &kernel) const {
     vk::Viewport viewport = vk::Viewport();
 
+    vk::Extent2D surface = kernel.swapChain.size;
     auto newImageExtent = image.extent;
-
-    if (imageOrientation == LEFT ||
-        imageOrientation == RIGHT ||
-        imageOrientation == LEFT_MIRRORED ||
-        imageOrientation == RIGHT_MIRRORED) {
-        newImageExtent = vk::Extent2D()
-                .setWidth(image.extent.height)
-                .setHeight(image.extent.width);
+    if (surface.width < surface.height) {
+        if (image.extent.height < image.extent.width) {
+            newImageExtent = vk::Extent2D(image.extent.height, image.extent.width);
+        }
+    } else {
+        if (image.extent.width < image.extent.height) {
+            newImageExtent = vk::Extent2D(image.extent.height, image.extent.width);
+        }
     }
 
     switch (videoGravity) {
@@ -76,16 +97,16 @@ vk::Viewport Texture::GetViewport(const vk::Extent2D surface) const {
                     (float) surface.height / (float) newImageExtent.height;
             if (yRatio < xRatio) {
                 viewport
-                        .setX((surface.width - newImageExtent.width * yRatio) / 2)
+                        .setX(((float) surface.width - (float) newImageExtent.width * yRatio) / 2)
                         .setY(0)
-                        .setWidth(surface.width * yRatio)
-                        .setHeight(newImageExtent.height);
+                        .setWidth((float) surface.width * yRatio)
+                        .setHeight((float) newImageExtent.height);
             } else {
                 viewport
                         .setX(0)
-                        .setY((surface.height - newImageExtent.height * xRatio) / 2)
-                        .setWidth(surface.width)
-                        .setHeight(newImageExtent.height * xRatio);
+                        .setY(((float) surface.height - (float) newImageExtent.height * xRatio) / 2)
+                        .setWidth((float) surface.width)
+                        .setHeight((float) newImageExtent.height * xRatio);
             }
             break;
         }
@@ -96,28 +117,24 @@ vk::Viewport Texture::GetViewport(const vk::Extent2D surface) const {
                 viewport
                         .setX(((float) surface.width - (float) surface.height * fRatio) / 2)
                         .setY(0)
-                        .setWidth(surface.height * fRatio)
-                        .setHeight(surface.height);
+                        .setWidth((float) surface.height * fRatio)
+                        .setHeight((float) surface.height);
             } else {
                 viewport
                         .setX(0)
                         .setY(((float) surface.height - (float) surface.width / fRatio) / 2)
-                        .setWidth(surface.width)
-                        .setHeight(surface.width / fRatio);
+                        .setWidth((float) surface.width)
+                        .setHeight((float) surface.width / fRatio);
             }
             break;
         }
         case RESIZE: {
-            viewport.setWidth(surface.width);
-            viewport.setHeight(surface.height);
+            viewport.setWidth((float) surface.width);
+            viewport.setHeight((float) surface.height);
             break;
         }
     }
     return viewport;
-}
-
-bool Texture::IsInvalidateLayout() {
-    return invalidateLayout;
 }
 
 void Texture::SetImageOrientation(ImageOrientation newImageOrientation) {

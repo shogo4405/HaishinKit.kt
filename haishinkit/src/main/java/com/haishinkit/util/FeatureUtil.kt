@@ -13,7 +13,7 @@ object FeatureUtil {
     private var flags = ConcurrentHashMap(
         mutableMapOf(
             FEATURE_BITRATE_CHANGE to true,
-            FEATURE_VULKAN_PIXEL_TRANSFORM to true
+            FEATURE_VULKAN_PIXEL_TRANSFORM to false
         )
     )
 
@@ -25,7 +25,7 @@ object FeatureUtil {
     }
 
     /**
-     * Setter for feature flag.
+     * Setter for a feature flag.
      */
     fun setEnabled(feature: String, isEnabled: Boolean) {
         flags[feature] = isEnabled

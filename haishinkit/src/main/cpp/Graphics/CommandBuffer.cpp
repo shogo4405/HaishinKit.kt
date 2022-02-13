@@ -69,11 +69,11 @@ void CommandBuffer::SetTextures(Kernel &kernel, const std::vector<Texture *> &te
     };
 
     const std::vector<vk::Viewport> viewports = {
-            textures[0]->GetViewport(kernel.swapChain.size)
+            textures[0]->GetViewport(kernel)
     };
 
     const PushConstants pushConstantsBlock =
-            textures[0]->GetPushConstants();
+            textures[0]->GetPushConstants(kernel);
 
     for (auto i = 0; i < commandBuffers.size(); ++i) {
         auto &commandBuffer = commandBuffers[i].get();
@@ -117,6 +117,11 @@ void CommandBuffer::SetTextures(Kernel &kernel, const std::vector<Texture *> &te
         commandBuffer.endRenderPass();
         commandBuffer.end();
     }
+
+    for (const auto &texture : textures) {
+        texture->invalidateLayout = false;
+    }
+    kernel.invalidateSurfaceRotation = false;
 }
 
 vk::CommandBuffer CommandBuffer::Allocate(Kernel &kernel) {

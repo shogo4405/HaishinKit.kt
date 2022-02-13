@@ -52,16 +52,20 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     override var resampleFilter: ResampleFilter = ResampleFilter.CUBIC
         set(value) {
             field = value
-            nativeSetResampleFilter(field.rawValue)
+            nativeSetResampleFilter(value.rawValue)
         }
 
     override var assetManager: AssetManager? = null
         set(value) {
             field = value
-            nativeSetAssetManager(assetManager)
+            nativeSetAssetManager(value)
         }
 
-    override var surfaceOrientation: Int = Surface.ROTATION_0
+    override var surfaceRotation: Int = Surface.ROTATION_0
+        set(value) {
+            field = value
+            nativeSetSurfaceRotation(value)
+        }
 
     @Suppress("unused")
     private var memory: Long = 0
@@ -130,6 +134,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     private external fun nativeSetImageOrientation(imageOrientation: Int)
     private external fun nativeSetSurface(surface: Surface?)
+    private external fun nativeSetSurfaceRotation(surfaceRotation: Int)
     private external fun nativeSetResampleFilter(resampleFilter: Int)
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)

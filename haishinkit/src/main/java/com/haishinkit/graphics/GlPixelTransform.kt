@@ -36,10 +36,10 @@ internal class GlPixelTransform(
         set(value) {
             kernel.extent = value
         }
-    override var surfaceOrientation: Int
-        get() = kernel.surfaceOrientation
+    override var surfaceRotation: Int
+        get() = kernel.surfaceRotation
         set(value) {
-            kernel.surfaceOrientation = value
+            kernel.surfaceRotation = value
         }
     override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     var handler: Handler? = null

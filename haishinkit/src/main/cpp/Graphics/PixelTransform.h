@@ -3,6 +3,7 @@
 
 #include <jni.h>
 #include "Kernel.h"
+#include "SurfaceRotation.hpp"
 #include "ResampleFilter.h"
 
 namespace Graphics {
@@ -13,7 +14,9 @@ namespace Graphics {
 
         ~PixelTransform();
 
-        void SetUpTexture(int32_t width, int32_t height, int32_t format);
+        bool IsReady();
+
+        void SetTexture(int32_t width, int32_t height, int32_t format);
 
         void SetVideoGravity(VideoGravity newVideoGravity);
 
@@ -25,12 +28,12 @@ namespace Graphics {
 
         void SetImageOrientation(ImageOrientation imageOrientation);
 
+        void SetSurfaceRotation(SurfaceRotation surfaceRotation);
+
         void UpdateTexture(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
                            int32_t uvPixelStride);
 
         std::string InspectDevices();
-
-        bool IsReady();
 
     private:
         ANativeWindow *nativeWindow;

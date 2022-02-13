@@ -40,7 +40,7 @@ internal class GlKernel(
             invalidateLayout = true
         }
     var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
-    var surfaceOrientation: Int = Surface.ROTATION_0
+    var surfaceRotation: Int = Surface.ROTATION_0
         set(value) {
             field = value
             invalidateLayout = true
@@ -149,7 +149,7 @@ internal class GlKernel(
             ImageOrientation.LEFT_MIRRORED -> 270
             ImageOrientation.RIGHT_MIRRORED -> 90
         }
-        degrees += when (surfaceOrientation) {
+        degrees += when (surfaceRotation) {
             0 -> 0
             1 -> 90
             2 -> 180

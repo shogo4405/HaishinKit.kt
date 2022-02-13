@@ -43,13 +43,18 @@ namespace Graphics {
         }
     }
 
-    void PixelTransform::SetUpTexture(int32_t width, int32_t height, int32_t format) {
+    void PixelTransform::SetTexture(int32_t width, int32_t height, int32_t format) {
         auto texture = new Texture(vk::Extent2D(width, height), format);
         texture->videoGravity = videoGravity;
         texture->resampleFilter = resampleFilter;
+        texture->SetImageOrientation(imageOrientation);
         textures.clear();
         textures.push_back(texture);
         kernel->SetTextures(textures);
+    }
+
+    void PixelTransform::SetSurfaceRotation(SurfaceRotation surfaceRotation) {
+        kernel->SetSurfaceRotation(surfaceRotation);
     }
 
     void PixelTransform::SetAssetManager(AAssetManager *assetManager) {
@@ -81,7 +86,11 @@ namespace Graphics {
         if (!IsReady()) {
             return;
         }
-        textures[0]->Update(*kernel, y, u, v, yStride, uvStride, uvPixelStride);
+        const auto &texture = textures[0];
+        texture->Update(*kernel, y, u, v, yStride, uvStride, uvPixelStride);
+        if (texture->invalidateLayout || kernel->invalidateSurfaceRotation) {
+            kernel->commandBuffer.SetTextures(*kernel, textures);
+        }
         kernel->DrawFrame();
     }
 
@@ -137,7 +146,16 @@ Java_com_haishinkit_graphics_VkPixelTransform_setTexture(JNIEnv *env, jobject th
                                                          jint height, jint format) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
-                self->SetUpTexture(width, height, format);
+                self->SetTexture(width, height, format);
+            });
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_graphics_VkPixelTransform_nativeSetSurfaceRotation(JNIEnv *env, jobject thiz,
+                                                                       jint value) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
+                self->SetSurfaceRotation(static_cast<Graphics::SurfaceRotation>(value));
             });
 }
 

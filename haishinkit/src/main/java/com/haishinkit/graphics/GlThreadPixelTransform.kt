@@ -27,8 +27,8 @@ class GlThreadPixelTransform(
                 it.sendMessage(it.obtainMessage(MSG_SET_IMAGE_ORIENTATION, value))
             }
         }
-    override var surfaceOrientation: Int
-        get() = pixelTransform.surfaceOrientation
+    override var surfaceRotation: Int
+        get() = pixelTransform.surfaceRotation
         set(value) {
             handler?.let {
                 it.sendMessage(it.obtainMessage(MSG_SET_SURFACE_ORIENTATION, value))
@@ -108,7 +108,7 @@ class GlThreadPixelTransform(
                     transform.imageOrientation = message.obj as ImageOrientation
                 }
                 MSG_SET_SURFACE_ORIENTATION -> {
-                    transform.surfaceOrientation = message.obj as Int
+                    transform.surfaceRotation = message.obj as Int
                 }
                 MSG_SET_VIDEO_GRAVITY -> {
                     transform.videoGravity = message.obj as VideoGravity
