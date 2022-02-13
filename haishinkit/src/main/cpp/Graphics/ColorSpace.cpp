@@ -1,6 +1,6 @@
+#include "Kernel.h"
+#include "ImageStorage.h"
 #include "ColorSpace.h"
-#include <vulkan/vulkan.hpp>
-#include <android/native_window.h>
 
 using namespace Graphics;
 
@@ -9,8 +9,8 @@ ColorSpace::ColorSpace() = default;
 ColorSpace::~ColorSpace() = default;
 
 bool
-ColorSpace::convert(void *buffer0, void *buffer1, void *buffer2, int32_t yStride, int32_t uvStride,
-                    int32_t uvPixelStride) const {
+ColorSpace::Map(void *buffer0, void *buffer1, void *buffer2, int32_t yStride, int32_t uvStride,
+                int32_t uvPixelStride) const {
     if (memory == nullptr) {
         return false;
     }
@@ -66,6 +66,28 @@ vk::Format ColorSpace::GetFormat() const {
         default:
             return vk::Format::eR8G8B8A8Unorm;
     }
+}
+
+void ColorSpace::Bind(Kernel &kernel, ImageStorage &storage, vk::MemoryPropertyFlags properties) {
+    const auto requirements = kernel.device->getImageMemoryRequirements(storage.image.get());
+    storage.memory = kernel.device->allocateMemoryUnique(
+            vk::MemoryAllocateInfo()
+                    .setAllocationSize(requirements.size)
+                    .setMemoryTypeIndex(
+                            kernel.FindMemoryType(
+                                    requirements.memoryTypeBits,
+                                    properties
+                            ))
+    );
+    kernel.device->bindImageMemory(storage.image.get(), storage.memory.get(), 0);
+    layout = kernel.device->getImageSubresourceLayout(
+            storage.image.get(),
+            vk::ImageSubresource()
+                    .setMipLevel(0)
+                    .setArrayLayer(0)
+                    .setAspectMask(vk::ImageAspectFlagBits::eColor)
+    );
+    memory = kernel.device->mapMemory(storage.memory.get(), 0, requirements.size);
 }
 
 uint32_t ColorSpace::YuvToRgb(int y, int u, int v) {

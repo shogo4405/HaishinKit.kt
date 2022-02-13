@@ -60,8 +60,10 @@ vk::Viewport Texture::GetViewport(const vk::Extent2D surface) const {
 
     auto newImageExtent = image.extent;
 
-    if (imageOrientation == LEFT || imageOrientation == RIGHT ||
-        imageOrientation == LEFT_MIRRORED || imageOrientation || RIGHT_MIRRORED) {
+    if (imageOrientation == LEFT ||
+        imageOrientation == RIGHT ||
+        imageOrientation == LEFT_MIRRORED ||
+        imageOrientation == RIGHT_MIRRORED) {
         newImageExtent = vk::Extent2D()
                 .setWidth(image.extent.height)
                 .setHeight(image.extent.width);
@@ -143,20 +145,10 @@ void Texture::SetUp(Kernel &kernel) {
                     vk::ImageTiling::eOptimal)
     );
 
-    colorSpace->size = BindImageMemory(kernel, image.memory, image.image.get(),
-                                       mode == Linear ? vk::MemoryPropertyFlagBits::eHostVisible
-                                                      : vk::MemoryPropertyFlagBits::eDeviceLocal);
-
     switch (mode) {
         case Linear: {
             LOGI("%s", "This device has a linear tiling feature.");
-            colorSpace->layout = kernel.device->getImageSubresourceLayout(
-                    image.image.get(),
-                    vk::ImageSubresource()
-                            .setMipLevel(0)
-                            .setArrayLayer(0)
-                            .setAspectMask(vk::ImageAspectFlagBits::eColor)
-            );
+            colorSpace->Bind(kernel, image, vk::MemoryPropertyFlagBits::eHostVisible);
             auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
             commandBuffer.begin(vk::CommandBufferBeginInfo());
             image.SetLayout(
@@ -167,26 +159,15 @@ void Texture::SetUp(Kernel &kernel) {
             );
             commandBuffer.end();
             kernel.Submit(commandBuffer);
-            colorSpace->memory = kernel.device->mapMemory(image.memory.get(), 0,
-                                                          colorSpace->size);
             break;
         }
         case Stage: {
             LOGI("%s", "This device has no a linear tiling feature.");
+            colorSpace->Bind(kernel, stage, vk::MemoryPropertyFlagBits::eDeviceLocal);
             stage.SetUp(kernel, stage.CreateImageCreateInfo()
                     .setUsage(vk::ImageUsageFlagBits::eTransferSrc)
                     .setTiling(vk::ImageTiling::eLinear)
             );
-            colorSpace->size = BindImageMemory(kernel, stage.memory, stage.image.get(),
-                                               vk::MemoryPropertyFlagBits::eHostVisible);
-            colorSpace->layout = kernel.device->getImageSubresourceLayout(
-                    stage.image.get(),
-                    vk::ImageSubresource()
-                            .setMipLevel(0)
-                            .setArrayLayer(0)
-                            .setAspectMask(vk::ImageAspectFlagBits::eColor));
-            colorSpace->memory = kernel.device->mapMemory(stage.memory.get(), 0,
-                                                          colorSpace->size);
             break;
         }
     }
@@ -229,7 +210,7 @@ void Texture::TearDown(Kernel &kernel) {
 void
 Texture::Update(Kernel &kernel, void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
                 int32_t uvPixelStride) {
-    if (colorSpace->convert(y, u, v, yStride, uvStride, uvPixelStride)) {
+    if (colorSpace->Map(y, u, v, yStride, uvStride, uvPixelStride)) {
         CopyImage(kernel);
     }
 }
@@ -247,23 +228,6 @@ bool Texture::HasLinearTilingFeatures(Kernel &kernel) const {
         return true;
     }
     return false;
-}
-
-int32_t
-Texture::BindImageMemory(Kernel &kernel, vk::UniqueDeviceMemory &memory, vk::Image image,
-                         vk::MemoryPropertyFlags properties) {
-    const auto requirements = kernel.device->getImageMemoryRequirements(image);
-    memory = kernel.device->allocateMemoryUnique(
-            vk::MemoryAllocateInfo()
-                    .setAllocationSize(requirements.size)
-                    .setMemoryTypeIndex(
-                            kernel.FindMemoryType(
-                                    requirements.memoryTypeBits,
-                                    properties
-                            ))
-    );
-    kernel.device->bindImageMemory(image, memory.get(), 0);
-    return requirements.size;
 }
 
 void Texture::CopyImage(Kernel &kernel) {

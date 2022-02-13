@@ -59,10 +59,6 @@ namespace Graphics {
 
         bool HasLinearTilingFeatures(Kernel &kernel) const;
 
-        static int32_t
-        BindImageMemory(Kernel &kernel, vk::UniqueDeviceMemory &memory, vk::Image image,
-                        vk::MemoryPropertyFlags properties);
-
         void CopyImage(Kernel &kernel);
     };
 }
