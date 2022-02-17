@@ -43,6 +43,11 @@ internal class GlPixelTransform(
         }
     override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
     var handler: Handler? = null
+        set(value) {
+            field?.post { kernel.tearDown() }
+            value?.post { kernel.setUp() }
+            field = value
+        }
 
     private var kernel: GlKernel = GlKernel()
     private var fpsController: FpsController = DefaultFpsController.instance

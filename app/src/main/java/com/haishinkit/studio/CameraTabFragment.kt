@@ -2,24 +2,24 @@ package com.haishinkit.studio
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import com.haishinkit.rtmp.RtmpConnection
-import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.event.IEventListener
-import com.haishinkit.media.Camera2Source
-import com.haishinkit.event.Event
-import com.haishinkit.event.EventUtils
-import android.content.pm.PackageManager
-import android.hardware.camera2.CameraCharacteristics
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.haishinkit.media.AudioRecordSource
 import androidx.fragment.app.Fragment
+import com.haishinkit.event.Event
+import com.haishinkit.event.EventUtils
+import com.haishinkit.event.IEventListener
+import com.haishinkit.media.AudioRecordSource
+import com.haishinkit.media.Camera2Source
+import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.view.HkSurfaceView
 
 class CameraTabFragment : Fragment(), IEventListener {
@@ -46,9 +46,7 @@ class CameraTabFragment : Fragment(), IEventListener {
         connection = RtmpConnection()
         stream = RtmpStream(connection)
         stream.attachAudio(AudioRecordSource())
-        cameraSource = Camera2Source(requireContext()).apply {
-            open(CameraCharacteristics.LENS_FACING_BACK)
-        }
+        cameraSource = Camera2Source(requireContext())
         stream.attachVideo(cameraSource)
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
@@ -77,6 +75,16 @@ class CameraTabFragment : Fragment(), IEventListener {
         cameraView = v.findViewById(R.id.camera)
         cameraView.attachStream(stream)
         return v
+    }
+
+    override fun onResume() {
+        super.onResume()
+        cameraSource.open(CameraCharacteristics.LENS_FACING_BACK)
+    }
+
+    override fun onPause() {
+        cameraSource.close()
+        super.onPause()
     }
 
     override fun onDestroy() {

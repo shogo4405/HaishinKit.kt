@@ -133,7 +133,10 @@ class GlThreadPixelTransform(
         listener?.onPixelTransformSurfaceChanged(this, surface)
     }
 
-    override fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface) {
+    override fun onPixelTransformInputSurfaceCreated(
+        pixelTransform: PixelTransform,
+        surface: Surface
+    ) {
         listener?.onPixelTransformInputSurfaceCreated(this, surface)
     }
 

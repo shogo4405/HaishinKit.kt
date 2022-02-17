@@ -1,5 +1,7 @@
 package com.haishinkit.graphics.gles
 
+import android.opengl.EGL14
+import android.opengl.EGLConfig
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Size
@@ -18,11 +20,7 @@ internal class GlKernel(
     var surface: Surface? = null
         set(value) {
             field = value
-            if (value == null) {
-                tearDown()
-            } else {
-                setUp()
-            }
+            inputSurfaceWindow.setSurface(value)
         }
     var imageOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
@@ -53,12 +51,41 @@ internal class GlKernel(
     private var texCoordHandle = INVALID_VALUE
     private var textureHandle = INVALID_VALUE
     private var invalidateLayout = true
+    private var display = EGL14.EGL_NO_DISPLAY
+        set(value) {
+            field = value
+            inputSurfaceWindow.display = value
+        }
+    private var context = EGL14.EGL_NO_CONTEXT
+        set(value) {
+            field = value
+            inputSurfaceWindow.context = value
+        }
 
     override fun setUp() {
         if (utilizable) return
 
-        inputSurfaceWindow.setUp(surface, null)
-        inputSurfaceWindow.makeCurrent()
+        display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
+        if (display === EGL14.EGL_NO_DISPLAY) {
+            throw RuntimeException()
+        }
+
+        val version = IntArray(2)
+        if (!EGL14.eglInitialize(display, version, 0, version, 1)) {
+            throw RuntimeException()
+        }
+
+        val config = chooseConfig() ?: return
+        inputSurfaceWindow.config = config
+        context = EGL14.eglCreateContext(
+            display,
+            config,
+            EGL14.EGL_NO_CONTEXT,
+            CONTEXT_ATTRIBUTES,
+            0
+        )
+        GlUtil.checkGlError("eglCreateContext")
+        EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, context)
 
         GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
@@ -93,8 +120,6 @@ internal class GlKernel(
 
     override fun tearDown() {
         if (!utilizable) return
-
-        inputSurfaceWindow.tearDown()
 
         program = INVALID_VALUE
         positionHandle = INVALID_VALUE
@@ -213,8 +238,44 @@ internal class GlKernel(
         }
     }
 
+    private fun chooseConfig(): EGLConfig? {
+        val attributes: IntArray = CONFIG_ATTRIBUTES_WITH_CONTEXT
+        val configs: Array<EGLConfig?> = arrayOfNulls<EGLConfig>(1)
+        val numConfigs = IntArray(1)
+        if (!EGL14.eglChooseConfig(
+                display,
+                attributes,
+                0,
+                configs,
+                0,
+                configs.size,
+                numConfigs,
+                0
+            )
+        ) {
+            return null
+        }
+        return configs[0]
+    }
+
     companion object {
         private const val INVALID_VALUE = 0
+
+        private const val EGL_RECORDABLE_ANDROID: Int = 0x3142
+
+        private val CONTEXT_ATTRIBUTES =
+            intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
+        private val SURFACE_ATTRIBUTES = intArrayOf(EGL14.EGL_NONE)
+
+        private val CONFIG_ATTRIBUTES_WITH_CONTEXT = intArrayOf(
+            EGL14.EGL_RED_SIZE, 8,
+            EGL14.EGL_GREEN_SIZE, 8,
+            EGL14.EGL_BLUE_SIZE, 8,
+            EGL14.EGL_ALPHA_SIZE, 8,
+            EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+            EGL_RECORDABLE_ANDROID, 1,
+            EGL14.EGL_NONE
+        )
 
         private val VERTECES = floatArrayOf(
             -1.0f, 1.0f, 0.0f,

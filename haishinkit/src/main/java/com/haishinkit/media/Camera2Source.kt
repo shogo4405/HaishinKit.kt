@@ -126,6 +126,10 @@ class Camera2Source(
         )
     }
 
+    fun close() {
+        device = null
+    }
+
     /**
      * Switches an using camera front or back.
      */
