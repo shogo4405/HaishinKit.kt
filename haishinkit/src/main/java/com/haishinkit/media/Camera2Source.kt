@@ -185,7 +185,7 @@ class Camera2Source(
         }
     }
 
-    override fun onPixelTransformSetUp(pixelTransform: PixelTransform) {
+    override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
         if (stream?.videoCodec?.pixelTransform == pixelTransform) {
             pixelTransform.createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
         }

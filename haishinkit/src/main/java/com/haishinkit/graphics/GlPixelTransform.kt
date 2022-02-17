@@ -19,7 +19,7 @@ internal class GlPixelTransform(
         get() = kernel.surface
         set(value) {
             kernel.surface = value
-            listener?.onPixelTransformSetUp(this)
+            listener?.onPixelTransformSurfaceChanged(this, value)
         }
     override var imageOrientation: ImageOrientation
         get() = kernel.imageOrientation

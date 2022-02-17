@@ -73,7 +73,7 @@ class MediaProjectionSource(
         isRunning.set(false)
     }
 
-    override fun onPixelTransformSetUp(pixelTransform: PixelTransform) {
+    override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
         pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
     }
 
