@@ -43,6 +43,7 @@ internal class GlKernel(
             field = value
             invalidateLayout = true
         }
+    var expectedOrientationSynchronize: Boolean = true
     private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
@@ -158,7 +159,7 @@ internal class GlKernel(
     }
 
     private fun layout(newTextureSize: Size) {
-        val swapped = if (extent.width < extent.height) {
+        var swapped = if (extent.width < extent.height) {
             newTextureSize.height < newTextureSize.width
         } else {
             newTextureSize.width < newTextureSize.height
@@ -174,6 +175,7 @@ internal class GlKernel(
             ImageOrientation.LEFT_MIRRORED -> 270
             ImageOrientation.RIGHT_MIRRORED -> 90
         }
+
         degrees += when (surfaceRotation) {
             0 -> 0
             1 -> 90
@@ -184,6 +186,11 @@ internal class GlKernel(
 
         if (degrees.rem(180) == 0 && (imageOrientation == ImageOrientation.RIGHT || imageOrientation == ImageOrientation.RIGHT_MIRRORED)) {
             degrees += 180
+        }
+
+        if (!expectedOrientationSynchronize) {
+            degrees = 0
+            swapped = false
         }
 
         when (degrees.rem(360)) {
@@ -197,6 +204,14 @@ internal class GlKernel(
         val textureSize = newTextureSize.swap(swapped)
 
         when (videoGravity) {
+            VideoGravity.RESIZE -> {
+                GLES20.glViewport(
+                    0,
+                    0,
+                    extent.width,
+                    extent.height
+                )
+            }
             VideoGravity.RESIZE_ASPECT -> {
                 val xRatio = extent.width.toFloat() / textureSize.width.toFloat()
                 val yRatio = extent.height.toFloat() / textureSize.height.toFloat()
@@ -265,7 +280,6 @@ internal class GlKernel(
 
         private val CONTEXT_ATTRIBUTES =
             intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
-        private val SURFACE_ATTRIBUTES = intArrayOf(EGL14.EGL_NONE)
 
         private val CONFIG_ATTRIBUTES_WITH_CONTEXT = intArrayOf(
             EGL14.EGL_RED_SIZE, 8,

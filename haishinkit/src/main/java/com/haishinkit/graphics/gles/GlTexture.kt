@@ -36,6 +36,10 @@ internal class GlTexture {
         }
     private var surfaceTexture: SurfaceTexture? = null
 
+    fun isValid(width: Int, height: Int): Boolean {
+        return extent.width == width && extent.height == height
+    }
+
     fun updateTexImage() {
         surfaceTexture?.updateTexImage()
     }

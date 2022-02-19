@@ -71,7 +71,7 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createVideoFormat(MIME, width, height).apply {
-            if (mode == MODE_ENCODE) {
+            if (mode == Mode.ENCODE) {
                 setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
                 setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
                 setInteger(MediaFormat.KEY_CAPTURE_RATE, frameRate)
@@ -95,7 +95,7 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
 
     override fun configure(codec: android.media.MediaCodec) {
         super.configure(codec)
-        if (mode == MODE_ENCODE) {
+        if (mode == Mode.ENCODE) {
             pixelTransform.fpsControllerClass = fpsControllerClass
             pixelTransform.extent = Size(width, height)
             pixelTransform.surface = codec.createInputSurface()

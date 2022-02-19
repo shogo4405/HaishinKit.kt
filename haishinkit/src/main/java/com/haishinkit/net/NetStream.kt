@@ -7,7 +7,6 @@ import android.media.AudioTrack
 import android.media.MediaFormat
 import android.os.Build
 import android.util.Log
-import android.view.Surface
 import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.RecordSetting
 import com.haishinkit.codec.VideoCodec
@@ -48,8 +47,6 @@ abstract class NetStream {
     val recordSetting: RecordSetting by lazy {
         RecordSetting()
     }
-
-    var surface: Surface? = null
 
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()

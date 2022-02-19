@@ -42,6 +42,11 @@ internal class GlPixelTransform(
             kernel.surfaceRotation = value
         }
     override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
+    override var expectedOrientationSynchronize: Boolean
+        get() = kernel.expectedOrientationSynchronize
+        set(value) {
+            kernel.expectedOrientationSynchronize = value
+        }
     var handler: Handler? = null
         set(value) {
             field?.post { kernel.tearDown() }
@@ -58,7 +63,7 @@ internal class GlPixelTransform(
         }
 
     override fun createInputSurface(width: Int, height: Int, format: Int) {
-        if (texture != null) {
+        if (texture != null && texture?.isValid(width, height) == true) {
             texture?.surface?.let {
                 listener?.onPixelTransformInputSurfaceCreated(this, it)
             }

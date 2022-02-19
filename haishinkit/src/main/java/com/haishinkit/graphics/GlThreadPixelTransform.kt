@@ -64,6 +64,15 @@ class GlThreadPixelTransform(
                 )
             }
         }
+    override var expectedOrientationSynchronize: Boolean
+        get() = pixelTransform.expectedOrientationSynchronize
+        set(value) {
+            handler?.let {
+                it.sendMessage(
+                    it.obtainMessage(MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE, value)
+                )
+            }
+        }
     private var handler: Handler? = null
         get() {
             if (field == null) {
@@ -123,6 +132,9 @@ class GlThreadPixelTransform(
                 MSG_SET_RESAMPLE_FILTER -> {
                     transform.resampleFilter = message.obj as ResampleFilter
                 }
+                MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE -> {
+                    transform.expectedOrientationSynchronize = message.obj as Boolean
+                }
                 else ->
                     throw RuntimeException("Unhandled msg what=$message.what")
             }
@@ -148,6 +160,7 @@ class GlThreadPixelTransform(
         private const val MSG_SET_VIDEO_GRAVITY = 4
         private const val MSG_SET_CURRENT_EXTENT = 5
         private const val MSG_SET_RESAMPLE_FILTER = 6
+        private const val MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE = 7
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

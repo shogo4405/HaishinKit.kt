@@ -23,6 +23,7 @@ interface PixelTransform {
     var videoGravity: VideoGravity
     var assetManager: AssetManager?
     var fpsControllerClass: Class<*>?
+    var expectedOrientationSynchronize: Boolean
 
     fun createInputSurface(width: Int, height: Int, format: Int)
 }

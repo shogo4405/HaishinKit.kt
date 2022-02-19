@@ -1,12 +1,15 @@
 package com.haishinkit.rtmp
 
+import android.graphics.ImageFormat
 import android.util.Log
+import android.view.Surface
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
+import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpDataMessage
@@ -20,7 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger
  * An object that provides the interface to control a one-way channel over a RTMPConnection.
  */
 @Suppress("unused")
-open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IEventDispatcher {
+open class RtmpStream(internal var connection: RtmpConnection) :
+    NetStream(),
+    IEventDispatcher,
+    PixelTransform.Listener {
     data class Info(
         var resourceName: String? = null
     )
@@ -185,14 +191,11 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
                     messages.clear()
                 }
                 ReadyState.PLAY -> {
-                    surface?.let {
-                        videoCodec.inputSurface = it
-                    }
-                    muxer.mode = MediaCodec.MODE_DECODE
+                    muxer.mode = MediaCodec.Mode.DECODE
                     muxer.startRunning()
                 }
                 ReadyState.PUBLISHING -> {
-                    muxer.mode = MediaCodec.MODE_ENCODE
+                    muxer.mode = MediaCodec.Mode.ENCODE
                     muxer.startRunning()
                     send("@setDataFrame", "onMetaData", toMetaData())
                     if (howToPublish == PUBLISH_LOCAL_RECORD) {
@@ -274,6 +277,10 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
      * Plays a media file or a live stream from server.
      */
     open fun play(vararg arguments: Any) {
+        renderer?.pixelTransform?.expectedOrientationSynchronize = false
+        renderer?.pixelTransform?.listener = this
+        renderer?.pixelTransform?.createInputSurface(1024, 1024, ImageFormat.NV21)
+
         val streamName = if (arguments.isEmpty()) null else arguments[0]
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
@@ -355,6 +362,16 @@ open class RtmpStream(internal var connection: RtmpConnection) : NetStream(), IE
 
     override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
         dispatcher.removeEventListener(type, listener, useCapture)
+    }
+
+    override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
+    }
+
+    override fun onPixelTransformInputSurfaceCreated(
+        pixelTransform: PixelTransform,
+        surface: Surface
+    ) {
+        videoCodec.surface = surface
     }
 
     internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {

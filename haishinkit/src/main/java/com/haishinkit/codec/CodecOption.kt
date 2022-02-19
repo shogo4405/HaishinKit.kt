@@ -11,6 +11,7 @@ data class CodecOption(var key: String, var value: Any) {
             value is Float -> format.setFloat(key, value as Float)
             value is String -> format.setString(key, value as String)
             value is ByteBuffer -> format.setByteBuffer(key, value as ByteBuffer)
+            else -> throw IllegalArgumentException()
         }
     }
 }

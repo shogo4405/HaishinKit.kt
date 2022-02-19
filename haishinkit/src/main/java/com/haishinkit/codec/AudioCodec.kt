@@ -25,7 +25,7 @@ class AudioCodec : MediaCodec(MIME) {
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createAudioFormat(MIME, sampleRate, channelCount).apply {
-            if (mode == MODE_ENCODE) {
+            if (mode == Mode.ENCODE) {
                 setInteger(MediaFormat.KEY_AAC_PROFILE, aacProfile)
                 setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
             } else {

@@ -78,15 +78,15 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
         data?.let { it ->
             when (val byte = it.get()) {
                 FlvAvcPacketType.SEQ -> {
-                    Log.i(TAG, "$this")
                     if (!it.hasRemaining()) return this
                     it.position(4)
                     val record = AvcConfigurationRecord().decode(it)
-                    record.apply(stream.videoCodec)
-                    data = record.toByteBuffer()
-                    timestamp = 0
-                    stream.muxer.hasVideo = true
-                    stream.muxer.enqueueVideo(this)
+                    if (record.apply(stream.videoCodec)) {
+                        data = record.toByteBuffer()
+                        timestamp = 0
+                        stream.muxer.hasVideo = true
+                        stream.muxer.enqueueVideo(this)
+                    }
                 }
                 FlvAvcPacketType.NAL -> {
                     if (!it.hasRemaining()) return this

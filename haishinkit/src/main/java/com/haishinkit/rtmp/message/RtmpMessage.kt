@@ -24,11 +24,11 @@ internal open class RtmpMessage(val type: Byte, private val pool: Pools.Pool<Rtm
     }
 
     open fun decode(buffer: ByteBuffer): RtmpMessage {
-        TODO("$TAG#encode")
+        TODO("$TAG#decode")
     }
 
     open fun execute(connection: RtmpConnection): RtmpMessage {
-        TODO("$TAG#encode")
+        TODO("$TAG#execute")
     }
 
     open fun release(): Boolean {

@@ -99,7 +99,7 @@ data class AvcConfigurationRecord(
         return ByteBuffer.allocate(capacity)
     }
 
-    internal fun apply(codec: VideoCodec) {
+    internal fun apply(codec: VideoCodec): Boolean {
         when (avcProfileIndication.toInt()) {
             66 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
             77 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileMain
@@ -124,7 +124,7 @@ data class AvcConfigurationRecord(
             }
         }
         spsBuffer.flip()
-        options.add(CodecOption(CSD0, spsBuffer))
+
         val ppsBuffer = ByteBuffer.allocate(128)
         pictureParameterSets?.let {
             for (pps in it) {
@@ -133,9 +133,28 @@ data class AvcConfigurationRecord(
             }
         }
         ppsBuffer.flip()
-        options.add(CodecOption(CSD1, ppsBuffer))
+
+        if (codec.options.isEmpty()) {
+            options.add(CodecOption(CSD0, spsBuffer))
+            options.add(CodecOption(CSD1, ppsBuffer))
+        } else {
+            for (option in codec.options) {
+                if (option.key == CSD0 && spsBuffer.compareTo(option.value as ByteBuffer) != 0) {
+                    options.add(CodecOption(CSD0, spsBuffer))
+                }
+                if (option.key == CSD1 && ppsBuffer.compareTo(option.value as ByteBuffer) != 0) {
+                    options.add(CodecOption(CSD1, ppsBuffer))
+                }
+            }
+            if (options.isEmpty()) {
+                return false
+            }
+        }
+
         codec.options = options
         Log.i(TAG, "apply value=$this for a videoCodec")
+
+        return true
     }
 
     internal fun toByteBuffer(): ByteBuffer {

@@ -18,6 +18,11 @@ import kotlin.properties.Delegates
 
 @Suppress("unused")
 abstract class MediaCodec(private val mime: String) : Running {
+    enum class Mode {
+        ENCODE,
+        DECODE
+    }
+
     @Suppress("unused")
     open class Setting(private var codec: com.haishinkit.codec.MediaCodec?) {
         var options: List<CodecOption> by Delegates.observable(listOf()) { _, _, newValue ->
@@ -92,7 +97,7 @@ abstract class MediaCodec(private val mime: String) : Running {
     var codec: MediaCodec? = null
         get() {
             if (field == null) {
-                field = if (mode == MODE_ENCODE) {
+                field = if (mode == Mode.ENCODE) {
                     MediaCodec.createEncoderByType(mime)
                 } else {
                     MediaCodec.createDecoderByType(mime)
@@ -105,9 +110,26 @@ abstract class MediaCodec(private val mime: String) : Running {
             field?.release()
             field = value
         }
-    var mode = MODE_ENCODE
+    var mode = Mode.ENCODE
     var options = listOf<CodecOption>()
-    var inputSurface: Surface? = null
+    var surface: Surface? = null
+        set(value) {
+            field = value
+            if (isRunning.get()) {
+                when (mode) {
+                    Mode.ENCODE -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            value?.let { codec?.setInputSurface(it) }
+                        }
+                    }
+                    Mode.DECODE -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            value?.let { codec?.setOutputSurface(it) }
+                        }
+                    }
+                }
+            }
+        }
 
     @Volatile
     var capturing = false
@@ -198,8 +220,8 @@ abstract class MediaCodec(private val mime: String) : Running {
             option.apply(format)
         }
         codec.configure(
-            format, inputSurface, null,
-            if (mode == MODE_ENCODE) {
+            format, surface, null,
+            if (mode == Mode.ENCODE) {
                 MediaCodec.CONFIGURE_FLAG_ENCODE
             } else {
                 0
@@ -237,9 +259,6 @@ abstract class MediaCodec(private val mime: String) : Running {
         const val MIME_AUDIO_G711A = "audio/g711-alaw"
         const val MIME_AUDIO_G711U = "audio/g711-mlaw"
         const val MIME_AUDIO_RAW = "audio/raw"
-
-        const val MODE_ENCODE = 0
-        const val MODE_DECODE = 1
 
         private val TAG = MediaCodec::class.java.simpleName
     }

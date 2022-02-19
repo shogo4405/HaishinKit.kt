@@ -43,6 +43,8 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     override var fpsControllerClass: Class<*>? = null
 
+    override var expectedOrientationSynchronize: Boolean = false
+
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
             field = value

@@ -59,7 +59,6 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
         data?.let {
             when (val byte = it.get()) {
                 FlvAacPacketType.SEQ -> {
-                    Log.i(TAG, "$this")
                     timestamp = 0
                     stream.muxer.hasAudio = true
                     stream.muxer.enqueueAudio(this)

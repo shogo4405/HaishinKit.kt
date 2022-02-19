@@ -1,5 +1,6 @@
 package com.haishinkit.rtmp
 
+import android.graphics.ImageFormat
 import android.media.MediaFormat
 import android.os.SystemClock
 import android.util.Log
@@ -18,6 +19,7 @@ import com.haishinkit.media.MediaLink
 import com.haishinkit.metric.FrameTracker
 import com.haishinkit.rtmp.message.RtmpAudioMessage
 import com.haishinkit.rtmp.message.RtmpVideoMessage
+import com.haishinkit.util.MediaFormatUtil
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -27,7 +29,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     MediaCodec.Listener {
     override var isRunning = AtomicBoolean(false)
 
-    var mode = MediaCodec.MODE_DECODE
+    var mode = MediaCodec.Mode.DECODE
         set(value) {
             stream.audioCodec.mode = value
             stream.videoCodec.mode = value
@@ -94,7 +96,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         }
         hasFirstFlame = false
         when (mode) {
-            MediaCodec.MODE_ENCODE -> {
+            MediaCodec.Mode.ENCODE -> {
                 stream.audio?.let {
                     it.startRunning()
                     stream.audioCodec.listener = this
@@ -106,7 +108,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     stream.videoCodec.startRunning()
                 }
             }
-            MediaCodec.MODE_DECODE -> {
+            MediaCodec.Mode.DECODE -> {
                 mediaLink.startRunning()
             }
         }
@@ -120,7 +122,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             Log.d(TAG, "stopRunning()")
         }
         when (mode) {
-            MediaCodec.MODE_ENCODE -> {
+            MediaCodec.Mode.ENCODE -> {
                 stream.audio?.let {
                     it.stopRunning()
                     stream.audioCodec.stopRunning()
@@ -130,7 +132,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     stream.videoCodec.stopRunning()
                 }
             }
-            MediaCodec.MODE_DECODE -> {
+            MediaCodec.Mode.DECODE -> {
                 clear()
                 mediaLink.stopRunning()
             }
@@ -203,6 +205,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
         when (mime) {
             MediaCodec.MIME_VIDEO_RAW -> {
+                mediaFormat.apply {
+                    val width = MediaFormatUtil.getWidth(this)
+                    val height = MediaFormatUtil.getHeight(this)
+                    stream.renderer?.pixelTransform?.createInputSurface(width, height, ImageFormat.NV21)
+                }
                 stream.dispatchEventWith(
                     Event.RTMP_STATUS,
                     false,

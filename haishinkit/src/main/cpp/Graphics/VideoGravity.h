@@ -3,9 +3,9 @@
 
 namespace Graphics {
     enum VideoGravity {
-        RESIZE_ASPECT = 0,
-        RESIZE_ASPECT_FILL = 1,
-        RESIZE = 2
+        RESIZE = 0,
+        RESIZE_ASPECT = 1,
+        RESIZE_ASPECT_FILL = 2,
     };
 }
 
