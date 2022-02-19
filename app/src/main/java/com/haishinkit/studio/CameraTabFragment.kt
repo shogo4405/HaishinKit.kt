@@ -21,11 +21,12 @@ import com.haishinkit.media.Camera2Source
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.view.HkSurfaceView
+import com.haishinkit.view.NetStreamView
 
 class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var cameraView: HkSurfaceView
+    private lateinit var cameraView: NetStreamView
     private lateinit var cameraSource: Camera2Source
 
     override fun onCreate(savedInstanceState: Bundle?) {

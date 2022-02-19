@@ -13,12 +13,14 @@ import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.view.HkSurfaceView
 import com.haishinkit.view.HkTextureView
+import com.haishinkit.view.NetStreamView
 
 class PlaybackTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var playbackView: HkTextureView
+    private lateinit var playbackView: NetStreamView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,7 @@ class PlaybackTabFragment : Fragment(), IEventListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val v = inflater.inflate(R.layout.fragment_playback, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
@@ -46,7 +49,12 @@ class PlaybackTabFragment : Fragment(), IEventListener {
                 button.text = "Play"
             }
         }
-        playbackView = v.findViewById(R.id.surface)
+
+        playbackView = if (Preference.useSurfaceView) {
+            v.findViewById(R.id.surfaceView)
+        } else {
+            v.findViewById(R.id.textureView)
+        }
         playbackView.attachStream(stream)
 
         return v

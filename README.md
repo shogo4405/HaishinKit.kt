@@ -34,8 +34,8 @@
 |-|HkSurfaceView|HkTextureView|
 |:-|:-:|:-:|
 |Engine|SurfaceView|TextureView|
-|Playback|Beta|Good|
-|Publish|Good|Beta|
+|Playback|🤔beta|🤔beta|
+|Publish|✅Stable|✅Stable|
 
 ### Others
 - [x] Hardware acceleration for H264 video encoding/AAC audio encoding.

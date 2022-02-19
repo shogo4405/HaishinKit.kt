@@ -8,7 +8,7 @@
     tools:context=".CameraTabFragment"
     >
 
-    <com.haishinkit.view.HkSurfaceView
+    <com.haishinkit.view.HkTextureView
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

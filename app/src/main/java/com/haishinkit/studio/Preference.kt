@@ -6,5 +6,7 @@ data class Preference(var rtmpURL: String, var streamName: String) {
             "rtmp://test:test@192.168.1.6/live",
             "live"
         )
+
+        var useSurfaceView: Boolean = true
     }
 }

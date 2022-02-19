@@ -6,24 +6,17 @@ import android.util.Size
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
-import com.haishinkit.event.Event
-import com.haishinkit.event.EventUtils
-import com.haishinkit.event.IEventDispatcher
-import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.net.NetStream
-import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.util.MediaFormatUtil
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Suppress("unused")
 class HkSurfaceView(context: Context, attributes: AttributeSet) :
     SurfaceView(context, attributes),
-    NetStreamView,
-    IEventListener {
+    NetStreamView {
     var videoOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
             field = value
@@ -38,8 +31,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
         }
     override var stream: NetStream? = null
         set(value) {
-            (field as? IEventDispatcher)?.removeEventListener(Event.RTMP_STATUS, this)
-            (value as? IEventDispatcher)?.addEventListener(Event.RTMP_STATUS, this)
+            field?.renderer = null
             field = value
             field?.renderer = this
         }
@@ -47,11 +39,6 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
         PixelTransformFactory().create()
     }
     private var isPortrait = false
-    private var videoAspectRatio = 0f
-        set(value) {
-            field = value
-            requestLayout()
-        }
 
     init {
         pixelTransform.assetManager = context.assets
@@ -102,25 +89,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
         isRunning.set(false)
     }
 
-    override fun handleEvent(event: Event) {
-        val data = EventUtils.toMap(event)
-        when (data["code"].toString()) {
-            RtmpStream.Code.VIDEO_DIMENSION_CHANGE.rawValue -> {
-                stream?.videoCodec?.outputFormat?.let {
-                    val width = MediaFormatUtil.getWidth(it)
-                    val height = MediaFormatUtil.getHeight(it)
-                    this.post {
-                        videoAspectRatio = width.toFloat() / height.toFloat()
-                    }
-                }
-            }
-            else -> {
-            }
-        }
-    }
-
     companion object {
-        private const val MAX_ASPECT_RATIO_DEFORMATION_PERCENT = 0.01f
         private var TAG = HkSurfaceView::class.java.simpleName
     }
 }

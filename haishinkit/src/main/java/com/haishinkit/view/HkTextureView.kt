@@ -1,42 +1,34 @@
 package com.haishinkit.view
 
 import android.content.Context
-import android.graphics.Matrix
-import android.graphics.RectF
 import android.graphics.SurfaceTexture
 import android.util.AttributeSet
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView
-import com.haishinkit.event.Event
-import com.haishinkit.event.EventUtils
-import com.haishinkit.event.IEventDispatcher
-import com.haishinkit.event.IEventListener
+import android.view.WindowManager
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.net.NetStream
-import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.util.MediaFormatUtil
 import java.util.concurrent.atomic.AtomicBoolean
 
 class HkTextureView(context: Context, attributes: AttributeSet) :
     TextureView(context, attributes),
     NetStreamView,
-    IEventListener,
     TextureView.SurfaceTextureListener {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
     override var stream: NetStream? = null
         set(value) {
-            (field as? IEventDispatcher)?.removeEventListener(Event.RTMP_STATUS, this)
-            (value as? IEventDispatcher)?.addEventListener(Event.RTMP_STATUS, this)
+            field?.renderer = null
             field = value
+            field?.renderer = this
         }
     override val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create()
     }
-    private var resolution = Size(0, 0)
 
     init {
         surfaceTextureListener = this
@@ -53,9 +45,6 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
 
     override fun startRunning() {
         if (isRunning.get()) return
-        surfaceTexture?.let {
-            stream?.surface = Surface(it)
-        }
         isRunning.set(true)
     }
 
@@ -64,60 +53,21 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
         isRunning.set(false)
     }
 
-    override fun handleEvent(event: Event) {
-        val data = EventUtils.toMap(event)
-        when (data["code"].toString()) {
-            RtmpStream.Code.VIDEO_DIMENSION_CHANGE.rawValue -> {
-                stream?.videoCodec?.outputFormat?.let { format ->
-                    val width = MediaFormatUtil.getWidth(format)
-                    val height = MediaFormatUtil.getHeight(format)
-                    resolution = Size(width, height)
-                    surfaceTexture?.let { surface ->
-                        onSurfaceTextureSizeChanged(surface, this.width, this.height)
-                    }
-                }
-            }
-            else -> {
-            }
-        }
-    }
-
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        stream?.let {
-            it.surface = Surface(surface)
-        }
+        pixelTransform.extent = Size(width, height)
+        pixelTransform.surface = Surface(surface)
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-        val degrees = if (resolution.width < resolution.height) {
-            // portrait
-            if (width < height) {
-                0f
-            } else {
-                90f
-            }
-        } else {
-            // landscape
-            if (width < height) {
-                90f
-            } else {
-                0f
-            }
+        (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
+            pixelTransform.surfaceRotation = it
+            stream?.videoCodec?.pixelTransform?.surfaceRotation = it
         }
-        val matrix = Matrix()
-        val src = RectF(0f, 0f, resolution.width.toFloat(), resolution.height.toFloat())
-        val dst = RectF(0f, 0f, this.width.toFloat(), this.height.toFloat())
-        val screen = RectF(dst)
-        matrix.postRotate(degrees, screen.centerX(), screen.centerY())
-        matrix.mapRect(dst)
-        matrix.setRectToRect(src, dst, Matrix.ScaleToFit.CENTER)
-        matrix.mapRect(src)
-        matrix.setRectToRect(screen, src, Matrix.ScaleToFit.FILL)
-        matrix.postRotate(degrees, screen.centerX(), screen.centerY())
-        setTransform(matrix)
+        pixelTransform.extent = Size(width, height)
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+        pixelTransform.surface = null
         return false
     }
 

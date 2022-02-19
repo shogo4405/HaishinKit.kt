@@ -6,28 +6,33 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
     android:background="@color/cardview_dark_background"
-    tools:context=".PlaybackTabFragment"
-    >
+    tools:context=".PlaybackTabFragment">
 
     <com.haishinkit.view.HkTextureView
-        android:id="@+id/surface"
+        android:id="@+id/textureView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        />
+        android:layout_gravity="center_vertical" />
+
+    <com.haishinkit.view.HkSurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Play"
-            android:layout_margin="16px"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true" />
+            android:layout_margin="16dp"
+            android:text="Play"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
 
 </FrameLayout>
