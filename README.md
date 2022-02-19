@@ -20,14 +20,29 @@
 - [x] Playback
 - [ ] Action Message Format
   - [x] AMF0
-  - [ ] AMF3
-- [ ] SharedObject
+  - [ ] ~~AMF3~~
+- [ ] ~~SharedObject~~
 - [x] RTMPS
   - [x] Native (RTMP over SSL/TSL)
+
+### Sources
+- [x] Camera with Camera2 api
+- [x] MediaProjection
+- [x] Microphone with AudioRecord api.
+
+### View rendering
+|-|HkSurfaceView|HkTextureView|
+|:-|:-:|:-:|
+|Engine|SurfaceView|TextureView|
+|Playback|Beta|Good|
+|Publish|Good|Beta|
 
 ### Others
 - [x] Hardware acceleration for H264 video encoding/AAC audio encoding.
   - [x] Asynchronously processing.
+- [ ] Graphics api
+  - [x] OpenGL
+  - [ ] Vulkan
 
 ## License
 BSD-3-Clause
@@ -47,6 +62,11 @@ Bitcoin
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
+
+## Requirements
+|-|Android|
+|:----:|:----:|
+|0.6.0|5.0+|
 
 ## Prerequisites
 ```kt
