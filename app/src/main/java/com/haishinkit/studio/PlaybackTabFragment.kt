@@ -13,14 +13,12 @@ import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.view.HkSurfaceView
-import com.haishinkit.view.HkTextureView
-import com.haishinkit.view.NetStreamView
+import com.haishinkit.view.HkView
 
 class PlaybackTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var playbackView: NetStreamView
+    private lateinit var playbackView: HkView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

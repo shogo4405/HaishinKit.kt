@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Suppress("unused")
 class HkSurfaceView(context: Context, attributes: AttributeSet) :
     SurfaceView(context, attributes),
-    NetStreamView {
+    HkView {
     var videoOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
             field = value

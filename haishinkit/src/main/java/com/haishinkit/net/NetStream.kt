@@ -13,7 +13,7 @@ import com.haishinkit.codec.RecordSetting
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
-import com.haishinkit.view.NetStreamView
+import com.haishinkit.view.HkView
 import java.nio.ByteBuffer
 
 /**
@@ -53,7 +53,7 @@ abstract class NetStream {
 
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()
-    internal var renderer: NetStreamView? = null
+    internal var renderer: HkView? = null
     internal var audio: AudioSource? = null
     internal var video: VideoSource? = null
 

@@ -3,7 +3,6 @@ package com.haishinkit.view
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.util.AttributeSet
-import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class HkTextureView(context: Context, attributes: AttributeSet) :
     TextureView(context, attributes),
-    NetStreamView,
+    HkView,
     TextureView.SurfaceTextureListener {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL

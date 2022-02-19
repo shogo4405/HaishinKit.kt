@@ -5,7 +5,7 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.lang.Running
 import com.haishinkit.net.NetStream
 
-interface NetStreamView : Running {
+interface HkView : Running {
     var videoGravity: VideoGravity
     var stream: NetStream?
     val pixelTransform: PixelTransform

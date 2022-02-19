@@ -34,8 +34,9 @@
 |-|HkSurfaceView|HkTextureView|
 |:-|:-:|:-:|
 |Engine|SurfaceView|TextureView|
-|Playback|🤔beta|🤔beta|
-|Publish|✅Stable|✅Stable|
+|Playback|beta|beta|
+|Publish|✅ Stable|✅ Stable|
+|Note|Recommend Android 7.0+|Recommend Android 5.0-6.0|
 
 ### Others
 - [x] Hardware acceleration for H264 video encoding/AAC audio encoding.
