@@ -57,7 +57,6 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             ) {
                 (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
                     pixelTransform.surfaceRotation = it
-                    stream?.videoCodec?.pixelTransform?.surfaceRotation = it
                 }
                 pixelTransform.extent = Size(width, height)
             }

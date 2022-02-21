@@ -8,7 +8,7 @@ import android.util.Size
 import android.view.Surface
 import java.lang.ref.WeakReference
 
-class GlThreadPixelTransform(
+internal class GlThreadPixelTransform(
     override var assetManager: AssetManager? = null,
     override var fpsControllerClass: Class<*>? = null,
 ) : PixelTransform, PixelTransform.Listener {

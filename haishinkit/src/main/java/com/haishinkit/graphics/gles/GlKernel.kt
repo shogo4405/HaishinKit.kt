@@ -43,7 +43,7 @@ internal class GlKernel(
             field = value
             invalidateLayout = true
         }
-    var expectedOrientationSynchronize: Boolean = true
+    var expectedOrientationSynchronize = true
     private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
@@ -176,21 +176,20 @@ internal class GlKernel(
             ImageOrientation.RIGHT_MIRRORED -> 90
         }
 
-        degrees += when (surfaceRotation) {
-            0 -> 0
-            1 -> 90
-            2 -> 180
-            3 -> 270
-            else -> 0
+        if (expectedOrientationSynchronize) {
+            degrees += when (surfaceRotation) {
+                0 -> 0
+                1 -> 90
+                2 -> 180
+                3 -> 270
+                else -> 0
+            }
+        } else {
+            swapped = false
         }
 
         if (degrees.rem(180) == 0 && (imageOrientation == ImageOrientation.RIGHT || imageOrientation == ImageOrientation.RIGHT_MIRRORED)) {
             degrees += 180
-        }
-
-        if (!expectedOrientationSynchronize) {
-            degrees = 0
-            swapped = false
         }
 
         when (degrees.rem(360)) {
