@@ -2,27 +2,31 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>AudioRecordSource</title>
-<link href="../../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script><script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" async="async"></script>  </head>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+const savedDarkMode = storage ? JSON.parse(storage) : false
+if(savedDarkMode === true){
+    document.getElementsByTagName("html")[0].classList.add("theme-dark")
+}</script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><link href="../../../styles/prism.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script><script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>  </head>
   <body>
+    <div class="navigation-wrapper" id="navigation-wrapper">
+      <div id="leftToggler"><span class="icon-toggler"></span></div>
+      <div class="library-name"><a href="../../../index.html">haishinkit</a></div>
+      <div>0.5.1</div>
+      <div class="pull-right d-flex"><button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+      </div>
+    </div>
     <div id="container">
-      <div id="leftColumn"><a href="../../../index.html">
-          <div id="logo"></div>
-        </a>
-        <div id="paneSearch"></div>
+      <div id="leftColumn">
         <div id="sideMenu"></div>
       </div>
       <div id="main">
-        <div id="leftToggler"><span class="icon-toggler"></span></div>
-<script type="text/javascript" src="../../../scripts/main.js"></script>        <div class="main-content" id="content" pageIds="haishinkit::com.haishinkit.media/AudioRecordSource///PointingToDeclaration//-473192002">
-          <div class="navigation-wrapper" id="navigation-wrapper">
-            <div class="breadcrumbs"><a href="../../../index.html">haishinkit</a>/<a href="../index.html">com.haishinkit.media</a>/<a href="index.html">AudioRecordSource</a></div>
-            <div class="pull-right d-flex">
-              <div id="searchBar"></div>
-            </div>
-          </div>
+        <div class="main-content" id="content" pageIds="haishinkit::com.haishinkit.media/AudioRecordSource///PointingToDeclaration//-473192002">
+          <div class="breadcrumbs"><a href="../../../index.html">haishinkit</a>/<a href="../index.html">com.haishinkit.media</a>/<a href="index.html">AudioRecordSource</a></div>
           <div class="cover ">
-            <h1 class="cover"><span>Audio</span><wbr></wbr><span>Record</span><wbr></wbr><span>Source</span></h1>
-            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">class <a href="index.html">AudioRecordSource</a>(utilizable: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>) : <a href="../-audio-source/index.html">AudioSource</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">An audio source that captures a microphone by the AudioRecord api.</p></div></div>
+            <h1 class="cover"><span>Audio</span><wbr></wbr><span>Record</span><wbr></wbr><span><span>Source</span></span></h1>
+            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">AudioRecordSource</a><span class="token punctuation">(</span>utilizable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">)</span> : <a href="../-audio-source/index.html">AudioSource</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">An audio source that captures a microphone by the AudioRecord api.</p></div></div>
           </div>
           <div class="tabbedcontent">
             <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
@@ -31,12 +35,14 @@
               <div class="table" data-togglable="Constructors"><a data-name="-552836563%2FConstructors%2F-473192002" anchor-label="AudioRecordSource" id="-552836563%2FConstructors%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue TabbedContent">
-                    <div class=""><span class="inline-flex"><a href="-audio-record-source.html">AudioRecordSource</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-552836563%2FConstructors%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="-audio-record-source.html"><span>Audio</span><wbr></wbr><span>Record</span><wbr></wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-552836563%2FConstructors%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">fun <a href="-audio-record-source.html">AudioRecordSource</a>(utilizable: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a> = false)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-audio-record-source.html"><span class="token function">AudioRecordSource</span></a><span class="token punctuation">(</span>utilizable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -46,17 +52,15 @@
               <div class="table" data-togglable="Types"><a data-name="-1800854639%2FClasslikes%2F-473192002" anchor-label="Companion" id="-1800854639%2FClasslikes%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-companion/index.html">Companion</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1800854639%2FClasslikes%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1800854639%2FClasslikes%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">object <a href="-companion/index.html">Companion</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -65,102 +69,75 @@
               <div class="table" data-togglable="Functions"><a data-name="-1438701402%2FFunctions%2F-473192002" anchor-label="onInputBufferAvailable" id="-1438701402%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="on-input-buffer-available.html">onInputBufferAvailable</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1438701402%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="on-input-buffer-available.html"><span>on</span><wbr></wbr><span>Input</span><wbr></wbr><span>Buffer</span><wbr></wbr><span><span>Available</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1438701402%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="on-input-buffer-available.html">onInputBufferAvailable</a>(codec: <a href="https://developer.android.com/reference/kotlin/android/media/MediaCodec.html">MediaCodec</a>, index: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-input-buffer-available.html"><span class="token function">onInputBufferAvailable</span></a><span class="token punctuation">(</span>codec<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/media/MediaCodec.html">MediaCodec</a><span class="token punctuation">, </span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1468540109%2FFunctions%2F-473192002" anchor-label="setUp" id="1468540109%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="set-up.html">setUp</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1468540109%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="set-up.html"><span>set</span><wbr></wbr><span><span>Up</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1468540109%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="set-up.html">setUp</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-<a data-name="1468540109%2FFunctions%2F-473192002" anchor-label="setUp" id="1468540109%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="brief "><a data-name="1468540109%2FFunctions%2F-473192002" anchor-label="setUp" id="1468540109%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>Tells the receiver to setUp.</div></div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="set-up.html"><span class="token function">setUp</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Tells the receiver to setUp.</p></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="181181875%2FFunctions%2F-473192002" anchor-label="startRunning" id="181181875%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="start-running.html">startRunning</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="181181875%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="start-running.html"><span>start</span><wbr></wbr><span><span>Running</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="181181875%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="start-running.html">startRunning</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-<a data-name="181181875%2FFunctions%2F-473192002" anchor-label="startRunning" id="181181875%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="brief "><a data-name="181181875%2FFunctions%2F-473192002" anchor-label="startRunning" id="181181875%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>Tells the receiver to start running.</div></div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="start-running.html"><span class="token function">startRunning</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Tells the receiver to start running.</p></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1998588339%2FFunctions%2F-473192002" anchor-label="stopRunning" id="-1998588339%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="stop-running.html">stopRunning</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1998588339%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="stop-running.html"><span>stop</span><wbr></wbr><span><span>Running</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1998588339%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="stop-running.html">stopRunning</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-<a data-name="-1998588339%2FFunctions%2F-473192002" anchor-label="stopRunning" id="-1998588339%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="brief "><a data-name="-1998588339%2FFunctions%2F-473192002" anchor-label="stopRunning" id="-1998588339%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>Tells the receiver to stop running.</div></div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="stop-running.html"><span class="token function">stopRunning</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Tells the receiver to stop running.</p></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1307215340%2FFunctions%2F-473192002" anchor-label="tearDown" id="1307215340%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="tear-down.html">tearDown</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1307215340%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="tear-down.html"><span>tear</span><wbr></wbr><span><span>Down</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1307215340%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="tear-down.html">tearDown</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-<a data-name="1307215340%2FFunctions%2F-473192002" anchor-label="tearDown" id="1307215340%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="brief "><a data-name="1307215340%2FFunctions%2F-473192002" anchor-label="tearDown" id="1307215340%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>Tells the receiver to tearDown.</div></div>
-</div>
-                    </div>
-                  </div>
-                </div>
-<a data-name="857042596%2FFunctions%2F-473192002" anchor-label="toString" id="857042596%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
-                <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="to-string.html">toString</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="857042596%2FFunctions%2F-473192002"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="to-string.html">toString</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="tear-down.html"><span class="token function">tearDown</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Tells the receiver to tearDown.</p></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -169,12 +146,14 @@
               <div class="table" data-togglable="Properties"><a data-name="-70998749%2FProperties%2F-473192002" anchor-label="audioRecord" id="-70998749%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="audio-record.html">audioRecord</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-70998749%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="audio-record.html">audioRecord</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-70998749%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="-70998749%2FProperties%2F-473192002" anchor-label="audioRecord" id="-70998749%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">var <a href="audio-record.html">audioRecord</a>: <a href="https://developer.android.com/reference/kotlin/android/media/AudioRecord.html">AudioRecord</a>? = null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="-70998749%2FProperties%2F-473192002" anchor-label="audioRecord" id="-70998749%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="audio-record.html">audioRecord</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/media/AudioRecord.html">AudioRecord</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -182,12 +161,14 @@
 <a data-name="2006360217%2FProperties%2F-473192002" anchor-label="audioSource" id="2006360217%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="audio-source.html">audioSource</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2006360217%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="audio-source.html">audioSource</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2006360217%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="2006360217%2FProperties%2F-473192002" anchor-label="audioSource" id="2006360217%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">var <a href="audio-source.html">audioSource</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="2006360217%2FProperties%2F-473192002" anchor-label="audioSource" id="2006360217%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="audio-source.html">audioSource</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -195,12 +176,14 @@
 <a data-name="-400052761%2FProperties%2F-473192002" anchor-label="channel" id="-400052761%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="channel.html">channel</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-400052761%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="channel.html">channel</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-400052761%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="-400052761%2FProperties%2F-473192002" anchor-label="channel" id="-400052761%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">var <a href="channel.html">channel</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="-400052761%2FProperties%2F-473192002" anchor-label="channel" id="-400052761%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="channel.html">channel</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -208,12 +191,14 @@
 <a data-name="1555625549%2FProperties%2F-473192002" anchor-label="currentPresentationTimestamp" id="1555625549%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="current-presentation-timestamp.html">currentPresentationTimestamp</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1555625549%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="current-presentation-timestamp.html">currentPresentationTimestamp</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1555625549%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1555625549%2FProperties%2F-473192002" anchor-label="currentPresentationTimestamp" id="1555625549%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">var <a href="current-presentation-timestamp.html">currentPresentationTimestamp</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1555625549%2FProperties%2F-473192002" anchor-label="currentPresentationTimestamp" id="1555625549%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="current-presentation-timestamp.html">currentPresentationTimestamp</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -221,12 +206,14 @@
 <a data-name="58510005%2FProperties%2F-473192002" anchor-label="isRunning" id="58510005%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="is-running.html">isRunning</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="58510005%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="is-running.html">isRunning</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="58510005%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="58510005%2FProperties%2F-473192002" anchor-label="isRunning" id="58510005%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">open override val <a href="is-running.html">isRunning</a>: <a href="https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicBoolean.html">AtomicBoolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="58510005%2FProperties%2F-473192002" anchor-label="isRunning" id="58510005%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>Indicates whether the receiver is running.</div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="58510005%2FProperties%2F-473192002" anchor-label="isRunning" id="58510005%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="is-running.html">isRunning</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/atomic/AtomicBoolean.html">AtomicBoolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="58510005%2FProperties%2F-473192002" anchor-label="isRunning" id="58510005%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><p class="paragraph">Indicates whether the receiver is running.</p></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -234,12 +221,14 @@
 <a data-name="1852287703%2FProperties%2F-473192002" anchor-label="minBufferSize" id="1852287703%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="min-buffer-size.html">minBufferSize</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1852287703%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="min-buffer-size.html">minBufferSize</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1852287703%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1852287703%2FProperties%2F-473192002" anchor-label="minBufferSize" id="1852287703%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">var <a href="min-buffer-size.html">minBufferSize</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1852287703%2FProperties%2F-473192002" anchor-label="minBufferSize" id="1852287703%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="min-buffer-size.html">minBufferSize</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -247,12 +236,14 @@
 <a data-name="1734053311%2FProperties%2F-473192002" anchor-label="muted" id="1734053311%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="muted.html">muted</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1734053311%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="muted.html">muted</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1734053311%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1734053311%2FProperties%2F-473192002" anchor-label="muted" id="1734053311%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><div class="block"><div class="block">@<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-volatile/index.html">Volatile</a>()</div></div>var <a href="muted.html">muted</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a> = false<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1734053311%2FProperties%2F-473192002" anchor-label="muted" id="1734053311%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-volatile/index.html"><span class="token annotation">Volatile</span></a></div></div><span class="token keyword"></span><span class="token keyword">var </span><a href="muted.html">muted</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -260,12 +251,14 @@
 <a data-name="-854603674%2FProperties%2F-473192002" anchor-label="sampleRate" id="-854603674%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="sample-rate.html">sampleRate</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-854603674%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="sample-rate.html">sampleRate</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-854603674%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="-854603674%2FProperties%2F-473192002" anchor-label="sampleRate" id="-854603674%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">var <a href="sample-rate.html">sampleRate</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="-854603674%2FProperties%2F-473192002" anchor-label="sampleRate" id="-854603674%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="sample-rate.html">sampleRate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -273,12 +266,14 @@
 <a data-name="1418619088%2FProperties%2F-473192002" anchor-label="stream" id="1418619088%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="stream.html">stream</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1418619088%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="stream.html">stream</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1418619088%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1418619088%2FProperties%2F-473192002" anchor-label="stream" id="1418619088%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">open override var <a href="stream.html">stream</a>: <a href="../../com.haishinkit.net/-net-stream/index.html">NetStream</a>? = null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1418619088%2FProperties%2F-473192002" anchor-label="stream" id="1418619088%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="stream.html">stream</a><span class="token operator">: </span><a href="../../com.haishinkit.net/-net-stream/index.html">NetStream</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -286,12 +281,14 @@
 <a data-name="1835239139%2FProperties%2F-473192002" anchor-label="utilizable" id="1835239139%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="utilizable.html">utilizable</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1835239139%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="utilizable.html">utilizable</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1835239139%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1835239139%2FProperties%2F-473192002" anchor-label="utilizable" id="1835239139%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">open override var <a href="utilizable.html">utilizable</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a> = false<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1835239139%2FProperties%2F-473192002" anchor-label="utilizable" id="1835239139%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="utilizable.html">utilizable</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -300,7 +297,7 @@
             </div>
           </div>
         </div>
-        <div class="footer"><span class="go-to-top-icon"><a href="#content"></a></span><span>© 2021 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
+        <div class="footer"><span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
       </div>
     </div>
   </body>

@@ -2,27 +2,31 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>AsArray</title>
-<link href="../../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script><script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" async="async"></script>  </head>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+const savedDarkMode = storage ? JSON.parse(storage) : false
+if(savedDarkMode === true){
+    document.getElementsByTagName("html")[0].classList.add("theme-dark")
+}</script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><link href="../../../styles/prism.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script><script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>  </head>
   <body>
+    <div class="navigation-wrapper" id="navigation-wrapper">
+      <div id="leftToggler"><span class="icon-toggler"></span></div>
+      <div class="library-name"><a href="../../../index.html">haishinkit</a></div>
+      <div>0.5.1</div>
+      <div class="pull-right d-flex"><button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+      </div>
+    </div>
     <div id="container">
-      <div id="leftColumn"><a href="../../../index.html">
-          <div id="logo"></div>
-        </a>
-        <div id="paneSearch"></div>
+      <div id="leftColumn">
         <div id="sideMenu"></div>
       </div>
       <div id="main">
-        <div id="leftToggler"><span class="icon-toggler"></span></div>
-<script type="text/javascript" src="../../../scripts/main.js"></script>        <div class="main-content" id="content" pageIds="haishinkit::com.haishinkit.amf.data/AsArray///PointingToDeclaration//-473192002">
-          <div class="navigation-wrapper" id="navigation-wrapper">
-            <div class="breadcrumbs"><a href="../../../index.html">haishinkit</a>/<a href="../index.html">com.haishinkit.amf.data</a>/<a href="index.html">AsArray</a></div>
-            <div class="pull-right d-flex">
-              <div id="searchBar"></div>
-            </div>
-          </div>
+        <div class="main-content" id="content" pageIds="haishinkit::com.haishinkit.amf.data/AsArray///PointingToDeclaration//-473192002">
+          <div class="breadcrumbs"><a href="../../../index.html">haishinkit</a>/<a href="../index.html">com.haishinkit.amf.data</a>/<a href="index.html">AsArray</a></div>
           <div class="cover ">
-            <h1 class="cover"><span>As</span><wbr></wbr><span>Array</span></h1>
-            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">class <a href="index.html">AsArray</a>(capacity: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>) : <a href="https://developer.android.com/reference/kotlin/java/util/ArrayList.html">ArrayList</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt; <span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+            <h1 class="cover"><span>As</span><wbr></wbr><span><span>Array</span></span></h1>
+            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">AsArray</a><span class="token punctuation">(</span>capacity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/java/util/ArrayList.html">ArrayList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
           </div>
           <div class="tabbedcontent">
             <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
@@ -31,588 +35,526 @@
               <div class="table" data-togglable="Functions"><a data-name="-1113722973%2FFunctions%2F-473192002" anchor-label="add" id="-1113722973%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1273029514%2FFunctions%2F-473192002">add</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1113722973%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1273029514%2FFunctions%2F-473192002"><span><span>add</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1113722973%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1273029514%2FFunctions%2F-473192002">add</a>(element: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace">open override fun <a href="index.html#-1462351411%2FFunctions%2F-473192002">add</a>(index: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>, element: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1273029514%2FFunctions%2F-473192002"><span class="token function">add</span></a><span class="token punctuation">(</span>element<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1462351411%2FFunctions%2F-473192002"><span class="token function">add</span></a><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>element<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1818968169%2FFunctions%2F-473192002" anchor-label="addAll" id="1818968169%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#1989363543%2FFunctions%2F-473192002">addAll</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1818968169%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#1989363543%2FFunctions%2F-473192002"><span>add</span><wbr></wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1818968169%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#1989363543%2FFunctions%2F-473192002">addAll</a>(elements: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace">open override fun <a href="index.html#885490206%2FFunctions%2F-473192002">addAll</a>(index: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>, elements: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1989363543%2FFunctions%2F-473192002"><span class="token function">addAll</span></a><span class="token punctuation">(</span>elements<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#885490206%2FFunctions%2F-473192002"><span class="token function">addAll</span></a><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>elements<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-24309431%2FFunctions%2F-473192002" anchor-label="clear" id="-24309431%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-24309431%2FFunctions%2F-473192002">clear</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-24309431%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-24309431%2FFunctions%2F-473192002"><span><span>clear</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-24309431%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-24309431%2FFunctions%2F-473192002">clear</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-24309431%2FFunctions%2F-473192002"><span class="token function">clear</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="936115257%2FFunctions%2F-473192002" anchor-label="clone" id="936115257%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#936115257%2FFunctions%2F-473192002">clone</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="936115257%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#936115257%2FFunctions%2F-473192002"><span><span>clone</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="936115257%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#936115257%2FFunctions%2F-473192002">clone</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#936115257%2FFunctions%2F-473192002"><span class="token function">clone</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1995438746%2FFunctions%2F-473192002" anchor-label="contains" id="-1995438746%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1995438746%2FFunctions%2F-473192002">contains</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1995438746%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1995438746%2FFunctions%2F-473192002"><span><span>contains</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1995438746%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open operator override fun <a href="index.html#-1995438746%2FFunctions%2F-473192002">contains</a>(element: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="index.html#-1995438746%2FFunctions%2F-473192002"><span class="token function">contains</span></a><span class="token punctuation">(</span>element<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1704495374%2FFunctions%2F-473192002" anchor-label="containsAll" id="-1704495374%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1704495374%2FFunctions%2F-473192002">containsAll</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1704495374%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1704495374%2FFunctions%2F-473192002"><span>contains</span><wbr></wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1704495374%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1704495374%2FFunctions%2F-473192002">containsAll</a>(elements: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1704495374%2FFunctions%2F-473192002"><span class="token function">containsAll</span></a><span class="token punctuation">(</span>elements<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1361101014%2FFunctions%2F-473192002" anchor-label="ensureCapacity" id="-1361101014%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1361101014%2FFunctions%2F-473192002">ensureCapacity</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1361101014%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1361101014%2FFunctions%2F-473192002"><span>ensure</span><wbr></wbr><span><span>Capacity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1361101014%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open fun <a href="index.html#-1361101014%2FFunctions%2F-473192002">ensureCapacity</a>(p0: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1361101014%2FFunctions%2F-473192002"><span class="token function">ensureCapacity</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="450163474%2FFunctions%2F-473192002" anchor-label="equals" id="450163474%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#450163474%2FFunctions%2F-473192002">equals</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="450163474%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#450163474%2FFunctions%2F-473192002"><span><span>equals</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="450163474%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open operator override fun <a href="index.html#450163474%2FFunctions%2F-473192002">equals</a>(other: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>?): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="index.html#450163474%2FFunctions%2F-473192002"><span class="token function">equals</span></a><span class="token punctuation">(</span>other<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1390591463%2FFunctions%2F-473192002" anchor-label="forEach" id="1390591463%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#1390591463%2FFunctions%2F-473192002">forEach</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1390591463%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#1390591463%2FFunctions%2F-473192002"><span>for</span><wbr></wbr><span><span>Each</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1390591463%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#1390591463%2FFunctions%2F-473192002">forEach</a>(p0: <a href="https://developer.android.com/reference/kotlin/java/util/function/Consumer.html">Consumer</a>&lt;in <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1390591463%2FFunctions%2F-473192002"><span class="token function">forEach</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/Consumer.html">Consumer</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1986850878%2FFunctions%2F-473192002" anchor-label="get" id="1986850878%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#1986850878%2FFunctions%2F-473192002">get</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1986850878%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#1986850878%2FFunctions%2F-473192002"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1986850878%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open operator override fun <a href="index.html#1986850878%2FFunctions%2F-473192002">get</a>(index: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="index.html#1986850878%2FFunctions%2F-473192002"><span class="token function">get</span></a><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1188567444%2FFunctions%2F-473192002" anchor-label="hashCode" id="1188567444%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#1188567444%2FFunctions%2F-473192002">hashCode</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1188567444%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#1188567444%2FFunctions%2F-473192002"><span>hash</span><wbr></wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1188567444%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#1188567444%2FFunctions%2F-473192002">hashCode</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1188567444%2FFunctions%2F-473192002"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1825281714%2FFunctions%2F-473192002" anchor-label="indexOf" id="-1825281714%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1825281714%2FFunctions%2F-473192002">indexOf</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1825281714%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1825281714%2FFunctions%2F-473192002"><span>index</span><wbr></wbr><span><span>Of</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1825281714%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1825281714%2FFunctions%2F-473192002">indexOf</a>(element: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1825281714%2FFunctions%2F-473192002"><span class="token function">indexOf</span></a><span class="token punctuation">(</span>element<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="996273107%2FFunctions%2F-473192002" anchor-label="isEmpty" id="996273107%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#996273107%2FFunctions%2F-473192002">isEmpty</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="996273107%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#996273107%2FFunctions%2F-473192002"><span>is</span><wbr></wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="996273107%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#996273107%2FFunctions%2F-473192002">isEmpty</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#996273107%2FFunctions%2F-473192002"><span class="token function">isEmpty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="204273974%2FFunctions%2F-473192002" anchor-label="iterator" id="204273974%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#204273974%2FFunctions%2F-473192002">iterator</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="204273974%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#204273974%2FFunctions%2F-473192002"><span><span>iterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="204273974%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open operator override fun <a href="index.html#204273974%2FFunctions%2F-473192002">iterator</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterator/index.html">MutableIterator</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="index.html#204273974%2FFunctions%2F-473192002"><span class="token function">iterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterator/index.html">MutableIterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1950533628%2FFunctions%2F-473192002" anchor-label="lastIndexOf" id="-1950533628%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1950533628%2FFunctions%2F-473192002">lastIndexOf</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1950533628%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1950533628%2FFunctions%2F-473192002"><span>last</span><wbr></wbr><span>Index</span><wbr></wbr><span><span>Of</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1950533628%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1950533628%2FFunctions%2F-473192002">lastIndexOf</a>(element: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1950533628%2FFunctions%2F-473192002"><span class="token function">lastIndexOf</span></a><span class="token punctuation">(</span>element<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="649010346%2FFunctions%2F-473192002" anchor-label="listIterator" id="649010346%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1172936520%2FFunctions%2F-473192002">listIterator</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="649010346%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1172936520%2FFunctions%2F-473192002"><span>list</span><wbr></wbr><span><span>Iterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="649010346%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1172936520%2FFunctions%2F-473192002">listIterator</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list-iterator/index.html">MutableListIterator</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace">open override fun <a href="index.html#1119542358%2FFunctions%2F-473192002">listIterator</a>(index: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list-iterator/index.html">MutableListIterator</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1172936520%2FFunctions%2F-473192002"><span class="token function">listIterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list-iterator/index.html">MutableListIterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1119542358%2FFunctions%2F-473192002"><span class="token function">listIterator</span></a><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list-iterator/index.html">MutableListIterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1592339412%2FFunctions%2F-473192002" anchor-label="parallelStream" id="-1592339412%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1592339412%2FFunctions%2F-473192002">parallelStream</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1592339412%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1592339412%2FFunctions%2F-473192002"><span>parallel</span><wbr></wbr><span><span>Stream</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1592339412%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open fun <a href="index.html#-1592339412%2FFunctions%2F-473192002">parallelStream</a>(): <a href="https://developer.android.com/reference/kotlin/java/util/stream/Stream.html">Stream</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1592339412%2FFunctions%2F-473192002"><span class="token function">parallelStream</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/stream/Stream.html">Stream</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="466020533%2FFunctions%2F-473192002" anchor-label="put" id="466020533%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="put.html">put</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="466020533%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="put.html"><span><span>put</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="466020533%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">fun <a href="put.html">put</a>(k: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, v: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>?)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="put.html"><span class="token function">put</span></a><span class="token punctuation">(</span>k<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span>v<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1299468639%2FFunctions%2F-473192002" anchor-label="remove" id="-1299468639%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1299468639%2FFunctions%2F-473192002">remove</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1299468639%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1299468639%2FFunctions%2F-473192002"><span><span>remove</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1299468639%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1299468639%2FFunctions%2F-473192002">remove</a>(element: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1299468639%2FFunctions%2F-473192002"><span class="token function">remove</span></a><span class="token punctuation">(</span>element<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1111257406%2FFunctions%2F-473192002" anchor-label="removeAll" id="-1111257406%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1111257406%2FFunctions%2F-473192002">removeAll</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1111257406%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1111257406%2FFunctions%2F-473192002"><span>remove</span><wbr></wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1111257406%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1111257406%2FFunctions%2F-473192002">removeAll</a>(elements: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1111257406%2FFunctions%2F-473192002"><span class="token function">removeAll</span></a><span class="token punctuation">(</span>elements<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-2012790965%2FFunctions%2F-473192002" anchor-label="removeAt" id="-2012790965%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-2012790965%2FFunctions%2F-473192002">removeAt</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2012790965%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-2012790965%2FFunctions%2F-473192002"><span>remove</span><wbr></wbr><span><span>At</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2012790965%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-2012790965%2FFunctions%2F-473192002">removeAt</a>(p0: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-2012790965%2FFunctions%2F-473192002"><span class="token function">removeAt</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1679662335%2FFunctions%2F-473192002" anchor-label="removeIf" id="1679662335%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#1679662335%2FFunctions%2F-473192002">removeIf</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1679662335%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#1679662335%2FFunctions%2F-473192002"><span>remove</span><wbr></wbr><span><span>If</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1679662335%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#1679662335%2FFunctions%2F-473192002">removeIf</a>(p0: <a href="https://developer.android.com/reference/kotlin/java/util/function/Predicate.html">Predicate</a>&lt;in <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1679662335%2FFunctions%2F-473192002"><span class="token function">removeIf</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/Predicate.html">Predicate</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1133643294%2FFunctions%2F-473192002" anchor-label="removeRange" id="-1133643294%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1133643294%2FFunctions%2F-473192002">removeRange</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1133643294%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1133643294%2FFunctions%2F-473192002"><span>remove</span><wbr></wbr><span><span>Range</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1133643294%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1133643294%2FFunctions%2F-473192002">removeRange</a>(p0: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>, p1: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1133643294%2FFunctions%2F-473192002"><span class="token function">removeRange</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1843811721%2FFunctions%2F-473192002" anchor-label="replaceAll" id="-1843811721%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1843811721%2FFunctions%2F-473192002">replaceAll</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1843811721%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1843811721%2FFunctions%2F-473192002"><span>replace</span><wbr></wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1843811721%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1843811721%2FFunctions%2F-473192002">replaceAll</a>(p0: <a href="https://developer.android.com/reference/kotlin/java/util/function/UnaryOperator.html">UnaryOperator</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1843811721%2FFunctions%2F-473192002"><span class="token function">replaceAll</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/UnaryOperator.html">UnaryOperator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-2052307231%2FFunctions%2F-473192002" anchor-label="retainAll" id="-2052307231%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-2052307231%2FFunctions%2F-473192002">retainAll</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2052307231%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-2052307231%2FFunctions%2F-473192002"><span>retain</span><wbr></wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2052307231%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-2052307231%2FFunctions%2F-473192002">retainAll</a>(elements: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-2052307231%2FFunctions%2F-473192002"><span class="token function">retainAll</span></a><span class="token punctuation">(</span>elements<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html">Collection</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="837821390%2FFunctions%2F-473192002" anchor-label="set" id="837821390%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#837821390%2FFunctions%2F-473192002">set</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="837821390%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#837821390%2FFunctions%2F-473192002"><span><span>set</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="837821390%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open operator override fun <a href="index.html#837821390%2FFunctions%2F-473192002">set</a>(index: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>, element: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="index.html#837821390%2FFunctions%2F-473192002"><span class="token function">set</span></a><span class="token punctuation">(</span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>element<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-539280851%2FFunctions%2F-473192002" anchor-label="sort" id="-539280851%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-539280851%2FFunctions%2F-473192002">sort</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-539280851%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-539280851%2FFunctions%2F-473192002"><span><span>sort</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-539280851%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-539280851%2FFunctions%2F-473192002">sort</a>(p0: <a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a>&lt;in <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-539280851%2FFunctions%2F-473192002"><span class="token function">sort</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1642634169%2FFunctions%2F-473192002" anchor-label="spliterator" id="1642634169%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#1642634169%2FFunctions%2F-473192002">spliterator</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1642634169%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#1642634169%2FFunctions%2F-473192002"><span><span>spliterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1642634169%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#1642634169%2FFunctions%2F-473192002">spliterator</a>(): <a href="https://developer.android.com/reference/kotlin/java/util/Spliterator.html">Spliterator</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1642634169%2FFunctions%2F-473192002"><span class="token function">spliterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Spliterator.html">Spliterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="135225651%2FFunctions%2F-473192002" anchor-label="stream" id="135225651%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#135225651%2FFunctions%2F-473192002">stream</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="135225651%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#135225651%2FFunctions%2F-473192002"><span><span>stream</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="135225651%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open fun <a href="index.html#135225651%2FFunctions%2F-473192002">stream</a>(): <a href="https://developer.android.com/reference/kotlin/java/util/stream/Stream.html">Stream</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#135225651%2FFunctions%2F-473192002"><span class="token function">stream</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/stream/Stream.html">Stream</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1861460857%2FFunctions%2F-473192002" anchor-label="subList" id="-1861460857%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#-1861460857%2FFunctions%2F-473192002">subList</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1861460857%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-1861460857%2FFunctions%2F-473192002"><span>sub</span><wbr></wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1861460857%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#-1861460857%2FFunctions%2F-473192002">subList</a>(fromIndex: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>, toIndex: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1861460857%2FFunctions%2F-473192002"><span class="token function">subList</span></a><span class="token punctuation">(</span>fromIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span>toIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="1285794985%2FFunctions%2F-473192002" anchor-label="toArray" id="1285794985%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#776741336%2FFunctions%2F-473192002">toArray</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1285794985%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#776741336%2FFunctions%2F-473192002"><span>to</span><wbr></wbr><span><span>Array</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1285794985%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="index.html#776741336%2FFunctions%2F-473192002">toArray</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace">open override fun &lt;<a href="index.html#-268358819%2FFunctions%2F-473192002">T</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a>&gt; <a href="index.html#-268358819%2FFunctions%2F-473192002">toArray</a>(p0: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a>&lt;<a href="index.html#-268358819%2FFunctions%2F-473192002">T</a>&gt;): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a>&lt;<a href="index.html#-268358819%2FFunctions%2F-473192002">T</a>&gt;<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#776741336%2FFunctions%2F-473192002"><span class="token function">toArray</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html#-268358819%2FFunctions%2F-473192002">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="index.html#-268358819%2FFunctions%2F-473192002"><span class="token function">toArray</span></a><span class="token punctuation">(</span>p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html#-268358819%2FFunctions%2F-473192002">T</a><span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html#-268358819%2FFunctions%2F-473192002">T</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="-1347208659%2FFunctions%2F-473192002" anchor-label="toString" id="-1347208659%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="to-string.html">toString</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1347208659%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="to-string.html"><span>to</span><wbr></wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1347208659%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="to-string.html">toString</a>(): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 <a data-name="130278918%2FFunctions%2F-473192002" anchor-label="trimToSize" id="130278918%2FFunctions%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#130278918%2FFunctions%2F-473192002">trimToSize</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="130278918%2FFunctions%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#130278918%2FFunctions%2F-473192002"><span>trim</span><wbr></wbr><span>To</span><wbr></wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="130278918%2FFunctions%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace">open fun <a href="index.html#130278918%2FFunctions%2F-473192002">trimToSize</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#130278918%2FFunctions%2F-473192002"><span class="token function">trimToSize</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               <h2 class="">Properties</h2>
-              <div class="table" data-togglable="Properties"><a data-name="1729850508%2FProperties%2F-473192002" anchor-label="modCount" id="1729850508%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
+              <div class="table" data-togglable="Properties"><a data-name="-207506750%2FProperties%2F-473192002" anchor-label="modCount" id="-207506750%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#1729850508%2FProperties%2F-473192002">modCount</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1729850508%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#-207506750%2FProperties%2F-473192002">modCount</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-207506750%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1729850508%2FProperties%2F-473192002" anchor-label="modCount" id="1729850508%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">val <a href="index.html#1729850508%2FProperties%2F-473192002">modCount</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="-207506750%2FProperties%2F-473192002" anchor-label="modCount" id="-207506750%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="index.html#-207506750%2FProperties%2F-473192002">modCount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
                 </div>
-<a data-name="2021899320%2FProperties%2F-473192002" anchor-label="size" id="2021899320%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
+<a data-name="1363994755%2FProperties%2F-473192002" anchor-label="size" id="1363994755%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a>
                 <div class="table-row" data-filterable-current=":haishinkit:dokkaHtml/release" data-filterable-set=":haishinkit:dokkaHtml/release">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="index.html#2021899320%2FProperties%2F-473192002">size</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2021899320%2FProperties%2F-473192002"></span>
+                    <div class=""><span class="inline-flex">
+                        <div><a href="index.html#1363994755%2FProperties%2F-473192002">size</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1363994755%2FProperties%2F-473192002"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="2021899320%2FProperties%2F-473192002" anchor-label="size" id="2021899320%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace">open override val <a href="index.html#2021899320%2FProperties%2F-473192002">size</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtml/release"><a data-name="1363994755%2FProperties%2F-473192002" anchor-label="size" id="1363994755%2FProperties%2F-473192002" data-filterable-set=":haishinkit:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="index.html#1363994755%2FProperties%2F-473192002">size</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -621,7 +563,7 @@
             </div>
           </div>
         </div>
-        <div class="footer"><span class="go-to-top-icon"><a href="#content"></a></span><span>© 2021 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
+        <div class="footer"><span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
       </div>
     </div>
   </body>
