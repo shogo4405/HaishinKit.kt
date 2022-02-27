@@ -1,5 +1,6 @@
 package com.haishinkit.graphics.gles
 
+import android.content.res.AssetManager
 import android.opengl.EGL14
 import android.opengl.EGLConfig
 import android.opengl.GLES11Ext
@@ -9,6 +10,8 @@ import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
+import com.haishinkit.graphics.filter.DefaultVideoEffect
+import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.lang.Utilize
 import com.haishinkit.util.aspectRatio
 import com.haishinkit.util.swap
@@ -44,9 +47,25 @@ internal class GlKernel(
             invalidateLayout = true
         }
     var expectedOrientationSynchronize = true
+    var videoEffect: VideoEffect = DefaultVideoEffect()
+        set(value) {
+            field = value
+            program = GlShaderLoader.createProgram(videoEffect.name)
+        }
+    var assetManager: AssetManager? = null
+        set(value) {
+            field = value
+            GlShaderLoader.assetManager = assetManager
+            program = GlShaderLoader.createProgram(videoEffect.name)
+            positionHandle = GLES20.glGetAttribLocation(program, "position")
+            GLES20.glEnableVertexAttribArray(positionHandle)
+            texCoordHandle = GLES20.glGetAttribLocation(program, "texcoord")
+            GLES20.glEnableVertexAttribArray(texCoordHandle)
+            textureHandle = GLES20.glGetAttribLocation(program, "texture")
+        }
     private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
-    private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
-    private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
+    private val vertexBuffer = GlShaderLoader.createFloatBuffer(VERTECES)
+    private val texCoordBuffer = GlShaderLoader.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private var program = INVALID_VALUE
     private var positionHandle = INVALID_VALUE
     private var texCoordHandle = INVALID_VALUE
@@ -85,7 +104,7 @@ internal class GlKernel(
             CONTEXT_ATTRIBUTES,
             0
         )
-        GlUtil.checkGlError("eglCreateContext")
+        GlShaderLoader.checkGlError("eglCreateContext")
         EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, context)
 
         GLES20.glTexParameteri(
@@ -108,13 +127,6 @@ internal class GlKernel(
             GL10.GL_TEXTURE_WRAP_T,
             GL10.GL_CLAMP_TO_EDGE
         )
-
-        program = GlUtil.createProgram(GlShader.VERTEX, GlShader.FRAGMENT)
-        positionHandle = GLES20.glGetAttribLocation(program, "position")
-        GLES20.glEnableVertexAttribArray(positionHandle)
-        texCoordHandle = GLES20.glGetAttribLocation(program, "texcoord")
-        GLES20.glEnableVertexAttribArray(texCoordHandle)
-        textureHandle = GLES20.glGetAttribLocation(program, "texture")
 
         utilizable = true
     }
@@ -140,14 +152,14 @@ internal class GlKernel(
 
         GLES20.glVertexAttribPointer(texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
         GLES20.glVertexAttribPointer(positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
-        GlUtil.checkGlError("glVertexAttribPointer")
+        GlShaderLoader.checkGlError("glVertexAttribPointer")
 
         GLES20.glUniform1i(textureHandle, 0)
-        GlUtil.checkGlError("glUniform1i")
+        GlShaderLoader.checkGlError("glUniform1i")
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
-        GlUtil.checkGlError("glBindTexture")
+        GlShaderLoader.checkGlError("glBindTexture")
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 

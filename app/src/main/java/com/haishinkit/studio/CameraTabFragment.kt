@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
+import com.haishinkit.graphics.filter.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.rtmp.RtmpConnection
@@ -68,11 +69,26 @@ class CameraTabFragment : Fragment(), IEventListener {
                 button.text = "Publish"
             }
         }
+        val filter = v.findViewById<Button>(R.id.filter_button)
+        filter.setOnClickListener {
+            if (filter.text == "Normal") {
+                stream.videoEffect = MonochromeVideoEffect()
+                filter.text = "Mono"
+            } else {
+                stream.videoEffect = null
+                filter.text = "Normal"
+            }
+        }
+
         val switchButton = v.findViewById<Button>(R.id.switch_button)
         switchButton.setOnClickListener {
             cameraSource.switchCamera()
         }
-        cameraView = v.findViewById(R.id.camera)
+        cameraView = if (Preference.useSurfaceView) {
+            v.findViewById(R.id.surface_view)
+        } else {
+            v.findViewById(R.id.texture_view)
+        }
         cameraView.attachStream(stream)
         return v
     }

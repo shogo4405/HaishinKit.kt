@@ -7,12 +7,12 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
+import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlTexture
 
 internal class GlPixelTransform(
     override var fpsControllerClass: Class<*>? = null,
-    override var assetManager: AssetManager? = null,
     override var listener: PixelTransform.Listener? = null,
 ) : PixelTransform, SurfaceTexture.OnFrameAvailableListener {
     override var surface: Surface?
@@ -31,6 +31,11 @@ internal class GlPixelTransform(
         set(value) {
             kernel.videoGravity = value
         }
+    override var videoEffect: VideoEffect
+        get() = kernel.videoEffect
+        set(value) {
+            kernel.videoEffect = value
+        }
     override var extent: Size
         get() = kernel.extent
         set(value) {
@@ -41,11 +46,20 @@ internal class GlPixelTransform(
         set(value) {
             kernel.surfaceRotation = value
         }
-    override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
+    override var resampleFilter: ResampleFilter
+        get() = kernel.resampleFilter
+        set(value) {
+            kernel.resampleFilter = value
+        }
     override var expectedOrientationSynchronize: Boolean
         get() = kernel.expectedOrientationSynchronize
         set(value) {
             kernel.expectedOrientationSynchronize = value
+        }
+    override var assetManager: AssetManager?
+        get() = kernel.assetManager
+        set(value) {
+            kernel.assetManager = value
         }
     var handler: Handler? = null
         set(value) {

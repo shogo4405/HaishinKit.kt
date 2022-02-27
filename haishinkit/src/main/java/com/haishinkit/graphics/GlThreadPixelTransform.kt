@@ -6,11 +6,11 @@ import android.os.Looper
 import android.os.Message
 import android.util.Size
 import android.view.Surface
+import com.haishinkit.graphics.filter.VideoEffect
 import java.lang.ref.WeakReference
 
 internal class GlThreadPixelTransform(
-    override var assetManager: AssetManager? = null,
-    override var fpsControllerClass: Class<*>? = null,
+    override var fpsControllerClass: Class<*>? = null
 ) : PixelTransform, PixelTransform.Listener {
     override var surface: Surface?
         get() = pixelTransform.surface
@@ -39,6 +39,13 @@ internal class GlThreadPixelTransform(
         set(value) {
             handler?.let {
                 it.sendMessage(it.obtainMessage(MSG_SET_VIDEO_GRAVITY, value))
+            }
+        }
+    override var videoEffect: VideoEffect
+        get() = pixelTransform.videoEffect
+        set(value) {
+            handler?.let {
+                it.sendMessage(it.obtainMessage(MSG_SET_VIDEO_EFFECT, value))
             }
         }
     override var extent: Size
@@ -70,6 +77,15 @@ internal class GlThreadPixelTransform(
             handler?.let {
                 it.sendMessage(
                     it.obtainMessage(MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE, value)
+                )
+            }
+        }
+    override var assetManager: AssetManager?
+        get() = pixelTransform.assetManager
+        set(value) {
+            handler?.let {
+                it.sendMessage(
+                    it.obtainMessage(MSG_SET_ASSET_MANAGER, value)
                 )
             }
         }
@@ -135,6 +151,16 @@ internal class GlThreadPixelTransform(
                 MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE -> {
                     transform.expectedOrientationSynchronize = message.obj as Boolean
                 }
+                MSG_SET_VIDEO_EFFECT -> {
+                    transform.videoEffect = message.obj as VideoEffect
+                }
+                MSG_SET_ASSET_MANAGER -> {
+                    if (message.obj == null) {
+                        transform.assetManager = null
+                    } else {
+                        transform.assetManager = message.obj as AssetManager
+                    }
+                }
                 else ->
                     throw RuntimeException("Unhandled msg what=$message.what")
             }
@@ -161,6 +187,8 @@ internal class GlThreadPixelTransform(
         private const val MSG_SET_CURRENT_EXTENT = 5
         private const val MSG_SET_RESAMPLE_FILTER = 6
         private const val MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE = 7
+        private const val MSG_SET_VIDEO_EFFECT = 8
+        private const val MSG_SET_ASSET_MANAGER = 9
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

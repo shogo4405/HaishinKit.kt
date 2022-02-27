@@ -8,6 +8,8 @@ import android.os.HandlerThread
 import android.util.Log
 import android.util.Size
 import android.view.Surface
+import com.haishinkit.graphics.filter.DefaultVideoEffect
+import com.haishinkit.graphics.filter.VideoEffect
 import java.nio.ByteBuffer
 
 class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
@@ -68,6 +70,8 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             field = value
             nativeSetSurfaceRotation(value)
         }
+
+    override var videoEffect: VideoEffect = DefaultVideoEffect()
 
     @Suppress("unused")
     private var memory: Long = 0

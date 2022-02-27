@@ -30,6 +30,7 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
     }
 
     init {
+        pixelTransform.assetManager = context.assets
         surfaceTextureListener = this
     }
 

@@ -10,6 +10,8 @@ import android.util.Log
 import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.RecordSetting
 import com.haishinkit.codec.VideoCodec
+import com.haishinkit.graphics.filter.DefaultVideoEffect
+import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
 import com.haishinkit.view.HkView
@@ -47,6 +49,13 @@ abstract class NetStream {
     val recordSetting: RecordSetting by lazy {
         RecordSetting()
     }
+
+    var videoEffect: VideoEffect? = null
+        set(value) {
+            videoCodec.pixelTransform.videoEffect = value ?: DefaultVideoEffect.shared
+            renderer?.pixelTransform?.videoEffect = value ?: DefaultVideoEffect.shared
+            field = value
+        }
 
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()

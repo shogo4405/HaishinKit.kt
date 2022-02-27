@@ -3,6 +3,7 @@ package com.haishinkit.graphics
 import android.content.res.AssetManager
 import android.util.Size
 import android.view.Surface
+import com.haishinkit.graphics.filter.VideoEffect
 
 interface PixelTransform {
     interface Listener {
@@ -17,6 +18,7 @@ interface PixelTransform {
      * The current width and height of the surface
      */
     var extent: Size
+    var videoEffect: VideoEffect
     var resampleFilter: ResampleFilter
     var imageOrientation: ImageOrientation
     var surfaceRotation: Int
