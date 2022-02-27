@@ -1,7 +1,7 @@
 # HaishinKit.kt
 [![GitHub license](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.kt/master/LICENSE.md)
 
-* Technical Preview. Camera and Microphone streaming library via RTMP for Android.
+* Camera and Microphone streaming library via RTMP for Android.
 * [API Documentation](https://shogo4405.github.io/HaishinKit.kt/)
 * Issuesの言語は、日本語が分かる方は日本語でお願いします！
 
