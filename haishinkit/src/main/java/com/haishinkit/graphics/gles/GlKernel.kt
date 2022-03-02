@@ -50,26 +50,17 @@ internal class GlKernel(
     var videoEffect: VideoEffect = DefaultVideoEffect()
         set(value) {
             field = value
-            program = GlShaderLoader.createProgram(videoEffect.name)
+            program = shaderLoader.createProgram(videoEffect.name)
         }
     var assetManager: AssetManager? = null
         set(value) {
             field = value
-            GlShaderLoader.assetManager = assetManager
-            program = GlShaderLoader.createProgram(videoEffect.name)
-            positionHandle = GLES20.glGetAttribLocation(program, "position")
-            GLES20.glEnableVertexAttribArray(positionHandle)
-            texCoordHandle = GLES20.glGetAttribLocation(program, "texcoord")
-            GLES20.glEnableVertexAttribArray(texCoordHandle)
-            textureHandle = GLES20.glGetAttribLocation(program, "texture")
+            shaderLoader.assetManager = assetManager
+            program = shaderLoader.createProgram(videoEffect.name)
         }
     private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
-    private val vertexBuffer = GlShaderLoader.createFloatBuffer(VERTECES)
-    private val texCoordBuffer = GlShaderLoader.createFloatBuffer(TEX_COORDS_ROTATION_0)
-    private var program = INVALID_VALUE
-    private var positionHandle = INVALID_VALUE
-    private var texCoordHandle = INVALID_VALUE
-    private var textureHandle = INVALID_VALUE
+    private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
+    private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private var invalidateLayout = true
     private var display = EGL14.EGL_NO_DISPLAY
         set(value) {
@@ -80,6 +71,16 @@ internal class GlKernel(
         set(value) {
             field = value
             inputSurfaceWindow.context = value
+        }
+    private val shaderLoader by lazy {
+        val shaderLoader = GlShaderLoader()
+        shaderLoader.assetManager = assetManager
+        shaderLoader
+    }
+    private var program: GlShaderLoader.Program? = null
+        set(value) {
+            field?.dispose()
+            field = value
         }
 
     override fun setUp() {
@@ -104,7 +105,7 @@ internal class GlKernel(
             CONTEXT_ATTRIBUTES,
             0
         )
-        GlShaderLoader.checkGlError("eglCreateContext")
+        GlUtil.checkGlError("eglCreateContext")
         EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, context)
 
         GLES20.glTexParameteri(
@@ -133,12 +134,7 @@ internal class GlKernel(
 
     override fun tearDown() {
         if (!utilizable) return
-
-        program = INVALID_VALUE
-        positionHandle = INVALID_VALUE
-        texCoordHandle = INVALID_VALUE
-        texCoordHandle = INVALID_VALUE
-
+        program = null
         utilizable = false
     }
 
@@ -148,18 +144,20 @@ internal class GlKernel(
             invalidateLayout = false
         }
 
-        GLES20.glUseProgram(program)
+        val program = program ?: return
 
-        GLES20.glVertexAttribPointer(texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
-        GLES20.glVertexAttribPointer(positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
-        GlShaderLoader.checkGlError("glVertexAttribPointer")
+        GLES20.glUseProgram(program.id)
 
-        GLES20.glUniform1i(textureHandle, 0)
-        GlShaderLoader.checkGlError("glUniform1i")
+        GLES20.glVertexAttribPointer(program.texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
+        GLES20.glVertexAttribPointer(program.positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+        GlUtil.checkGlError("glVertexAttribPointer")
+
+        GLES20.glUniform1i(program.textureHandle, 0)
+        GlUtil.checkGlError("glUniform1i")
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
-        GlShaderLoader.checkGlError("glBindTexture")
+        GlUtil.checkGlError("glBindTexture")
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
@@ -266,7 +264,7 @@ internal class GlKernel(
 
     private fun chooseConfig(): EGLConfig? {
         val attributes: IntArray = CONFIG_ATTRIBUTES_WITH_CONTEXT
-        val configs: Array<EGLConfig?> = arrayOfNulls<EGLConfig>(1)
+        val configs: Array<EGLConfig?> = arrayOfNulls(1)
         val numConfigs = IntArray(1)
         if (!EGL14.eglChooseConfig(
                 display,
@@ -285,8 +283,6 @@ internal class GlKernel(
     }
 
     companion object {
-        private const val INVALID_VALUE = 0
-
         private const val EGL_RECORDABLE_ANDROID: Int = 0x3142
 
         private val CONTEXT_ATTRIBUTES =

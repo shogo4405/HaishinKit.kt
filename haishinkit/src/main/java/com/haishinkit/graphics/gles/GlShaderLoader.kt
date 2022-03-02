@@ -5,36 +5,50 @@ import android.opengl.GLES20
 import android.util.Log
 import java.io.FileNotFoundException
 import java.lang.Exception
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.FloatBuffer
 
-internal object GlShaderLoader {
-    val TAG = GlShaderLoader::class.java.simpleName
-
-    const val GL_CREATE_PROGRAM = "glCreateProgram"
-    const val GL_ATTACH_SHADER = "glAttachShader"
-
+internal class GlShaderLoader {
     var assetManager: AssetManager? = null
 
-    fun createProgram(name: String): Int {
+    data class Program(
+        val id: Int = INVALID_VALUE,
+        val vertexShader: Int = INVALID_VALUE,
+        val fragmentShaper: Int = INVALID_VALUE,
+        val positionHandle: Int = INVALID_VALUE,
+        val texCoordHandle: Int = INVALID_VALUE,
+        val textureHandle: Int = INVALID_VALUE
+    ) {
+        init {
+            GLES20.glEnableVertexAttribArray(positionHandle)
+            GLES20.glEnableVertexAttribArray(texCoordHandle)
+        }
+
+        fun dispose() {
+            GLES20.glDetachShader(id, vertexShader)
+            GLES20.glDeleteShader(vertexShader)
+            GLES20.glDetachShader(id, fragmentShaper)
+            GLES20.glDeleteShader(fragmentShaper)
+            GLES20.glDeleteProgram(id)
+        }
+    }
+
+    fun createProgram(name: String): Program? {
         val vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, name)
         if (vertexShader == 0) {
-            return 0
+            return null
         }
         val fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, name)
         if (fragmentShader == 0) {
-            return 0
+            return null
         }
         var program = GLES20.glCreateProgram()
-        checkGlError(GL_CREATE_PROGRAM)
+        GlUtil.checkGlError(GL_CREATE_PROGRAM)
         if (program == 0) {
             Log.e(TAG, "Could not create program")
         }
         GLES20.glAttachShader(program, vertexShader)
-        checkGlError(GL_ATTACH_SHADER)
+        GlUtil.checkGlError(GL_ATTACH_SHADER)
         GLES20.glAttachShader(program, fragmentShader)
-        checkGlError(GL_ATTACH_SHADER)
+        GlUtil.checkGlError(GL_ATTACH_SHADER)
         GLES20.glLinkProgram(program)
         val linkStatus = IntArray(1)
         GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0)
@@ -44,25 +58,14 @@ internal object GlShaderLoader {
             GLES20.glDeleteProgram(program)
             program = 0
         }
-        return program
-    }
-
-    fun checkGlError(op: String) {
-        val error = GLES20.glGetError()
-        if (error != GLES20.GL_NO_ERROR) {
-            val msg = op + ": glError 0x" + Integer.toHexString(error)
-            Log.e(TAG, msg)
-            throw RuntimeException(msg)
-        }
-    }
-
-    fun createFloatBuffer(array: FloatArray): FloatBuffer {
-        val buffer = ByteBuffer.allocateDirect(array.size * 4)
-        buffer.order(ByteOrder.nativeOrder())
-        return buffer.asFloatBuffer().apply {
-            put(array)
-            position(0)
-        }
+        return Program(
+            program,
+            vertexShader,
+            fragmentShader,
+            GLES20.glGetAttribLocation(program, "position"),
+            GLES20.glGetAttribLocation(program, "texcoord"),
+            GLES20.glGetAttribLocation(program, "texture")
+        )
     }
 
     private fun readFile(shaderType: Int, source: String?): String {
@@ -88,7 +91,7 @@ internal object GlShaderLoader {
 
     private fun loadShader(shaderType: Int, source: String?): Int {
         var shader = GLES20.glCreateShader(shaderType)
-        checkGlError("glCreateShader type=$shaderType")
+        GlUtil.checkGlError("glCreateShader type=$shaderType")
         GLES20.glShaderSource(shader, readFile(shaderType, source))
         GLES20.glCompileShader(shader)
         val compiled = IntArray(1)
@@ -100,5 +103,13 @@ internal object GlShaderLoader {
             shader = 0
         }
         return shader
+    }
+
+    companion object {
+        private const val INVALID_VALUE = 0
+        private val TAG = GlShaderLoader::class.java.simpleName
+
+        private const val GL_CREATE_PROGRAM = "glCreateProgram"
+        private const val GL_ATTACH_SHADER = "glAttachShader"
     }
 }
