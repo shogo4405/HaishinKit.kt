@@ -364,6 +364,9 @@ open class RtmpStream(internal var connection: RtmpConnection) :
         dispatcher.removeEventListener(type, listener, useCapture)
     }
 
+    override fun onPixelTransformImageAvailable(pixelTransform: PixelTransform) {
+    }
+
     override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
     }
 

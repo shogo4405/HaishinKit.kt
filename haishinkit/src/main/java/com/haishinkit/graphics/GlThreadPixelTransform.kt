@@ -9,9 +9,14 @@ import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
 import java.lang.ref.WeakReference
 
-internal class GlThreadPixelTransform(
-    override var fpsControllerClass: Class<*>? = null
-) : PixelTransform, PixelTransform.Listener {
+internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener {
+    override var fpsControllerClass: Class<*>?
+        get() = pixelTransform.fpsControllerClass
+        set(value) {
+            handler?.let {
+                it.sendMessage(it.obtainMessage(MSG_SET_FPS_CONTROLLER_CLASS, value))
+            }
+        }
     override var surface: Surface?
         get() = pixelTransform.surface
         set(value) {
@@ -161,10 +166,21 @@ internal class GlThreadPixelTransform(
                         transform.assetManager = message.obj as AssetManager
                     }
                 }
+                MSG_SET_FPS_CONTROLLER_CLASS -> {
+                    if (message.obj == null) {
+                        transform.fpsControllerClass = null
+                    } else {
+                        transform.fpsControllerClass = message.obj as? Class<*>
+                    }
+                }
                 else ->
                     throw RuntimeException("Unhandled msg what=$message.what")
             }
         }
+    }
+
+    override fun onPixelTransformImageAvailable(pixelTransform: PixelTransform) {
+        listener?.onPixelTransformImageAvailable(this)
     }
 
     override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
@@ -189,6 +205,7 @@ internal class GlThreadPixelTransform(
         private const val MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE = 7
         private const val MSG_SET_VIDEO_EFFECT = 8
         private const val MSG_SET_ASSET_MANAGER = 9
+        private const val MSG_SET_FPS_CONTROLLER_CLASS = 10
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

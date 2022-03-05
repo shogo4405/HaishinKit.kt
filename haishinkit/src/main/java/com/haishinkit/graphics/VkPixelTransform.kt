@@ -107,6 +107,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     }
 
     override fun onImageAvailable(reader: ImageReader) {
+        listener?.onPixelTransformImageAvailable(this)
         val image = reader.acquireNextImage()
         try {
             if (image.planes.size == 1) {

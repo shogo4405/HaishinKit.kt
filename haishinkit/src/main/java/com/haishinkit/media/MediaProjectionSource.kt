@@ -26,6 +26,7 @@ class MediaProjectionSource(
 ) :
     VideoSource, PixelTransform.Listener {
     var scale = 0.5F
+    var rotatesWithContent = true
     override var stream: NetStream? = null
         set(value) {
             field = value
@@ -38,7 +39,6 @@ class MediaProjectionSource(
             stream?.videoSetting?.width = value.width
             stream?.videoSetting?.height = value.height
         }
-    private var surface: Surface? = null
     private var virtualDisplay: VirtualDisplay? = null
 
     override fun setUp() {
@@ -73,17 +73,24 @@ class MediaProjectionSource(
         isRunning.set(false)
     }
 
+    override fun onPixelTransformImageAvailable(pixelTransform: PixelTransform) {
+    }
+
     override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
         pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
     }
 
     override fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface) {
+        var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
+        if (rotatesWithContent) {
+            flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT
+        }
         virtualDisplay = mediaProjection.createVirtualDisplay(
             DEFAULT_DISPLAY_NAME,
             resolution.width,
             resolution.height,
             metrics.densityDpi,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            flags,
             surface,
             null,
             null
@@ -92,7 +99,7 @@ class MediaProjectionSource(
 
     companion object {
         const val DEFAULT_DISPLAY_NAME = "MediaProjectionSourceDisplay"
-
+        private const val VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT = 128
         private val TAG = MediaProjectionSource::class.java.simpleName
     }
 }

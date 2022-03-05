@@ -7,14 +7,22 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.codec.util.DefaultFpsController
 import com.haishinkit.codec.util.FpsController
+import com.haishinkit.codec.util.FpsControllerFactory
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlTexture
 
 internal class GlPixelTransform(
-    override var fpsControllerClass: Class<*>? = null,
     override var listener: PixelTransform.Listener? = null,
 ) : PixelTransform, SurfaceTexture.OnFrameAvailableListener {
+    override var fpsControllerClass: Class<*>? = null
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            fpsController = FpsControllerFactory.shared.create(value)
+        }
     override var surface: Surface?
         get() = kernel.surface
         set(value) {
@@ -95,6 +103,7 @@ internal class GlPixelTransform(
         if (surface == null) {
             return
         }
+        listener?.onPixelTransformImageAvailable(this)
         texture?.updateTexImage()
         var timestamp = surfaceTexture.timestamp
         if (timestamp <= 0L) {
