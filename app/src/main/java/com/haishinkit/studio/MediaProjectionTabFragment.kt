@@ -22,7 +22,6 @@ import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import java.nio.ByteBuffer
 
-
 class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
 

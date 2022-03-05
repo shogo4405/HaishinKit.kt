@@ -72,7 +72,7 @@ class CameraTabFragment : Fragment(), IEventListener {
         val filter = v.findViewById<Button>(R.id.filter_button)
         filter.setOnClickListener {
             if (filter.text == "Normal") {
-                stream.videoEffect = MonochromeVideoEffect()
+                stream.videoEffect = Monochrome2VideoEffect()
                 filter.text = "Mono"
             } else {
                 stream.videoEffect = null
