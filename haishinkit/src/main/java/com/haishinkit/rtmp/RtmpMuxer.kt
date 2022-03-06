@@ -208,7 +208,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 mediaFormat.apply {
                     val width = MediaFormatUtil.getWidth(this)
                     val height = MediaFormatUtil.getHeight(this)
-                    stream.renderer?.pixelTransform?.createInputSurface(width, height, ImageFormat.NV21)
+                    stream.renderer?.pixelTransform?.createInputSurface(
+                        width,
+                        height,
+                        ImageFormat.NV21
+                    )
                 }
                 stream.dispatchEventWith(
                     Event.RTMP_STATUS,

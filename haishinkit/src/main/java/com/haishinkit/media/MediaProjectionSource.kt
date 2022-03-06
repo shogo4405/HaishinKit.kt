@@ -80,7 +80,10 @@ class MediaProjectionSource(
         pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
     }
 
-    override fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface) {
+    override fun onPixelTransformInputSurfaceCreated(
+        pixelTransform: PixelTransform,
+        surface: Surface
+    ) {
         var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
         if (rotatesWithContent) {
             flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT

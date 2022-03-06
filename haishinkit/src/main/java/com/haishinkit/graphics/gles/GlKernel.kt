@@ -148,8 +148,22 @@ internal class GlKernel(
 
         GLES20.glUseProgram(program.id)
 
-        GLES20.glVertexAttribPointer(program.texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
-        GLES20.glVertexAttribPointer(program.positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+        GLES20.glVertexAttribPointer(
+            program.texCoordHandle,
+            2,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            texCoordBuffer
+        )
+        GLES20.glVertexAttribPointer(
+            program.positionHandle,
+            3,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            vertexBuffer
+        )
         GlUtil.checkGlError("glVertexAttribPointer")
 
         GLES20.glUniform1i(program.textureHandle, 0)

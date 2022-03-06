@@ -68,8 +68,8 @@ void Pipeline::SetUp(Kernel &kernel) {
 
     pipelineCache = kernel.device->createPipelineCacheUnique(vk::PipelineCacheCreateInfo());
 
-    const auto vert = kernel.LoadShader("shaders/main.vert.spv");
-    const auto frag = kernel.LoadShader("shaders/main.frag.spv");
+    const auto vert = kernel.LoadShader("shaders/default.vert.spv");
+    const auto frag = kernel.LoadShader("shaders/default.frag.spv");
 
     // pipeline
     std::vector<vk::PipelineShaderStageCreateInfo> shaderStages = {

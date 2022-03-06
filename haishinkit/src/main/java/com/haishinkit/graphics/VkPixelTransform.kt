@@ -154,5 +154,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         buffer1Stride: Int,
         uvPixelStride: Int
     )
+
     private external fun nativeDispose()
 }
