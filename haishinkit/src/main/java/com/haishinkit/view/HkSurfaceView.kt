@@ -38,7 +38,6 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
     override val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create()
     }
-    private var isPortrait = false
 
     init {
         pixelTransform.assetManager = context.assets

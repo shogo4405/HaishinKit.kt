@@ -10,6 +10,9 @@ interface HkView : Running {
     var stream: NetStream?
     val pixelTransform: PixelTransform
 
+    /**
+     * Attaches a video stream to the view.
+     */
     fun attachStream(stream: NetStream?) {
         stream?.renderer = this
         this.stream = stream
@@ -18,5 +21,12 @@ interface HkView : Running {
         } else {
             stopRunning()
         }
+    }
+
+    /**
+     * Disposes the view for a memory management.
+     */
+    fun dispose() {
+        pixelTransform.dispose()
     }
 }

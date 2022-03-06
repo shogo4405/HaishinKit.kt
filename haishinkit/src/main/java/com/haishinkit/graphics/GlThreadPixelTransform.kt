@@ -120,6 +120,12 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
         }
     }
 
+    override fun dispose() {
+        handler?.let {
+            it.sendMessage(it.obtainMessage(MSG_DISPOSE))
+        }
+    }
+
     private class Handler(frame: GlPixelTransform, looper: Looper) : android.os.Handler(looper) {
         private val weakTransform: WeakReference<GlPixelTransform> =
             WeakReference<GlPixelTransform>(frame)
@@ -173,6 +179,9 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                         transform.fpsControllerClass = message.obj as? Class<*>
                     }
                 }
+                MSG_DISPOSE -> {
+                    transform.dispose()
+                }
                 else ->
                     throw RuntimeException("Unhandled msg what=$message.what")
             }
@@ -206,6 +215,7 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
         private const val MSG_SET_VIDEO_EFFECT = 8
         private const val MSG_SET_ASSET_MANAGER = 9
         private const val MSG_SET_FPS_CONTROLLER_CLASS = 10
+        private const val MSG_DISPOSE = 11
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

@@ -3,6 +3,7 @@ package com.haishinkit.graphics
 import android.content.res.AssetManager
 import android.graphics.SurfaceTexture
 import android.os.Handler
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.codec.util.DefaultFpsController
@@ -115,6 +116,12 @@ internal class GlPixelTransform(
                 kernel.render(it.id, it.extent, timestamp)
             }
         }
+    }
+
+    override fun dispose() {
+        texture = null
+        listener = null
+        kernel.tearDown()
     }
 
     companion object {

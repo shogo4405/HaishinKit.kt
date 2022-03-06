@@ -135,8 +135,8 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         image.close()
     }
 
-    protected fun finalize() {
-        dispose()
+    override fun dispose() {
+        nativeDispose()
     }
 
     private external fun nativeSetImageOrientation(imageOrientation: Int)
@@ -154,6 +154,5 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         buffer1Stride: Int,
         uvPixelStride: Int
     )
-
-    private external fun dispose()
+    private external fun nativeDispose()
 }

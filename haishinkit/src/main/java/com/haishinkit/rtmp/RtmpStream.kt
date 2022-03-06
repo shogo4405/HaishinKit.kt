@@ -339,13 +339,10 @@ open class RtmpStream(internal var connection: RtmpConnection) :
         connection.doOutput(RtmpChunk.ZERO, message)
     }
 
-    open fun dispose() {
+    override fun dispose() {
         connection.removeEventListener(Event.RTMP_STATUS, eventListener)
         muxer.stopRunning()
-        audio?.tearDown()
-        audioCodec.dispose()
-        video?.tearDown()
-        videoCodec.dispose()
+        super.dispose()
     }
 
     override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {

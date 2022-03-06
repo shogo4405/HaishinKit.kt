@@ -29,4 +29,9 @@ interface PixelTransform {
     var expectedOrientationSynchronize: Boolean
 
     fun createInputSurface(width: Int, height: Int, format: Int)
+
+    /**
+     * Disposes the pixelTransform of memory management.
+     */
+    fun dispose()
 }

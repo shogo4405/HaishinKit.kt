@@ -96,6 +96,17 @@ abstract class NetStream {
      */
     abstract fun close()
 
+    /**
+     * Disposes the stream of memory management.
+     */
+    open fun dispose() {
+        audio?.tearDown()
+        audioCodec.dispose()
+        video?.tearDown()
+        videoCodec.dispose()
+        renderer?.dispose()
+    }
+
     internal fun createAudioTrack(mediaFormat: MediaFormat): AudioTrack {
         val sampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
         val channelCount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)

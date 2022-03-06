@@ -214,7 +214,7 @@ Java_com_haishinkit_graphics_VkPixelTransform_updateTexture(JNIEnv *env, jobject
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_graphics_VkPixelTransform_dispose(JNIEnv *env, jobject thiz) {
+Java_com_haishinkit_graphics_VkPixelTransform_nativeDispose(JNIEnv *env, jobject thiz) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->release();
 }
 }
