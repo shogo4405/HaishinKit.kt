@@ -25,6 +25,9 @@
 - [x] RTMPS
   - [x] Native (RTMP over SSL/TSL)
 
+### Filter
+- [x] Monochrome
+
 ### Sources
 - [x] Camera with Camera2 api
 - [x] MediaProjection
@@ -153,6 +156,29 @@ class CameraTabFragment: Fragment(), IEventListener {
     }
 }
 ```
+
+### Filter API (v0.1)
+```
+- [assets]
+  - [shaders]
+    - custom-shader.vert(optional)
+    - custom-shader.frag
+```
+
+```
+package my.custom.filter
+
+import com.haishinkit.graphics.filter.VideoEffect
+
+class Monochrome2VideoEffect(
+    override val name: String = "custom-shader"
+) : VideoEffect
+```
+
+```
+stream.videoEffect = Monochrome2VideoEffect()
+```
+
 ## FAQ
 ### How can I run example project?
 ```sh
