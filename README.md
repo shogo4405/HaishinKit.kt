@@ -70,7 +70,7 @@ Bitcoin
 ## Requirements
 |-|Android|
 |:----:|:----:|
-|0.6.0|5.0+|
+|0.7.0|5.0+|
 
 ## Prerequisites
 ```kt
