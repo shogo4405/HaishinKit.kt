@@ -269,6 +269,12 @@ $dokka.location:com.haishinkit.flv/FlvWriter///PointingToDeclaration/haishinkit
 $dokka.location:com.haishinkit.flv/FlvWriter/FlvWriter/#/PointingToDeclaration/haishinkit/com.haishinkit.flv/-flv-writer/-flv-writer.html
 $dokka.location:com.haishinkit.flv/FlvWriter/close/#/PointingToDeclaration/haishinkit/com.haishinkit.flv/-flv-writer/close.html
 $dokka.location:com.haishinkit.flv/FlvWriter/open/#com.haishinkit.codec.RecordSetting#kotlin.String/PointingToDeclaration/haishinkit/com.haishinkit.flv/-flv-writer/open.html
+$dokka.location:com.haishinkit.graphics.filter////PointingToDeclaration/haishinkit/com.haishinkit.graphics.filter/index.html
+$dokka.location:com.haishinkit.graphics.filter/MonochromeVideoEffect///PointingToDeclaration/haishinkit/com.haishinkit.graphics.filter/-monochrome-video-effect/index.html
+$dokka.location:com.haishinkit.graphics.filter/MonochromeVideoEffect/MonochromeVideoEffect/#kotlin.String/PointingToDeclaration/haishinkit/com.haishinkit.graphics.filter/-monochrome-video-effect/-monochrome-video-effect.html
+$dokka.location:com.haishinkit.graphics.filter/MonochromeVideoEffect/name/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics.filter/-monochrome-video-effect/name.html
+$dokka.location:com.haishinkit.graphics.filter/VideoEffect///PointingToDeclaration/haishinkit/com.haishinkit.graphics.filter/-video-effect/index.html
+$dokka.location:com.haishinkit.graphics.filter/VideoEffect/name/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics.filter/-video-effect/name.html
 $dokka.location:com.haishinkit.graphics////PointingToDeclaration/haishinkit/com.haishinkit.graphics/index.html
 $dokka.location:com.haishinkit.graphics/ImageOrientation.DOWN///PointingToDeclaration/haishinkit/com.haishinkit.graphics/-image-orientation/-d-o-w-n/index.html
 $dokka.location:com.haishinkit.graphics/ImageOrientation.DOWN_MIRRORED///PointingToDeclaration/haishinkit/com.haishinkit.graphics/-image-orientation/-d-o-w-n_-m-i-r-r-o-r-e-d/index.html
@@ -281,11 +287,13 @@ $dokka.location:com.haishinkit.graphics/ImageOrientation.UP_MIRRORED///PointingT
 $dokka.location:com.haishinkit.graphics/ImageOrientation///PointingToDeclaration/haishinkit/com.haishinkit.graphics/-image-orientation/index.html
 $dokka.location:com.haishinkit.graphics/ImageOrientation/rawValue/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-image-orientation/raw-value.html
 $dokka.location:com.haishinkit.graphics/PixelTransform.Listener///PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/-listener/index.html
+$dokka.location:com.haishinkit.graphics/PixelTransform.Listener/onPixelTransformImageAvailable/#com.haishinkit.graphics.PixelTransform/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/-listener/on-pixel-transform-image-available.html
 $dokka.location:com.haishinkit.graphics/PixelTransform.Listener/onPixelTransformInputSurfaceCreated/#com.haishinkit.graphics.PixelTransform#android.view.Surface/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/-listener/on-pixel-transform-input-surface-created.html
 $dokka.location:com.haishinkit.graphics/PixelTransform.Listener/onPixelTransformSurfaceChanged/#com.haishinkit.graphics.PixelTransform#android.view.Surface?/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/-listener/on-pixel-transform-surface-changed.html
 $dokka.location:com.haishinkit.graphics/PixelTransform///PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/index.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/assetManager/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/asset-manager.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/createInputSurface/#kotlin.Int#kotlin.Int#kotlin.Int/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/create-input-surface.html
+$dokka.location:com.haishinkit.graphics/PixelTransform/dispose/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/dispose.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/expectedOrientationSynchronize/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/expected-orientation-synchronize.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/extent/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/extent.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/fpsControllerClass/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/fps-controller-class.html
@@ -294,6 +302,7 @@ $dokka.location:com.haishinkit.graphics/PixelTransform/listener/#/PointingToDecl
 $dokka.location:com.haishinkit.graphics/PixelTransform/resampleFilter/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/resample-filter.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/surface/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/surface.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/surfaceRotation/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/surface-rotation.html
+$dokka.location:com.haishinkit.graphics/PixelTransform/videoEffect/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/video-effect.html
 $dokka.location:com.haishinkit.graphics/PixelTransform/videoGravity/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-pixel-transform/video-gravity.html
 $dokka.location:com.haishinkit.graphics/ResampleFilter.CUBIC///PointingToDeclaration/haishinkit/com.haishinkit.graphics/-resample-filter/-c-u-b-i-c/index.html
 $dokka.location:com.haishinkit.graphics/ResampleFilter.LINEAR///PointingToDeclaration/haishinkit/com.haishinkit.graphics/-resample-filter/-l-i-n-e-a-r/index.html
@@ -312,6 +321,7 @@ $dokka.location:com.haishinkit.graphics/VkPixelTransform///PointingToDeclaration
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/VkPixelTransform/#com.haishinkit.graphics.PixelTransform.Listener?/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/-vk-pixel-transform.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/assetManager/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/asset-manager.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/createInputSurface/#kotlin.Int#kotlin.Int#kotlin.Int/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/create-input-surface.html
+$dokka.location:com.haishinkit.graphics/VkPixelTransform/dispose/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/dispose.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/expectedOrientationSynchronize/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/expected-orientation-synchronize.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/extent/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/extent.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/fpsControllerClass/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/fps-controller-class.html
@@ -322,6 +332,7 @@ $dokka.location:com.haishinkit.graphics/VkPixelTransform/onImageAvailable/#andro
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/resampleFilter/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/resample-filter.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/surface/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/surface.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/surfaceRotation/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/surface-rotation.html
+$dokka.location:com.haishinkit.graphics/VkPixelTransform/videoEffect/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/video-effect.html
 $dokka.location:com.haishinkit.graphics/VkPixelTransform/videoGravity/#/PointingToDeclaration/haishinkit/com.haishinkit.graphics/-vk-pixel-transform/video-gravity.html
 $dokka.location:com.haishinkit.iso////PointingToDeclaration/haishinkit/com.haishinkit.iso/index.html
 $dokka.location:com.haishinkit.iso/AudioSpecificConfig.AudioObjectType.AAC_LC///PointingToDeclaration/haishinkit/com.haishinkit.iso/-audio-specific-config/-audio-object-type/-a-a-c_-l-c/index.html
@@ -445,6 +456,7 @@ $dokka.location:com.haishinkit.media/Camera2Source/close/#/PointingToDeclaration
 $dokka.location:com.haishinkit.media/Camera2Source/device/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-camera2-source/device.html
 $dokka.location:com.haishinkit.media/Camera2Source/fpsControllerClass/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-camera2-source/fps-controller-class.html
 $dokka.location:com.haishinkit.media/Camera2Source/isRunning/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-camera2-source/is-running.html
+$dokka.location:com.haishinkit.media/Camera2Source/onPixelTransformImageAvailable/#com.haishinkit.graphics.PixelTransform/PointingToDeclaration/haishinkit/com.haishinkit.media/-camera2-source/on-pixel-transform-image-available.html
 $dokka.location:com.haishinkit.media/Camera2Source/onPixelTransformInputSurfaceCreated/#com.haishinkit.graphics.PixelTransform#android.view.Surface/PointingToDeclaration/haishinkit/com.haishinkit.media/-camera2-source/on-pixel-transform-input-surface-created.html
 $dokka.location:com.haishinkit.media/Camera2Source/onPixelTransformSurfaceChanged/#com.haishinkit.graphics.PixelTransform#android.view.Surface?/PointingToDeclaration/haishinkit/com.haishinkit.media/-camera2-source/on-pixel-transform-surface-changed.html
 $dokka.location:com.haishinkit.media/Camera2Source/open/#kotlin.Int?/PointingToDeclaration/haishinkit/com.haishinkit.media/-camera2-source/open.html
@@ -484,9 +496,11 @@ $dokka.location:com.haishinkit.media/MediaProjectionSource///PointingToDeclarati
 $dokka.location:com.haishinkit.media/MediaProjectionSource/MediaProjectionSource/#android.content.Context#android.media.projection.MediaProjection#android.util.DisplayMetrics#java.lang.Class[*]?#kotlin.Boolean/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/-media-projection-source.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/fpsControllerClass/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/fps-controller-class.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/isRunning/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/is-running.html
+$dokka.location:com.haishinkit.media/MediaProjectionSource/onPixelTransformImageAvailable/#com.haishinkit.graphics.PixelTransform/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/on-pixel-transform-image-available.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/onPixelTransformInputSurfaceCreated/#com.haishinkit.graphics.PixelTransform#android.view.Surface/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/on-pixel-transform-input-surface-created.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/onPixelTransformSurfaceChanged/#com.haishinkit.graphics.PixelTransform#android.view.Surface?/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/on-pixel-transform-surface-changed.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/resolution/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/resolution.html
+$dokka.location:com.haishinkit.media/MediaProjectionSource/rotatesWithContent/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/rotates-with-content.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/scale/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/scale.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/setUp/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/set-up.html
 $dokka.location:com.haishinkit.media/MediaProjectionSource/startRunning/#/PointingToDeclaration/haishinkit/com.haishinkit.media/-media-projection-source/start-running.html
@@ -542,7 +556,9 @@ $dokka.location:com.haishinkit.net/NetStream/attachAudio/#com.haishinkit.media.A
 $dokka.location:com.haishinkit.net/NetStream/attachVideo/#com.haishinkit.media.VideoSource?/PointingToDeclaration/haishinkit/com.haishinkit.net/-net-stream/attach-video.html
 $dokka.location:com.haishinkit.net/NetStream/audioSetting/#/PointingToDeclaration/haishinkit/com.haishinkit.net/-net-stream/audio-setting.html
 $dokka.location:com.haishinkit.net/NetStream/close/#/PointingToDeclaration/haishinkit/com.haishinkit.net/-net-stream/close.html
+$dokka.location:com.haishinkit.net/NetStream/dispose/#/PointingToDeclaration/haishinkit/com.haishinkit.net/-net-stream/dispose.html
 $dokka.location:com.haishinkit.net/NetStream/recordSetting/#/PointingToDeclaration/haishinkit/com.haishinkit.net/-net-stream/record-setting.html
+$dokka.location:com.haishinkit.net/NetStream/videoEffect/#/PointingToDeclaration/haishinkit/com.haishinkit.net/-net-stream/video-effect.html
 $dokka.location:com.haishinkit.net/NetStream/videoSetting/#/PointingToDeclaration/haishinkit/com.haishinkit.net/-net-stream/video-setting.html
 $dokka.location:com.haishinkit.net/Responder///PointingToDeclaration/haishinkit/com.haishinkit.net/-responder/index.html
 $dokka.location:com.haishinkit.net/Responder/onResult/#kotlin.collections.List[kotlin.Any?]/PointingToDeclaration/haishinkit/com.haishinkit.net/-responder/on-result.html
@@ -682,6 +698,7 @@ $dokka.location:com.haishinkit.rtmp/RtmpStream/dispatchEventWith/#kotlin.String#
 $dokka.location:com.haishinkit.rtmp/RtmpStream/dispose/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/dispose.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/info/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/info.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/listener/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/listener.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream/onPixelTransformImageAvailable/#com.haishinkit.graphics.PixelTransform/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/on-pixel-transform-image-available.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/onPixelTransformInputSurfaceCreated/#com.haishinkit.graphics.PixelTransform#android.view.Surface/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/on-pixel-transform-input-surface-created.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/onPixelTransformSurfaceChanged/#com.haishinkit.graphics.PixelTransform#android.view.Surface?/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/on-pixel-transform-surface-changed.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/play/#kotlin.Array[kotlin.Any]/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/play.html
@@ -728,6 +745,7 @@ $dokka.location:com.haishinkit.view/HkTextureView/stream/#/PointingToDeclaration
 $dokka.location:com.haishinkit.view/HkTextureView/videoGravity/#/PointingToDeclaration/haishinkit/com.haishinkit.view/-hk-texture-view/video-gravity.html
 $dokka.location:com.haishinkit.view/HkView///PointingToDeclaration/haishinkit/com.haishinkit.view/-hk-view/index.html
 $dokka.location:com.haishinkit.view/HkView/attachStream/#com.haishinkit.net.NetStream?/PointingToDeclaration/haishinkit/com.haishinkit.view/-hk-view/attach-stream.html
+$dokka.location:com.haishinkit.view/HkView/dispose/#/PointingToDeclaration/haishinkit/com.haishinkit.view/-hk-view/dispose.html
 $dokka.location:com.haishinkit.view/HkView/pixelTransform/#/PointingToDeclaration/haishinkit/com.haishinkit.view/-hk-view/pixel-transform.html
 $dokka.location:com.haishinkit.view/HkView/stream/#/PointingToDeclaration/haishinkit/com.haishinkit.view/-hk-view/stream.html
 $dokka.location:com.haishinkit.view/HkView/videoGravity/#/PointingToDeclaration/haishinkit/com.haishinkit.view/-hk-view/video-gravity.html
@@ -738,6 +756,7 @@ com.haishinkit.event
 com.haishinkit.flv
 com.haishinkit.flv.tag
 com.haishinkit.graphics
+com.haishinkit.graphics.filter
 com.haishinkit.iso
 com.haishinkit.lang
 com.haishinkit.media
