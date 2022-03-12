@@ -174,8 +174,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
                     muxer.clear()
                 }
                 ReadyState.PUBLISHING -> {
-                    audio?.stopRunning()
-                    video?.stopRunning()
+                    muxer.clear()
                 }
                 else -> {
                 }
@@ -332,13 +331,13 @@ open class RtmpStream(internal var connection: RtmpConnection) :
         if (readyState == ReadyState.CLOSED) {
             return
         }
-        readyState = ReadyState.CLOSED
         val message = RtmpCommandMessage(RtmpObjectEncoding.AMF0)
         message.streamID = 0
         message.chunkStreamID = RtmpChunk.COMMAND
         message.commandName = "deleteStream"
         message.arguments = listOf<Any>(id)
         connection.doOutput(RtmpChunk.ZERO, message)
+        readyState = ReadyState.CLOSED
     }
 
     override fun dispose() {
