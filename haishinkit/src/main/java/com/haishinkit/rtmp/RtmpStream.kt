@@ -20,7 +20,7 @@ import java.util.HashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * An object that provides the interface to control a one-way channel over a RTMPConnection.
+ * An object that provides the interface to control a one-way channel over a RtmpConnection.
  */
 @Suppress("unused")
 open class RtmpStream(internal var connection: RtmpConnection) :
@@ -30,6 +30,14 @@ open class RtmpStream(internal var connection: RtmpConnection) :
     data class Info(
         var resourceName: String? = null
     )
+
+    enum class HowToPublish(val rawValue: String) {
+        RECORD("record"),
+        APPEND("append"),
+        APPEND_WITH_GAP("appendWithGap"),
+        LIVE("live"),
+        LOCAL_RECORD("localRecord")
+    }
 
     @Suppress("unused")
     enum class Code(val rawValue: String, private val level: String) {
@@ -198,12 +206,6 @@ open class RtmpStream(internal var connection: RtmpConnection) :
                     muxer.mode = MediaCodec.Mode.ENCODE
                     muxer.startRunning()
                     send("@setDataFrame", "onMetaData", toMetaData())
-                    if (howToPublish == PUBLISH_LOCAL_RECORD) {
-                        info.resourceName?.let {
-                            recorder.startRunning()
-                            recorder.open(recordSetting, it)
-                        }
-                    }
                 }
                 ReadyState.CLOSED -> {
                     muxer.stopRunning()
@@ -221,7 +223,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
         EventDispatcher(this)
     }
     private val eventListener = EventListener(this)
-    private var howToPublish = PUBLISH_LIVE
+    private var howToPublish = HowToPublish.LIVE
 
     init {
         val count = (connection.streams.count() * -1) - 1
@@ -238,7 +240,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
     /**
      * Sends streaming audio, video and data messages from a client to server.
      */
-    open fun publish(name: String?, howToPublish: String = PUBLISH_LIVE) {
+    open fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
         message.commandName = if (name != null) "publish" else "closeStream"
@@ -258,7 +260,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
 
         val arguments = mutableListOf<Any?>()
         arguments.add(name)
-        arguments.add(howToPublish)
+        arguments.add(howToPublish.rawValue)
         message.arguments = arguments
 
         when (readyState) {
@@ -406,12 +408,6 @@ open class RtmpStream(internal var connection: RtmpConnection) :
     }
 
     companion object {
-        const val PUBLISH_RECORD = "record"
-        const val PUBLISH_APPEND = "append"
-        const val PUBLISH_APPEND_WITH_GAP = "appendWithGap"
-        const val PUBLISH_LIVE = "live"
-        const val PUBLISH_LOCAL_RECORD = "localRecord"
-
         private val TAG = RtmpStream::class.java.simpleName
     }
 }
