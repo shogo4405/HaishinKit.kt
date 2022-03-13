@@ -3,15 +3,18 @@ package com.haishinkit.graphics
 import android.content.res.AssetManager
 import android.graphics.ImageFormat
 import android.media.ImageReader
+import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import android.util.Size
 import android.view.Surface
+import androidx.annotation.RequiresApi
 import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
 import java.nio.ByteBuffer
 
+@RequiresApi(Build.VERSION_CODES.P)
 class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     PixelTransform,
     ImageReader.OnImageAvailableListener {
