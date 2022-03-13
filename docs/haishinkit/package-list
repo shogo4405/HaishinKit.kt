@@ -678,11 +678,13 @@ $dokka.location:com.haishinkit.rtmp/RtmpStream.Code///PointingToDeclaration/hai
 $dokka.location:com.haishinkit.rtmp/RtmpStream.Code/data/#kotlin.String/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-code/data.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream.Code/rawValue/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-code/raw-value.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream.Companion///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-companion/index.html
-$dokka.location:com.haishinkit.rtmp/RtmpStream.Companion/PUBLISH_APPEND/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-companion/-p-u-b-l-i-s-h_-a-p-p-e-n-d.html
-$dokka.location:com.haishinkit.rtmp/RtmpStream.Companion/PUBLISH_APPEND_WITH_GAP/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-companion/-p-u-b-l-i-s-h_-a-p-p-e-n-d_-w-i-t-h_-g-a-p.html
-$dokka.location:com.haishinkit.rtmp/RtmpStream.Companion/PUBLISH_LIVE/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-companion/-p-u-b-l-i-s-h_-l-i-v-e.html
-$dokka.location:com.haishinkit.rtmp/RtmpStream.Companion/PUBLISH_LOCAL_RECORD/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-companion/-p-u-b-l-i-s-h_-l-o-c-a-l_-r-e-c-o-r-d.html
-$dokka.location:com.haishinkit.rtmp/RtmpStream.Companion/PUBLISH_RECORD/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-companion/-p-u-b-l-i-s-h_-r-e-c-o-r-d.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream.HowToPublish.APPEND///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-how-to-publish/-a-p-p-e-n-d/index.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream.HowToPublish.APPEND_WITH_GAP///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-how-to-publish/-a-p-p-e-n-d_-w-i-t-h_-g-a-p/index.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream.HowToPublish.LIVE///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-how-to-publish/-l-i-v-e/index.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream.HowToPublish.LOCAL_RECORD///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-how-to-publish/-l-o-c-a-l_-r-e-c-o-r-d/index.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream.HowToPublish.RECORD///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-how-to-publish/-r-e-c-o-r-d/index.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream.HowToPublish///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-how-to-publish/index.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream.HowToPublish/rawValue/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-how-to-publish/raw-value.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream.Info///PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-info/index.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream.Info/Info/#kotlin.String?/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-info/-info.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream.Info/resourceName/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/-info/resource-name.html
@@ -702,7 +704,7 @@ $dokka.location:com.haishinkit.rtmp/RtmpStream/onPixelTransformImageAvailable/#c
 $dokka.location:com.haishinkit.rtmp/RtmpStream/onPixelTransformInputSurfaceCreated/#com.haishinkit.graphics.PixelTransform#android.view.Surface/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/on-pixel-transform-input-surface-created.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/onPixelTransformSurfaceChanged/#com.haishinkit.graphics.PixelTransform#android.view.Surface?/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/on-pixel-transform-surface-changed.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/play/#kotlin.Array[kotlin.Any]/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/play.html
-$dokka.location:com.haishinkit.rtmp/RtmpStream/publish/#kotlin.String?#kotlin.String/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/publish.html
+$dokka.location:com.haishinkit.rtmp/RtmpStream/publish/#kotlin.String?#com.haishinkit.rtmp.RtmpStream.HowToPublish/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/publish.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/receiveAudio/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/receive-audio.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/receiveVideo/#/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/receive-video.html
 $dokka.location:com.haishinkit.rtmp/RtmpStream/removeEventListener/#kotlin.String#com.haishinkit.event.IEventListener#kotlin.Boolean/PointingToDeclaration/haishinkit/com.haishinkit.rtmp/-rtmp-stream/remove-event-listener.html
