@@ -1,4 +1,4 @@
-package com.haishinkit.graphics
+package com.haishinkit.vulkan
 
 import android.content.res.AssetManager
 import android.graphics.ImageFormat
@@ -10,6 +10,10 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import androidx.annotation.RequiresApi
+import com.haishinkit.graphics.ImageOrientation
+import com.haishinkit.graphics.PixelTransform
+import com.haishinkit.graphics.ResampleFilter
+import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
 import java.nio.ByteBuffer
@@ -20,7 +24,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     ImageReader.OnImageAvailableListener {
     companion object {
         init {
-            System.loadLibrary("haishinkit")
+            System.loadLibrary("libhkvulkan")
         }
 
         /**

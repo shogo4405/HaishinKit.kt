@@ -1,9 +1,9 @@
-[submodule "haishinkit/vendor/picojson"]
-	path = haishinkit/vendor/picojson
+[submodule "vulkan/vendor/picojson"]
+	path = vulkan/vendor/picojson
 	url = git@github.com:kazuho/picojson.git
-[submodule "haishinkit/vendor/Vulkan-Headers"]
-	path = haishinkit/vendor/Vulkan-Headers
+[submodule "vulkan/vendor/Vulkan-Headers"]
+	path = vulkan/vendor/Vulkan-Headers
 	url = git@github.com:KhronosGroup/Vulkan-Headers.git
-[submodule "haishinkit/vendor/glm"]
-	path = haishinkit/vendor/glm
+[submodule "vulkan/vendor/glm"]
+	path = vulkan/vendor/glm
 	url = git@github.com:g-truc/glm.git

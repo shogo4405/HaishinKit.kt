@@ -1,1 +1,3 @@
-include ':app', ':haishinkit'
+include ':app' 
+include ':haishinkit'
+include ':vulkan'

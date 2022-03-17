@@ -6,9 +6,12 @@
 
 cmake_minimum_required(VERSION 3.10.2)
 
+message(STATUS "PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
+message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
+
 # Declares and names the project.
 
-project("haishinkit")
+project("vulkan")
 
 add_definitions(-DVULKAN_HPP_DISPATCH_LOADER_DYNAMIC)
 
@@ -19,29 +22,29 @@ add_definitions(-DVULKAN_HPP_DISPATCH_LOADER_DYNAMIC)
 
 add_library(
         # Sets the name of the library.
-        haishinkit
+        libhkvulkan
         # Sets the library as a shared library.
         SHARED
         # Provides a relative path to your source file(s).
-        haishinkit.hpp
-        Graphics/Kernel.cpp
-        Graphics/ColorSpace.cpp
-        Graphics/ImageStorage.cpp
-        Graphics/DynamicLoader.cpp
-        Graphics/CommandBuffer.cpp
-        Graphics/Queue.cpp
-        Graphics/PixelTransform.cpp
-        Graphics/SwapChain.cpp
-        Graphics/Pipeline.cpp
-        Graphics/Texture.cpp
-        Graphics/Util.cpp
-        Graphics/Vertex.hpp
-        Graphics/PushConstants.hpp
-        Graphics/Feature/Feature.cpp
-        Graphics/Feature/FeatureManager.cpp
-        Graphics/Feature/PhysicalDeviceFeature.cpp
-        Graphics/Feature/PhysicalDeviceSamplerYcbcrConversionFeature.cpp
-        Graphics/Feature/DebugUtilsMessengerFeature.cpp
+        src/main/cpp/haishinkit.hpp
+        src/main/cpp/Graphics/Kernel.cpp
+        src/main/cpp/Graphics/ColorSpace.cpp
+        src/main/cpp/Graphics/ImageStorage.cpp
+        src/main/cpp/Graphics/DynamicLoader.cpp
+        src/main/cpp/Graphics/CommandBuffer.cpp
+        src/main/cpp/Graphics/Queue.cpp
+        src/main/cpp/Graphics/PixelTransform.cpp
+        src/main/cpp/Graphics/SwapChain.cpp
+        src/main/cpp/Graphics/Pipeline.cpp
+        src/main/cpp/Graphics/Texture.cpp
+        src/main/cpp/Graphics/Util.cpp
+        src/main/cpp/Graphics/Vertex.hpp
+        src/main/cpp/Graphics/PushConstants.hpp
+        src/main/cpp/Graphics/Feature/Feature.cpp
+        src/main/cpp/Graphics/Feature/FeatureManager.cpp
+        src/main/cpp/Graphics/Feature/PhysicalDeviceFeature.cpp
+        src/main/cpp/Graphics/Feature/PhysicalDeviceSamplerYcbcrConversionFeature.cpp
+        src/main/cpp/Graphics/Feature/DebugUtilsMessengerFeature.cpp
 )
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -64,7 +67,7 @@ find_library(
 
 target_link_libraries(
         # Specifies the target library.
-        haishinkit
+        libhkvulkan
         # Links the target library to the log library
         # included in the NDK.
         -landroid
@@ -72,7 +75,7 @@ target_link_libraries(
 )
 
 include_directories(
-        ${PROJECT_SOURCE_DIR}/../../../vendor
-        ${PROJECT_SOURCE_DIR}/../../../vendor/Vulkan-Headers/include
-        ${PROJECT_SOURCE_DIR}/../../../vendor/glm
+        vendor
+        vendor/Vulkan-Headers/include
+        vendor/glm
 )

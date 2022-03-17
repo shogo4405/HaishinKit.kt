@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.haishinkit.graphics.VkPixelTransform
+import com.haishinkit.vulkan.VkPixelTransform
 import java.lang.Exception
 
 class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
@@ -17,12 +17,13 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
     private lateinit var holderB: SurfaceHolder
     private lateinit var surfaceHolderA: SurfaceHolder
     private lateinit var surfaceHolderB: SurfaceHolder
-    private var renderer: VkPixelTransform? = VkPixelTransform()
+    private var renderer: com.haishinkit.vulkan.VkPixelTransform? =
+        com.haishinkit.vulkan.VkPixelTransform()
     private val choreographer = Choreographer.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "VkPixelTransform::isSupported() = ${VkPixelTransform.isSupported()}")
+        Log.i(TAG, "VkPixelTransform::isSupported() = ${com.haishinkit.vulkan.VkPixelTransform.isSupported()}")
         context?.let {
             Log.d(TAG, "setAssetManager")
             renderer?.assetManager = it.assets

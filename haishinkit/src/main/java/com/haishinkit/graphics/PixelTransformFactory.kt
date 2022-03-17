@@ -1,17 +1,39 @@
 package com.haishinkit.graphics
 
-import android.os.Build
-import com.haishinkit.util.FeatureUtil
+import java.lang.Exception
+import kotlin.reflect.KClass
 
-internal class PixelTransformFactory {
+class PixelTransformFactory {
     fun create(): PixelTransform {
-        if (FeatureUtil.isEnabled(FeatureUtil.FEATURE_VULKAN_PIXEL_TRANSFORM)) {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && VkPixelTransform.isSupported()) {
-                VkPixelTransform()
-            } else {
-                GlThreadPixelTransform()
+        if (pixelTransforms.isEmpty()) {
+            return GlThreadPixelTransform()
+        }
+        return try {
+            val pixelTransformClass = pixelTransforms.first()
+            pixelTransformClass.java.newInstance() as PixelTransform
+        } catch (e: Exception) {
+            return GlThreadPixelTransform()
+        }
+    }
+
+    companion object {
+        private var pixelTransforms: MutableList<KClass<*>> = mutableListOf()
+
+        fun <T : PixelTransform> registerPixelTransform(clazz: KClass<T>) {
+            for (i in 0 until pixelTransforms.size) {
+                if (pixelTransforms[i] == clazz) {
+                    return
+                }
+            }
+            pixelTransforms.add(clazz)
+        }
+
+        fun <T : PixelTransform> unregisterPixelTransform(clazz: KClass<T>) {
+            for (i in (0 until pixelTransforms.size).reversed()) {
+                if (pixelTransforms[i] == clazz) {
+                    pixelTransforms.removeAt(i)
+                }
             }
         }
-        return GlThreadPixelTransform()
     }
 }

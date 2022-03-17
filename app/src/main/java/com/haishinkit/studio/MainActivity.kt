@@ -1,16 +1,25 @@
 package com.haishinkit.studio
 
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.haishinkit.graphics.PixelTransformFactory
+import com.haishinkit.util.FeatureUtil
+import com.haishinkit.vulkan.VkPixelTransform
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var fragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // PixelTransformFactory.registerPixelTransform(VkPixelTransform::class)
+        }
+
         setContentView(R.layout.activity_main)
 
         val navigation = findViewById<BottomNavigationView>(R.id.navigation)

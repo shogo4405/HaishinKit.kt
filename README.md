@@ -60,19 +60,38 @@ Bitcoin
 3FnjC3CmwFLTzNY5WPNz4LjTo1uxGNozUR
 ```
 
-## Android manifest
+## Usage
+
+### Gradle dependency
+```groovy
+repositories {
+  maven {
+    url = uri("https://maven.pkg.github.com/shogo4405/HaishinKit.kt")
+    credentials {
+      username = System.getenv("GITHUB_USER")
+      password = System.getenv("GITHUB_API_TOKEN")
+    }
+  }
+}
+
+dependencies {
+    implementation 'com.haishinkit:haishinkit:x.x.x'
+}
+```
+
+### Android manifest
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
-## Requirements
+### Requirements
 |-|Android|
 |:----:|:----:|
 |0.7.0|5.0+|
 
-## Prerequisites
+### Prerequisites
 ```kt
 ActivityCompat.requestPermissions(this,arrayOf(
     Manifest.permission.CAMERA,
@@ -80,7 +99,7 @@ ActivityCompat.requestPermissions(this,arrayOf(
 ), 1)
 ```
 
-## RTMP Usage
+### RTMP Usage
 Real Time Messaging Protocol (RTMP).
 
 ```kt

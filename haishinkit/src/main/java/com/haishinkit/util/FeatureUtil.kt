@@ -8,12 +8,10 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object FeatureUtil {
     const val FEATURE_BITRATE_CHANGE = "bitrate_change"
-    const val FEATURE_VULKAN_PIXEL_TRANSFORM = "vulkan_pixel_transform"
 
     private var flags = ConcurrentHashMap(
         mutableMapOf(
             FEATURE_BITRATE_CHANGE to true,
-            FEATURE_VULKAN_PIXEL_TRANSFORM to false
         )
     )
 
