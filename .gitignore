@@ -383,7 +383,7 @@ obj/
 
 # End of https://www.toptal.com/developers/gitignore/api/java,linux,macos,android,windows,intellij,androidstudio
 
-haishinkit/src/main/jniLibs/x86_64/libVkLayer_khronos_validation.so
-haishinkit/src/main/jniLibs/arm64-v8a/libVkLayer_khronos_validation.so
-haishinkit/src/main/jniLibs/armeabi-v7a/libVkLayer_khronos_validation.so
-haishinkit/src/main/jniLibs/x86/libVkLayer_khronos_validation.so
+vulkan/src/main/jniLibs/x86_64/libVkLayer_khronos_validation.so
+vulkan/src/main/jniLibs/arm64-v8a/libVkLayer_khronos_validation.so
+vulkan/src/main/jniLibs/armeabi-v7a/libVkLayer_khronos_validation.so
+vulkan/src/main/jniLibs/x86/libVkLayer_khronos_validation.so

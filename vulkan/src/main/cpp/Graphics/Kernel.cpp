@@ -231,6 +231,9 @@ Kernel::FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) 
     throw std::runtime_error("failed to find suitable memory type!");
 }
 
+void Kernel::ReadPixels(void *buffer) {
+}
+
 std::string Kernel::InspectDevices() {
     picojson::object inspect;
     picojson::array devices;

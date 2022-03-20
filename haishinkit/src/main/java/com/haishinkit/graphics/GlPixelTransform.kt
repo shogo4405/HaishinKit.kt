@@ -11,6 +11,7 @@ import com.haishinkit.codec.util.FpsControllerFactory
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlTexture
+import java.nio.ByteBuffer
 
 internal class GlPixelTransform(
     override var listener: PixelTransform.Listener? = null,
@@ -115,6 +116,9 @@ internal class GlPixelTransform(
                 kernel.render(it.id, it.extent, timestamp)
             }
         }
+    }
+
+    override fun readPixels(byteBuffer: ByteBuffer) {
     }
 
     override fun dispose() {

@@ -94,6 +94,13 @@ namespace Graphics {
         kernel->DrawFrame();
     }
 
+    void PixelTransform::ReadPixels(void *byteBuffer) {
+        if (!IsReady()) {
+            return;
+        }
+        kernel->ReadPixels(byteBuffer);
+    }
+
     bool PixelTransform::IsReady() {
         return kernel->IsAvailable() && nativeWindow != nullptr;
     }
@@ -107,13 +114,13 @@ extern "C"
 {
 JNIEXPORT jboolean JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_00024Companion_isSupported(JNIEnv *env,
-                                                                         jobject thiz) {
+                                                                       jobject thiz) {
     return Graphics::DynamicLoader::GetInstance().Load();
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetVideoGravity(JNIEnv *env, jobject thiz,
-                                                                    jint value) {
+                                                                  jint value) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
                                                     thiz)->takeRetainedValue()->SetVideoGravity(
             static_cast<Graphics::VideoGravity>(value));
@@ -121,7 +128,7 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetVideoGravity(JNIEnv *env, j
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetSurface(JNIEnv *env, jobject thiz,
-                                                               jobject surface) {
+                                                             jobject surface) {
     ANativeWindow *window = nullptr;
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
@@ -134,7 +141,7 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetSurface(JNIEnv *env, jobjec
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageOrientation(JNIEnv *env, jobject thiz,
-                                                                        jint value) {
+                                                                      jint value) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetImageOrientation(static_cast<Graphics::ImageOrientation>(value));
@@ -143,7 +150,7 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageOrientation(JNIEnv *en
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
-                                                         jint height, jint format) {
+                                                       jint height, jint format) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetTexture(width, height, format);
@@ -152,7 +159,7 @@ Java_com_haishinkit_vulkan_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetSurfaceRotation(JNIEnv *env, jobject thiz,
-                                                                       jint value) {
+                                                                     jint value) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetSurfaceRotation(static_cast<Graphics::SurfaceRotation>(value));
@@ -161,7 +168,7 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetSurfaceRotation(JNIEnv *env
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetResampleFilter(JNIEnv *env, jobject thiz,
-                                                                      jint value) {
+                                                                    jint value) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetResampleFilter(static_cast<Graphics::ResampleFilter>(value));
@@ -170,7 +177,7 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetResampleFilter(JNIEnv *env,
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetAssetManager(JNIEnv *env, jobject thiz,
-                                                                    jobject asset_manager) {
+                                                                  jobject asset_manager) {
     AAssetManager *manager = AAssetManager_fromJava(env, asset_manager);
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
@@ -187,12 +194,12 @@ Java_com_haishinkit_vulkan_VkPixelTransform_inspectDevices(JNIEnv *env, jobject 
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz,
-                                                            jobject buffer0,
-                                                            jobject buffer1,
-                                                            jobject buffer2,
-                                                            jint stride1,
-                                                            jint stride2,
-                                                            jint pixelStride) {
+                                                          jobject buffer0,
+                                                          jobject buffer1,
+                                                          jobject buffer2,
+                                                          jint stride1,
+                                                          jint stride2,
+                                                          jint pixelStride) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 if (buffer0 == nullptr) {
@@ -211,6 +218,18 @@ Java_com_haishinkit_vulkan_VkPixelTransform_updateTexture(JNIEnv *env, jobject t
                                         stride2, pixelStride);
                 }
             });
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeReadPixels(JNIEnv *env, jobject thiz,
+                                                             jobject byteBuffer) {
+    void *directBuffer = env->GetDirectBufferAddress(byteBuffer);
+    if (directBuffer != nullptr) {
+        Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+                [=](Graphics::PixelTransform *self) {
+                    self->ReadPixels(directBuffer);
+                });
+    }
 }
 
 JNIEXPORT void JNICALL

@@ -63,6 +63,8 @@ namespace Graphics {
 
         uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) const;
 
+        void ReadPixels(void *buffer);
+
     private:
         const std::string applicationName = "HaishinKit";
         const std::string engineName = "Vulkan::Kernel";

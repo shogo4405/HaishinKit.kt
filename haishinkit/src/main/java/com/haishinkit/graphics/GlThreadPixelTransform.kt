@@ -8,6 +8,7 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
 import java.lang.ref.WeakReference
+import java.nio.ByteBuffer
 
 internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener {
     override var fpsControllerClass: Class<*>?
@@ -201,6 +202,9 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
         surface: Surface
     ) {
         listener?.onPixelTransformInputSurfaceCreated(this, surface)
+    }
+
+    override fun readPixels(byteBuffer: ByteBuffer) {
     }
 
     companion object {

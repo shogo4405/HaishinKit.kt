@@ -16,12 +16,12 @@ import androidx.fragment.app.Fragment
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
-import com.haishinkit.graphics.filter.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.view.HkView
+import java.nio.ByteBuffer
 
 class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection

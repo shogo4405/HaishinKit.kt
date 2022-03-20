@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.haishinkit.metric.FrameCapture
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
@@ -27,7 +26,8 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)

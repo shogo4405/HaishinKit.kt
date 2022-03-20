@@ -142,6 +142,10 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         image.close()
     }
 
+    override fun readPixels(byteBuffer: ByteBuffer) {
+        nativeReadPixels(byteBuffer)
+    }
+
     override fun dispose() {
         nativeDispose()
     }
@@ -161,6 +165,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         buffer1Stride: Int,
         uvPixelStride: Int
     )
+    private external fun nativeReadPixels(byteBuffer: ByteBuffer)
 
     private external fun nativeDispose()
 }

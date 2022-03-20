@@ -4,6 +4,7 @@ import android.content.res.AssetManager
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
+import java.nio.ByteBuffer
 
 interface PixelTransform {
     interface Listener {
@@ -29,6 +30,8 @@ interface PixelTransform {
     var expectedOrientationSynchronize: Boolean
 
     fun createInputSurface(width: Int, height: Int, format: Int)
+
+    fun readPixels(byteBuffer: ByteBuffer)
 
     /**
      * Disposes the pixelTransform of memory management.
