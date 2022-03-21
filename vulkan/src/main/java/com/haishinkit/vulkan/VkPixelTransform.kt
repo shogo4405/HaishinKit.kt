@@ -2,6 +2,7 @@ package com.haishinkit.vulkan
 
 import android.content.res.AssetManager
 import android.graphics.ImageFormat
+import android.hardware.HardwareBuffer
 import android.media.ImageReader
 import android.os.Build
 import android.os.Handler
@@ -18,7 +19,6 @@ import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
 import java.nio.ByteBuffer
 
-@RequiresApi(Build.VERSION_CODES.P)
 class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     PixelTransform,
     ImageReader.OnImageAvailableListener {
@@ -32,7 +32,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
          */
         external fun isSupported(): Boolean
 
-        private const val MAX_IMAGES = 2
         private const val TAG = "VkPixelTransform"
     }
 
@@ -82,9 +81,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     @Suppress("unused")
     private var memory: Long = 0
-    private lateinit var reader: ImageReader
-    private var buffer: ByteBuffer? = null
-    private var isMultiPlanar: Boolean = false
+
     private var handler: Handler? = null
         get() {
             if (field == null) {
@@ -102,44 +99,13 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     external fun inspectDevices(): String
 
     override fun createInputSurface(width: Int, height: Int, format: Int) {
-        isMultiPlanar = when (format) {
-            ImageFormat.YUV_420_888 -> true
-            else -> false
+        handler?.post {
+            val surface = setTexture(width, height, format)
+            listener?.onPixelTransformInputSurfaceCreated(this, surface)
         }
-        buffer = null
-        reader = ImageReader.newInstance(width, height, format, MAX_IMAGES)
-        setTexture(width, height, format)
-        reader.setOnImageAvailableListener(this, handler)
-        listener?.onPixelTransformInputSurfaceCreated(this, reader.surface)
     }
 
     override fun onImageAvailable(reader: ImageReader) {
-        listener?.onPixelTransformImageAvailable(this)
-        val image = reader.acquireNextImage()
-        try {
-            if (image.planes.size == 1) {
-                updateTexture(
-                    image.planes[0].buffer,
-                    null,
-                    null,
-                    image.planes[0].rowStride,
-                    0,
-                    0
-                )
-            } else {
-                updateTexture(
-                    image.planes[0].buffer,
-                    image.planes[1].buffer,
-                    image.planes[2].buffer,
-                    image.planes[0].rowStride,
-                    image.planes[1].rowStride,
-                    image.planes[1].pixelStride
-                )
-            }
-        } catch (e: Exception) {
-            Log.w(TAG, "", e)
-        }
-        image.close()
     }
 
     override fun readPixels(byteBuffer: ByteBuffer) {
@@ -156,16 +122,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     private external fun nativeSetResampleFilter(resampleFilter: Int)
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
-    private external fun setTexture(width: Int, height: Int, format: Int)
-    private external fun updateTexture(
-        buffer0: ByteBuffer? = null,
-        buffer1: ByteBuffer? = null,
-        buffer2: ByteBuffer? = null,
-        buffer0Stride: Int,
-        buffer1Stride: Int,
-        uvPixelStride: Int
-    )
+    private external fun setTexture(width: Int, height: Int, format: Int): Surface
     private external fun nativeReadPixels(byteBuffer: ByteBuffer)
-
     private external fun nativeDispose()
 }

@@ -13,7 +13,10 @@ FeatureManager::FeatureManager() {
     features.emplace_back(new Feature(INSTANCE, VK_KHR_SURFACE_EXTENSION_NAME));
     features.emplace_back(new Feature(INSTANCE, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME));
     // DEVICE
+    features.emplace_back(new Feature(DEVICE, VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME));
     features.emplace_back(new Feature(DEVICE, VK_KHR_SWAPCHAIN_EXTENSION_NAME));
+    features.emplace_back(
+            new Feature(DEVICE, VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME));
     // FEATURE
     features.emplace_back(new PhysicalDeviceFeature());
     features.emplace_back(new PhysicalDeviceSamplerYcbcrConversionFeature());

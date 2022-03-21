@@ -4,15 +4,20 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include <android/asset_manager_jni.h>
+#include <media/NdkImageReader.h>
 #include "../haishinkit.hpp"
 #include "DynamicLoader.h"
 
 namespace Graphics {
+    void OnImageAvailable(void *ctx, AImageReader *reader) {
+        reinterpret_cast<PixelTransform *>(ctx)->OnImageAvailable(reader);
+    }
 
     PixelTransform::PixelTransform() :
             kernel(new Kernel()),
             textures(std::vector<Texture *>(0)),
-            nativeWindow(nullptr) {
+            nativeWindow(nullptr),
+            imageReader(nullptr) {
     }
 
     PixelTransform::~PixelTransform() {
@@ -50,7 +55,22 @@ namespace Graphics {
         texture->SetImageOrientation(imageOrientation);
         textures.clear();
         textures.push_back(texture);
-        kernel->SetTextures(textures);
+
+        AImageReader_newWithUsage(
+                width,
+                height,
+                format,
+                AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+                AHARDWAREBUFFER_USAGE_CPU_READ_RARELY,
+                2,
+                &imageReader);
+
+        AImageReader_ImageListener listener{
+                .context = this,
+                .onImageAvailable = Graphics::OnImageAvailable
+        };
+
+        AImageReader_setImageListener(imageReader, &listener);
     }
 
     void PixelTransform::SetSurfaceRotation(SurfaceRotation surfaceRotation) {
@@ -71,9 +91,6 @@ namespace Graphics {
                 kernel->TearDown();
             }
             kernel->SetUp(newNativeWindow);
-            if (!textures.empty()) {
-                kernel->SetTextures(textures);
-            }
         }
         if (oldNativeWindow != nullptr) {
             ANativeWindow_release(oldNativeWindow);
@@ -81,17 +98,27 @@ namespace Graphics {
         nativeWindow = newNativeWindow;
     }
 
-    void PixelTransform::UpdateTexture(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
-                                       int32_t uvPixelStride) {
+    void PixelTransform::OnImageAvailable(AImageReader *reader) {
         if (!IsReady()) {
             return;
         }
-        const auto &texture = textures[0];
-        texture->Update(*kernel, y, u, v, yStride, uvStride, uvPixelStride);
-        if (texture->invalidateLayout || kernel->invalidateSurfaceRotation) {
-            kernel->commandBuffer.SetTextures(*kernel, textures);
+        AImage *image;
+        media_status_t status = AImageReader_acquireLatestImage(reader, &image);
+        if (status != AMEDIA_OK) {
+            return;
         }
-        kernel->DrawFrame();
+        AHardwareBuffer *buffer;
+        status = AImage_getHardwareBuffer(image, &buffer);
+        if (status == AMEDIA_OK) {
+            const auto &texture = textures[0];
+            texture->SetUp(*kernel, buffer);
+            texture->Update(*kernel, buffer);
+            if (texture->invalidateLayout || kernel->invalidateSurfaceRotation) {
+                kernel->commandBuffer.SetTextures(*kernel, textures);
+            }
+            kernel->DrawFrame();
+            AImage_delete(image);
+        }
     }
 
     void PixelTransform::ReadPixels(void *byteBuffer) {
@@ -148,13 +175,18 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageOrientation(JNIEnv *en
             });
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
                                                        jint height, jint format) {
+    ANativeWindow *window;
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetTexture(width, height, format);
             });
+    AImageReader_getWindow(Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
+                                                                           thiz)->takeRetainedValue()->imageReader,
+                           &window);
+    return ANativeWindow_toSurface(env, window);
 }
 
 JNIEXPORT void JNICALL
@@ -190,34 +222,6 @@ Java_com_haishinkit_vulkan_VkPixelTransform_inspectDevices(JNIEnv *env, jobject 
     std::string string = Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
                                                                          thiz)->takeRetainedValue()->InspectDevices();
     return env->NewStringUTF(string.c_str());
-}
-
-JNIEXPORT void JNICALL
-Java_com_haishinkit_vulkan_VkPixelTransform_updateTexture(JNIEnv *env, jobject thiz,
-                                                          jobject buffer0,
-                                                          jobject buffer1,
-                                                          jobject buffer2,
-                                                          jint stride1,
-                                                          jint stride2,
-                                                          jint pixelStride) {
-    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
-            [=](Graphics::PixelTransform *self) {
-                if (buffer0 == nullptr) {
-                    self->UpdateTexture(nullptr, nullptr, nullptr, 0, 0, 0);
-                } else {
-                    void *bufferAddress0 = env->GetDirectBufferAddress(buffer0);
-                    void *bufferAddress1 = nullptr;
-                    if (buffer1 != nullptr) {
-                        bufferAddress1 = env->GetDirectBufferAddress(buffer1);
-                    }
-                    void *bufferAddress2 = nullptr;
-                    if (buffer2 != nullptr) {
-                        bufferAddress2 = env->GetDirectBufferAddress(buffer2);
-                    }
-                    self->UpdateTexture(bufferAddress0, bufferAddress1, bufferAddress2, stride1,
-                                        stride2, pixelStride);
-                }
-            });
 }
 
 JNIEXPORT void JNICALL

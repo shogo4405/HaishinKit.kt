@@ -39,8 +39,6 @@ namespace Graphics {
 
         void SetSurfaceRotation(SurfaceRotation surfaceRotation);
 
-        void SetTextures(const std::vector<Texture *> &textures);
-
         void SetAssetManager(AAssetManager *newAssetManager);
 
         void SetUp(ANativeWindow *window);

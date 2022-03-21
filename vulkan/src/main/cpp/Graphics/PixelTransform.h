@@ -3,6 +3,7 @@
 
 #include <jni.h>
 #include <android/hardware_buffer_jni.h>
+#include <media/NdkImageReader.h>
 #include "Kernel.h"
 #include "SurfaceRotation.hpp"
 #include "ResampleFilter.h"
@@ -11,6 +12,8 @@ namespace Graphics {
 
     class PixelTransform {
     public:
+        AImageReader *imageReader;
+
         PixelTransform();
 
         ~PixelTransform();
@@ -31,10 +34,9 @@ namespace Graphics {
 
         void SetSurfaceRotation(SurfaceRotation surfaceRotation);
 
-        void UpdateTexture(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
-                           int32_t uvPixelStride);
-
         void ReadPixels(void *byteBuffer);
+
+        void OnImageAvailable(AImageReader *reader);
 
         std::string InspectDevices();
 

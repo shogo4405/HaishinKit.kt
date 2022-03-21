@@ -18,11 +18,6 @@ namespace Graphics {
     struct ImageStorage;
 
     struct Texture {
-        enum Mode {
-            Linear,
-            Stage
-        };
-
         bool invalidateLayout = true;
         VideoGravity videoGravity = RESIZE_ASPECT;
         ResampleFilter resampleFilter = CUBIC;
@@ -31,14 +26,11 @@ namespace Graphics {
 
         ~Texture();
 
-        void SetUp(Kernel &kernel);
-
-        void SetImageOrientation(ImageOrientation newImageOrientation);
+        void SetUp(Kernel &kernel, AHardwareBuffer *buffer);
 
         void TearDown(Kernel &kernel);
 
-        void Update(Kernel &kernel, void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
-                    int32_t uvPixelStride);
+        void SetImageOrientation(ImageOrientation newImageOrientation);
 
         vk::Viewport GetViewport(Kernel &kernel) const;
 
@@ -46,18 +38,16 @@ namespace Graphics {
 
         vk::DescriptorImageInfo CreateDescriptorImageInfo();
 
+        void Update(Kernel &kernel, AHardwareBuffer *buffer);
+
     private:
-        Mode mode = Mode::Linear;
         ImageStorage image;
-        ImageStorage stage;
         vk::UniqueSampler sampler;
         vk::UniqueImageView imageView;
         ImageOrientation imageOrientation = UP;
         ColorSpace *colorSpace;
-
-        bool HasLinearTilingFeatures(Kernel &kernel) const;
-
-        void CopyImage(Kernel &kernel);
+        vk::UniqueSamplerYcbcrConversion conversion;
+        uint64_t externalFormat = 0;
     };
 }
 

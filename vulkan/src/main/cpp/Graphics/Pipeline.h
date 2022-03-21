@@ -18,11 +18,11 @@ namespace Graphics {
         vk::UniquePipelineCache pipelineCache;
         vk::UniquePipeline pipeline;
 
-        void SetTextures(Kernel &kernel, std::vector<Texture *> textures);
-
-        void SetUp(Kernel &kernel);
+        void SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers);
 
         void TearDown(Kernel &kernel);
+
+        void UpdateDescriptorSets(Kernel &kernel, Texture &textures);
     };
 }
 

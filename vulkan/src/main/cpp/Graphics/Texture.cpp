@@ -3,6 +3,8 @@
 #include "Util.h"
 #include "ImageStorage.h"
 #include "ColorSpace.h"
+#include <sys/socket.h>
+#include <unistd.h>
 #include <glm/ext/matrix_transform.hpp>
 
 using namespace Graphics;
@@ -12,8 +14,6 @@ Texture::Texture(vk::Extent2D extent, int32_t format) : colorSpace(new ColorSpac
     colorSpace->extent = extent;
     image.extent = extent;
     image.format = colorSpace->GetFormat();
-    stage.extent = extent;
-    stage.format = colorSpace->GetFormat();
 }
 
 Texture::~Texture() = default;
@@ -142,53 +142,10 @@ void Texture::SetImageOrientation(ImageOrientation newImageOrientation) {
     invalidateLayout = true;
 }
 
-void Texture::SetUp(Kernel &kernel) {
-    mode = HasLinearTilingFeatures(kernel) ? Mode::Linear : Mode::Stage;
-
-    image.SetUp(kernel, image.CreateImageCreateInfo()
-            .setInitialLayout(
-                    mode == Linear ?
-                    vk::ImageLayout::ePreinitialized :
-                    vk::ImageLayout::eUndefined
-            )
-            .setUsage(
-                    mode == Linear ?
-                    vk::ImageUsageFlagBits::eSampled :
-                    vk::ImageUsageFlagBits::eSampled |
-                    vk::ImageUsageFlagBits::eTransferDst)
-            .setTiling(
-                    mode == Linear ?
-                    vk::ImageTiling::eLinear :
-                    vk::ImageTiling::eOptimal)
-    );
-
-    switch (mode) {
-        case Linear: {
-            LOGI("%s", "This device has a linear tiling feature.");
-            colorSpace->Bind(kernel, image, vk::MemoryPropertyFlagBits::eHostVisible);
-            auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
-            commandBuffer.begin(vk::CommandBufferBeginInfo());
-            image.SetLayout(
-                    commandBuffer,
-                    vk::ImageLayout::eShaderReadOnlyOptimal,
-                    vk::PipelineStageFlagBits::eHost,
-                    vk::PipelineStageFlagBits::eFragmentShader
-            );
-            commandBuffer.end();
-            kernel.Submit(commandBuffer);
-            break;
-        }
-        case Stage: {
-            LOGI("%s", "This device has no a linear tiling feature.");
-            colorSpace->Bind(kernel, stage, vk::MemoryPropertyFlagBits::eDeviceLocal);
-            stage.SetUp(kernel, stage.CreateImageCreateInfo()
-                    .setUsage(vk::ImageUsageFlagBits::eTransferSrc)
-                    .setTiling(vk::ImageTiling::eLinear)
-            );
-            break;
-        }
+void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
+    if (sampler) {
+        return;
     }
-
     vk::Filter filter = vk::Filter::eLinear;
     switch (resampleFilter) {
         case LINEAR:
@@ -202,34 +159,76 @@ void Texture::SetUp(Kernel &kernel) {
             break;
     }
 
-    sampler = kernel.device->createSamplerUnique(
-            vk::SamplerCreateInfo()
-                    .setMagFilter(filter)
-                    .setMinFilter(filter)
-                    .setAddressModeU(vk::SamplerAddressMode::eRepeat)
-                    .setAddressModeV(vk::SamplerAddressMode::eRepeat)
-                    .setAddressModeW(vk::SamplerAddressMode::eRepeat)
-                    .setMipLodBias(0.0f)
-                    .setMaxAnisotropy(1)
-                    .setCompareOp(vk::CompareOp::eNever)
-                    .setMinLod(0.0f)
-                    .setMaxLod(0.0f)
-                    .setBorderColor(vk::BorderColor::eFloatOpaqueWhite)
-                    .setUnnormalizedCoordinates(false)
-    );
+    vk::AndroidHardwareBufferFormatPropertiesANDROID format;
+    vk::AndroidHardwareBufferPropertiesANDROID properties;
+    properties.pNext = &format;
+    kernel.device->getAndroidHardwareBufferPropertiesANDROID(buffer, &properties);
+    auto externalFormat = vk::ExternalFormatANDROID().setExternalFormat(format.externalFormat);
 
-    imageView = kernel.CreateImageView(image.image.get(), image.format);
+    this->externalFormat = format.externalFormat;
+
+    conversion = kernel.device->createSamplerYcbcrConversionUnique(
+            vk::SamplerYcbcrConversionCreateInfo()
+                    .setPNext(&externalFormat)
+                    .setFormat(vk::Format::eUndefined)
+                    .setYcbcrModel(format.suggestedYcbcrModel)
+                    .setYcbcrRange(format.suggestedYcbcrRange)
+                    .setComponents(format.samplerYcbcrConversionComponents)
+                    .setXChromaOffset(format.suggestedXChromaOffset)
+                    .setYChromaOffset(format.suggestedYChromaOffset)
+                    .setChromaFilter(vk::Filter::eNearest)
+                    .setForceExplicitReconstruction(false));
+
+    auto samplerCreate = vk::SamplerCreateInfo()
+            .setMagFilter(filter)
+            .setMinFilter(filter)
+            .setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
+            .setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
+            .setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
+            .setMipLodBias(0.0f)
+            .setMaxAnisotropy(1)
+            .setCompareOp(vk::CompareOp::eNever)
+            .setMinLod(0.0f)
+            .setMaxLod(0.0f)
+            .setBorderColor(vk::BorderColor::eFloatOpaqueWhite)
+            .setUnnormalizedCoordinates(false);
+
+    if (conversion) {
+        auto ycbcrConversionInfo = vk::SamplerYcbcrConversionInfo()
+                .setConversion(
+                        conversion.get());
+        samplerCreate.setPNext(&ycbcrConversionInfo);
+    }
+
+    sampler = kernel.device->createSamplerUnique(samplerCreate);
+
+    std::vector<vk::Sampler> samplers(1);
+    samplers[0] = sampler.get();
+
+    kernel.pipeline.SetUp(kernel, samplers);
+    kernel.commandBuffer.SetUp(kernel);
 }
 
 void Texture::TearDown(Kernel &kernel) {
 }
 
-void
-Texture::Update(Kernel &kernel, void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
-                int32_t uvPixelStride) {
-    if (colorSpace->Map(y, u, v, yStride, uvStride, uvPixelStride)) {
-        CopyImage(kernel);
-    }
+void Texture::Update(Kernel &kernel, AHardwareBuffer *buffer) {
+    image.SetExternalFormat(externalFormat);
+    image.SetUp(kernel, buffer);
+
+    auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
+    commandBuffer.begin(vk::CommandBufferBeginInfo());
+    image.SetLayout(
+            commandBuffer,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            vk::PipelineStageFlagBits::eHost,
+            vk::PipelineStageFlagBits::eFragmentShader
+    );
+    commandBuffer.end();
+    kernel.Submit(commandBuffer);
+
+    imageView = image.CreateImageView(kernel, conversion);
+    kernel.pipeline.UpdateDescriptorSets(kernel, *this);
 }
 
 vk::DescriptorImageInfo Texture::CreateDescriptorImageInfo() {
@@ -237,53 +236,4 @@ vk::DescriptorImageInfo Texture::CreateDescriptorImageInfo() {
             .setImageLayout(image.layout)
             .setSampler(sampler.get())
             .setImageView(imageView.get());
-}
-
-bool Texture::HasLinearTilingFeatures(Kernel &kernel) const {
-    auto properties = kernel.physicalDevice.getFormatProperties(image.format);
-    if (properties.linearTilingFeatures & vk::FormatFeatureFlagBits::eSampledImage) {
-        return true;
-    }
-    return false;
-}
-
-void Texture::CopyImage(Kernel &kernel) {
-    if (mode == Linear) {
-        return;
-    }
-    auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
-    commandBuffer.begin(vk::CommandBufferBeginInfo());
-    stage.SetLayout(
-            commandBuffer,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::PipelineStageFlagBits::eHost,
-            vk::PipelineStageFlagBits::eTransfer
-    );
-    image.SetLayout(
-            commandBuffer,
-            vk::ImageLayout::eTransferDstOptimal,
-            vk::PipelineStageFlagBits::eHost,
-            vk::PipelineStageFlagBits::eTransfer);
-
-    const auto imageCopy = vk::ImageCopy()
-            .setSrcSubresource({vk::ImageAspectFlagBits::eColor, 0, 0, 1})
-            .setSrcOffset({0, 0, 0})
-            .setDstSubresource({vk::ImageAspectFlagBits::eColor, 0, 0, 1})
-            .setDstOffset({0, 0, 0})
-            .setExtent({stage.extent.width, stage.extent.height, 1});
-
-    commandBuffer.copyImage(
-            stage.image.get(),
-            vk::ImageLayout::eTransferSrcOptimal,
-            image.image.get(),
-            vk::ImageLayout::eTransferDstOptimal,
-            imageCopy);
-
-    image.SetLayout(
-            commandBuffer,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            vk::PipelineStageFlagBits::eTransfer,
-            vk::PipelineStageFlagBits::eFragmentShader);
-    commandBuffer.end();
-    kernel.Submit(commandBuffer);
 }

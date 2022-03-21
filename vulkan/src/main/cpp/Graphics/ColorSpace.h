@@ -21,19 +21,6 @@ namespace Graphics {
         ~ColorSpace();
 
         vk::Format GetFormat() const;
-
-        bool
-        Map(void *y, void *u, void *v, int32_t yStride, int32_t uvStride,
-            int32_t uvPixelStride) const;
-
-        void Bind(Kernel &kernel, ImageStorage &storage, vk::MemoryPropertyFlags properties);
-
-    private:
-        int32_t size = 0;
-        vk::SubresourceLayout layout;
-        void *memory = nullptr;
-
-        inline static uint32_t YuvToRgb(int y, int u, int v);
     };
 }
 

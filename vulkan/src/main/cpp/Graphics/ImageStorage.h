@@ -15,7 +15,11 @@ namespace Graphics {
         vk::ImageLayout layout = vk::ImageLayout::ePreinitialized;
         vk::Extent2D extent = vk::Extent2D(0, 0);
 
+        void SetExternalFormat(uint64_t newExternalFormat);
+
         void SetUp(Kernel &kernel, vk::ImageCreateInfo info);
+
+        void SetUp(Kernel &kernel, AHardwareBuffer *buffer);
 
         void TearDown(Kernel &kernel);
 
@@ -24,6 +28,13 @@ namespace Graphics {
                 vk::ImageLayout newLayout,
                 vk::PipelineStageFlagBits srcStageMask,
                 vk::PipelineStageFlagBits dstStageMask);
+
+        vk::UniqueImageView
+        CreateImageView(Kernel &kernel, vk::UniqueSamplerYcbcrConversion &conversion) const;
+
+    private:
+        AHardwareBuffer *buffer = nullptr;
+        vk::ExternalFormatANDROID externalFormat;
 
         vk::ImageCreateInfo CreateImageCreateInfo() const;
     };

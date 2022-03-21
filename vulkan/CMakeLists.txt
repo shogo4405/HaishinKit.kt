@@ -72,6 +72,7 @@ target_link_libraries(
         # included in the NDK.
         -landroid
         ${log-lib}
+        mediandk
 )
 
 include_directories(

@@ -34,12 +34,6 @@ class Camera2Source(
             session = null
             field?.close()
             field = value
-            stream?.renderer?.pixelTransform?.apply {
-                listener = this@Camera2Source
-                createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
-                imageOrientation = this@Camera2Source.imageOrientation
-            }
-            stream?.videoCodec?.pixelTransform?.imageOrientation = imageOrientation
         }
     var characteristics: CameraCharacteristics? = null
         private set
@@ -111,6 +105,12 @@ class Camera2Source(
             object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
                     this@Camera2Source.device = camera
+                    stream?.renderer?.pixelTransform?.apply {
+                        listener = this@Camera2Source
+                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
+                        imageOrientation = this@Camera2Source.imageOrientation
+                    }
+                    stream?.videoCodec?.pixelTransform?.imageOrientation = imageOrientation
                     this@Camera2Source.setUp()
                 }
 

@@ -7,24 +7,7 @@
 
 using namespace Graphics;
 
-void Pipeline::SetTextures(Kernel &kernel, std::vector<Texture *> textures) {
-    std::vector<vk::DescriptorImageInfo> images(textures.size());
-    for (auto i = 0; i < images.size(); ++i) {
-        images[i] = textures[i]->CreateDescriptorImageInfo();
-    }
-    for (auto &descriptorSet: descriptorSets) {
-        kernel.device->updateDescriptorSets(
-                vk::WriteDescriptorSet()
-                        .setDstSet(descriptorSet.get())
-                        .setDescriptorCount(1)
-                        .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-                        .setImageInfo(images),
-                nullptr
-        );
-    }
-}
-
-void Pipeline::SetUp(Kernel &kernel) {
+void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers) {
     descriptorSetLayout = kernel.device->createDescriptorSetLayoutUnique(
             vk::DescriptorSetLayoutCreateInfo()
                     .setBindingCount(1)
@@ -34,6 +17,7 @@ void Pipeline::SetUp(Kernel &kernel) {
                                     .setDescriptorType(
                                             vk::DescriptorType::eCombinedImageSampler)
                                     .setDescriptorCount(1)
+                                    .setImmutableSamplers(samplers)
                                     .setStageFlags(vk::ShaderStageFlagBits::eFragment)
                     )
     );
@@ -168,4 +152,21 @@ void Pipeline::SetUp(Kernel &kernel) {
 }
 
 void Pipeline::TearDown(Kernel &kernel) {
+}
+
+void Pipeline::UpdateDescriptorSets(Kernel &kernel, Texture &texture) {
+    std::vector<vk::DescriptorImageInfo> images(1);
+    for (auto i = 0; i < images.size(); ++i) {
+        images[i] = texture.CreateDescriptorImageInfo();
+    }
+    for (auto &descriptorSet: descriptorSets) {
+        kernel.device->updateDescriptorSets(
+                vk::WriteDescriptorSet()
+                        .setDstSet(descriptorSet.get())
+                        .setDescriptorCount(1)
+                        .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+                        .setImageInfo(images),
+                nullptr
+        );
+    }
 }
