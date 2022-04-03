@@ -48,7 +48,7 @@ namespace Graphics {
         }
     }
 
-    void PixelTransform::SetTexture(int32_t width, int32_t height, int32_t format) {
+    void PixelTransform::SetImageReader(int32_t width, int32_t height, int32_t format) {
         auto texture = new Texture(vk::Extent2D(width, height), format);
         texture->videoGravity = videoGravity;
         texture->resampleFilter = resampleFilter;
@@ -98,29 +98,6 @@ namespace Graphics {
         nativeWindow = newNativeWindow;
     }
 
-    void PixelTransform::OnImageAvailable(AImageReader *reader) {
-        if (!IsReady()) {
-            return;
-        }
-        AImage *image;
-        media_status_t status = AImageReader_acquireLatestImage(reader, &image);
-        if (status != AMEDIA_OK) {
-            return;
-        }
-        AHardwareBuffer *buffer;
-        status = AImage_getHardwareBuffer(image, &buffer);
-        if (status == AMEDIA_OK) {
-            const auto &texture = textures[0];
-            texture->SetUp(*kernel, buffer);
-            texture->Update(*kernel, buffer);
-            if (texture->invalidateLayout || kernel->invalidateSurfaceRotation) {
-                kernel->commandBuffer.SetTextures(*kernel, textures);
-            }
-            kernel->DrawFrame();
-            AImage_delete(image);
-        }
-    }
-
     void PixelTransform::ReadPixels(void *byteBuffer) {
         if (!IsReady()) {
             return;
@@ -134,6 +111,30 @@ namespace Graphics {
 
     std::string PixelTransform::InspectDevices() {
         return kernel->InspectDevices();
+    }
+
+    void PixelTransform::OnImageAvailable(AImageReader *reader) {
+        if (!IsReady()) {
+            return;
+        }
+        AImage *image;
+        media_status_t status = AImageReader_acquireLatestImage(reader, &image);
+        if (status != AMEDIA_OK) {
+            return;
+        }
+        AHardwareBuffer *buffer;
+        status = AImage_getHardwareBuffer(image, &buffer);
+        if (status != AMEDIA_OK) {
+            AImage_delete(image);
+            return;
+        }
+        const auto &texture = textures[0];
+        texture->SetUp(*kernel, buffer);
+        kernel->DrawFrame([=](uint32_t currentFrame) {
+            texture->UpdateAt(*kernel, currentFrame, buffer);
+            texture->Layout(*kernel);
+        });
+        AImage_delete(image);
     }
 }
 
@@ -176,12 +177,13 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageOrientation(JNIEnv *en
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_haishinkit_vulkan_VkPixelTransform_setTexture(JNIEnv *env, jobject thiz, jint width,
-                                                       jint height, jint format) {
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeCreateInputSurface(JNIEnv *env, jobject thiz,
+                                                                     jint width,
+                                                                     jint height, jint format) {
     ANativeWindow *window;
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
-                self->SetTexture(width, height, format);
+                self->SetImageReader(width, height, format);
             });
     AImageReader_getWindow(Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
                                                                            thiz)->takeRetainedValue()->imageReader,

@@ -157,7 +157,7 @@ void Pipeline::TearDown(Kernel &kernel) {
 void Pipeline::UpdateDescriptorSets(Kernel &kernel, Texture &texture) {
     std::vector<vk::DescriptorImageInfo> images(1);
     for (auto i = 0; i < images.size(); ++i) {
-        images[i] = texture.CreateDescriptorImageInfo();
+        images[i] = texture.GetDescriptorImageInfo();
     }
     for (auto &descriptorSet: descriptorSets) {
         kernel.device->updateDescriptorSets(

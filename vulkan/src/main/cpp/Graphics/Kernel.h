@@ -45,7 +45,7 @@ namespace Graphics {
 
         void TearDown();
 
-        vk::Result DrawFrame();
+        vk::Result DrawFrame(std::function<void(uint32_t currentFrame)> lambda);
 
         void Submit(vk::CommandBuffer &commandBuffer);
 

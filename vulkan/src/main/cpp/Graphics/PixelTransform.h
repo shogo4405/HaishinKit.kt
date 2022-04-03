@@ -20,7 +20,7 @@ namespace Graphics {
 
         bool IsReady();
 
-        void SetTexture(int32_t width, int32_t height, int32_t format);
+        void SetImageReader(int32_t width, int32_t height, int32_t format);
 
         void SetVideoGravity(VideoGravity newVideoGravity);
 

@@ -1,16 +1,11 @@
 package com.haishinkit.vulkan
 
 import android.content.res.AssetManager
-import android.graphics.ImageFormat
-import android.hardware.HardwareBuffer
 import android.media.ImageReader
-import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import android.util.Size
 import android.view.Surface
-import androidx.annotation.RequiresApi
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.ResampleFilter
@@ -100,7 +95,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     override fun createInputSurface(width: Int, height: Int, format: Int) {
         handler?.post {
-            val surface = setTexture(width, height, format)
+            val surface = nativeCreateInputSurface(width, height, format)
             listener?.onPixelTransformInputSurfaceCreated(this, surface)
         }
     }
@@ -122,7 +117,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     private external fun nativeSetResampleFilter(resampleFilter: Int)
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
-    private external fun setTexture(width: Int, height: Int, format: Int): Surface
+    private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface
     private external fun nativeReadPixels(byteBuffer: ByteBuffer)
     private external fun nativeDispose()
 }

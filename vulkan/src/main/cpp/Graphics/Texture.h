@@ -18,7 +18,6 @@ namespace Graphics {
     struct ImageStorage;
 
     struct Texture {
-        bool invalidateLayout = true;
         VideoGravity videoGravity = RESIZE_ASPECT;
         ResampleFilter resampleFilter = CUBIC;
 
@@ -26,28 +25,30 @@ namespace Graphics {
 
         ~Texture();
 
+        vk::DescriptorImageInfo GetDescriptorImageInfo();
+
         void SetUp(Kernel &kernel, AHardwareBuffer *buffer);
 
         void TearDown(Kernel &kernel);
 
         void SetImageOrientation(ImageOrientation newImageOrientation);
 
-        vk::Viewport GetViewport(Kernel &kernel) const;
+        void UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *buffer);
 
-        PushConstants GetPushConstants(Kernel &kernel) const;
-
-        vk::DescriptorImageInfo CreateDescriptorImageInfo();
-
-        void Update(Kernel &kernel, AHardwareBuffer *buffer);
+        void Layout(Kernel &kernel);
 
     private:
+        bool invalidateLayout = true;
         ImageStorage image;
         vk::UniqueSampler sampler;
-        vk::UniqueImageView imageView;
         ImageOrientation imageOrientation = UP;
         ColorSpace *colorSpace;
         vk::UniqueSamplerYcbcrConversion conversion;
         uint64_t externalFormat = 0;
+
+        vk::Viewport GetViewport(Kernel &kernel) const;
+
+        PushConstants GetPushConstants(Kernel &kernel) const;
     };
 }
 

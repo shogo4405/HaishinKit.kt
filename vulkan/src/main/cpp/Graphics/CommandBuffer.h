@@ -13,12 +13,13 @@ namespace Graphics {
 
     struct CommandBuffer {
         std::vector<vk::UniqueCommandBuffer> commandBuffers;
+        std::vector<vk::Buffer> buffers;
+        std::vector<vk::DeviceSize> offsets;
+        std::vector<vk::Framebuffer> framebuffers;
 
         CommandBuffer();
 
         ~CommandBuffer();
-
-        void SetTextures(Kernel &kernel, const std::vector<Texture *> &textures);
 
         void SetUp(Kernel &kernel);
 
@@ -32,9 +33,6 @@ namespace Graphics {
         static vk::Buffer CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size);
 
         vk::UniqueCommandPool commandPool;
-        std::vector<vk::Buffer> buffers;
-        std::vector<vk::DeviceSize> offsets;
-        std::vector<vk::Framebuffer> framebuffers;
     };
 }
 

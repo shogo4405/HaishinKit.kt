@@ -24,7 +24,7 @@ namespace Graphics {
 
         void Submit(Kernel &kernel, vk::CommandBuffer &commandBuffer);
 
-        vk::Result Present(Kernel &kernel, uint32_t nextIndex, vk::CommandBuffer &commandBuffer);
+        vk::Result Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint32_t currentFrame)> &lambda);
 
     private:
         int32_t currentFrame = 0;

@@ -10,16 +10,20 @@ namespace Graphics {
 
     struct ImageStorage {
         vk::Format format;
-        vk::UniqueImage image;
-        vk::UniqueDeviceMemory memory;
         vk::ImageLayout layout = vk::ImageLayout::ePreinitialized;
         vk::Extent2D extent = vk::Extent2D(0, 0);
 
+        vk::DescriptorImageInfo GetDescriptorImageInfo() {
+            return descriptorImageInfo
+                    .setImageLayout(layout)
+                    .setImageView(imageView.get());
+        }
+
         void SetExternalFormat(uint64_t newExternalFormat);
 
-        void SetUp(Kernel &kernel, vk::ImageCreateInfo info);
+        void SetUp(Kernel &kernel, vk::UniqueSamplerYcbcrConversion &conversion);
 
-        void SetUp(Kernel &kernel, AHardwareBuffer *buffer);
+        void Update(Kernel &kernel, AHardwareBuffer *buffer);
 
         void TearDown(Kernel &kernel);
 
@@ -29,14 +33,18 @@ namespace Graphics {
                 vk::PipelineStageFlagBits srcStageMask,
                 vk::PipelineStageFlagBits dstStageMask);
 
-        vk::UniqueImageView
-        CreateImageView(Kernel &kernel, vk::UniqueSamplerYcbcrConversion &conversion) const;
-
     private:
         AHardwareBuffer *buffer = nullptr;
-        vk::ExternalFormatANDROID externalFormat;
 
-        vk::ImageCreateInfo CreateImageCreateInfo() const;
+        vk::UniqueImage image;
+        vk::UniqueImageView imageView;
+        vk::UniqueDeviceMemory memory;
+
+        vk::ExternalFormatANDROID externalFormat;
+        vk::DescriptorImageInfo descriptorImageInfo;
+        vk::ImageCreateInfo imageCreateInfo;
+        vk::ImageViewCreateInfo imageViewCreateInfo;
+        vk::SamplerYcbcrConversionInfo samplerYcbcrConversionInfo;
     };
 }
 

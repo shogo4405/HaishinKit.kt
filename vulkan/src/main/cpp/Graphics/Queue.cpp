@@ -56,7 +56,10 @@ void Queue::Submit(Kernel &kernel, vk::CommandBuffer &commandBuffer) {
 }
 
 vk::Result
-Queue::Present(Kernel &kernel, uint32_t nextIndex, vk::CommandBuffer &commandBuffer) {
+Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint32_t currentFrame)> &lambda) {
+
+    vk::CommandBuffer commandBuffer = kernel.commandBuffer.commandBuffers[nextIndex].get();
+
     kernel.device->waitForFences(fences[currentFrame], true,
                                  std::numeric_limits<uint64_t>::max());
 
@@ -69,7 +72,7 @@ Queue::Present(Kernel &kernel, uint32_t nextIndex, vk::CommandBuffer &commandBuf
                                      std::numeric_limits<uint64_t>::max());
     }
     images[nextIndex] = fences[currentFrame];
-
+    lambda(currentFrame);
     kernel.device->resetFences(fences[currentFrame]);
 
     queue.submit(

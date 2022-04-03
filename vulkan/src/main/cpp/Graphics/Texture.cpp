@@ -143,97 +143,147 @@ void Texture::SetImageOrientation(ImageOrientation newImageOrientation) {
 }
 
 void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
-    if (sampler) {
-        return;
+    if (!sampler) {
+        vk::Filter filter = vk::Filter::eLinear;
+        switch (resampleFilter) {
+            case LINEAR:
+                filter = vk::Filter::eLinear;
+                break;
+            case NEAREST:
+                filter = vk::Filter::eNearest;
+                break;
+            case CUBIC:
+                filter = vk::Filter::eCubicIMG;
+                break;
+        }
+
+        vk::AndroidHardwareBufferFormatPropertiesANDROID format;
+        vk::AndroidHardwareBufferPropertiesANDROID properties;
+        properties.pNext = &format;
+        kernel.device->getAndroidHardwareBufferPropertiesANDROID(buffer, &properties);
+        auto externalFormat = vk::ExternalFormatANDROID().setExternalFormat(format.externalFormat);
+
+        this->externalFormat = format.externalFormat;
+
+        conversion = kernel.device->createSamplerYcbcrConversionUnique(
+                vk::SamplerYcbcrConversionCreateInfo()
+                        .setPNext(&externalFormat)
+                        .setFormat(vk::Format::eUndefined)
+                        .setYcbcrModel(format.suggestedYcbcrModel)
+                        .setYcbcrRange(format.suggestedYcbcrRange)
+                        .setComponents(format.samplerYcbcrConversionComponents)
+                        .setXChromaOffset(format.suggestedXChromaOffset)
+                        .setYChromaOffset(format.suggestedYChromaOffset)
+                        .setChromaFilter(vk::Filter::eNearest)
+                        .setForceExplicitReconstruction(false));
+
+        auto samplerCreate = vk::SamplerCreateInfo()
+                .setMagFilter(filter)
+                .setMinFilter(filter)
+                .setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
+                .setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
+                .setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
+                .setMipLodBias(0.0f)
+                .setMaxAnisotropy(1)
+                .setCompareOp(vk::CompareOp::eNever)
+                .setMinLod(0.0f)
+                .setMaxLod(0.0f)
+                .setBorderColor(vk::BorderColor::eFloatOpaqueWhite)
+                .setUnnormalizedCoordinates(false);
+
+        if (conversion) {
+            auto ycbcrConversionInfo = vk::SamplerYcbcrConversionInfo()
+                    .setConversion(
+                            conversion.get());
+            samplerCreate.setPNext(&ycbcrConversionInfo);
+        }
+
+        sampler = kernel.device->createSamplerUnique(samplerCreate);
+
+        std::vector<vk::Sampler> samplers(1);
+        samplers[0] = sampler.get();
+
+        kernel.pipeline.SetUp(kernel, samplers);
+        kernel.commandBuffer.SetUp(kernel);
+
+        image.SetExternalFormat(this->externalFormat);
+        image.SetUp(kernel, conversion);
     }
-    vk::Filter filter = vk::Filter::eLinear;
-    switch (resampleFilter) {
-        case LINEAR:
-            filter = vk::Filter::eLinear;
-            break;
-        case NEAREST:
-            filter = vk::Filter::eNearest;
-            break;
-        case CUBIC:
-            filter = vk::Filter::eCubicIMG;
-            break;
-    }
-
-    vk::AndroidHardwareBufferFormatPropertiesANDROID format;
-    vk::AndroidHardwareBufferPropertiesANDROID properties;
-    properties.pNext = &format;
-    kernel.device->getAndroidHardwareBufferPropertiesANDROID(buffer, &properties);
-    auto externalFormat = vk::ExternalFormatANDROID().setExternalFormat(format.externalFormat);
-
-    this->externalFormat = format.externalFormat;
-
-    conversion = kernel.device->createSamplerYcbcrConversionUnique(
-            vk::SamplerYcbcrConversionCreateInfo()
-                    .setPNext(&externalFormat)
-                    .setFormat(vk::Format::eUndefined)
-                    .setYcbcrModel(format.suggestedYcbcrModel)
-                    .setYcbcrRange(format.suggestedYcbcrRange)
-                    .setComponents(format.samplerYcbcrConversionComponents)
-                    .setXChromaOffset(format.suggestedXChromaOffset)
-                    .setYChromaOffset(format.suggestedYChromaOffset)
-                    .setChromaFilter(vk::Filter::eNearest)
-                    .setForceExplicitReconstruction(false));
-
-    auto samplerCreate = vk::SamplerCreateInfo()
-            .setMagFilter(filter)
-            .setMinFilter(filter)
-            .setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
-            .setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
-            .setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
-            .setMipLodBias(0.0f)
-            .setMaxAnisotropy(1)
-            .setCompareOp(vk::CompareOp::eNever)
-            .setMinLod(0.0f)
-            .setMaxLod(0.0f)
-            .setBorderColor(vk::BorderColor::eFloatOpaqueWhite)
-            .setUnnormalizedCoordinates(false);
-
-    if (conversion) {
-        auto ycbcrConversionInfo = vk::SamplerYcbcrConversionInfo()
-                .setConversion(
-                        conversion.get());
-        samplerCreate.setPNext(&ycbcrConversionInfo);
-    }
-
-    sampler = kernel.device->createSamplerUnique(samplerCreate);
-
-    std::vector<vk::Sampler> samplers(1);
-    samplers[0] = sampler.get();
-
-    kernel.pipeline.SetUp(kernel, samplers);
-    kernel.commandBuffer.SetUp(kernel);
 }
 
 void Texture::TearDown(Kernel &kernel) {
 }
 
-void Texture::Update(Kernel &kernel, AHardwareBuffer *buffer) {
-    image.SetExternalFormat(externalFormat);
-    image.SetUp(kernel, buffer);
-
-    auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
-    commandBuffer.begin(vk::CommandBufferBeginInfo());
-    image.SetLayout(
-            commandBuffer,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            vk::PipelineStageFlagBits::eHost,
-            vk::PipelineStageFlagBits::eFragmentShader
-    );
-    commandBuffer.end();
-    kernel.Submit(commandBuffer);
-
-    imageView = image.CreateImageView(kernel, conversion);
+void Texture::UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *buffer) {
+    image.Update(kernel, buffer);
     kernel.pipeline.UpdateDescriptorSets(kernel, *this);
 }
 
-vk::DescriptorImageInfo Texture::CreateDescriptorImageInfo() {
-    return vk::DescriptorImageInfo()
-            .setImageLayout(image.layout)
-            .setSampler(sampler.get())
-            .setImageView(imageView.get());
+void Texture::Layout(Kernel &kernel) {
+    if (!invalidateLayout && !kernel.invalidateSurfaceRotation) {
+        return;
+    }
+
+    const auto colors = {vk::ClearValue().setColor(
+            vk::ClearColorValue().setFloat32({0.f, 0.f, 0.f, 1.f}))};
+
+    const std::vector<vk::Rect2D> scissors = {
+            vk::Rect2D().setExtent(kernel.swapChain.size).setOffset({0, 0})
+    };
+
+    const std::vector<vk::Viewport> viewports = {GetViewport(kernel)};
+    const PushConstants pushConstantsBlock = GetPushConstants(kernel);
+
+    for (auto i = 0; i < kernel.commandBuffer.commandBuffers.size(); ++i) {
+        auto &commandBuffer = kernel.commandBuffer.commandBuffers[i].get();
+        commandBuffer.begin(
+                vk::CommandBufferBeginInfo()
+                        .setFlags(vk::CommandBufferUsageFlagBits::eRenderPassContinue));
+
+        commandBuffer.setViewport(0, viewports);
+        commandBuffer.setScissor(0, scissors);
+
+        commandBuffer.pushConstants(
+                kernel.pipeline.pipelineLayout.get(),
+                vk::ShaderStageFlagBits::eVertex,
+                0,
+                sizeof(PushConstants),
+                &pushConstantsBlock);
+
+        commandBuffer.beginRenderPass(
+                vk::RenderPassBeginInfo()
+                        .setRenderPass(kernel.swapChain.renderPass.get())
+                        .setFramebuffer(kernel.commandBuffer.framebuffers[i])
+                        .setRenderArea(
+                                vk::Rect2D().setOffset({0, 0}).setExtent(kernel.swapChain.size))
+                        .setClearValues(colors),
+                vk::SubpassContents::eInline);
+
+        commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                   kernel.pipeline.pipeline.get());
+
+        commandBuffer.bindVertexBuffers(0, kernel.commandBuffer.buffers,
+                                        kernel.commandBuffer.offsets);
+
+        commandBuffer.bindDescriptorSets(
+                vk::PipelineBindPoint::eGraphics,
+                kernel.pipeline.pipelineLayout.get(),
+                0,
+                1,
+                &kernel.pipeline.descriptorSets[0].get(),
+                0,
+                nullptr);
+
+        commandBuffer.draw(4, 1, 0, 0);
+        commandBuffer.endRenderPass();
+        commandBuffer.end();
+    }
+
+    invalidateLayout = false;
+    kernel.invalidateSurfaceRotation = false;
+}
+
+vk::DescriptorImageInfo Texture::GetDescriptorImageInfo() {
+    return image.GetDescriptorImageInfo()
+            .setSampler(sampler.get());
 }
