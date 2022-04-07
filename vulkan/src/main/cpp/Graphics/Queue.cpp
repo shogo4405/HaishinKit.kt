@@ -55,13 +55,13 @@ void Queue::Submit(Kernel &kernel, vk::CommandBuffer &commandBuffer) {
     kernel.device->destroy(fence);
 }
 
-vk::Result
-Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint32_t currentFrame)> &lambda) {
-
-    vk::CommandBuffer commandBuffer = kernel.commandBuffer.commandBuffers[nextIndex].get();
-
+void Queue::Wait(Kernel &kernel) {
     kernel.device->waitForFences(fences[currentFrame], true,
                                  std::numeric_limits<uint64_t>::max());
+}
+
+vk::Result
+Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint32_t)> &lambda) {
 
     vk::Result result;
     const auto waitStageMask =
@@ -72,8 +72,10 @@ Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint
                                      std::numeric_limits<uint64_t>::max());
     }
     images[nextIndex] = fences[currentFrame];
-    lambda(currentFrame);
     kernel.device->resetFences(fences[currentFrame]);
+
+    vk::CommandBuffer commandBuffer = kernel.commandBuffer.commandBuffers[nextIndex].get();
+    lambda(nextIndex);
 
     queue.submit(
             vk::SubmitInfo()

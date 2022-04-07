@@ -39,12 +39,13 @@ namespace Graphics {
 
     private:
         bool invalidateLayout = true;
-        ImageStorage image;
+        std::vector<ImageStorage> storages;
         vk::UniqueSampler sampler;
         ImageOrientation imageOrientation = UP;
         ColorSpace *colorSpace;
         vk::UniqueSamplerYcbcrConversion conversion;
         uint64_t externalFormat = 0;
+        uint64_t currentImage = 0;
 
         vk::Viewport GetViewport(Kernel &kernel) const;
 

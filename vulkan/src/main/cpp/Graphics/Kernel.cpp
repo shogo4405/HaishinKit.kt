@@ -94,10 +94,11 @@ void Kernel::TearDown() {
     swapChain.TearDown(*this);
 }
 
-vk::Result Kernel::DrawFrame(std::function<void(uint32_t currentFrame)> lambda) {
+vk::Result Kernel::DrawFrame(const std::function<void(uint32_t)> &lambda) {
     if (!isAvailable) {
         return vk::Result::eErrorInitializationFailed;
     }
+    queue.Wait(*this);
     uint32_t index = queue.Acquire(*this);
     return queue.Present(*this, index, lambda);
 }

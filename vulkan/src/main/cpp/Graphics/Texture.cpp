@@ -12,8 +12,6 @@ using namespace Graphics;
 Texture::Texture(vk::Extent2D extent, int32_t format) : colorSpace(new ColorSpace()) {
     colorSpace->format = format;
     colorSpace->extent = extent;
-    image.extent = extent;
-    image.format = colorSpace->GetFormat();
 }
 
 Texture::~Texture() = default;
@@ -79,14 +77,14 @@ vk::Viewport Texture::GetViewport(Kernel &kernel) const {
     vk::Viewport viewport = vk::Viewport();
 
     vk::Extent2D surface = kernel.swapChain.size;
-    auto newImageExtent = image.extent;
+    auto newImageExtent = colorSpace->extent;
     if (surface.width < surface.height) {
-        if (image.extent.height < image.extent.width) {
-            newImageExtent = vk::Extent2D(image.extent.height, image.extent.width);
+        if (colorSpace->extent.height < colorSpace->extent.width) {
+            newImageExtent = vk::Extent2D(colorSpace->extent.height, colorSpace->extent.width);
         }
     } else {
-        if (image.extent.width < image.extent.height) {
-            newImageExtent = vk::Extent2D(image.extent.height, image.extent.width);
+        if (colorSpace->extent.width < colorSpace->extent.height) {
+            newImageExtent = vk::Extent2D(colorSpace->extent.height, colorSpace->extent.width);
         }
     }
 
@@ -206,8 +204,13 @@ void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
         kernel.pipeline.SetUp(kernel, samplers);
         kernel.commandBuffer.SetUp(kernel);
 
-        image.SetExternalFormat(this->externalFormat);
-        image.SetUp(kernel, conversion);
+        storages.resize(kernel.swapChain.GetImagesCount());
+        for (auto &storage : storages) {
+            storage.extent = colorSpace->extent;
+            storage.format = colorSpace->GetFormat();
+            storage.SetExternalFormat(this->externalFormat);
+            storage.SetUp(kernel, conversion);
+        }
     }
 }
 
@@ -215,14 +218,17 @@ void Texture::TearDown(Kernel &kernel) {
 }
 
 void Texture::UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *buffer) {
-    image.Update(kernel, buffer);
+    storages[currentFrame].Update(kernel, buffer);
     kernel.pipeline.UpdateDescriptorSets(kernel, *this);
+    currentImage = currentFrame;
 }
 
 void Texture::Layout(Kernel &kernel) {
+    /*
     if (!invalidateLayout && !kernel.invalidateSurfaceRotation) {
         return;
     }
+     */
 
     const auto colors = {vk::ClearValue().setColor(
             vk::ClearColorValue().setFloat32({0.f, 0.f, 0.f, 1.f}))};
@@ -284,6 +290,6 @@ void Texture::Layout(Kernel &kernel) {
 }
 
 vk::DescriptorImageInfo Texture::GetDescriptorImageInfo() {
-    return image.GetDescriptorImageInfo()
+    return storages[currentImage].GetDescriptorImageInfo()
             .setSampler(sampler.get());
 }

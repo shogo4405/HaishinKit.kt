@@ -9,8 +9,6 @@ void ImageStorage::SetExternalFormat(uint64_t newExternalFormat) {
 }
 
 void ImageStorage::SetUp(Kernel &kernel, vk::UniqueSamplerYcbcrConversion &conversion) {
-    layout = vk::ImageLayout::eUndefined;
-
     // vk::ImageCreateInfo
     imageCreateInfo
             .setImageType(vk::ImageType::e2D)
@@ -50,10 +48,12 @@ void ImageStorage::SetUp(Kernel &kernel, vk::UniqueSamplerYcbcrConversion &conve
 }
 
 void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *newBuffer) {
-    this->buffer = newBuffer;
+    buffer = newBuffer;
+    layout = vk::ImageLayout::eUndefined;
 
     image = kernel.device->createImageUnique(
             imageCreateInfo
+                    .setInitialLayout(layout)
                     .setPNext(&vk::ExternalMemoryImageCreateInfo()
                             .setHandleTypes(
                                     vk::ExternalMemoryHandleTypeFlagBits::eAndroidHardwareBufferANDROID)

@@ -32,8 +32,8 @@ void SwapChain::SetUp(Kernel &kernel) {
                     .setQueueFamilyIndexCount(1)
                     .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
                     .setPreTransform(capabilities.currentTransform)
-                    .setPresentMode(vk::PresentModeKHR::eFifo)
-                    .setClipped(false)
+                    .setPresentMode(vk::PresentModeKHR::eMailbox)
+                    .setClipped(true)
                     .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit)
                     .setOldSwapchain(nullptr));
 
@@ -41,7 +41,7 @@ void SwapChain::SetUp(Kernel &kernel) {
 
     const auto imagesCount = images.size();
     imageViews.resize(imagesCount);
-    for (uint32_t i = 0; i < imagesCount; i++) {
+    for (uint32_t i = 0; i < imagesCount; ++i) {
         imageViews[i] = kernel.CreateImageView(images[i], format);
     }
 

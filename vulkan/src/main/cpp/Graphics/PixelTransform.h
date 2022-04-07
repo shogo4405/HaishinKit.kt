@@ -12,6 +12,8 @@ namespace Graphics {
 
     class PixelTransform {
     public:
+        static void OnImageAvailable(void *ctx, AImageReader *reader);
+
         AImageReader *imageReader;
 
         PixelTransform();

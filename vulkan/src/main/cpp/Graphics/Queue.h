@@ -22,9 +22,12 @@ namespace Graphics {
 
         int32_t Acquire(Kernel &kernel);
 
+        void Wait(Kernel &kernel);
+
         void Submit(Kernel &kernel, vk::CommandBuffer &commandBuffer);
 
-        vk::Result Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint32_t currentFrame)> &lambda);
+        vk::Result
+        Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint32_t)> &lambda);
 
     private:
         int32_t currentFrame = 0;

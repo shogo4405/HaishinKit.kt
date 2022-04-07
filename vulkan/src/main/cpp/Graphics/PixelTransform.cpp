@@ -9,7 +9,7 @@
 #include "DynamicLoader.h"
 
 namespace Graphics {
-    void OnImageAvailable(void *ctx, AImageReader *reader) {
+    void PixelTransform::OnImageAvailable(void *ctx, AImageReader *reader) {
         reinterpret_cast<PixelTransform *>(ctx)->OnImageAvailable(reader);
     }
 
@@ -67,7 +67,7 @@ namespace Graphics {
 
         AImageReader_ImageListener listener{
                 .context = this,
-                .onImageAvailable = Graphics::OnImageAvailable
+                .onImageAvailable = OnImageAvailable
         };
 
         AImageReader_setImageListener(imageReader, &listener);
@@ -130,8 +130,8 @@ namespace Graphics {
         }
         const auto &texture = textures[0];
         texture->SetUp(*kernel, buffer);
-        kernel->DrawFrame([=](uint32_t currentFrame) {
-            texture->UpdateAt(*kernel, currentFrame, buffer);
+        kernel->DrawFrame([=](uint32_t index) {
+            texture->UpdateAt(*kernel, index, buffer);
             texture->Layout(*kernel);
         });
         AImage_delete(image);
