@@ -1,9 +1,9 @@
 package com.haishinkit.vulkan
 
 import android.content.res.AssetManager
-import android.media.ImageReader
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -14,9 +14,7 @@ import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
 import java.nio.ByteBuffer
 
-class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
-    PixelTransform,
-    ImageReader.OnImageAvailableListener {
+class VkPixelTransform(override var listener: PixelTransform.Listener? = null) : PixelTransform {
     companion object {
         init {
             System.loadLibrary("libhkvulkan")
@@ -34,6 +32,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         set(value) {
             field = value
             nativeSetSurface(value)
+            listener?.onPixelTransformSurfaceChanged(this, value)
         }
 
     override var imageOrientation: ImageOrientation = ImageOrientation.UP
@@ -98,9 +97,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             val surface = nativeCreateInputSurface(width, height, format)
             listener?.onPixelTransformInputSurfaceCreated(this, surface)
         }
-    }
-
-    override fun onImageAvailable(reader: ImageReader) {
     }
 
     override fun readPixels(byteBuffer: ByteBuffer) {

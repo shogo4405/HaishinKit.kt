@@ -47,7 +47,7 @@ namespace Graphics {
         std::vector<Texture *> textures;
         Kernel *kernel;
         VideoGravity videoGravity = RESIZE_ASPECT_FILL;
-        ResampleFilter resampleFilter = NEAREST;
+        ResampleFilter resampleFilter = LINEAR;
         ImageOrientation imageOrientation = UP;
     };
 }

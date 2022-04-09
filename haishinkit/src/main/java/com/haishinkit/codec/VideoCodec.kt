@@ -5,6 +5,7 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.Size
 import com.haishinkit.flv.tag.FlvTag
 import com.haishinkit.graphics.PixelTransform
@@ -63,10 +64,6 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
 
     internal fun setAssetManager(assetManager: AssetManager?) {
         pixelTransform.assetManager = assetManager
-    }
-
-    internal fun createInputSurface(width: Int, height: Int, format: Int) {
-        pixelTransform.createInputSurface(width, height, format)
     }
 
     override fun createOutputFormat(): MediaFormat {
