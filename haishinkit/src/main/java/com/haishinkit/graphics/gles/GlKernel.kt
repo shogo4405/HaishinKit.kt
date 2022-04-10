@@ -5,6 +5,7 @@ import android.opengl.EGL14
 import android.opengl.EGLConfig
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -183,12 +184,6 @@ internal class GlKernel(
     }
 
     private fun layout(newTextureSize: Size) {
-        var swapped = if (extent.width < extent.height) {
-            newTextureSize.height < newTextureSize.width
-        } else {
-            newTextureSize.width < newTextureSize.height
-        }
-
         var degrees = when (imageOrientation) {
             ImageOrientation.UP -> 0
             ImageOrientation.DOWN -> 180
@@ -208,19 +203,28 @@ internal class GlKernel(
                 3 -> 270
                 else -> 0
             }
-        } else {
-            swapped = false
         }
 
         if (degrees.rem(180) == 0 && (imageOrientation == ImageOrientation.RIGHT || imageOrientation == ImageOrientation.RIGHT_MIRRORED)) {
             degrees += 180
         }
 
+        var swapped = false
         when (degrees.rem(360)) {
-            0 -> texCoordBuffer.put(TEX_COORDS_ROTATION_0)
-            90 -> texCoordBuffer.put(TEX_COORDS_ROTATION_90)
-            180 -> texCoordBuffer.put(TEX_COORDS_ROTATION_180)
-            270 -> texCoordBuffer.put(TEX_COORDS_ROTATION_270)
+            0 -> {
+                texCoordBuffer.put(TEX_COORDS_ROTATION_0)
+            }
+            90 -> {
+                texCoordBuffer.put(TEX_COORDS_ROTATION_90)
+            }
+            180 -> {
+                swapped = true
+                texCoordBuffer.put(TEX_COORDS_ROTATION_180)
+            }
+            270 -> {
+                swapped = true
+                texCoordBuffer.put(TEX_COORDS_ROTATION_270)
+            }
         }
 
         texCoordBuffer.position(0)
