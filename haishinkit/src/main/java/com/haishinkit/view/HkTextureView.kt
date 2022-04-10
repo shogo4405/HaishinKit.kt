@@ -61,6 +61,7 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
         (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
             pixelTransform.surfaceRotation = it
+            stream?.videoCodec?.pixelTransform?.surfaceRotation = it
         }
         pixelTransform.extent = Size(width, height)
     }
