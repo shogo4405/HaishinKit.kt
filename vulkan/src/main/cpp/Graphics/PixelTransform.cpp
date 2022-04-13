@@ -17,7 +17,7 @@ namespace Graphics {
             kernel(new Kernel()),
             textures(std::vector<Texture *>(0)),
             nativeWindow(nullptr),
-            imageReader(nullptr) {
+            imageReader(new ImageReader()) {
     }
 
     PixelTransform::~PixelTransform() {
@@ -25,6 +25,10 @@ namespace Graphics {
         if (nativeWindow != nullptr) {
             ANativeWindow_release(nativeWindow);
         }
+    }
+
+    ANativeWindow *PixelTransform::GetInputSurface() {
+        return imageReader->GetWindow();
     }
 
     void PixelTransform::SetVideoGravity(VideoGravity newVideoGravity) {
@@ -56,21 +60,12 @@ namespace Graphics {
         textures.clear();
         textures.push_back(texture);
 
-        AImageReader_newWithUsage(
-                width,
-                height,
-                format,
-                AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
-                AHARDWAREBUFFER_USAGE_CPU_READ_RARELY,
-                2,
-                &imageReader);
-
         AImageReader_ImageListener listener{
                 .context = this,
                 .onImageAvailable = OnImageAvailable
         };
-
-        AImageReader_setImageListener(imageReader, &listener);
+        imageReader->listener = &listener;
+        imageReader->SetUp(width, height, format);
     }
 
     void PixelTransform::SetSurfaceRotation(SurfaceRotation surfaceRotation) {
@@ -114,27 +109,16 @@ namespace Graphics {
     }
 
     void PixelTransform::OnImageAvailable(AImageReader *reader) {
+        AHardwareBuffer *buffer = imageReader->GetLatestBuffer();
         if (!IsReady()) {
-            return;
-        }
-        AImage *image;
-        media_status_t status = AImageReader_acquireLatestImage(reader, &image);
-        if (status != AMEDIA_OK) {
-            return;
-        }
-        AHardwareBuffer *buffer;
-        status = AImage_getHardwareBuffer(image, &buffer);
-        if (status != AMEDIA_OK) {
-            AImage_delete(image);
             return;
         }
         const auto &texture = textures[0];
         texture->SetUp(*kernel, buffer);
         kernel->DrawFrame([=](uint32_t index) {
             texture->UpdateAt(*kernel, index, buffer);
-            texture->Layout(*kernel);
+            texture->LayoutAt(*kernel, index);
         });
-        AImage_delete(image);
     }
 }
 
@@ -185,10 +169,8 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeCreateInputSurface(JNIEnv *env
             [=](Graphics::PixelTransform *self) {
                 self->SetImageReader(width, height, format);
             });
-    AImageReader_getWindow(Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
-                                                                           thiz)->takeRetainedValue()->imageReader,
-                           &window);
-    return ANativeWindow_toSurface(env, window);
+    return ANativeWindow_toSurface(env, Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
+                                                                                        thiz)->takeRetainedValue()->GetInputSurface());
 }
 
 JNIEXPORT void JNICALL

@@ -78,7 +78,7 @@ Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint
     lambda(nextIndex);
 
     queue.submit(
-            vk::SubmitInfo()
+            submitInfo
                     .setWaitSemaphores(waitSemaphores[currentFrame].get())
                     .setWaitDstStageMask(waitStageMask)
                     .setCommandBuffers(commandBuffer)
@@ -86,7 +86,7 @@ Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint
             fences[currentFrame]);
 
     result = queue.presentKHR(
-            vk::PresentInfoKHR()
+            presentInfo
                     .setSwapchains(kernel.swapChain.swapchain.get())
                     .setImageIndices(nextIndex)
                     .setWaitSemaphores(signalSemaphores[currentFrame].get())

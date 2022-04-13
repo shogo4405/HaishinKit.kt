@@ -16,6 +16,7 @@ namespace Graphics {
         std::vector<vk::Buffer> buffers;
         std::vector<vk::DeviceSize> offsets;
         std::vector<vk::Framebuffer> framebuffers;
+        vk::UniqueCommandPool commandPool;
 
         CommandBuffer();
 
@@ -31,8 +32,6 @@ namespace Graphics {
         static const Vertex VERTICES[];
 
         static vk::Buffer CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size);
-
-        vk::UniqueCommandPool commandPool;
     };
 }
 

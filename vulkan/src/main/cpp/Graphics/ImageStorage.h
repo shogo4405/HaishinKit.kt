@@ -13,11 +13,7 @@ namespace Graphics {
         vk::ImageLayout layout = vk::ImageLayout::ePreinitialized;
         vk::Extent2D extent = vk::Extent2D(0, 0);
 
-        vk::DescriptorImageInfo GetDescriptorImageInfo() {
-            return descriptorImageInfo
-                    .setImageLayout(layout)
-                    .setImageView(imageView.get());
-        }
+        vk::DescriptorImageInfo GetDescriptorImageInfo();
 
         void SetExternalFormat(uint64_t newExternalFormat);
 
@@ -34,8 +30,6 @@ namespace Graphics {
                 vk::PipelineStageFlagBits dstStageMask);
 
     private:
-        AHardwareBuffer *buffer = nullptr;
-
         vk::UniqueImage image;
         vk::UniqueImageView imageView;
         vk::UniqueDeviceMemory memory;
@@ -44,6 +38,7 @@ namespace Graphics {
         vk::DescriptorImageInfo descriptorImageInfo;
         vk::ImageCreateInfo imageCreateInfo;
         vk::ImageViewCreateInfo imageViewCreateInfo;
+        vk::MemoryAllocateInfo memoryAllocateInfo;
         vk::SamplerYcbcrConversionInfo samplerYcbcrConversionInfo;
     };
 }

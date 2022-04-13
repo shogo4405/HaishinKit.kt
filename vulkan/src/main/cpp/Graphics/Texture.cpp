@@ -2,16 +2,18 @@
 #include "Texture.h"
 #include "Util.h"
 #include "ImageStorage.h"
-#include "ColorSpace.h"
 #include <sys/socket.h>
 #include <unistd.h>
 #include <glm/ext/matrix_transform.hpp>
 
 using namespace Graphics;
 
-Texture::Texture(vk::Extent2D extent, int32_t format) : colorSpace(new ColorSpace()) {
-    colorSpace->format = format;
-    colorSpace->extent = extent;
+vk::ClearColorValue Texture::CLEAR_COLOR = vk::ClearColorValue().setFloat32({0.f, 0.f, 0.f, 1.f});
+
+Texture::Texture(vk::Extent2D extent, int32_t format) : extent(extent), format(format) {
+    colors.resize(1);
+    colors.push_back(vk::ClearValue().setColor(CLEAR_COLOR));
+    scissors.resize(1);
 }
 
 Texture::~Texture() = default;
@@ -77,14 +79,14 @@ vk::Viewport Texture::GetViewport(Kernel &kernel) const {
     vk::Viewport viewport = vk::Viewport();
 
     vk::Extent2D surface = kernel.swapChain.size;
-    auto newImageExtent = colorSpace->extent;
+    auto newImageExtent = extent;
     if (surface.width < surface.height) {
-        if (colorSpace->extent.height < colorSpace->extent.width) {
-            newImageExtent = vk::Extent2D(colorSpace->extent.height, colorSpace->extent.width);
+        if (extent.height < extent.width) {
+            newImageExtent = vk::Extent2D(extent.height, extent.width);
         }
     } else {
-        if (colorSpace->extent.width < colorSpace->extent.height) {
-            newImageExtent = vk::Extent2D(colorSpace->extent.height, colorSpace->extent.width);
+        if (extent.width < extent.height) {
+            newImageExtent = vk::Extent2D(extent.height, extent.width);
         }
     }
 
@@ -137,7 +139,6 @@ vk::Viewport Texture::GetViewport(Kernel &kernel) const {
 
 void Texture::SetImageOrientation(ImageOrientation newImageOrientation) {
     imageOrientation = newImageOrientation;
-    invalidateLayout = true;
 }
 
 void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
@@ -206,8 +207,8 @@ void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
 
         storages.resize(kernel.swapChain.GetImagesCount());
         for (auto &storage : storages) {
-            storage.extent = colorSpace->extent;
-            storage.format = colorSpace->GetFormat();
+            storage.extent = extent;
+            storage.format = vk::Format::eUndefined;
             storage.SetExternalFormat(this->externalFormat);
             storage.SetUp(kernel, conversion);
         }
@@ -218,78 +219,58 @@ void Texture::TearDown(Kernel &kernel) {
 }
 
 void Texture::UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *buffer) {
-    storages[currentFrame].Update(kernel, buffer);
-    kernel.pipeline.UpdateDescriptorSets(kernel, *this);
-    currentImage = currentFrame;
+    auto storage = &storages[currentFrame];
+    storage->Update(kernel, buffer);
+    storage->GetDescriptorImageInfo().setSampler(sampler.get());
+    kernel.pipeline.UpdateDescriptorSets(kernel, *storage);
 }
 
-void Texture::Layout(Kernel &kernel) {
-    /*
-    if (!invalidateLayout && !kernel.invalidateSurfaceRotation) {
-        return;
-    }
-     */
-
-    const auto colors = {vk::ClearValue().setColor(
-            vk::ClearColorValue().setFloat32({0.f, 0.f, 0.f, 1.f}))};
-
-    const std::vector<vk::Rect2D> scissors = {
-            vk::Rect2D().setExtent(kernel.swapChain.size).setOffset({0, 0})
-    };
+void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
+    scissors[0].setExtent(kernel.swapChain.size);
 
     const std::vector<vk::Viewport> viewports = {GetViewport(kernel)};
     const PushConstants pushConstantsBlock = GetPushConstants(kernel);
 
-    for (auto i = 0; i < kernel.commandBuffer.commandBuffers.size(); ++i) {
-        auto &commandBuffer = kernel.commandBuffer.commandBuffers[i].get();
-        commandBuffer.begin(
-                vk::CommandBufferBeginInfo()
-                        .setFlags(vk::CommandBufferUsageFlagBits::eRenderPassContinue));
+    auto &commandBuffer = kernel.commandBuffer.commandBuffers[currentFrame].get();
+    commandBuffer.begin(
+            vk::CommandBufferBeginInfo()
+                    .setFlags(vk::CommandBufferUsageFlagBits::eRenderPassContinue));
 
-        commandBuffer.setViewport(0, viewports);
-        commandBuffer.setScissor(0, scissors);
+    commandBuffer.setViewport(0, viewports);
+    commandBuffer.setScissor(0, scissors);
 
-        commandBuffer.pushConstants(
-                kernel.pipeline.pipelineLayout.get(),
-                vk::ShaderStageFlagBits::eVertex,
-                0,
-                sizeof(PushConstants),
-                &pushConstantsBlock);
+    commandBuffer.pushConstants(
+            kernel.pipeline.pipelineLayout.get(),
+            vk::ShaderStageFlagBits::eVertex,
+            0,
+            sizeof(PushConstants),
+            &pushConstantsBlock);
 
-        commandBuffer.beginRenderPass(
-                vk::RenderPassBeginInfo()
-                        .setRenderPass(kernel.swapChain.renderPass.get())
-                        .setFramebuffer(kernel.commandBuffer.framebuffers[i])
-                        .setRenderArea(
-                                vk::Rect2D().setOffset({0, 0}).setExtent(kernel.swapChain.size))
-                        .setClearValues(colors),
-                vk::SubpassContents::eInline);
+    commandBuffer.beginRenderPass(
+            vk::RenderPassBeginInfo()
+                    .setRenderPass(kernel.swapChain.renderPass.get())
+                    .setFramebuffer(kernel.commandBuffer.framebuffers[currentFrame])
+                    .setRenderArea(
+                            vk::Rect2D().setOffset({0, 0}).setExtent(kernel.swapChain.size))
+                    .setClearValues(colors),
+            vk::SubpassContents::eInline);
 
-        commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                   kernel.pipeline.pipeline.get());
+    commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                               kernel.pipeline.pipeline.get());
 
-        commandBuffer.bindVertexBuffers(0, kernel.commandBuffer.buffers,
-                                        kernel.commandBuffer.offsets);
+    commandBuffer.bindVertexBuffers(0, kernel.commandBuffer.buffers,
+                                    kernel.commandBuffer.offsets);
 
-        commandBuffer.bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                kernel.pipeline.pipelineLayout.get(),
-                0,
-                1,
-                &kernel.pipeline.descriptorSets[0].get(),
-                0,
-                nullptr);
+    commandBuffer.bindDescriptorSets(
+            vk::PipelineBindPoint::eGraphics,
+            kernel.pipeline.pipelineLayout.get(),
+            0,
+            1,
+            &kernel.pipeline.descriptorSets[0].get(),
+            0,
+            nullptr);
 
-        commandBuffer.draw(4, 1, 0, 0);
-        commandBuffer.endRenderPass();
-        commandBuffer.end();
-    }
-
-    invalidateLayout = false;
-    kernel.invalidateSurfaceRotation = false;
-}
-
-vk::DescriptorImageInfo Texture::GetDescriptorImageInfo() {
-    return storages[currentImage].GetDescriptorImageInfo()
-            .setSampler(sampler.get());
+    commandBuffer.draw(4, 1, 0, 0);
+    commandBuffer.endRenderPass();
+    commandBuffer.end();
 }

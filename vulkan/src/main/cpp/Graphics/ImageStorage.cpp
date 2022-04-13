@@ -4,6 +4,12 @@
 
 using namespace Graphics;
 
+vk::DescriptorImageInfo ImageStorage::GetDescriptorImageInfo() {
+    return descriptorImageInfo
+            .setImageLayout(layout)
+            .setImageView(imageView.get());
+}
+
 void ImageStorage::SetExternalFormat(uint64_t newExternalFormat) {
     externalFormat.setExternalFormat(newExternalFormat);
 }
@@ -47,8 +53,7 @@ void ImageStorage::SetUp(Kernel &kernel, vk::UniqueSamplerYcbcrConversion &conve
     }
 }
 
-void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *newBuffer) {
-    buffer = newBuffer;
+void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *buffer) {
     layout = vk::ImageLayout::eUndefined;
 
     image = kernel.device->createImageUnique(
@@ -64,7 +69,7 @@ void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *newBuffer) {
     const auto hardwareBufferProperties = kernel.device->getAndroidHardwareBufferPropertiesANDROID(
             *buffer);
     memory = kernel.device->allocateMemoryUnique(
-            vk::MemoryAllocateInfo()
+            memoryAllocateInfo
                     .setAllocationSize(hardwareBufferProperties.allocationSize)
                     .setMemoryTypeIndex(
                             kernel.FindMemoryType(
@@ -78,17 +83,14 @@ void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *newBuffer) {
     );
 
     kernel.device->bindImageMemory(image.get(), memory.get(), 0);
-
-    auto commandBuffer = kernel.commandBuffer.Allocate(kernel);
-    commandBuffer.begin(vk::CommandBufferBeginInfo());
-    SetLayout(
-            commandBuffer,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            vk::PipelineStageFlagBits::eHost,
-            vk::PipelineStageFlagBits::eFragmentShader
-    );
-    commandBuffer.end();
-    kernel.Submit(commandBuffer);
+    kernel.Submit([=](vk::CommandBuffer commandBuffer) {
+        SetLayout(
+                commandBuffer,
+                vk::ImageLayout::eShaderReadOnlyOptimal,
+                vk::PipelineStageFlagBits::eHost,
+                vk::PipelineStageFlagBits::eFragmentShader
+        );
+    });
 
     imageViewCreateInfo.setImage(image.get());
     imageView = kernel.device->createImageViewUnique(imageViewCreateInfo);

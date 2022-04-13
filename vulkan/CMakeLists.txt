@@ -11,7 +11,7 @@ message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 
 # Declares and names the project.
 
-project("vulkan")
+project("hkvulkan")
 
 add_definitions(-DVULKAN_HPP_DISPATCH_LOADER_DYNAMIC)
 
@@ -22,13 +22,12 @@ add_definitions(-DVULKAN_HPP_DISPATCH_LOADER_DYNAMIC)
 
 add_library(
         # Sets the name of the library.
-        libhkvulkan
+        hkvulkan
         # Sets the library as a shared library.
         SHARED
         # Provides a relative path to your source file(s).
         src/main/cpp/haishinkit.hpp
         src/main/cpp/Graphics/Kernel.cpp
-        src/main/cpp/Graphics/ColorSpace.cpp
         src/main/cpp/Graphics/ImageStorage.cpp
         src/main/cpp/Graphics/DynamicLoader.cpp
         src/main/cpp/Graphics/CommandBuffer.cpp
@@ -37,6 +36,7 @@ add_library(
         src/main/cpp/Graphics/SwapChain.cpp
         src/main/cpp/Graphics/Pipeline.cpp
         src/main/cpp/Graphics/Texture.cpp
+        src/main/cpp/Graphics/ImageReader.cpp
         src/main/cpp/Graphics/Util.cpp
         src/main/cpp/Graphics/Vertex.hpp
         src/main/cpp/Graphics/PushConstants.hpp
@@ -67,7 +67,7 @@ find_library(
 
 target_link_libraries(
         # Specifies the target library.
-        libhkvulkan
+        hkvulkan
         # Links the target library to the log library
         # included in the NDK.
         -landroid

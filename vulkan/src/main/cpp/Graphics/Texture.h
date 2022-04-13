@@ -8,7 +8,6 @@
 #include "ImageStorage.h"
 #include "VideoGravity.h"
 #include "ResampleFilter.h"
-#include "ColorSpace.h"
 #include "ImageOrientation.h"
 #include "PushConstants.hpp"
 
@@ -25,8 +24,6 @@ namespace Graphics {
 
         ~Texture();
 
-        vk::DescriptorImageInfo GetDescriptorImageInfo();
-
         void SetUp(Kernel &kernel, AHardwareBuffer *buffer);
 
         void TearDown(Kernel &kernel);
@@ -35,17 +32,21 @@ namespace Graphics {
 
         void UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *buffer);
 
-        void Layout(Kernel &kernel);
+        void LayoutAt(Kernel &kernel, uint32_t currentFrame);
 
     private:
-        bool invalidateLayout = true;
+        static vk::ClearColorValue CLEAR_COLOR;
+
+        int32_t format;
+        vk::Extent2D extent;
         std::vector<ImageStorage> storages;
         vk::UniqueSampler sampler;
         ImageOrientation imageOrientation = UP;
-        ColorSpace *colorSpace;
         vk::UniqueSamplerYcbcrConversion conversion;
         uint64_t externalFormat = 0;
-        uint64_t currentImage = 0;
+
+        std::vector<vk::Rect2D> scissors;
+        std::vector<vk::ClearValue> colors;
 
         vk::Viewport GetViewport(Kernel &kernel) const;
 
