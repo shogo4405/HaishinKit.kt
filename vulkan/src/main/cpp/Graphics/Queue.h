@@ -36,6 +36,9 @@ namespace Graphics {
         std::vector<vk::UniqueSemaphore> signalSemaphores;
         std::vector<vk::Fence> fences;
         std::vector<vk::Fence> images;
+
+        vk::SubmitInfo submitInfo;
+        vk::PresentInfoKHR presentInfo;
     };
 }
 

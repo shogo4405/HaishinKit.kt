@@ -1,9 +1,6 @@
 package com.haishinkit.vulkan
 
 import android.content.res.AssetManager
-import android.os.Handler
-import android.os.HandlerThread
-import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -17,7 +14,7 @@ import java.nio.ByteBuffer
 class VkPixelTransform(override var listener: PixelTransform.Listener? = null) : PixelTransform {
     companion object {
         init {
-            System.loadLibrary("libhkvulkan")
+            System.loadLibrary("hkvulkan")
         }
 
         /**
@@ -76,27 +73,11 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     @Suppress("unused")
     private var memory: Long = 0
 
-    private var handler: Handler? = null
-        get() {
-            if (field == null) {
-                val thread = HandlerThread(TAG)
-                thread.start()
-                field = Handler(thread.looper)
-            }
-            return field
-        }
-        set(value) {
-            field?.looper?.quitSafely()
-            field = value
-        }
-
     external fun inspectDevices(): String
 
     override fun createInputSurface(width: Int, height: Int, format: Int) {
-        handler?.post {
-            val surface = nativeCreateInputSurface(width, height, format)
-            listener?.onPixelTransformInputSurfaceCreated(this, surface)
-        }
+        val surface = nativeCreateInputSurface(width, height, format)
+        listener?.onPixelTransformInputSurfaceCreated(this, surface)
     }
 
     override fun readPixels(byteBuffer: ByteBuffer) {

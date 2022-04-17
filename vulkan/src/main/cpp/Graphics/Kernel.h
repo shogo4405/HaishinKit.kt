@@ -47,7 +47,7 @@ namespace Graphics {
 
         vk::Result DrawFrame(const std::function<void(uint32_t)> &lambda);
 
-        void Submit(vk::CommandBuffer &commandBuffer);
+        void Submit(const std::function<void(vk::CommandBuffer)> &transaction);
 
         bool IsAvailable() const;
 

@@ -8,7 +8,7 @@
 namespace Graphics {
     class Kernel;
 
-    struct Texture;
+    struct ImageStorage;
 
     struct Pipeline {
         vk::UniqueDescriptorSetLayout descriptorSetLayout;
@@ -22,7 +22,7 @@ namespace Graphics {
 
         void TearDown(Kernel &kernel);
 
-        void UpdateDescriptorSets(Kernel &kernel, Texture &textures);
+        void UpdateDescriptorSets(Kernel &kernel, ImageStorage &storage);
     };
 }
 

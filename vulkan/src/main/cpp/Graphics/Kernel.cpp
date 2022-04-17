@@ -182,8 +182,18 @@ void Kernel::SelectPhysicalDevice() {
     queue.SetUp(*this, graphicsQueueFamilyIndex);
 }
 
-void Kernel::Submit(vk::CommandBuffer &commandBuffer) {
-    queue.Submit(*this, commandBuffer);
+void Kernel::Submit(const std::function<void(vk::CommandBuffer)> &transaction) {
+    auto commandBuffers = device->allocateCommandBuffers(
+            vk::CommandBufferAllocateInfo()
+                    .setCommandBufferCount(1)
+                    .setCommandPool(commandBuffer.commandPool.get())
+                    .setLevel(vk::CommandBufferLevel::ePrimary)
+    );
+    commandBuffers[0].begin(vk::CommandBufferBeginInfo());
+    transaction(commandBuffers[0]);
+    commandBuffers[0].end();
+    queue.Submit(*this, commandBuffers[0]);
+    device->freeCommandBuffers(commandBuffer.commandPool.get(), commandBuffers);
 }
 
 vk::UniqueImageView Kernel::CreateImageView(vk::Image image, vk::Format format) {

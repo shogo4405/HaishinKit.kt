@@ -7,14 +7,13 @@
 #include "Kernel.h"
 #include "SurfaceRotation.hpp"
 #include "ResampleFilter.h"
+#include "ImageReader.h"
 
 namespace Graphics {
 
     class PixelTransform {
     public:
         static void OnImageAvailable(void *ctx, AImageReader *reader);
-
-        AImageReader *imageReader;
 
         PixelTransform();
 
@@ -36,6 +35,8 @@ namespace Graphics {
 
         void SetSurfaceRotation(SurfaceRotation surfaceRotation);
 
+        ANativeWindow *GetInputSurface();
+
         void ReadPixels(void *byteBuffer);
 
         void OnImageAvailable(AImageReader *reader);
@@ -49,6 +50,7 @@ namespace Graphics {
         VideoGravity videoGravity = RESIZE_ASPECT_FILL;
         ResampleFilter resampleFilter = LINEAR;
         ImageOrientation imageOrientation = UP;
+        ImageReader *imageReader;
     };
 }
 
