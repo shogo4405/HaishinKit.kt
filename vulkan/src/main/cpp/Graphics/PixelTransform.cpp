@@ -110,7 +110,7 @@ namespace Graphics {
 
     void PixelTransform::OnImageAvailable(AImageReader *reader) {
         AHardwareBuffer *buffer = imageReader->GetLatestBuffer();
-        if (!IsReady()) {
+        if (!IsReady() || buffer == nullptr) {
             return;
         }
         const auto &texture = textures[0];
@@ -164,7 +164,6 @@ JNIEXPORT jobject JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeCreateInputSurface(JNIEnv *env, jobject thiz,
                                                                      jint width,
                                                                      jint height, jint format) {
-    ANativeWindow *window;
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetImageReader(width, height, format);

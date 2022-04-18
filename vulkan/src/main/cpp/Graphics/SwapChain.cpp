@@ -16,26 +16,34 @@ void SwapChain::SetUp(Kernel &kernel) {
         }
     }
 
-    size = capabilities.currentExtent;
+    // https://developer.android.com/games/optimize/vulkan-prerotation
+    if (capabilities.currentTransform == vk::SurfaceTransformFlagBitsKHR::eRotate90 ||
+        capabilities.currentTransform == vk::SurfaceTransformFlagBitsKHR::eRotate270) {
+        size = vk::Extent2D(capabilities.currentExtent.height, capabilities.currentExtent.width);
+    } else {
+        size = capabilities.currentExtent;
+    }
     format = formats[chosenFormat].format;
 
-    swapchain = kernel.device->createSwapchainKHRUnique(
-            vk::SwapchainCreateInfoKHR()
-                    .setSurface(kernel.surface.get())
-                    .setMinImageCount(capabilities.minImageCount)
-                    .setImageFormat(formats[chosenFormat].format)
-                    .setImageColorSpace(formats[chosenFormat].colorSpace)
-                    .setImageExtent(capabilities.currentExtent)
-                    .setImageArrayLayers(1)
-                    .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
-                    .setImageSharingMode(vk::SharingMode::eExclusive)
-                    .setQueueFamilyIndexCount(1)
-                    .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
-                    .setPreTransform(capabilities.currentTransform)
-                    .setPresentMode(vk::PresentModeKHR::eMailbox)
-                    .setClipped(true)
-                    .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit)
-                    .setOldSwapchain(nullptr));
+    auto info = vk::SwapchainCreateInfoKHR()
+            .setSurface(kernel.surface.get())
+            .setMinImageCount(capabilities.minImageCount)
+            .setImageFormat(formats[chosenFormat].format)
+            .setImageColorSpace(formats[chosenFormat].colorSpace)
+            .setImageExtent(size)
+            .setImageArrayLayers(1)
+            .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
+            .setImageSharingMode(vk::SharingMode::eExclusive)
+            .setQueueFamilyIndexCount(1)
+            .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
+            .setPreTransform(capabilities.currentTransform)
+            .setPresentMode(vk::PresentModeKHR::eMailbox)
+            .setClipped(true)
+            .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit);
+    if (swapchain) {
+        info.setOldSwapchain(swapchain.get());
+    }
+    swapchain = kernel.device->createSwapchainKHRUnique(info);
 
     images = kernel.device->getSwapchainImagesKHR(swapchain.get());
 
