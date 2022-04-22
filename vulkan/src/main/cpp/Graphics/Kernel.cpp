@@ -73,7 +73,6 @@ void Kernel::SetUp(ANativeWindow *nativeWindow) {
         return;
     }
     SelectPhysicalDevice();
-
     surface = instance->createAndroidSurfaceKHRUnique(
             vk::AndroidSurfaceCreateInfoKHR()
                     .setFlags(vk::AndroidSurfaceCreateFlagsKHR())
@@ -280,3 +279,14 @@ std::vector<char> Kernel::ReadFile(const std::string &fileName) {
     return contents;
 }
 
+void Kernel::OnOutOfDate() {
+    if (!isAvailable) {
+        return;
+    }
+    isAvailable = false;
+    device->waitIdle();
+    swapChain.SetUp(*this);
+    queue.SetImagesCount(*this, swapChain.GetImagesCount());
+    commandBuffer.SetUp(*this);
+    isAvailable = true;
+}

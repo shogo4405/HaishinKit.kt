@@ -63,6 +63,8 @@ namespace Graphics {
 
         void ReadPixels(void *buffer);
 
+        void OnOutOfDate();
+
     private:
         const std::string applicationName = "HaishinKit";
         const std::string engineName = "Vulkan::Kernel";

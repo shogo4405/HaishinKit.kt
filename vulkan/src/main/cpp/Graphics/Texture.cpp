@@ -48,21 +48,6 @@ PushConstants Texture::GetPushConstants(Kernel &kernel) const {
             break;
     }
 
-    switch (kernel.GetSurfaceRotation()) {
-        case ROTATION_0:
-            degrees += 0.f;
-            break;
-        case ROTATION_90:
-            degrees += 90.f;
-            break;
-        case ROTATION_180:
-            degrees += 180.f;
-            break;
-        case ROTATION_270:
-            degrees += 270.f;
-            break;
-    }
-
     if (((int) degrees % 180) == 0 &&
         (imageOrientation == LEFT || imageOrientation == LEFT_MIRRORED)) {
         degrees += 180.f;
@@ -80,14 +65,27 @@ vk::Viewport Texture::GetViewport(Kernel &kernel) const {
 
     vk::Extent2D surface = kernel.swapChain.size;
     auto newImageExtent = extent;
-    if (surface.width < surface.height) {
-        if (extent.height < extent.width) {
-            newImageExtent = vk::Extent2D(extent.height, extent.width);
-        }
-    } else {
-        if (extent.width < extent.height) {
-            newImageExtent = vk::Extent2D(extent.height, extent.width);
-        }
+
+    auto swapped = false;
+    switch (imageOrientation) {
+        case LEFT:
+            swapped = true;
+            break;
+        case RIGHT:
+            swapped = true;
+            break;
+        case LEFT_MIRRORED:
+            swapped = true;
+            break;
+        case RIGHT_MIRRORED:
+            swapped = true;
+            break;
+        default:
+            break;
+    }
+
+    if (swapped) {
+        newImageExtent = vk::Extent2D(extent.height, extent.width);
     }
 
     switch (videoGravity) {
@@ -134,6 +132,7 @@ vk::Viewport Texture::GetViewport(Kernel &kernel) const {
             break;
         }
     }
+
     return viewport;
 }
 
