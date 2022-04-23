@@ -120,6 +120,10 @@ namespace Graphics {
             texture->LayoutAt(*kernel, index);
         });
     }
+
+    bool PixelTransform::HasFeatures() {
+        return kernel->HasFeatures();
+    }
 }
 
 extern "C"
@@ -217,6 +221,15 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeReadPixels(JNIEnv *env, jobjec
                     self->ReadPixels(directBuffer);
                 });
     }
+}
+
+JNIEXPORT bool JNICALL
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeIsSupported(JNIEnv *env, jobject thiz) {
+    if (!Graphics::DynamicLoader::GetInstance().Load()) {
+        return false;
+    }
+    return Unmanaged<Graphics::PixelTransform>::fromOpaque(env,
+                                                           thiz)->takeRetainedValue()->HasFeatures();
 }
 
 JNIEXPORT void JNICALL

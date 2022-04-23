@@ -32,7 +32,7 @@ Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr),
             .setApplicationVersion(VK_MAKE_VERSION(1, 0, 0))
             .setPEngineName(engineName.c_str())
             .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
-            .setApiVersion(VK_API_VERSION_1_2);
+            .setApiVersion(VK_API_VERSION_1_1);
 
     std::vector<const char *> extensions = featureManager->GetExtensions(INSTANCE);
 
@@ -229,6 +229,25 @@ Kernel::FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) 
 }
 
 void Kernel::ReadPixels(void *buffer) {
+}
+
+bool Kernel::HasFeatures() {
+    for (const auto &device: instance->enumeratePhysicalDevices()) {
+        auto count = 0;
+        const auto extensions = featureManager->GetExtensions(DEVICE);
+        const auto properties = device.enumerateDeviceExtensionProperties();
+        for (const auto &extension : extensions) {
+            for (const auto &property : properties) {
+                if (strcmp(property.extensionName, extension) == 0) {
+                    ++count;
+                }
+            }
+        }
+        if (count == extensions.size()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 std::string Kernel::InspectDevices() {

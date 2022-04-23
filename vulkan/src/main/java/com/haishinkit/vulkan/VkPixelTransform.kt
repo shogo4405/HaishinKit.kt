@@ -1,6 +1,7 @@
 package com.haishinkit.vulkan
 
 import android.content.res.AssetManager
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -23,6 +24,16 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         external fun isSupported(): Boolean
 
         private const val TAG = "VkPixelTransform"
+    }
+
+    init {
+        if (nativeIsSupported()) {
+            if (BuildConfig.DEBUG) {
+                Log.i(TAG, inspectDevices())
+            }
+        } else {
+            throw UnsupportedOperationException()
+        }
     }
 
     override var surface: Surface? = null
@@ -88,6 +99,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         nativeDispose()
     }
 
+    private external fun nativeIsSupported(): Boolean
     private external fun nativeSetImageOrientation(imageOrientation: Int)
     private external fun nativeSetSurface(surface: Surface?)
     private external fun nativeSetSurfaceRotation(surfaceRotation: Int)

@@ -65,6 +65,8 @@ namespace Graphics {
 
         void OnOutOfDate();
 
+        bool HasFeatures();
+
     private:
         const std::string applicationName = "HaishinKit";
         const std::string engineName = "Vulkan::Kernel";

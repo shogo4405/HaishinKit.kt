@@ -37,6 +37,8 @@ namespace Graphics {
 
         ANativeWindow *GetInputSurface();
 
+        bool HasFeatures();
+
         void ReadPixels(void *byteBuffer);
 
         void OnImageAvailable(AImageReader *reader);
