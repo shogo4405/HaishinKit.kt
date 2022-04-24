@@ -189,10 +189,6 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
         }
     }
 
-    override fun onPixelTransformImageAvailable(pixelTransform: PixelTransform) {
-        listener?.onPixelTransformImageAvailable(this)
-    }
-
     override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
         listener?.onPixelTransformSurfaceChanged(this, surface)
     }
@@ -202,9 +198,6 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
         surface: Surface
     ) {
         listener?.onPixelTransformInputSurfaceCreated(this, surface)
-    }
-
-    override fun readPixels(byteBuffer: ByteBuffer) {
     }
 
     companion object {

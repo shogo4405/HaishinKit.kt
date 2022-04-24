@@ -10,6 +10,7 @@ import android.util.Size
 import com.haishinkit.flv.tag.FlvTag
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
+import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.gles.GlPixelReader
 import com.haishinkit.util.FeatureUtil
 import java.nio.ByteBuffer
@@ -33,6 +34,9 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
         var frameRate: Int by Delegates.observable(DEFAULT_FRAME_RATE) { _, _, newValue ->
             codec?.frameRate = newValue
         }
+        var videoGravity: VideoGravity by Delegates.observable(DEFAULT_VIDEO_GRAVITY) { _, _, newValue ->
+            codec?.videoGravity = newValue
+        }
     }
 
     var bitRate = DEFAULT_BIT_RATE
@@ -53,9 +57,16 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
     var level = DEFAULT_LEVEL
     var colorFormat = DEFAULT_COLOR_FORMAT
     var fpsControllerClass: Class<*>? = null
+    var videoGravity: VideoGravity
+        get() = pixelTransform.videoGravity
+        set(value) {
+            pixelTransform.videoGravity = value
+        }
 
     val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create()
+        PixelTransformFactory().create().apply {
+            videoGravity = videoGravity
+        }
     }
 
     internal fun setListener(listener: PixelTransform.Listener?) {
@@ -114,6 +125,7 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
         const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
         const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
         const val DEFAULT_COLOR_FORMAT = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+        val DEFAULT_VIDEO_GRAVITY = VideoGravity.RESIZE_ASPECT
 
         private val TAG = VideoCodec::class.java.simpleName
     }

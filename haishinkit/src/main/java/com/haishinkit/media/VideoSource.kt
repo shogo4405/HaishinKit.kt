@@ -6,6 +6,9 @@ import android.util.Size
  * An interface that captures a video source.
  */
 interface VideoSource : Source {
-    var resolution: Size
+    /**
+     * The video size that is current capturing.
+     */
+    val resolution: Size
     val fpsControllerClass: Class<*>?
 }

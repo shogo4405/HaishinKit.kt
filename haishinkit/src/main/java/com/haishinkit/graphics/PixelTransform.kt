@@ -8,7 +8,6 @@ import java.nio.ByteBuffer
 
 interface PixelTransform {
     interface Listener {
-        fun onPixelTransformImageAvailable(pixelTransform: PixelTransform)
         fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?)
         fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface)
     }
@@ -30,8 +29,6 @@ interface PixelTransform {
     var expectedOrientationSynchronize: Boolean
 
     fun createInputSurface(width: Int, height: Int, format: Int)
-
-    fun readPixels(byteBuffer: ByteBuffer)
 
     /**
      * Disposes the pixelTransform of memory management.

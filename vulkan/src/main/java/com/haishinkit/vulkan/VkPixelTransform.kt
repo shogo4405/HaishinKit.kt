@@ -91,10 +91,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         listener?.onPixelTransformInputSurfaceCreated(this, surface)
     }
 
-    override fun readPixels(byteBuffer: ByteBuffer) {
-        nativeReadPixels(byteBuffer)
-    }
-
     override fun dispose() {
         nativeDispose()
     }
