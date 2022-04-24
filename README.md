@@ -83,8 +83,15 @@ repositories {
 
 dependencies {
     implementation 'com.haishinkit:haishinkit:x.x.x'
+    implementation 'com.haishinkit:vulkan:x.x.x'
 }
 ```
+
+### Dependencies
+|-|minSdk|Android|Requirements|Status|
+|:----|:----|:----|:-----|:----|
+|com.haishinkit:haishinkit|21+|5|Require|Stable|
+|com.haishinkit:vulkan|26+|8|Optional|Technical preview|
 
 ### Android manifest
 ```xml
@@ -92,12 +99,6 @@ dependencies {
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
-
-### modules
-|-|minSdk|Android|Requirements|Status|
-|:----|:----|:----|:-----|:----|
-|com.haishinkit:haishinkit|21+|5|Require|Stable|
-|com.haishinkit:vulkan|26+|8|Optional|Technical preview|
 
 ### Prerequisites
 ```kt
