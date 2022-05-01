@@ -4,7 +4,6 @@ import android.content.res.AssetManager
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
-import java.nio.ByteBuffer
 
 interface PixelTransform {
     interface Listener {
@@ -12,13 +11,16 @@ interface PixelTransform {
         fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface)
     }
 
+    /**
+     * The surface that is a input source.
+     */
     var surface: Surface?
     var listener: Listener?
 
     /**
      * The current width and height of the surface
      */
-    var extent: Size
+    var imageExtent: Size
     var videoEffect: VideoEffect
     var resampleFilter: ResampleFilter
     var imageOrientation: ImageOrientation

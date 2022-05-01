@@ -45,7 +45,7 @@ internal class GlPixelTransform(
         set(value) {
             kernel.videoEffect = value
         }
-    override var extent: Size
+    override var imageExtent: Size
         get() = kernel.extent
         set(value) {
             kernel.extent = value

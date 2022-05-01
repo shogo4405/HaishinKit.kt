@@ -30,9 +30,6 @@ void ImageReader::TearDown() {
         AImageReader_delete(reader);
         reader = nullptr;
     }
-    for (auto &image : images) {
-        AImage_delete(image);
-    }
 }
 
 ANativeWindow *ImageReader::GetWindow() {

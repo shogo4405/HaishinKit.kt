@@ -27,6 +27,9 @@ namespace Graphics {
         }
     }
 
+    void PixelTransform::SetImageExtent(int32_t width, int32_t height) {
+    }
+
     ANativeWindow *PixelTransform::GetInputSurface() {
         return imageReader->GetWindow();
     }
@@ -91,13 +94,6 @@ namespace Graphics {
             ANativeWindow_release(oldNativeWindow);
         }
         nativeWindow = newNativeWindow;
-    }
-
-    void PixelTransform::ReadPixels(void *byteBuffer) {
-        if (!IsReady()) {
-            return;
-        }
-        kernel->ReadPixels(byteBuffer);
     }
 
     bool PixelTransform::IsReady() {
@@ -211,19 +207,7 @@ Java_com_haishinkit_vulkan_VkPixelTransform_inspectDevices(JNIEnv *env, jobject 
     return env->NewStringUTF(string.c_str());
 }
 
-JNIEXPORT void JNICALL
-Java_com_haishinkit_vulkan_VkPixelTransform_nativeReadPixels(JNIEnv *env, jobject thiz,
-                                                             jobject byteBuffer) {
-    void *directBuffer = env->GetDirectBufferAddress(byteBuffer);
-    if (directBuffer != nullptr) {
-        Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
-                [=](Graphics::PixelTransform *self) {
-                    self->ReadPixels(directBuffer);
-                });
-    }
-}
-
-JNIEXPORT bool JNICALL
+JNIEXPORT jboolean JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeIsSupported(JNIEnv *env, jobject thiz) {
     if (!Graphics::DynamicLoader::GetInstance().Load()) {
         return false;
@@ -235,5 +219,15 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeIsSupported(JNIEnv *env, jobje
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeDispose(JNIEnv *env, jobject thiz) {
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->release();
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageExtent(JNIEnv *env, jobject thiz,
+                                                                 jint width,
+                                                                 jint height) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
+                self->SetImageExtent(width, height);
+            });
 }
 }

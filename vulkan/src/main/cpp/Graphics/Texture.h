@@ -9,7 +9,6 @@
 #include "VideoGravity.h"
 #include "ResampleFilter.h"
 #include "ImageOrientation.h"
-#include "PushConstants.hpp"
 
 namespace Graphics {
     class Kernel;
@@ -47,10 +46,7 @@ namespace Graphics {
 
         std::vector<vk::Rect2D> scissors;
         std::vector<vk::ClearValue> colors;
-
-        vk::Viewport GetViewport(Kernel &kernel) const;
-
-        PushConstants GetPushConstants(Kernel &kernel) const;
+        std::vector<vk::Viewport> viewports;
     };
 }
 

@@ -2,16 +2,8 @@
 #include "Kernel.h"
 #include "Util.h"
 #include "CommandBuffer.h"
-#include "PushConstants.hpp"
 
 using namespace Graphics;
-
-const Vertex CommandBuffer::VERTICES[] = {
-        {{-1.f, 1.f},  {0.f, 1.f}},
-        {{1.f,  1.f},  {1.f, 1.f}},
-        {{-1.f, -1.f}, {0.f, 0.f}},
-        {{1.f,  -1.f}, {1.f, 0.f}},
-};
 
 CommandBuffer::CommandBuffer() = default;
 
@@ -41,9 +33,42 @@ void CommandBuffer::SetUp(Kernel &kernel) {
         framebuffers[i] = kernel.swapChain.CreateFramebuffer(kernel, i);
     }
 
-    buffers.resize(1);
-    buffers[0] = CreateBuffer(kernel, (void *) CommandBuffer::VERTICES,
-                              sizeof(CommandBuffer::VERTICES) * sizeof(Graphics::Vertex));
+    buffers.resize(4);
+    const Vertex rotation_0[] = {
+            {{1.f,  1.f},  {1.f, 0.f}},
+            {{1.f,  -1.f}, {0.f, 0.f}},
+            {{-1.f, 1.f},  {1.f, 1.f}},
+            {{-1.f, -1.f}, {0.f, 1.f}},
+    };
+    buffers[0] = CreateBuffer(kernel, (void *) rotation_0,
+                              sizeof(rotation_0) * sizeof(Graphics::Vertex));
+
+    const Vertex rotation_90[] = {
+            {{-1.f, -1.f}, {1.f, 0.f}},
+            {{-1.f, 1.f},  {0.f, 0.f}},
+            {{1.f,  -1.f}, {1.f, 1.f}},
+            {{1.f,  1.f},  {0.f, 1.f}},
+    };
+    buffers[1] = CreateBuffer(kernel, (void *) rotation_90,
+                              sizeof(rotation_90) * sizeof(Graphics::Vertex));
+
+    const Vertex rotation_180[] = {
+            {{1.f,  1.f},  {1.f, 0.f}},
+            {{1.f,  -1.f}, {0.f, 0.f}},
+            {{-1.f, 1.f},  {1.f, 1.f}},
+            {{-1.f, -1.f}, {0.f, 1.f}},
+    };
+    buffers[2] = CreateBuffer(kernel, (void *) rotation_180,
+                              sizeof(rotation_180) * sizeof(Graphics::Vertex));
+
+    const Vertex rotation_270[] = {
+            {{-1.f, -1.f}, {0.f, 1.f}},
+            {{-1.f, 1.f},  {1.f, 1.f}},
+            {{1.f,  -1.f}, {0.f, 0.f}},
+            {{1.f,  1.f},  {1.f, 0.f}},
+    };
+    buffers[3] = CreateBuffer(kernel, (void *) rotation_270,
+                              sizeof(rotation_270) * sizeof(Graphics::Vertex));
 
     offsets.resize(1);
     offsets[0] = {0};

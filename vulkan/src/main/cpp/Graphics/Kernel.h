@@ -61,8 +61,6 @@ namespace Graphics {
 
         uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) const;
 
-        void ReadPixels(void *buffer);
-
         void OnOutOfDate();
 
         bool HasFeatures();

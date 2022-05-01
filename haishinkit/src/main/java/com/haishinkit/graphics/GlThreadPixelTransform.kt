@@ -8,7 +8,6 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
 import java.lang.ref.WeakReference
-import java.nio.ByteBuffer
 
 internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener {
     override var fpsControllerClass: Class<*>?
@@ -54,8 +53,8 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                 it.sendMessage(it.obtainMessage(MSG_SET_VIDEO_EFFECT, value))
             }
         }
-    override var extent: Size
-        get() = pixelTransform.extent
+    override var imageExtent: Size
+        get() = pixelTransform.imageExtent
         set(value) {
             handler?.let {
                 it.sendMessage(
@@ -151,7 +150,7 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                     transform.videoGravity = message.obj as VideoGravity
                 }
                 MSG_SET_CURRENT_EXTENT -> {
-                    transform.extent = Size(message.arg1, message.arg2)
+                    transform.imageExtent = Size(message.arg1, message.arg2)
                 }
                 MSG_CREATE_INPUT_SURFACE -> {
                     val obj = message.obj

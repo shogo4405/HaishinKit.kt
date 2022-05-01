@@ -49,11 +49,18 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             nativeSetImageOrientation(imageOrientation.rawValue)
         }
 
-    override var extent: Size = Size(0, 0)
+    override var imageExtent = Size(0, 0)
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            nativeSetImageExtent(imageExtent.width, imageExtent.height)
+        }
 
     override var fpsControllerClass: Class<*>? = null
 
-    override var expectedOrientationSynchronize: Boolean = false
+    override var expectedOrientationSynchronize = false
 
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
@@ -101,8 +108,8 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     private external fun nativeSetSurfaceRotation(surfaceRotation: Int)
     private external fun nativeSetResampleFilter(resampleFilter: Int)
     private external fun nativeSetVideoGravity(videoGravity: Int)
+    private external fun nativeSetImageExtent(width: Int, height: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
     private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface
-    private external fun nativeReadPixels(byteBuffer: ByteBuffer)
     private external fun nativeDispose()
 }

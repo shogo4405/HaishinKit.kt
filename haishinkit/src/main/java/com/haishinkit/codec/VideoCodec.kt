@@ -132,7 +132,7 @@ class VideoCodec : MediaCodec(MIME) {
         super.configure(codec)
         if (mode == Mode.ENCODE) {
             pixelTransform.fpsControllerClass = fpsControllerClass
-            pixelTransform.extent = Size(width, height)
+            pixelTransform.imageExtent = Size(width, height)
             pixelTransform.surface = codec.createInputSurface()
         }
     }

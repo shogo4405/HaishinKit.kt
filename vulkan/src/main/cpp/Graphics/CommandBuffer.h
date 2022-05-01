@@ -1,5 +1,5 @@
-#ifndef HAISHINKIT_KT_COMMANDBUFFER_H
-#define HAISHINKIT_KT_COMMANDBUFFER_H
+#ifndef HAISHINKIT_KT_COMMAND_BUFFER_H
+#define HAISHINKIT_KT_COMMAND_BUFFER_H
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_android.h>
@@ -29,10 +29,8 @@ namespace Graphics {
         vk::CommandBuffer Allocate(Kernel &kernel);
 
     private:
-        static const Vertex VERTICES[];
-
         static vk::Buffer CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size);
     };
 }
 
-#endif //HAISHINKIT_KT_COMMANDBUFFER_H
+#endif //HAISHINKIT_KT_COMMAND_BUFFER_H

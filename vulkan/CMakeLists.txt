@@ -39,7 +39,6 @@ add_library(
         src/main/cpp/Graphics/ImageReader.cpp
         src/main/cpp/Graphics/Util.cpp
         src/main/cpp/Graphics/Vertex.hpp
-        src/main/cpp/Graphics/PushConstants.hpp
         src/main/cpp/Graphics/Feature/Feature.cpp
         src/main/cpp/Graphics/Feature/FeatureManager.cpp
         src/main/cpp/Graphics/Feature/PhysicalDeviceFeature.cpp

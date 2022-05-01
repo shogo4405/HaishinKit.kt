@@ -3,6 +3,10 @@
 
 using namespace Graphics;
 
+vk::Extent2D SwapChain::GetImageExtent() const {
+    return info.imageExtent;
+}
+
 void SwapChain::SetUp(Kernel &kernel) {
     const auto capabilities = kernel.physicalDevice.getSurfaceCapabilitiesKHR(
             kernel.surface.get());
@@ -16,45 +20,44 @@ void SwapChain::SetUp(Kernel &kernel) {
         }
     }
 
+    vk::Extent2D imageExtent = capabilities.currentExtent;
     // https://developer.android.com/games/optimize/vulkan-prerotation
     if (capabilities.currentTransform == vk::SurfaceTransformFlagBitsKHR::eRotate90 ||
         capabilities.currentTransform == vk::SurfaceTransformFlagBitsKHR::eRotate270) {
-        size = vk::Extent2D(capabilities.currentExtent.height, capabilities.currentExtent.width);
-    } else {
-        size = capabilities.currentExtent;
+        imageExtent = vk::Extent2D(imageExtent.height, imageExtent.width);
     }
-    format = formats[chosenFormat].format;
 
-    auto info = vk::SwapchainCreateInfoKHR()
-            .setSurface(kernel.surface.get())
-            .setMinImageCount(capabilities.minImageCount)
-            .setImageFormat(formats[chosenFormat].format)
-            .setImageColorSpace(formats[chosenFormat].colorSpace)
-            .setImageExtent(size)
-            .setImageArrayLayers(1)
-            .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
-            .setImageSharingMode(vk::SharingMode::eExclusive)
-            .setQueueFamilyIndexCount(1)
-            .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
-            .setPreTransform(capabilities.currentTransform)
-            .setPresentMode(vk::PresentModeKHR::eMailbox)
-            .setClipped(true)
-            .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit);
     if (swapchain) {
         info.setOldSwapchain(swapchain.get());
     }
-    swapchain = kernel.device->createSwapchainKHRUnique(info);
+
+    swapchain = kernel.device->createSwapchainKHRUnique(
+            info
+                    .setSurface(kernel.surface.get())
+                    .setMinImageCount(capabilities.minImageCount)
+                    .setImageFormat(formats[chosenFormat].format)
+                    .setImageColorSpace(formats[chosenFormat].colorSpace)
+                    .setImageExtent(imageExtent)
+                    .setImageArrayLayers(1)
+                    .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
+                    .setImageSharingMode(vk::SharingMode::eExclusive)
+                    .setQueueFamilyIndexCount(1)
+                    .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
+                    .setPreTransform(capabilities.currentTransform)
+                    .setPresentMode(vk::PresentModeKHR::eMailbox)
+                    .setClipped(true)
+                    .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit));
 
     images = kernel.device->getSwapchainImagesKHR(swapchain.get());
 
     const auto imagesCount = images.size();
     imageViews.resize(imagesCount);
     for (uint32_t i = 0; i < imagesCount; ++i) {
-        imageViews[i] = kernel.CreateImageView(images[i], format);
+        imageViews[i] = kernel.CreateImageView(images[i], info.imageFormat);
     }
 
     const auto attachmentDescription = vk::AttachmentDescription()
-            .setFormat(format)
+            .setFormat(info.imageFormat)
             .setSamples(vk::SampleCountFlagBits::e1)
             .setLoadOp(vk::AttachmentLoadOp::eClear)
             .setStoreOp(vk::AttachmentStoreOp::eStore)
@@ -104,8 +107,8 @@ vk::Framebuffer SwapChain::CreateFramebuffer(Kernel &kernel, int32_t index) {
                     .setRenderPass(renderPass.get())
                     .setAttachmentCount(1)
                     .setPAttachments(attachments)
-                    .setWidth(size.width)
-                    .setHeight(size.height)
+                    .setWidth(info.imageExtent.width)
+                    .setHeight(info.imageExtent.height)
                     .setLayers(1)
     );
 }

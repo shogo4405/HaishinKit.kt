@@ -21,6 +21,8 @@ namespace Graphics {
 
         bool IsReady();
 
+        void SetImageExtent(int32_t width, int32_t height);
+
         void SetImageReader(int32_t width, int32_t height, int32_t format);
 
         void SetVideoGravity(VideoGravity newVideoGravity);
@@ -38,8 +40,6 @@ namespace Graphics {
         ANativeWindow *GetInputSurface();
 
         bool HasFeatures();
-
-        void ReadPixels(void *byteBuffer);
 
         void OnImageAvailable(AImageReader *reader);
 

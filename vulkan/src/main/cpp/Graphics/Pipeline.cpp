@@ -3,7 +3,6 @@
 #include "SwapChain.h"
 #include "Texture.h"
 #include "Vertex.hpp"
-#include "PushConstants.hpp"
 
 using namespace Graphics;
 
@@ -43,11 +42,6 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers) {
                     .setSetLayoutCount(1)
                     .setSetLayouts(
                             descriptorSetLayout.get())
-                    .setPushConstantRangeCount(1)
-                    .setPPushConstantRanges(&vk::PushConstantRange()
-                            .setOffset(0)
-                            .setStageFlags(vk::ShaderStageFlagBits::eVertex)
-                            .setSize(sizeof(Graphics::PushConstants)))
     );
 
     pipelineCache = kernel.device->createPipelineCacheUnique(vk::PipelineCacheCreateInfo());
@@ -89,6 +83,7 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers) {
 
     const auto bindingDescription = Vertex::CreateBindingDescription();
 
+    vk::Extent2D imageExtent = kernel.swapChain.GetImageExtent();
     pipeline = kernel.device->createGraphicsPipelineUnique(
             pipelineCache.get(),
             vk::GraphicsPipelineCreateInfo()
@@ -108,15 +103,15 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers) {
                             .setViewports(vk::Viewport()
                                                   .setX(0)
                                                   .setY(0)
-                                                  .setWidth(kernel.swapChain.size.width)
-                                                  .setHeight(kernel.swapChain.size.height)
+                                                  .setWidth(imageExtent.width)
+                                                  .setHeight(imageExtent.height)
                                                   .setMinDepth(0.0f)
                                                   .setMaxDepth(1.0f)
                             )
                             .setScissorCount(1)
                             .setScissors(
                                     vk::Rect2D()
-                                            .setExtent(kernel.swapChain.size)
+                                            .setExtent(imageExtent)
                                             .setOffset(vk::Offset2D(0, 0))
                             )
                     )

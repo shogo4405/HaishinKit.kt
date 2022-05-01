@@ -54,7 +54,7 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        pixelTransform.extent = Size(width, height)
+        pixelTransform.imageExtent = Size(width, height)
         pixelTransform.surface = Surface(surface)
     }
 
@@ -63,7 +63,7 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
             pixelTransform.surfaceRotation = it
             stream?.videoCodec?.pixelTransform?.surfaceRotation = it
         }
-        pixelTransform.extent = Size(width, height)
+        pixelTransform.imageExtent = Size(width, height)
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {

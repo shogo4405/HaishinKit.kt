@@ -14,127 +14,10 @@ Texture::Texture(vk::Extent2D extent, int32_t format) : extent(extent), format(f
     colors.resize(1);
     colors.push_back(vk::ClearValue().setColor(CLEAR_COLOR));
     scissors.resize(1);
+    viewports.resize(1);
 }
 
 Texture::~Texture() = default;
-
-PushConstants Texture::GetPushConstants(Kernel &kernel) const {
-    auto degrees = 0.f;
-
-    switch (imageOrientation) {
-        case UP:
-            degrees = 0.f;
-            break;
-        case DOWN:
-            degrees = 180.f;
-            break;
-        case LEFT:
-            degrees = 90.f;
-            break;
-        case RIGHT:
-            degrees = 270.f;
-            break;
-        case UP_MIRRORED:
-            degrees = 0.f;
-            break;
-        case DOWN_MIRRORED:
-            degrees = 180.0;
-            break;
-        case LEFT_MIRRORED:
-            degrees = 90.f;
-            break;
-        case RIGHT_MIRRORED:
-            degrees = 180.f;
-            break;
-    }
-
-    if (((int) degrees % 180) == 0 &&
-        (imageOrientation == LEFT || imageOrientation == LEFT_MIRRORED)) {
-        degrees += 180.f;
-    }
-
-    return {
-            .mvp = glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)),
-            .preRotate = glm::rotate(glm::mat4(1.f), glm::radians(degrees),
-                                     glm::vec3(0.f, 0.f, 1.f)),
-    };
-}
-
-vk::Viewport Texture::GetViewport(Kernel &kernel) const {
-    vk::Viewport viewport = vk::Viewport();
-
-    vk::Extent2D surface = kernel.swapChain.size;
-    auto newImageExtent = extent;
-
-    auto swapped = false;
-    switch (imageOrientation) {
-        case LEFT:
-            swapped = true;
-            break;
-        case RIGHT:
-            swapped = true;
-            break;
-        case LEFT_MIRRORED:
-            swapped = true;
-            break;
-        case RIGHT_MIRRORED:
-            swapped = true;
-            break;
-        default:
-            break;
-    }
-
-    if (swapped) {
-        newImageExtent = vk::Extent2D(extent.height, extent.width);
-    }
-
-    switch (videoGravity) {
-        case RESIZE_ASPECT: {
-            const float xRatio = (float) surface.width / (float) newImageExtent.width;
-            const float yRatio =
-                    (float) surface.height / (float) newImageExtent.height;
-            if (yRatio < xRatio) {
-                viewport
-                        .setX(((float) surface.width - (float) newImageExtent.width * yRatio) / 2)
-                        .setY(0)
-                        .setWidth((float) surface.width * yRatio)
-                        .setHeight((float) newImageExtent.height);
-            } else {
-                viewport
-                        .setX(0)
-                        .setY(((float) surface.height - (float) newImageExtent.height * xRatio) / 2)
-                        .setWidth((float) surface.width)
-                        .setHeight((float) newImageExtent.height * xRatio);
-            }
-            break;
-        }
-        case RESIZE_ASPECT_FILL: {
-            const float iRatio = (float) surface.width / (float) surface.height;
-            const float fRatio = (float) newImageExtent.width / (float) newImageExtent.height;
-            if (iRatio < fRatio) {
-                viewport
-                        .setX(((float) surface.width - (float) surface.height * fRatio) / 2)
-                        .setY(0)
-                        .setWidth((float) surface.height * fRatio)
-                        .setHeight((float) surface.height);
-            } else {
-                viewport
-                        .setX(0)
-                        .setY(((float) surface.height - (float) surface.width / fRatio) / 2)
-                        .setWidth((float) surface.width)
-                        .setHeight((float) surface.width / fRatio);
-            }
-            break;
-        }
-        case RESIZE: {
-            viewport.setWidth((float) surface.width);
-            viewport.setHeight((float) surface.height);
-            break;
-        }
-    }
-
-    return viewport;
-}
 
 void Texture::SetImageOrientation(ImageOrientation newImageOrientation) {
     imageOrientation = newImageOrientation;
@@ -225,10 +108,105 @@ void Texture::UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *b
 }
 
 void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
-    scissors[0].setExtent(kernel.swapChain.size);
+    auto degrees = 0.f;
 
-    const std::vector<vk::Viewport> viewports = {GetViewport(kernel)};
-    const PushConstants pushConstantsBlock = GetPushConstants(kernel);
+    switch (imageOrientation) {
+        case UP:
+            degrees = 0.f;
+            break;
+        case DOWN:
+            degrees = 180.f;
+            break;
+        case LEFT:
+            degrees = 270.f;
+            break;
+        case RIGHT:
+            degrees = 90.f;
+            break;
+        case UP_MIRRORED:
+            degrees = 0.f;
+            break;
+        case DOWN_MIRRORED:
+            degrees = 180.0;
+            break;
+        case LEFT_MIRRORED:
+            degrees = 270.f;
+            break;
+        case RIGHT_MIRRORED:
+            degrees = 90.f;
+            break;
+    }
+
+    auto swapped = false;
+    auto index = 0;
+    switch ((int) degrees % 360) {
+        case 0:
+            index = 0;
+            break;
+        case 90:
+            swapped = true;
+            index = 1;
+            break;
+        case 180:
+            index = 2;
+            break;
+        case 270:
+            swapped = true;
+            index = 3;
+            break;
+    }
+
+    vk::Extent2D surface = kernel.swapChain.GetImageExtent();
+    scissors[0].setExtent(surface);
+    auto newImageExtent = extent;
+    if (swapped) {
+        newImageExtent = vk::Extent2D(extent.height, extent.width);
+    }
+
+    switch (videoGravity) {
+        case RESIZE: {
+            viewports[0].setWidth((float) surface.width);
+            viewports[0].setHeight((float) surface.height);
+            break;
+        }
+        case RESIZE_ASPECT: {
+            const float xRatio = (float) surface.width / (float) newImageExtent.width;
+            const float yRatio =
+                    (float) surface.height / (float) newImageExtent.height;
+            if (yRatio < xRatio) {
+                viewports[0]
+                        .setX(((float) surface.width - (float) newImageExtent.width * yRatio) / 2)
+                        .setY(0)
+                        .setWidth((float) surface.width * yRatio)
+                        .setHeight((float) newImageExtent.height);
+            } else {
+                viewports[0]
+                        .setX(0)
+                        .setY(((float) surface.height - (float) newImageExtent.height * xRatio) / 2)
+                        .setWidth((float) surface.width)
+                        .setHeight((float) newImageExtent.height * xRatio);
+            }
+            break;
+        }
+        case RESIZE_ASPECT_FILL: {
+            const float iRatio = (float) surface.width / (float) surface.height;
+            const float fRatio = (float) newImageExtent.width / (float) newImageExtent.height;
+            if (iRatio < fRatio) {
+                viewports[0]
+                        .setX(((float) surface.width - (float) surface.height * fRatio) / 2)
+                        .setY(0)
+                        .setWidth((float) surface.height * fRatio)
+                        .setHeight((float) surface.height);
+            } else {
+                viewports[0]
+                        .setX(0)
+                        .setY(((float) surface.height - (float) surface.width / fRatio) / 2)
+                        .setWidth((float) surface.width)
+                        .setHeight((float) surface.width / fRatio);
+            }
+            break;
+        }
+    }
 
     auto &commandBuffer = kernel.commandBuffer.commandBuffers[currentFrame].get();
     commandBuffer.begin(
@@ -238,26 +216,19 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
     commandBuffer.setViewport(0, viewports);
     commandBuffer.setScissor(0, scissors);
 
-    commandBuffer.pushConstants(
-            kernel.pipeline.pipelineLayout.get(),
-            vk::ShaderStageFlagBits::eVertex,
-            0,
-            sizeof(PushConstants),
-            &pushConstantsBlock);
-
     commandBuffer.beginRenderPass(
             vk::RenderPassBeginInfo()
                     .setRenderPass(kernel.swapChain.renderPass.get())
                     .setFramebuffer(kernel.commandBuffer.framebuffers[currentFrame])
                     .setRenderArea(
-                            vk::Rect2D().setOffset({0, 0}).setExtent(kernel.swapChain.size))
+                            vk::Rect2D().setOffset({0, 0}).setExtent(surface))
                     .setClearValues(colors),
             vk::SubpassContents::eInline);
 
     commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics,
                                kernel.pipeline.pipeline.get());
 
-    commandBuffer.bindVertexBuffers(0, kernel.commandBuffer.buffers,
+    commandBuffer.bindVertexBuffers(0, kernel.commandBuffer.buffers[index],
                                     kernel.commandBuffer.offsets);
 
     commandBuffer.bindDescriptorSets(

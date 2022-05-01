@@ -11,19 +11,20 @@ namespace Graphics {
 
     struct SwapChain {
         vk::UniqueSwapchainKHR swapchain;
-        vk::Extent2D size;
-        vk::Format format;
         vk::UniqueRenderPass renderPass;
+
+        vk::Extent2D GetImageExtent() const;
+
+        int32_t GetImagesCount();
 
         void SetUp(Kernel &kernel);
 
         void TearDown(Kernel &kernel);
 
-        int32_t GetImagesCount();
-
         vk::Framebuffer CreateFramebuffer(Kernel &kernel, int32_t index);
 
     private:
+        vk::SwapchainCreateInfoKHR info;
         std::vector<vk::Image> images;
         std::vector<vk::UniqueImageView> imageViews;
     };

@@ -44,7 +44,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
 
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
-                pixelTransform.extent = Size(width, height)
+                pixelTransform.imageExtent = Size(width, height)
                 pixelTransform.surface = holder.surface
             }
 
@@ -58,7 +58,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
                     pixelTransform.surfaceRotation = it
                     stream?.videoCodec?.pixelTransform?.surfaceRotation = it
                 }
-                pixelTransform.extent = Size(width, height)
+                pixelTransform.imageExtent = Size(width, height)
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {

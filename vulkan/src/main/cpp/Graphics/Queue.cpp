@@ -96,10 +96,10 @@ Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint
 
     currentFrame = (currentFrame + 1) % DEFAULT_MAX_FRAMES;
 
-    if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
+    if (result == vk::Result::eErrorOutOfDateKHR) {
         LOGI("%s", "error out of date");
         kernel.OnOutOfDate();
-    } else if (result != vk::Result::eSuccess) {
+    } else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
         throw std::runtime_error("failed to present image");
     }
 

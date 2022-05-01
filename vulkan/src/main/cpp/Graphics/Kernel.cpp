@@ -228,9 +228,6 @@ Kernel::FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) 
     throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void Kernel::ReadPixels(void *buffer) {
-}
-
 bool Kernel::HasFeatures() {
     for (const auto &device: instance->enumeratePhysicalDevices()) {
         auto count = 0;
