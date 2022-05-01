@@ -49,10 +49,20 @@
   - [x] OpenGL
   - [ ] Vulkan
 
+### Settings
+```
+stream.audioSettings.bitrate = 32 * 1000
+
+stream.videoSettings.width = 640 // The width resoulution of video output.
+stream.videoSettings.height = 360 // The height resoulution of video output.
+stream.videoSettings.bitrate = 160 * 1000 // The bitRate of video output.
+stream.videoSettings.IFrameInterval = 2 // The key-frmae interval
+```
+
 ## Architecture Overview
 ### Publishing Feature
 <p align="center">
-  <img width="732" alt="スクリーンショット 2022-04-23 13 12 15" src="https://user-images.githubusercontent.com/810189/164874912-3cdc0dde-2cfb-4c94-9404-eeb2ff6091ac.png">
+  <img width="732" alt="" src="https://user-images.githubusercontent.com/810189/164874912-3cdc0dde-2cfb-4c94-9404-eeb2ff6091ac.png">
 </p>
 
 ## License

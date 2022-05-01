@@ -28,9 +28,6 @@ abstract class MediaCodec(private val mime: String) : Running {
         var options: List<CodecOption> by Delegates.observable(listOf()) { _, _, newValue ->
             codec?.options = newValue
         }
-        var capturing: Boolean by Delegates.observable(false) { _, _, newValue ->
-            codec?.capturing = newValue
-        }
     }
 
     interface Listener {
@@ -130,9 +127,6 @@ abstract class MediaCodec(private val mime: String) : Running {
                 }
             }
         }
-
-    @Volatile
-    var capturing = false
     override val isRunning = AtomicBoolean(false)
     var outputFormat: MediaFormat? = null
         private set(value) {

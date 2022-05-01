@@ -6,15 +6,32 @@ import kotlin.properties.Delegates
 
 class AudioCodec : MediaCodec(MIME) {
     @Suppress("unused")
-    class Setting(var codec: AudioCodec? = null) : MediaCodec.Setting(codec) {
-        var channelCount: Int by Delegates.observable(DEFAULT_CHANNEL_COUNT) { _, _, newValue ->
-            codec?.channelCount = newValue
+    data class Setting(private var codec: AudioCodec? = null) : MediaCodec.Setting(codec) {
+        /**
+         * The channel of audio output.
+         */
+        var channelCount: Int by Delegates.observable(DEFAULT_CHANNEL_COUNT) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.channelCount = newValue
+            }
         }
-        var bitRate: Int by Delegates.observable(DEFAULT_BIT_RATE) { _, _, newValue ->
-            codec?.bitRate = newValue
+
+        /**
+         * The bitRate of audio output.
+         */
+        var bitRate: Int by Delegates.observable(DEFAULT_BIT_RATE) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.bitRate = newValue
+            }
         }
-        var sampleRate: Int by Delegates.observable(DEFAULT_SAMPLE_RATE) { _, _, newValue ->
-            codec?.sampleRate = newValue
+
+        /**
+         * The sampleRate of audio output.
+         */
+        var sampleRate: Int by Delegates.observable(DEFAULT_SAMPLE_RATE) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.sampleRate = newValue
+            }
         }
     }
 

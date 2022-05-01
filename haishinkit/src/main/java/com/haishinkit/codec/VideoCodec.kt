@@ -5,37 +5,64 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.Size
-import com.haishinkit.flv.tag.FlvTag
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
-import com.haishinkit.graphics.gles.GlPixelReader
 import com.haishinkit.util.FeatureUtil
-import java.nio.ByteBuffer
 import kotlin.properties.Delegates
 
-class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
+class VideoCodec : MediaCodec(MIME) {
     @Suppress("unused")
-    class Setting(var codec: VideoCodec? = null) : MediaCodec.Setting(codec) {
-        var width: Int by Delegates.observable(DEFAULT_WIDTH) { _, _, newValue ->
-            codec?.width = newValue
+    data class Setting(private val codec: VideoCodec? = null) : MediaCodec.Setting(codec) {
+        /**
+         * The width resolution for video output.
+         */
+        var width: Int by Delegates.observable(DEFAULT_WIDTH) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.width = newValue
+            }
         }
-        var height: Int by Delegates.observable(DEFAULT_HEIGHT) { _, _, newValue ->
-            codec?.height = newValue
+
+        /**
+         * The height resolution for video output.
+         */
+        var height: Int by Delegates.observable(DEFAULT_HEIGHT) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.height = newValue
+            }
         }
-        var bitRate: Int by Delegates.observable(DEFAULT_BIT_RATE) { _, _, newValue ->
-            codec?.bitRate = newValue
+
+        /**
+         * The bitrate for video output.
+         */
+        var bitRate: Int by Delegates.observable(DEFAULT_BIT_RATE) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.bitRate = newValue
+            }
         }
-        var IFrameInterval: Int by Delegates.observable(DEFAULT_I_FRAME_INTERVAL) { _, _, newValue ->
-            codec?.IFrameInterval = newValue
+
+        /**
+         * The IFrameInterval for video output.
+         */
+        var IFrameInterval: Int by Delegates.observable(DEFAULT_I_FRAME_INTERVAL) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.IFrameInterval = newValue
+            }
         }
-        var frameRate: Int by Delegates.observable(DEFAULT_FRAME_RATE) { _, _, newValue ->
-            codec?.frameRate = newValue
+        var frameRate: Int by Delegates.observable(DEFAULT_FRAME_RATE) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.frameRate = newValue
+            }
         }
-        var videoGravity: VideoGravity by Delegates.observable(DEFAULT_VIDEO_GRAVITY) { _, _, newValue ->
-            codec?.videoGravity = newValue
+
+        /**
+         * The scaling mode for video output.
+         */
+        var videoGravity: VideoGravity by Delegates.observable(DEFAULT_VIDEO_GRAVITY) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.videoGravity = newValue
+            }
         }
     }
 
@@ -108,10 +135,6 @@ class VideoCodec : MediaCodec(MIME), GlPixelReader.Listener {
             pixelTransform.extent = Size(width, height)
             pixelTransform.surface = codec.createInputSurface()
         }
-    }
-
-    override fun execute(buffer: ByteBuffer, timestamp: Long) {
-        listener?.onCaptureOutput(FlvTag.TYPE_VIDEO, buffer, timestamp)
     }
 
     companion object {
