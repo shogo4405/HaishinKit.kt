@@ -215,10 +215,10 @@ internal class GlKernel(
                 texCoordBuffer.put(TEX_COORDS_ROTATION_0)
             }
             90 -> {
+                swapped = true
                 texCoordBuffer.put(TEX_COORDS_ROTATION_90)
             }
             180 -> {
-                swapped = true
                 texCoordBuffer.put(TEX_COORDS_ROTATION_180)
             }
             270 -> {

@@ -4,6 +4,8 @@ import android.content.Context
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
@@ -25,7 +27,7 @@ class MediaProjectionSource(
     override var utilizable: Boolean = false
 ) :
     VideoSource, PixelTransform.Listener {
-    var scale = 0.5F
+    var scale = 1.0f
     var rotatesWithContent = true
     override var stream: NetStream? = null
         set(value) {
@@ -34,17 +36,24 @@ class MediaProjectionSource(
         }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(1, 1)
-        set(value) {
-            field = value
-            stream?.videoSetting?.width = value.width
-            stream?.videoSetting?.height = value.height
-        }
     private var virtualDisplay: VirtualDisplay? = null
+    private var handler: Handler? = null
+        get() {
+            if (field == null) {
+                val thread = HandlerThread(TAG)
+                thread.start()
+                field = Handler(thread.looper)
+            }
+            return field
+        }
+        set(value) {
+            field?.looper?.quitSafely()
+            field = value
+        }
 
     override fun setUp() {
         if (utilizable) return
-        resolution =
-            Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
+        resolution = Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
         stream?.videoCodec?.setAssetManager(context.assets)
         stream?.videoCodec?.setListener(this)
         super.setUp()
@@ -73,9 +82,6 @@ class MediaProjectionSource(
         isRunning.set(false)
     }
 
-    override fun onPixelTransformImageAvailable(pixelTransform: PixelTransform) {
-    }
-
     override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
         pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
     }
@@ -96,7 +102,7 @@ class MediaProjectionSource(
             flags,
             surface,
             null,
-            null
+            handler
         )
     }
 

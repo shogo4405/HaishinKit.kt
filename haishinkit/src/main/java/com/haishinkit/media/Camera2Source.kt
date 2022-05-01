@@ -19,6 +19,8 @@ import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
+import java.lang.Exception
+import java.lang.IllegalStateException
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -43,12 +45,7 @@ class Camera2Source(
             stream?.videoCodec?.fpsControllerClass = fpsControllerClass
         }
     override val isRunning = AtomicBoolean(false)
-    override var resolution = Size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-        set(value) {
-            field = value
-            stream?.videoSetting?.width = value.width
-            stream?.videoSetting?.height = value.height
-        }
+    override var resolution = Size(0, 0)
     private var cameraId: String = DEFAULT_CAMERA_ID
     private var manager: CameraManager =
         context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -74,7 +71,10 @@ class Camera2Source(
             field = value
             field?.let {
                 for (request in requests) {
-                    it.setRepeatingRequest(request.build(), null, handler)
+                    try {
+                        it.setRepeatingRequest(request.build(), null, handler)
+                    } catch (e: IllegalStateException) {
+                    }
                 }
             }
         }
@@ -105,12 +105,23 @@ class Camera2Source(
             object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
                     this@Camera2Source.device = camera
+                    surfaces.clear()
+                    resolution = resolver.getCameraSize(characteristics)
                     stream?.renderer?.pixelTransform?.apply {
                         listener = this@Camera2Source
-                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
                         imageOrientation = this@Camera2Source.imageOrientation
+                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
                     }
-                    stream?.videoCodec?.pixelTransform?.imageOrientation = imageOrientation
+                    stream?.videoCodec?.pixelTransform?.apply {
+                        imageOrientation = this@Camera2Source.imageOrientation
+                        if (stream?.videoCodec?.isRunning?.get() == true) {
+                            createInputSurface(
+                                resolution.width,
+                                resolution.height,
+                                IMAGE_FORMAT
+                            )
+                        }
+                    }
                     this@Camera2Source.setUp()
                 }
 
@@ -189,9 +200,6 @@ class Camera2Source(
         }
     }
 
-    override fun onPixelTransformImageAvailable(pixelTransform: PixelTransform) {
-    }
-
     override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
         if (stream?.videoCodec?.pixelTransform == pixelTransform) {
             pixelTransform.createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
@@ -242,9 +250,6 @@ class Camera2Source(
     }
 
     companion object {
-        const val DEFAULT_WIDTH: Int = 640
-        const val DEFAULT_HEIGHT: Int = 480
-
         private const val IMAGE_FORMAT = ImageFormat.YUV_420_888
 
         private const val DEFAULT_CAMERA_ID = "0"

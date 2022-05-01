@@ -104,7 +104,6 @@ internal class GlPixelTransform(
         if (surface == null) {
             return
         }
-        listener?.onPixelTransformImageAvailable(this)
         texture?.updateTexImage()
         var timestamp = surfaceTexture.timestamp
         if (timestamp <= 0L) {
@@ -116,9 +115,6 @@ internal class GlPixelTransform(
                 kernel.render(it.id, it.extent, timestamp)
             }
         }
-    }
-
-    override fun readPixels(byteBuffer: ByteBuffer) {
     }
 
     override fun dispose() {
