@@ -188,10 +188,6 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
         }
     }
 
-    override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
-        listener?.onPixelTransformSurfaceChanged(this, surface)
-    }
-
     override fun onPixelTransformInputSurfaceCreated(
         pixelTransform: PixelTransform,
         surface: Surface

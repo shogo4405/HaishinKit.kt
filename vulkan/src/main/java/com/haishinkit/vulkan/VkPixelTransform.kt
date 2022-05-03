@@ -42,7 +42,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             }
             field = value
             nativeSetSurface(value)
-            listener?.onPixelTransformSurfaceChanged(this, value)
         }
 
     override var imageOrientation: ImageOrientation = ImageOrientation.UP

@@ -11,7 +11,6 @@ import com.haishinkit.codec.util.FpsControllerFactory
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlTexture
-import java.nio.ByteBuffer
 
 internal class GlPixelTransform(
     override var listener: PixelTransform.Listener? = null,
@@ -28,7 +27,6 @@ internal class GlPixelTransform(
         get() = kernel.surface
         set(value) {
             kernel.surface = value
-            listener?.onPixelTransformSurfaceChanged(this, value)
         }
     override var imageOrientation: ImageOrientation
         get() = kernel.imageOrientation
@@ -101,9 +99,6 @@ internal class GlPixelTransform(
     }
 
     override fun onFrameAvailable(surfaceTexture: SurfaceTexture) {
-        if (surface == null) {
-            return
-        }
         texture?.updateTexImage()
         var timestamp = surfaceTexture.timestamp
         if (timestamp <= 0L) {
@@ -111,6 +106,9 @@ internal class GlPixelTransform(
         }
         if (fpsController.advanced(timestamp)) {
             timestamp = fpsController.timestamp(timestamp)
+            if (surface == null) {
+                return
+            }
             texture?.let {
                 kernel.render(it.id, it.extent, timestamp)
             }

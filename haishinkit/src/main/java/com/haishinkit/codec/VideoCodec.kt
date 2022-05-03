@@ -61,7 +61,7 @@ class VideoCodec : MediaCodec(MIME) {
         }
 
         /**
-         * The scaling mode for video output.
+         * The scaling mode for a video output.
          */
         var videoGravity: VideoGravity by Delegates.observable(DEFAULT_VIDEO_GRAVITY) { _, oldValue, newValue ->
             if (oldValue != newValue) {
@@ -120,6 +120,15 @@ class VideoCodec : MediaCodec(MIME) {
     var colorFormat = DEFAULT_COLOR_FORMAT
 
     var fpsControllerClass: Class<*>? = null
+
+    override var codec: android.media.MediaCodec?
+        get() = super.codec
+        set(value) {
+            if (value == null) {
+                pixelTransform.surface = null
+            }
+            super.codec = value
+        }
 
     val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create().apply {

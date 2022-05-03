@@ -7,7 +7,6 @@ import com.haishinkit.graphics.filter.VideoEffect
 
 interface PixelTransform {
     interface Listener {
-        fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?)
         fun onPixelTransformInputSurfaceCreated(pixelTransform: PixelTransform, surface: Surface)
     }
 

@@ -19,8 +19,6 @@ import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
-import java.lang.Exception
-import java.lang.IllegalStateException
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -113,14 +111,9 @@ class Camera2Source(
                         createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
                     }
                     stream?.videoCodec?.pixelTransform?.apply {
+                        listener = this@Camera2Source
                         imageOrientation = this@Camera2Source.imageOrientation
-                        if (stream?.videoCodec?.isRunning?.get() == true) {
-                            createInputSurface(
-                                resolution.width,
-                                resolution.height,
-                                IMAGE_FORMAT
-                            )
-                        }
+                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
                     }
                     this@Camera2Source.setUp()
                 }
@@ -197,12 +190,6 @@ class Camera2Source(
         isRunning.set(false)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
-        }
-    }
-
-    override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
-        if (stream?.videoCodec?.pixelTransform == pixelTransform) {
-            pixelTransform.createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
         }
     }
 

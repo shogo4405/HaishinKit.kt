@@ -56,6 +56,7 @@ class MediaProjectionSource(
         resolution = Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
         stream?.videoCodec?.setAssetManager(context.assets)
         stream?.videoCodec?.setListener(this)
+        stream?.videoCodec?.pixelTransform?.createInputSurface(resolution.width, resolution.height, 0x1)
         super.setUp()
     }
 
@@ -80,10 +81,6 @@ class MediaProjectionSource(
         }
         virtualDisplay?.release()
         isRunning.set(false)
-    }
-
-    override fun onPixelTransformSurfaceChanged(pixelTransform: PixelTransform, surface: Surface?) {
-        pixelTransform.createInputSurface(resolution.width, resolution.height, 0x1)
     }
 
     override fun onPixelTransformInputSurfaceCreated(
