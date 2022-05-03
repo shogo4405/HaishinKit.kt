@@ -32,23 +32,6 @@ void Queue::TearDown(Kernel &kernel) {
     }
 }
 
-int32_t Queue::Acquire(Kernel &kernel) {
-    uint32_t nextIndex;
-    vk::Result result = kernel.device->acquireNextImageKHR(
-            kernel.swapChain.swapchain.get(),
-            std::numeric_limits<uint64_t>::max(),
-            waitSemaphores[currentFrame].get(),
-            nullptr,
-            &nextIndex);
-    if (result == vk::Result::eErrorOutOfDateKHR) {
-        LOGI("%s", "error out of date");
-        kernel.OnOutOfDate();
-    } else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
-        throw std::runtime_error("failed to acquire swap chain");
-    }
-    return nextIndex;
-}
-
 void Queue::Submit(Kernel &kernel, vk::CommandBuffer &commandBuffer) {
     auto fence = kernel.device->createFence({});
     queue.submit(vk::SubmitInfo().setCommandBuffers(commandBuffer), fence);
@@ -56,15 +39,23 @@ void Queue::Submit(Kernel &kernel, vk::CommandBuffer &commandBuffer) {
     kernel.device->destroy(fence);
 }
 
-void Queue::Wait(Kernel &kernel) {
+vk::Result
+Queue::DrawFrame(Kernel &kernel, const std::function<void(uint32_t)> &lambda) {
+    uint32_t nextIndex;
+    vk::Result result = kernel.device->acquireNextImageKHR(
+            kernel.swapChain.swapchain.get(),
+            std::numeric_limits<uint64_t>::max(),
+            waitSemaphores[currentFrame].get(),
+            nullptr,
+            &nextIndex);
+
+    if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR && result != vk::Result::eErrorOutOfDateKHR) {
+        return result;
+    }
+
     kernel.device->waitForFences(fences[currentFrame], true,
                                  std::numeric_limits<uint64_t>::max());
-}
 
-vk::Result
-Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint32_t)> &lambda) {
-
-    vk::Result result;
     const auto waitStageMask =
             vk::PipelineStageFlags(vk::PipelineStageFlagBits::eColorAttachmentOutput);
 
@@ -95,13 +86,6 @@ Queue::Present(Kernel &kernel, uint32_t nextIndex, const std::function<void(uint
     );
 
     currentFrame = (currentFrame + 1) % DEFAULT_MAX_FRAMES;
-
-    if (result == vk::Result::eErrorOutOfDateKHR) {
-        LOGI("%s", "error out of date");
-        kernel.OnOutOfDate();
-    } else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
-        throw std::runtime_error("failed to present image");
-    }
 
     return result;
 }
