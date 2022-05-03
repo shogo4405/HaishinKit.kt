@@ -16,7 +16,7 @@ class VideoCodec : MediaCodec(MIME) {
     @Suppress("unused")
     data class Setting(private val codec: VideoCodec? = null) : MediaCodec.Setting(codec) {
         /**
-         * The width resolution for video output.
+         * The width resolution for a video output.
          */
         var width: Int by Delegates.observable(DEFAULT_WIDTH) { _, oldValue, newValue ->
             if (oldValue != newValue) {
@@ -25,7 +25,7 @@ class VideoCodec : MediaCodec(MIME) {
         }
 
         /**
-         * The height resolution for video output.
+         * The height resolution for a video output.
          */
         var height: Int by Delegates.observable(DEFAULT_HEIGHT) { _, oldValue, newValue ->
             if (oldValue != newValue) {
@@ -34,7 +34,7 @@ class VideoCodec : MediaCodec(MIME) {
         }
 
         /**
-         * The bitrate for video output.
+         * The bitrate for a video output.
          */
         var bitRate: Int by Delegates.observable(DEFAULT_BIT_RATE) { _, oldValue, newValue ->
             if (oldValue != newValue) {
@@ -43,13 +43,17 @@ class VideoCodec : MediaCodec(MIME) {
         }
 
         /**
-         * The IFrameInterval for video output.
+         * The IFrameInterval for a video output.
          */
         var IFrameInterval: Int by Delegates.observable(DEFAULT_I_FRAME_INTERVAL) { _, oldValue, newValue ->
             if (oldValue != newValue) {
                 codec?.IFrameInterval = newValue
             }
         }
+
+        /**
+         * The frame rate of a video format in frames/sec.
+         */
         var frameRate: Int by Delegates.observable(DEFAULT_FRAME_RATE) { _, oldValue, newValue ->
             if (oldValue != newValue) {
                 codec?.frameRate = newValue
@@ -61,11 +65,14 @@ class VideoCodec : MediaCodec(MIME) {
          */
         var videoGravity: VideoGravity by Delegates.observable(DEFAULT_VIDEO_GRAVITY) { _, oldValue, newValue ->
             if (oldValue != newValue) {
-                codec?.videoGravity = newValue
+                codec?.pixelTransform?.videoGravity = newValue
             }
         }
     }
 
+    /**
+     * The bitrate for a video output.
+     */
     var bitRate = DEFAULT_BIT_RATE
         set(value) {
             field = value
@@ -76,19 +83,43 @@ class VideoCodec : MediaCodec(MIME) {
                 codec?.setParameters(bundle)
             }
         }
+
+    /**
+     * The frame rate of a video format in frames/sec.
+     */
     var frameRate = DEFAULT_FRAME_RATE
+
+    /**
+     * The IFrameInterval for a video output.
+     */
     var IFrameInterval = DEFAULT_I_FRAME_INTERVAL
+
+    /**
+     * The width resolution for a video output.
+     */
     var width = DEFAULT_WIDTH
+
+    /**
+     * The height resolution for a video output.
+     */
     var height = DEFAULT_HEIGHT
+
+    /**
+     * The H264 profile for a video output.
+     */
     var profile = DEFAULT_PROFILE
+
+    /**
+     * The H264 profile-level for a video outout.
+     */
     var level = DEFAULT_LEVEL
+
+    /**
+     * The color format for a surface.
+     */
     var colorFormat = DEFAULT_COLOR_FORMAT
+
     var fpsControllerClass: Class<*>? = null
-    var videoGravity: VideoGravity
-        get() = pixelTransform.videoGravity
-        set(value) {
-            pixelTransform.videoGravity = value
-        }
 
     val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create().apply {

@@ -28,6 +28,7 @@ namespace Graphics {
     }
 
     void PixelTransform::SetImageExtent(int32_t width, int32_t height) {
+        kernel->SetImageExtent(width, height);
     }
 
     ANativeWindow *PixelTransform::GetInputSurface() {
@@ -62,7 +63,6 @@ namespace Graphics {
         texture->SetImageOrientation(imageOrientation);
         textures.clear();
         textures.push_back(texture);
-
         AImageReader_ImageListener listener{
                 .context = this,
                 .onImageAvailable = OnImageAvailable
@@ -119,6 +119,10 @@ namespace Graphics {
 
     bool PixelTransform::HasFeatures() {
         return kernel->HasFeatures();
+    }
+
+    void PixelTransform::SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize) {
+        kernel->SetExpectedOrientationSynchronize(expectedOrientationSynchronize);
     }
 }
 
@@ -228,6 +232,16 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageExtent(JNIEnv *env, jo
     Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
             [=](Graphics::PixelTransform *self) {
                 self->SetImageExtent(width, height);
+            });
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetExpectedOrientationSynchronize(JNIEnv *env,
+                                                                                    jobject thiz,
+                                                                                    jboolean expectedOrientationSynchronize) {
+    Unmanaged<Graphics::PixelTransform>::fromOpaque(env, thiz)->safe(
+            [=](Graphics::PixelTransform *self) {
+                self->SetExpectedOrientationSynchronize(expectedOrientationSynchronize);
             });
 }
 }

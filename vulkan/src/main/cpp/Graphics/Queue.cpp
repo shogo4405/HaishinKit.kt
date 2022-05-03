@@ -49,7 +49,8 @@ Queue::DrawFrame(Kernel &kernel, const std::function<void(uint32_t)> &lambda) {
             nullptr,
             &nextIndex);
 
-    if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR && result != vk::Result::eErrorOutOfDateKHR) {
+    if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR &&
+        result != vk::Result::eErrorOutOfDateKHR) {
         return result;
     }
 

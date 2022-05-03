@@ -41,6 +41,12 @@ namespace Graphics {
 
         void SetAssetManager(AAssetManager *newAssetManager);
 
+        bool GetExpectedOrientationSynchronize() const;
+
+        void SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize);
+
+        void SetImageExtent(int32_t width, int32_t height);
+
         void SetUp(ANativeWindow *window);
 
         void TearDown();
@@ -61,7 +67,7 @@ namespace Graphics {
 
         uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) const;
 
-        void OnOutOfDate();
+        void OnOrientationChange();
 
         bool HasFeatures();
 
@@ -76,6 +82,7 @@ namespace Graphics {
         bool isAvailable = false;
         AAssetManager *assetManager;
         FeatureManager *featureManager;
+        bool expectedOrientationSynchronize = true;
 
         std::vector<char> ReadFile(const std::string &fileName);
 

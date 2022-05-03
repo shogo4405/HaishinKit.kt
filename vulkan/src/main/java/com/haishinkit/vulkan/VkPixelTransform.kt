@@ -10,7 +10,6 @@ import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
-import java.nio.ByteBuffer
 
 class VkPixelTransform(override var listener: PixelTransform.Listener? = null) : PixelTransform {
     companion object {
@@ -38,6 +37,9 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     override var surface: Surface? = null
         set(value) {
+            if (field == value) {
+                return
+            }
             field = value
             nativeSetSurface(value)
             listener?.onPixelTransformSurfaceChanged(this, value)
@@ -45,6 +47,9 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     override var imageOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
+            if (field == value) {
+                return
+            }
             field = value
             nativeSetImageOrientation(imageOrientation.rawValue)
         }
@@ -61,27 +66,46 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     override var fpsControllerClass: Class<*>? = null
 
     override var expectedOrientationSynchronize = false
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            nativeSetExpectedOrientationSynchronize(value)
+        }
 
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
+            if (field == value) {
+                return
+            }
             field = value
             nativeSetVideoGravity(field.rawValue)
         }
 
     override var resampleFilter: ResampleFilter = ResampleFilter.CUBIC
         set(value) {
+            if (field == value) {
+                return
+            }
             field = value
             nativeSetResampleFilter(value.rawValue)
         }
 
     override var assetManager: AssetManager? = null
         set(value) {
+            if (field == value) {
+                return
+            }
             field = value
             nativeSetAssetManager(value)
         }
 
     override var surfaceRotation: Int = Surface.ROTATION_0
         set(value) {
+            if (field == value) {
+                return
+            }
             field = value
             nativeSetSurfaceRotation(value)
         }
@@ -111,5 +135,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     private external fun nativeSetImageExtent(width: Int, height: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
     private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface
+    private external fun nativeSetExpectedOrientationSynchronize(expectedOrientationSynchronize: Boolean)
     private external fun nativeDispose()
 }

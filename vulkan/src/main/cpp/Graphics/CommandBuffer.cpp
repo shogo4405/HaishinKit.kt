@@ -35,10 +35,10 @@ void CommandBuffer::SetUp(Kernel &kernel) {
 
     buffers.resize(4);
     const Vertex rotation_0[] = {
-            {{1.f,  1.f},  {1.f, 0.f}},
-            {{1.f,  -1.f}, {0.f, 0.f}},
-            {{-1.f, 1.f},  {1.f, 1.f}},
-            {{-1.f, -1.f}, {0.f, 1.f}},
+            {{-1.f, -1.f}, {0.f, 0.f}},
+            {{-1.f, 1.f},  {0.f, 1.f}},
+            {{1.f,  -1.f}, {1.f, 0.f}},
+            {{1.f,  1.f},  {1.f, 1.f}},
     };
     buffers[0] = CreateBuffer(kernel, (void *) rotation_0,
                               sizeof(rotation_0) * sizeof(Graphics::Vertex));
@@ -53,10 +53,10 @@ void CommandBuffer::SetUp(Kernel &kernel) {
                               sizeof(rotation_90) * sizeof(Graphics::Vertex));
 
     const Vertex rotation_180[] = {
-            {{1.f,  1.f},  {1.f, 0.f}},
-            {{1.f,  -1.f}, {0.f, 0.f}},
-            {{-1.f, 1.f},  {1.f, 1.f}},
-            {{-1.f, -1.f}, {0.f, 1.f}},
+            {{-1.f, -1.f}, {1.f, 1.f}},
+            {{-1.f, 1.f},  {1.f, 0.f}},
+            {{1.f,  -1.f}, {0.f, 1.f}},
+            {{1.f,  1.f},  {0.f, 0.f}},
     };
     buffers[2] = CreateBuffer(kernel, (void *) rotation_180,
                               sizeof(rotation_180) * sizeof(Graphics::Vertex));

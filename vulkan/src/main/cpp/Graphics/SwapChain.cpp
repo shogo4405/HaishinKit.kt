@@ -3,8 +3,19 @@
 
 using namespace Graphics;
 
+void SwapChain::SetImageExtent(int32_t width, int height) {
+    if (info.imageExtent.width == width && info.imageExtent.height == height) {
+        return;
+    }
+    invalidate = true;
+}
+
 vk::Extent2D SwapChain::GetImageExtent() const {
     return info.imageExtent;
+}
+
+bool SwapChain::IsInvalidate() const {
+    return invalidate;
 }
 
 void SwapChain::SetUp(Kernel &kernel) {
@@ -21,12 +32,6 @@ void SwapChain::SetUp(Kernel &kernel) {
     }
 
     vk::Extent2D imageExtent = capabilities.currentExtent;
-    // https://developer.android.com/games/optimize/vulkan-prerotation
-    if (capabilities.currentTransform == vk::SurfaceTransformFlagBitsKHR::eRotate90 ||
-        capabilities.currentTransform == vk::SurfaceTransformFlagBitsKHR::eRotate270) {
-        imageExtent = vk::Extent2D(imageExtent.height, imageExtent.width);
-    }
-
     if (swapchain) {
         info.setOldSwapchain(swapchain.get());
     }
@@ -43,7 +48,6 @@ void SwapChain::SetUp(Kernel &kernel) {
                     .setImageSharingMode(vk::SharingMode::eExclusive)
                     .setQueueFamilyIndexCount(1)
                     .setQueueFamilyIndices(kernel.queue.queueFamilyIndex)
-                    .setPreTransform(capabilities.currentTransform)
                     .setPresentMode(vk::PresentModeKHR::eMailbox)
                     .setClipped(true)
                     .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eInherit));
@@ -89,6 +93,8 @@ void SwapChain::SetUp(Kernel &kernel) {
                     .setDependencyCount(0)
                     .setDependencies(nullptr)
     );
+
+    invalidate = false;
 }
 
 void SwapChain::TearDown(Kernel &kernel) {

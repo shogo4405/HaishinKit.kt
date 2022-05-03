@@ -64,6 +64,10 @@ Kernel::~Kernel() {
     TearDown();
 }
 
+void Kernel::SetImageExtent(int32_t width, int32_t height) {
+    swapChain.SetImageExtent(width, height);
+}
+
 void Kernel::SetAssetManager(AAssetManager *newAssetManager) {
     assetManager = newAssetManager;
 }
@@ -97,7 +101,11 @@ vk::Result Kernel::DrawFrame(const std::function<void(uint32_t)> &lambda) {
     if (!isAvailable) {
         return vk::Result::eErrorInitializationFailed;
     }
-    return queue.DrawFrame(*this, lambda);
+    vk::Result result = queue.DrawFrame(*this, lambda);
+    if (swapChain.IsInvalidate()) {
+        this->OnOrientationChange();
+    }
+    return result;
 }
 
 bool Kernel::IsAvailable() const {
@@ -132,6 +140,14 @@ bool Kernel::IsValidationLayersSupported() {
         }
     }
     return false;
+}
+
+bool Kernel::GetExpectedOrientationSynchronize() const {
+    return expectedOrientationSynchronize;
+}
+
+void Kernel::SetExpectedOrientationSynchronize(bool newExpectedOrientationSynchronize) {
+    expectedOrientationSynchronize = newExpectedOrientationSynchronize;
 }
 
 void Kernel::SelectPhysicalDevice() {
@@ -293,7 +309,7 @@ std::vector<char> Kernel::ReadFile(const std::string &fileName) {
     return contents;
 }
 
-void Kernel::OnOutOfDate() {
+void Kernel::OnOrientationChange() {
     if (!isAvailable) {
         return;
     }

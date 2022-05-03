@@ -137,6 +137,28 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
             break;
     }
 
+    if (kernel.GetExpectedOrientationSynchronize()) {
+        switch (kernel.GetSurfaceRotation()) {
+            case ROTATION_0:
+                degrees += 0;
+                break;
+            case ROTATION_90:
+                degrees += 90;
+                break;
+            case ROTATION_180:
+                degrees += 180;
+                break;
+            case ROTATION_270:
+                degrees += 270;
+                break;
+        }
+    }
+
+    if (((int) degrees % 180) == 0 &&
+        (imageOrientation == RIGHT || imageOrientation == RIGHT_MIRRORED)) {
+        degrees += 180;
+    }
+
     auto swapped = false;
     auto index = 0;
     switch ((int) degrees % 360) {
@@ -158,10 +180,7 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
 
     vk::Extent2D surface = kernel.swapChain.GetImageExtent();
     scissors[0].setExtent(surface);
-    auto newImageExtent = extent;
-    if (swapped) {
-        newImageExtent = vk::Extent2D(extent.height, extent.width);
-    }
+    auto newImageExtent = swapped ? vk::Extent2D(extent.height, extent.width) : extent;
 
     switch (videoGravity) {
         case RESIZE: {

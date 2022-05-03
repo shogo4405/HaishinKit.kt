@@ -37,6 +37,8 @@ namespace Graphics {
 
         void SetSurfaceRotation(SurfaceRotation surfaceRotation);
 
+        void SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize);
+
         ANativeWindow *GetInputSurface();
 
         bool HasFeatures();

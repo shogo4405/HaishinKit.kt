@@ -31,7 +31,7 @@ abstract class MediaCodec(private val mime: String) : Running {
     }
 
     interface Listener {
-        fun onInputBufferAvailable(mime: String, codec: android.media.MediaCodec, index: Int)
+        fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int)
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
         fun onSampleOutput(
             mime: String,
@@ -43,7 +43,7 @@ abstract class MediaCodec(private val mime: String) : Running {
         fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
-    class Callback : android.media.MediaCodec.Callback() {
+    class Callback : MediaCodec.Callback() {
         var listener: Listener? = null
         var codec: com.haishinkit.codec.MediaCodec? = null
         var mime: String = ""
@@ -61,7 +61,7 @@ abstract class MediaCodec(private val mime: String) : Running {
         override fun onOutputBufferAvailable(
             codec: MediaCodec,
             index: Int,
-            info: android.media.MediaCodec.BufferInfo
+            info: MediaCodec.BufferInfo
         ) {
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
@@ -75,7 +75,7 @@ abstract class MediaCodec(private val mime: String) : Running {
             }
         }
 
-        override fun onError(codec: MediaCodec, e: android.media.MediaCodec.CodecException) {
+        override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, e.toString())
             }
@@ -86,12 +86,19 @@ abstract class MediaCodec(private val mime: String) : Running {
         }
     }
 
+    /**
+     * The listener of which callback method.
+     */
     var listener: Listener? = null
         set(value) {
             field = value
             callback.listener = value
         }
-    var codec: MediaCodec? = null
+
+    /**
+     * The android.media.MediaCodec instance.
+     */
+    open var codec: MediaCodec? = null
         get() {
             if (field == null) {
                 field = if (mode == Mode.ENCODE) {
@@ -107,8 +114,20 @@ abstract class MediaCodec(private val mime: String) : Running {
             field?.release()
             field = value
         }
+
+    /**
+     * The mode of encoding or decoding.
+     */
     var mode = Mode.ENCODE
+
+    /**
+     * The external android.media.MediaCodec options.
+     */
     var options = listOf<CodecOption>()
+
+    /**
+     * The surface for a video media codec.
+     */
     var surface: Surface? = null
         set(value) {
             field = value

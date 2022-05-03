@@ -13,9 +13,13 @@ namespace Graphics {
         vk::UniqueSwapchainKHR swapchain;
         vk::UniqueRenderPass renderPass;
 
+        void SetImageExtent(int32_t width, int32_t height);
+
         vk::Extent2D GetImageExtent() const;
 
         int32_t GetImagesCount();
+
+        bool IsInvalidate() const;
 
         void SetUp(Kernel &kernel);
 
@@ -24,6 +28,7 @@ namespace Graphics {
         vk::Framebuffer CreateFramebuffer(Kernel &kernel, int32_t index);
 
     private:
+        bool invalidate = false;
         vk::SwapchainCreateInfoKHR info;
         std::vector<vk::Image> images;
         std::vector<vk::UniqueImageView> imageViews;
