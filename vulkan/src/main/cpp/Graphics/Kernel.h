@@ -20,11 +20,9 @@
 namespace Graphics {
     class Kernel {
     public:
-        vk::UniqueInstance instance;
         vk::UniqueSurfaceKHR surface;
         vk::UniqueDevice device;
         vk::PhysicalDevice physicalDevice;
-        int32_t selectedPhysicalDevice = -1;
         bool invalidateSurfaceRotation = true;
         SwapChain swapChain;
         Pipeline pipeline;
@@ -47,9 +45,7 @@ namespace Graphics {
 
         void SetImageExtent(int32_t width, int32_t height);
 
-        void SetUp(ANativeWindow *window);
-
-        void TearDown();
+        void SetNativeWindow(ANativeWindow *window);
 
         vk::Result DrawFrame(const std::function<void(uint32_t)> &lambda);
 
@@ -80,9 +76,12 @@ namespace Graphics {
         SurfaceRotation surfaceRotation = ROTATION_0;
         bool isValidationLayersEnabled;
         bool isAvailable = false;
-        AAssetManager *assetManager;
-        FeatureManager *featureManager;
         bool expectedOrientationSynchronize = true;
+        AAssetManager *assetManager = nullptr;
+        FeatureManager *featureManager = nullptr;
+        ANativeWindow *nativeWindow = nullptr;
+        vk::UniqueInstance instance;
+        int32_t selectedPhysicalDevice = -1;
 
         std::vector<char> ReadFile(const std::string &fileName);
 

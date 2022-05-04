@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.haishinkit.vulkan.VkPixelTransform
 import java.lang.Exception
 
 class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
@@ -49,7 +48,7 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 Log.d(TAG, "surfaceCreated")
                 surfaceHolderA = holder
-                renderer?.surface = holder.surface
+                renderer?.outputSurface = holder.surface
             }
 
             override fun surfaceChanged(
@@ -141,15 +140,15 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             when (button2.text) {
                 "LEFT" -> {
                     button2.text = "RIGHT"
-                    renderer?.surface = surfaceViewB.holder.surface
+                    renderer?.outputSurface = surfaceViewB.holder.surface
                 }
                 "RIGHT" -> {
                     button2.text = "NULL"
-                    renderer?.surface = null
+                    renderer?.outputSurface = null
                 }
                 "NULL" -> {
                     button2.text = "LEFT"
-                    renderer?.surface = surfaceViewA.holder.surface
+                    renderer?.outputSurface = surfaceViewA.holder.surface
                 }
             }
         }

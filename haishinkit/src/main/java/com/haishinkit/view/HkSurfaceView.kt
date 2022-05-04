@@ -45,7 +45,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 pixelTransform.imageExtent = Size(width, height)
-                pixelTransform.surface = holder.surface
+                pixelTransform.outputSurface = holder.surface
             }
 
             override fun surfaceChanged(
@@ -62,7 +62,7 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {
-                pixelTransform.surface = null
+                pixelTransform.outputSurface = null
             }
         })
     }

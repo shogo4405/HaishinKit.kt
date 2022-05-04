@@ -125,7 +125,7 @@ class VideoCodec : MediaCodec(MIME) {
         get() = super.codec
         set(value) {
             if (value == null) {
-                pixelTransform.surface = null
+                pixelTransform.outputSurface = null
             }
             super.codec = value
         }
@@ -173,7 +173,7 @@ class VideoCodec : MediaCodec(MIME) {
         if (mode == Mode.ENCODE) {
             pixelTransform.fpsControllerClass = fpsControllerClass
             pixelTransform.imageExtent = Size(width, height)
-            pixelTransform.surface = codec.createInputSurface()
+            pixelTransform.outputSurface = codec.createInputSurface()
         }
     }
 

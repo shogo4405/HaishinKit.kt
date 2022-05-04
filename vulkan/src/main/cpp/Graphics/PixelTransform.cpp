@@ -16,15 +16,11 @@ namespace Graphics {
     PixelTransform::PixelTransform() :
             kernel(new Kernel()),
             textures(std::vector<Texture *>(0)),
-            nativeWindow(nullptr),
             imageReader(new ImageReader()) {
     }
 
     PixelTransform::~PixelTransform() {
         delete kernel;
-        if (nativeWindow != nullptr) {
-            ANativeWindow_release(nativeWindow);
-        }
     }
 
     void PixelTransform::SetImageExtent(int32_t width, int32_t height) {
@@ -79,25 +75,8 @@ namespace Graphics {
         kernel->SetAssetManager(assetManager);
     }
 
-    void PixelTransform::SetNativeWindow(ANativeWindow *newNativeWindow) {
-        ANativeWindow *oldNativeWindow = nativeWindow;
-        nativeWindow = nullptr;
-        if (oldNativeWindow != nullptr && newNativeWindow == nullptr) {
-            kernel->TearDown();
-        } else {
-            if (oldNativeWindow != nullptr && oldNativeWindow != newNativeWindow) {
-                kernel->TearDown();
-            }
-            kernel->SetUp(newNativeWindow);
-        }
-        if (oldNativeWindow != nullptr) {
-            ANativeWindow_release(oldNativeWindow);
-        }
-        nativeWindow = newNativeWindow;
-    }
-
-    bool PixelTransform::IsReady() {
-        return kernel->IsAvailable() && nativeWindow != nullptr;
+    void PixelTransform::SetNativeWindow(ANativeWindow *nativeWindow) {
+        kernel->SetNativeWindow(nativeWindow);
     }
 
     std::string PixelTransform::InspectDevices() {
@@ -106,7 +85,7 @@ namespace Graphics {
 
     void PixelTransform::OnImageAvailable(AImageReader *reader) {
         AHardwareBuffer *buffer = imageReader->GetLatestBuffer();
-        if (!IsReady() || buffer == nullptr) {
+        if (!kernel->IsAvailable() || buffer == nullptr) {
             return;
         }
         const auto &texture = textures[0];

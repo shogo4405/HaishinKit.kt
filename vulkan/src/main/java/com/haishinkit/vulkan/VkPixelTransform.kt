@@ -35,7 +35,7 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
         }
     }
 
-    override var surface: Surface? = null
+    override var outputSurface: Surface? = null
         set(value) {
             if (field == value) {
                 return

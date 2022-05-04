@@ -23,7 +23,7 @@ internal class GlPixelTransform(
             field = value
             fpsController = FpsControllerFactory.shared.create(value)
         }
-    override var surface: Surface?
+    override var outputSurface: Surface?
         get() = kernel.surface
         set(value) {
             kernel.surface = value
@@ -106,7 +106,7 @@ internal class GlPixelTransform(
         }
         if (fpsController.advanced(timestamp)) {
             timestamp = fpsController.timestamp(timestamp)
-            if (surface == null) {
+            if (outputSurface == null) {
                 return
             }
             texture?.let {

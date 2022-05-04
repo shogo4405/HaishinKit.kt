@@ -61,7 +61,9 @@ Kernel::~Kernel() {
     if (isAvailable) {
         device->waitIdle();
     }
-    TearDown();
+    if (nativeWindow) {
+        ANativeWindow_release(nativeWindow);
+    }
 }
 
 void Kernel::SetImageExtent(int32_t width, int32_t height) {
@@ -72,44 +74,41 @@ void Kernel::SetAssetManager(AAssetManager *newAssetManager) {
     assetManager = newAssetManager;
 }
 
-void Kernel::SetUp(ANativeWindow *nativeWindow) {
-    if (!isAvailable) {
-        return;
-    }
+void Kernel::SetNativeWindow(ANativeWindow *newNativeWindow) {
     SelectPhysicalDevice();
-    surface = instance->createAndroidSurfaceKHRUnique(
-            vk::AndroidSurfaceCreateInfoKHR()
-                    .setFlags(vk::AndroidSurfaceCreateFlagsKHR())
-                    .setPNext(nullptr)
-                    .setWindow(nativeWindow));
-
-    swapChain.SetUp(*this);
-    queue.SetImagesCount(*this, swapChain.GetImagesCount());
-}
-
-void Kernel::TearDown() {
-    if (!isAvailable) {
-        return;
-    }
+    ANativeWindow *oldNativeWindow = nativeWindow;
+    nativeWindow = nullptr;
     device->waitIdle();
-    commandBuffer.TearDown(*this);
-    pipeline.TearDown(*this);
-    swapChain.TearDown(*this);
+    if (newNativeWindow) {
+        surface = instance->createAndroidSurfaceKHRUnique(
+                vk::AndroidSurfaceCreateInfoKHR()
+                        .setFlags(vk::AndroidSurfaceCreateFlagsKHR())
+                        .setPNext(nullptr)
+                        .setWindow(newNativeWindow));
+        swapChain.SetUp(*this, false);
+        queue.SetImagesCount(*this, swapChain.GetImagesCount());
+    } else {
+        swapChain.TearDown(*this);
+        surface.release();
+    }
+    if (oldNativeWindow) {
+        ANativeWindow_release(oldNativeWindow);
+    }
+    nativeWindow = newNativeWindow;
 }
 
 vk::Result Kernel::DrawFrame(const std::function<void(uint32_t)> &lambda) {
     if (!isAvailable) {
         return vk::Result::eErrorInitializationFailed;
     }
-    vk::Result result = queue.DrawFrame(*this, lambda);
     if (swapChain.IsInvalidate()) {
         this->OnOrientationChange();
     }
-    return result;
+    return queue.DrawFrame(*this, lambda);
 }
 
 bool Kernel::IsAvailable() const {
-    return isAvailable;
+    return isAvailable && nativeWindow != nullptr;
 }
 
 SurfaceRotation Kernel::GetSurfaceRotation() {
@@ -315,7 +314,7 @@ void Kernel::OnOrientationChange() {
     }
     isAvailable = false;
     device->waitIdle();
-    swapChain.SetUp(*this);
+    swapChain.SetUp(*this, true);
     queue.SetImagesCount(*this, swapChain.GetImagesCount());
     commandBuffer.SetUp(*this);
     isAvailable = true;

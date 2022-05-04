@@ -17,8 +17,8 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                 it.sendMessage(it.obtainMessage(MSG_SET_FPS_CONTROLLER_CLASS, value))
             }
         }
-    override var surface: Surface?
-        get() = pixelTransform.surface
+    override var outputSurface: Surface?
+        get() = pixelTransform.outputSurface
         set(value) {
             handler?.let {
                 it.sendMessage(it.obtainMessage(MSG_SET_SURFACE, value))
@@ -135,9 +135,9 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
             when (message.what) {
                 MSG_SET_SURFACE -> {
                     if (message.obj == null) {
-                        transform.surface = null
+                        transform.outputSurface = null
                     } else {
-                        transform.surface = message.obj as Surface
+                        transform.outputSurface = message.obj as Surface
                     }
                 }
                 MSG_SET_IMAGE_ORIENTATION -> {

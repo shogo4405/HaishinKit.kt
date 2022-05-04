@@ -19,8 +19,6 @@ namespace Graphics {
 
         ~PixelTransform();
 
-        bool IsReady();
-
         void SetImageExtent(int32_t width, int32_t height);
 
         void SetImageReader(int32_t width, int32_t height, int32_t format);
@@ -48,7 +46,6 @@ namespace Graphics {
         std::string InspectDevices();
 
     private:
-        ANativeWindow *nativeWindow;
         std::vector<Texture *> textures;
         Kernel *kernel;
         VideoGravity videoGravity = RESIZE_ASPECT_FILL;

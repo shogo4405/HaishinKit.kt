@@ -55,7 +55,7 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
         pixelTransform.imageExtent = Size(width, height)
-        pixelTransform.surface = Surface(surface)
+        pixelTransform.outputSurface = Surface(surface)
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
@@ -67,7 +67,7 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-        pixelTransform.surface = null
+        pixelTransform.outputSurface = null
         return false
     }
 

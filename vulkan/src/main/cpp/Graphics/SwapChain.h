@@ -21,14 +21,15 @@ namespace Graphics {
 
         bool IsInvalidate() const;
 
-        void SetUp(Kernel &kernel);
+        void SetUp(Kernel &kernel, bool requestRecreate);
 
         void TearDown(Kernel &kernel);
 
         vk::Framebuffer CreateFramebuffer(Kernel &kernel, int32_t index);
 
     private:
-        bool invalidate = false;
+        bool isCreated = false;
+        bool isInvalidate = false;
         vk::SwapchainCreateInfoKHR info;
         std::vector<vk::Image> images;
         std::vector<vk::UniqueImageView> imageViews;

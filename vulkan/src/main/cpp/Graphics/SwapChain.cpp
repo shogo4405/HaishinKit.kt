@@ -7,7 +7,7 @@ void SwapChain::SetImageExtent(int32_t width, int height) {
     if (info.imageExtent.width == width && info.imageExtent.height == height) {
         return;
     }
-    invalidate = true;
+    isInvalidate = true;
 }
 
 vk::Extent2D SwapChain::GetImageExtent() const {
@@ -15,10 +15,14 @@ vk::Extent2D SwapChain::GetImageExtent() const {
 }
 
 bool SwapChain::IsInvalidate() const {
-    return invalidate;
+    return isInvalidate;
 }
 
-void SwapChain::SetUp(Kernel &kernel) {
+void SwapChain::SetUp(Kernel &kernel, bool requestRecreate) {
+    if (isCreated && !requestRecreate) {
+        return;
+    }
+    
     const auto capabilities = kernel.physicalDevice.getSurfaceCapabilitiesKHR(
             kernel.surface.get());
     const auto formats = kernel.physicalDevice.getSurfaceFormatsKHR(
@@ -34,6 +38,8 @@ void SwapChain::SetUp(Kernel &kernel) {
     vk::Extent2D imageExtent = capabilities.currentExtent;
     if (swapchain) {
         info.setOldSwapchain(swapchain.get());
+    } else {
+        info.setOldSwapchain(nullptr);
     }
 
     swapchain = kernel.device->createSwapchainKHRUnique(
@@ -94,10 +100,13 @@ void SwapChain::SetUp(Kernel &kernel) {
                     .setDependencies(nullptr)
     );
 
-    invalidate = false;
+    isCreated = true;
+    isInvalidate = false;
 }
 
 void SwapChain::TearDown(Kernel &kernel) {
+    swapchain.release();
+    isInvalidate = true;
 }
 
 int32_t SwapChain::GetImagesCount() {
