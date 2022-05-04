@@ -319,3 +319,17 @@ void Kernel::OnOrientationChange() {
     commandBuffer.SetUp(*this);
     isAvailable = true;
 }
+
+vk::SurfaceCapabilitiesKHR Kernel::GetSurfaceCapabilities() {
+    return physicalDevice.getSurfaceCapabilitiesKHR(surface.get());
+}
+
+vk::SurfaceFormatKHR Kernel::GetSurfaceFormat() {
+    const auto formats = physicalDevice.getSurfaceFormatsKHR(surface.get());
+    for (const auto &format : formats) {
+        if (format.format == vk::Format::eR8G8B8A8Unorm) {
+            return format;
+        }
+    }
+    throw std::runtime_error("failed to find suitable surface format!");
+}

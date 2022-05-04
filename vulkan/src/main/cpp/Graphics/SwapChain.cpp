@@ -22,18 +22,9 @@ void SwapChain::SetUp(Kernel &kernel, bool requestRecreate) {
     if (isCreated && !requestRecreate) {
         return;
     }
-    
-    const auto capabilities = kernel.physicalDevice.getSurfaceCapabilitiesKHR(
-            kernel.surface.get());
-    const auto formats = kernel.physicalDevice.getSurfaceFormatsKHR(
-            kernel.surface.get());
 
-    uint32_t chosenFormat;
-    for (chosenFormat = 0; chosenFormat < formats.size(); ++chosenFormat) {
-        if (formats[chosenFormat].format == vk::Format::eR8G8B8A8Unorm) {
-            break;
-        }
-    }
+    const auto capabilities = kernel.GetSurfaceCapabilities();
+    const auto format = kernel.GetSurfaceFormat();
 
     vk::Extent2D imageExtent = capabilities.currentExtent;
     if (swapchain) {
@@ -46,8 +37,8 @@ void SwapChain::SetUp(Kernel &kernel, bool requestRecreate) {
             info
                     .setSurface(kernel.surface.get())
                     .setMinImageCount(capabilities.minImageCount)
-                    .setImageFormat(formats[chosenFormat].format)
-                    .setImageColorSpace(formats[chosenFormat].colorSpace)
+                    .setImageFormat(format.format)
+                    .setImageColorSpace(format.colorSpace)
                     .setImageExtent(imageExtent)
                     .setImageArrayLayers(1)
                     .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)

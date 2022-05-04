@@ -20,10 +20,9 @@
 namespace Graphics {
     class Kernel {
     public:
-        vk::UniqueSurfaceKHR surface;
-        vk::UniqueDevice device;
-        vk::PhysicalDevice physicalDevice;
         bool invalidateSurfaceRotation = true;
+        vk::UniqueDevice device;
+        vk::UniqueSurfaceKHR surface;
         SwapChain swapChain;
         Pipeline pipeline;
         Queue queue;
@@ -67,6 +66,10 @@ namespace Graphics {
 
         bool HasFeatures();
 
+        vk::SurfaceCapabilitiesKHR GetSurfaceCapabilities();
+
+        vk::SurfaceFormatKHR GetSurfaceFormat();
+
     private:
         const std::string applicationName = "HaishinKit";
         const std::string engineName = "Vulkan::Kernel";
@@ -82,6 +85,7 @@ namespace Graphics {
         ANativeWindow *nativeWindow = nullptr;
         vk::UniqueInstance instance;
         int32_t selectedPhysicalDevice = -1;
+        vk::PhysicalDevice physicalDevice;
 
         std::vector<char> ReadFile(const std::string &fileName);
 
