@@ -65,13 +65,15 @@ class MediaProjectionService : Service(), IEventListener {
         stream.attachAudio(AudioRecordSource())
         stream.listener = listener
         data?.let {
-            stream.attachVideo(
-                MediaProjectionSource(
-                    this,
-                    mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it),
-                    metrics
-                )
+            val source = MediaProjectionSource(
+                this,
+                mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it),
+                metrics
             )
+            stream.attachVideo(source)
+            stream.videoSetting.width = source.resolution.width shr 2
+            stream.videoSetting.height = source.resolution.height shr 2
+            Log.e(TAG, "${stream.videoSetting.width}:${stream.videoSetting.height}")
         }
         stream.recordSetting.directory = getExternalFilesDir(null)
         // stream.videoSetting.capturing = true

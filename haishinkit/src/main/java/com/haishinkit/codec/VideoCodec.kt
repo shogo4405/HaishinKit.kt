@@ -20,7 +20,7 @@ class VideoCodec : MediaCodec(MIME) {
          */
         var width: Int by Delegates.observable(DEFAULT_WIDTH) { _, oldValue, newValue ->
             if (oldValue != newValue) {
-                codec?.width = newValue
+                codec?.width = if (newValue % 2 == 0) newValue else newValue - 1
             }
         }
 
@@ -29,7 +29,7 @@ class VideoCodec : MediaCodec(MIME) {
          */
         var height: Int by Delegates.observable(DEFAULT_HEIGHT) { _, oldValue, newValue ->
             if (oldValue != newValue) {
-                codec?.height = newValue
+                codec?.height = if (newValue % 2 == 0) newValue else newValue - 1
             }
         }
 
