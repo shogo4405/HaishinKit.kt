@@ -45,9 +45,9 @@
 ### Others
 - [x] Hardware acceleration for H264 video encoding/AAC audio encoding.
   - [x] Asynchronously processing.
-- [ ] Graphics api
-  - [x] OpenGL
-  - [ ] Vulkan
+- [x] Graphics api
+  - [x] ✅ OpenGL
+  - [x] 🐛 Vulkan (Technical preview)
 
 ### Settings
 ```
