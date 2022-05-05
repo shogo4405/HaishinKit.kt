@@ -6,28 +6,19 @@ import android.util.Size
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
-import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.net.NetStream
-import java.util.concurrent.atomic.AtomicBoolean
 
 @Suppress("unused")
 class HkSurfaceView(context: Context, attributes: AttributeSet) :
     SurfaceView(context, attributes),
     HkView {
-    var videoOrientation: ImageOrientation = ImageOrientation.UP
+    override var videoGravity: VideoGravity
+        get() = pixelTransform.videoGravity
         set(value) {
-            field = value
-            pixelTransform.imageOrientation = field
-            stream?.videoCodec?.pixelTransform?.imageOrientation = field
-        }
-    override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
-        set(value) {
-            field = value
-            pixelTransform.videoGravity = field
+            pixelTransform.videoGravity = value
         }
     override var stream: NetStream? = null
         set(value) {
@@ -54,38 +45,17 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
                 width: Int,
                 height: Int
             ) {
+                pixelTransform.imageExtent = Size(width, height)
                 (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
                     pixelTransform.surfaceRotation = it
                     stream?.videoCodec?.pixelTransform?.surfaceRotation = it
                 }
-                pixelTransform.imageExtent = Size(width, height)
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {
                 pixelTransform.outputSurface = null
             }
         })
-    }
-
-    override fun attachStream(stream: NetStream?) {
-        this.stream = stream
-        if (stream != null) {
-            startRunning()
-        } else {
-            stopRunning()
-        }
-    }
-
-    override fun startRunning() {
-        if (isRunning.get()) return
-        stream?.video?.startRunning()
-        isRunning.set(true)
-    }
-
-    override fun stopRunning() {
-        if (!isRunning.get()) return
-        stream?.video?.stopRunning()
-        isRunning.set(false)
     }
 
     companion object {

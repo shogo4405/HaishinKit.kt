@@ -7,6 +7,19 @@ void SwapChain::SetImageExtent(int32_t width, int height) {
     if (info.imageExtent.width == width && info.imageExtent.height == height) {
         return;
     }
+    imageExtent.setWidth(width).setHeight(height);
+    isInvalidate = true;
+}
+
+SurfaceRotation SwapChain::GetSurfaceRotation() const {
+    return surfaceRotation;
+}
+
+void SwapChain::SetSurfaceRotation(SurfaceRotation newSurfaceRotation) {
+    if (surfaceRotation == newSurfaceRotation) {
+        return;
+    }
+    surfaceRotation = newSurfaceRotation;
     isInvalidate = true;
 }
 
@@ -18,15 +31,18 @@ bool SwapChain::IsInvalidate() const {
     return isInvalidate;
 }
 
-void SwapChain::SetUp(Kernel &kernel, bool requestRecreate) {
+bool SwapChain::SetUp(Kernel &kernel, bool requestRecreate) {
     if (isCreated && !requestRecreate) {
-        return;
+        return false;
     }
 
     const auto capabilities = kernel.GetSurfaceCapabilities();
     const auto format = kernel.GetSurfaceFormat();
 
-    vk::Extent2D imageExtent = capabilities.currentExtent;
+    if (imageExtent != capabilities.currentExtent) {
+        return false;
+    }
+
     if (swapchain) {
         info.setOldSwapchain(swapchain.get());
     } else {
@@ -38,8 +54,8 @@ void SwapChain::SetUp(Kernel &kernel, bool requestRecreate) {
                     .setSurface(kernel.surface.get())
                     .setMinImageCount(capabilities.minImageCount)
                     .setImageFormat(format.format)
+                    .setImageExtent(capabilities.currentExtent)
                     .setImageColorSpace(format.colorSpace)
-                    .setImageExtent(imageExtent)
                     .setImageArrayLayers(1)
                     .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
                     .setImageSharingMode(vk::SharingMode::eExclusive)
@@ -93,6 +109,8 @@ void SwapChain::SetUp(Kernel &kernel, bool requestRecreate) {
 
     isCreated = true;
     isInvalidate = false;
+
+    return true;
 }
 
 void SwapChain::TearDown(Kernel &kernel) {

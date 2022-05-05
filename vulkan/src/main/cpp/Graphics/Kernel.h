@@ -20,7 +20,6 @@
 namespace Graphics {
     class Kernel {
     public:
-        bool invalidateSurfaceRotation = true;
         vk::UniqueDevice device;
         vk::UniqueSurfaceKHR surface;
         SwapChain swapChain;
@@ -31,8 +30,6 @@ namespace Graphics {
         Kernel();
 
         ~Kernel();
-
-        SurfaceRotation GetSurfaceRotation();
 
         void SetSurfaceRotation(SurfaceRotation surfaceRotation);
 

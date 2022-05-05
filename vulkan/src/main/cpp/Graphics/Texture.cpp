@@ -138,7 +138,7 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
     }
 
     if (kernel.GetExpectedOrientationSynchronize()) {
-        switch (kernel.GetSurfaceRotation()) {
+        switch (kernel.swapChain.GetSurfaceRotation()) {
             case ROTATION_0:
                 degrees += 0;
                 break;

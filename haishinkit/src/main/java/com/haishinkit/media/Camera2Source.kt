@@ -152,7 +152,6 @@ class Camera2Source(
         if (utilizable) return
         stream?.videoCodec?.setAssetManager(context.assets)
         stream?.videoCodec?.setListener(this)
-        stream?.renderer?.startRunning()
         super.setUp()
     }
 
@@ -177,7 +176,6 @@ class Camera2Source(
         if (!isRunning.get()) {
             return
         }
-        stream?.renderer?.stopRunning()
         session?.let {
             try {
                 it.stopRepeating()

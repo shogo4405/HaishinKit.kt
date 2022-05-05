@@ -5,6 +5,7 @@
 #include <vulkan/vulkan_android.h>
 #include <vulkan/vulkan.hpp>
 #include <android/native_window.h>
+#include "SurfaceRotation.hpp"
 
 namespace Graphics {
     class Kernel;
@@ -19,9 +20,13 @@ namespace Graphics {
 
         int32_t GetImagesCount();
 
+        SurfaceRotation GetSurfaceRotation() const;
+
+        void SetSurfaceRotation(SurfaceRotation surfaceRotation);
+
         bool IsInvalidate() const;
 
-        void SetUp(Kernel &kernel, bool requestRecreate);
+        bool SetUp(Kernel &kernel, bool requestRecreate);
 
         void TearDown(Kernel &kernel);
 
@@ -30,6 +35,8 @@ namespace Graphics {
     private:
         bool isCreated = false;
         bool isInvalidate = false;
+        vk::Extent2D imageExtent = vk::Extent2D();
+        SurfaceRotation surfaceRotation = ROTATION_0;
         vk::SwapchainCreateInfoKHR info;
         std::vector<vk::Image> images;
         std::vector<vk::UniqueImageView> imageViews;

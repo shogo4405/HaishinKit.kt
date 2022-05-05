@@ -111,13 +111,8 @@ bool Kernel::IsAvailable() const {
     return isAvailable && nativeWindow != nullptr;
 }
 
-SurfaceRotation Kernel::GetSurfaceRotation() {
-    return surfaceRotation;
-}
-
-void Kernel::SetSurfaceRotation(SurfaceRotation newSurfaceRotation) {
-    surfaceRotation = newSurfaceRotation;
-    invalidateSurfaceRotation = true;
+void Kernel::SetSurfaceRotation(SurfaceRotation surfaceRotation) {
+    swapChain.SetSurfaceRotation(surfaceRotation);
 }
 
 vk::ShaderModule Kernel::LoadShader(const std::string &fileName) {
@@ -309,15 +304,11 @@ std::vector<char> Kernel::ReadFile(const std::string &fileName) {
 }
 
 void Kernel::OnOrientationChange() {
-    if (!isAvailable) {
-        return;
-    }
-    isAvailable = false;
     device->waitIdle();
-    swapChain.SetUp(*this, true);
-    queue.SetImagesCount(*this, swapChain.GetImagesCount());
-    commandBuffer.SetUp(*this);
-    isAvailable = true;
+    if (swapChain.SetUp(*this, true)) {
+        queue.SetImagesCount(*this, swapChain.GetImagesCount());
+        commandBuffer.SetUp(*this);
+    }
 }
 
 vk::SurfaceCapabilitiesKHR Kernel::GetSurfaceCapabilities() {

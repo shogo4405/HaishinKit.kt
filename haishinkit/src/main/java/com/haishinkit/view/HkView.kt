@@ -5,7 +5,7 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.lang.Running
 import com.haishinkit.net.NetStream
 
-interface HkView : Running {
+interface HkView {
     var videoGravity: VideoGravity
     var stream: NetStream?
     val pixelTransform: PixelTransform
@@ -14,13 +14,7 @@ interface HkView : Running {
      * Attaches a video stream to the view.
      */
     fun attachStream(stream: NetStream?) {
-        stream?.renderer = this
         this.stream = stream
-        if (stream != null) {
-            startRunning()
-        } else {
-            stopRunning()
-        }
     }
 
     /**

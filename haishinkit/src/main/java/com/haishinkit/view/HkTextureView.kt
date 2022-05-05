@@ -11,14 +11,16 @@ import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.net.NetStream
-import java.util.concurrent.atomic.AtomicBoolean
 
 class HkTextureView(context: Context, attributes: AttributeSet) :
     TextureView(context, attributes),
     HkView,
     TextureView.SurfaceTextureListener {
-    override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
+    override var videoGravity: VideoGravity
+        get() = pixelTransform.videoGravity
+        set(value) {
+            pixelTransform.videoGravity = value
+        }
     override var stream: NetStream? = null
         set(value) {
             field?.renderer = null
@@ -34,36 +36,17 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
         surfaceTextureListener = this
     }
 
-    override fun attachStream(stream: NetStream?) {
-        this.stream = stream
-        if (stream != null) {
-            startRunning()
-        } else {
-            stopRunning()
-        }
-    }
-
-    override fun startRunning() {
-        if (isRunning.get()) return
-        isRunning.set(true)
-    }
-
-    override fun stopRunning() {
-        if (!isRunning.get()) return
-        isRunning.set(false)
-    }
-
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
         pixelTransform.imageExtent = Size(width, height)
         pixelTransform.outputSurface = Surface(surface)
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
+        pixelTransform.imageExtent = Size(width, height)
         (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
             pixelTransform.surfaceRotation = it
             stream?.videoCodec?.pixelTransform?.surfaceRotation = it
         }
-        pixelTransform.imageExtent = Size(width, height)
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
