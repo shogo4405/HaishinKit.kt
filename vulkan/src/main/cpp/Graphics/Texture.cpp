@@ -184,8 +184,11 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
 
     switch (videoGravity) {
         case RESIZE: {
-            viewports[0].setWidth((float) surface.width);
-            viewports[0].setHeight((float) surface.height);
+            viewports[0]
+                    .setX(0)
+                    .setY(0)
+                    .setWidth((float) surface.width)
+                    .setHeight((float) surface.height);
             break;
         }
         case RESIZE_ASPECT: {
@@ -196,8 +199,8 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
                 viewports[0]
                         .setX(((float) surface.width - (float) newImageExtent.width * yRatio) / 2)
                         .setY(0)
-                        .setWidth((float) surface.width * yRatio)
-                        .setHeight((float) newImageExtent.height);
+                        .setWidth((float) newImageExtent.width * yRatio)
+                        .setHeight((float) surface.height);
             } else {
                 viewports[0]
                         .setX(0)
