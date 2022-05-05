@@ -20,6 +20,7 @@
 namespace Graphics {
     class Kernel {
     public:
+        vk::UniqueInstance instance;
         vk::UniqueDevice device;
         vk::UniqueSurfaceKHR surface;
         SwapChain swapChain;
@@ -35,7 +36,7 @@ namespace Graphics {
 
         void SetAssetManager(AAssetManager *newAssetManager);
 
-        bool GetExpectedOrientationSynchronize() const;
+        bool IsExpectedOrientationSynchronize() const;
 
         void SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize);
 
@@ -74,13 +75,12 @@ namespace Graphics {
                 "VK_LAYER_KHRONOS_validation"
         };
         SurfaceRotation surfaceRotation = ROTATION_0;
-        bool isValidationLayersEnabled;
-        bool isAvailable = false;
+        bool validationLayersEnabled;
+        bool available = false;
         bool expectedOrientationSynchronize = true;
         AAssetManager *assetManager = nullptr;
         FeatureManager *featureManager = nullptr;
         ANativeWindow *nativeWindow = nullptr;
-        vk::UniqueInstance instance;
         int32_t selectedPhysicalDevice = -1;
         vk::PhysicalDevice physicalDevice;
 

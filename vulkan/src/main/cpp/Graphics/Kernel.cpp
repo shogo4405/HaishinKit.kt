@@ -15,13 +15,13 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 using namespace Graphics;
 
-Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr),
+Kernel::Kernel() : validationLayersEnabled(true), assetManager(nullptr),
                    featureManager(new FeatureManager()) {
     if (!DynamicLoader::GetInstance().Load()) {
         return;
     }
 
-    const auto useValidationLayers = isValidationLayersEnabled && IsValidationLayersSupported();
+    const auto useValidationLayers = validationLayersEnabled && IsValidationLayersSupported();
     if (useValidationLayers) {
         featureManager->features.emplace_back(new DebugUtilsMessengerFeature());
     }
@@ -54,16 +54,17 @@ Kernel::Kernel() : isValidationLayersEnabled(true), assetManager(nullptr),
     instance = vk::createInstanceUnique(createInfo);
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
-    isAvailable = true;
+    available = true;
 }
 
 Kernel::~Kernel() {
-    if (isAvailable) {
+    if (available) {
         device->waitIdle();
     }
-    if (nativeWindow) {
-        ANativeWindow_release(nativeWindow);
-    }
+    commandBuffer.TearDown(*this);
+    pipeline.TearDown(*this);
+    swapChain.TearDown(*this);
+    nativeWindow = nullptr;
 }
 
 void Kernel::SetImageExtent(int32_t width, int32_t height) {
@@ -98,7 +99,7 @@ void Kernel::SetNativeWindow(ANativeWindow *newNativeWindow) {
 }
 
 vk::Result Kernel::DrawFrame(const std::function<void(uint32_t)> &lambda) {
-    if (!isAvailable) {
+    if (!available) {
         return vk::Result::eErrorInitializationFailed;
     }
     if (swapChain.IsInvalidate()) {
@@ -108,7 +109,7 @@ vk::Result Kernel::DrawFrame(const std::function<void(uint32_t)> &lambda) {
 }
 
 bool Kernel::IsAvailable() const {
-    return isAvailable && nativeWindow != nullptr;
+    return available && nativeWindow != nullptr;
 }
 
 void Kernel::SetSurfaceRotation(SurfaceRotation surfaceRotation) {
@@ -136,7 +137,7 @@ bool Kernel::IsValidationLayersSupported() {
     return false;
 }
 
-bool Kernel::GetExpectedOrientationSynchronize() const {
+bool Kernel::IsExpectedOrientationSynchronize() const {
     return expectedOrientationSynchronize;
 }
 

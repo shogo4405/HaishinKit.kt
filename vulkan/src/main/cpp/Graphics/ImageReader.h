@@ -13,6 +13,8 @@ namespace Graphics {
 
         AHardwareBuffer *GetLatestBuffer();
 
+        ~ImageReader();
+
         void SetUp(int32_t width, int32_t height, int32_t format);
 
         void TearDown();

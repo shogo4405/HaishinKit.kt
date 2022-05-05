@@ -2,6 +2,10 @@
 
 using namespace Graphics;
 
+ImageReader::~ImageReader() {
+    listener = nullptr;
+}
+
 void ImageReader::SetUp(int32_t width, int32_t height, int32_t format) {
     TearDown();
 
@@ -30,6 +34,7 @@ void ImageReader::TearDown() {
         AImageReader_delete(reader);
         reader = nullptr;
     }
+    window = nullptr;
 }
 
 ANativeWindow *ImageReader::GetWindow() {
