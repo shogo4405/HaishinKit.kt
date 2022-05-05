@@ -167,6 +167,8 @@ internal class GlKernel(
         )
         GlUtil.checkGlError("glVertexAttribPointer")
 
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+
         GLES20.glUniform1i(program.textureHandle, 0)
         GlUtil.checkGlError("glUniform1i")
 
