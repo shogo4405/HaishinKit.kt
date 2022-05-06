@@ -37,21 +37,41 @@ interface PixelTransform {
      * Specifies the resampleFilter that is effective on a magFilter and a minFilter for a texture.
      */
     var resampleFilter: ResampleFilter
+
+    /**
+     * Specifies the imageOrientation that describe the image orientation.
+     */
     var imageOrientation: ImageOrientation
-    var surfaceRotation: Int
+
+    /**
+     * Specifies the deviceOrientation that describe the physical orientation of the device.
+     */
+    var deviceOrientation: Int
+
+    /**
+     * Specifies the videoGravity how the displays the inputSurface's visual content.
+     */
     var videoGravity: VideoGravity
 
     /**
      * Specifies the assetManager instance from a context.
      */
     var assetManager: AssetManager?
-    var fpsControllerClass: Class<*>?
+
+    /**
+     * Specifies whether displayed images rotates(true), or not(false).
+     */
     var expectedOrientationSynchronize: Boolean
+
+    /**
+     * Specifies the frameRate for a an output source in frames/sec.
+     */
+    var frameRate: Int
 
     fun createInputSurface(width: Int, height: Int, format: Int)
 
     /**
-     * Disposes the pixelTransform for memory management.
+     * Disposes the pixelTransform for the memory management.
      */
     fun dispose()
 }

@@ -1,10 +1,41 @@
-package com.haishinkit.codec.util
+package com.haishinkit.graphics.util
 
 /**
  * This source code from grafika.
  * https://github.com/google/grafika/blob/c747398a8f0d5c8ec7be2c66522a80b43dfc9a1e/app/src/main/java/com/android/grafika/ScheduledSwapActivity.java#L76
  */
-class ScheduledFpsController : FpsController {
+internal class ScheduledFpsController : FpsController {
+    override var frameRate: Int = NullFpsController.DEFAULT_FRAME_RATE
+        set(value) {
+            clear()
+            when (true) {
+                (60 <= value) -> {
+                    field = 60
+                    updatePatternIdx = 5
+                }
+                (48 <= value) -> {
+                    field = 48
+                    updatePatternIdx = 4
+                }
+                (30 <= value) -> {
+                    field = 30
+                    updatePatternIdx = 3
+                }
+                (25 <= value) -> {
+                    field = 25
+                    updatePatternIdx = 2
+                }
+                (24 <= value) -> {
+                    field = 24
+                    updatePatternIdx = 1
+                }
+                else -> {
+                    field = 15
+                    updatePatternIdx = 0
+                }
+            }
+        }
+
     private var framesAheadIndex = DEFAULT_FRAMES_AHEAD_INDEX
     private var refreshPeriodNs = DEFAULT_REFRESH_PERIOD_NS
     private var holdFrames = DEFAULT_HOLD_FRAMES

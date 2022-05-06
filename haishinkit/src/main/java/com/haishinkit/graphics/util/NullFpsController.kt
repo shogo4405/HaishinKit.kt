@@ -1,6 +1,8 @@
-package com.haishinkit.codec.util
+package com.haishinkit.graphics.util
 
-internal class DefaultFpsController : FpsController {
+internal class NullFpsController : FpsController {
+    override var frameRate: Int = DEFAULT_FRAME_RATE
+
     override fun advanced(timestamp: Long): Boolean {
         return true
     }
@@ -13,6 +15,8 @@ internal class DefaultFpsController : FpsController {
     }
 
     companion object {
-        var instance = DefaultFpsController()
+        val instance = NullFpsController()
+
+        const val DEFAULT_FRAME_RATE = 30
     }
 }

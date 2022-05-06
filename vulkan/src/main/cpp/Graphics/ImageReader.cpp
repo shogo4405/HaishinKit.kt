@@ -22,10 +22,6 @@ void ImageReader::SetUp(int32_t width, int32_t height, int32_t format) {
             maxImages + 2,
             &reader);
 
-    if (listener) {
-        AImageReader_setImageListener(reader, listener);
-    }
-
     AImageReader_getWindow(reader, &window);
 }
 
@@ -47,7 +43,7 @@ AHardwareBuffer *ImageReader::GetLatestBuffer() {
     }
     AImage *image = nullptr;
     if (AImageReader_acquireLatestImage(reader, &image) != AMEDIA_OK) {
-        return buffers[cursor];
+        return nullptr;
     }
     if (images[cursor]) {
         AImage_delete(images[cursor]);
@@ -55,7 +51,7 @@ AHardwareBuffer *ImageReader::GetLatestBuffer() {
     images[cursor] = image;
     AHardwareBuffer *buffer;
     if (AImage_getHardwareBuffer(image, &buffer) != AMEDIA_OK) {
-        return buffers[cursor];
+        return nullptr;
     }
     buffers[cursor] = buffer;
     ++cursor;

@@ -52,7 +52,7 @@ class VideoCodec : MediaCodec(MIME) {
         }
 
         /**
-         * Specifies the frame rate of a video format in frames/sec.
+         * Specifies the frameRate of a video format in frames/sec.
          */
         var frameRate: Int by Delegates.observable(DEFAULT_FRAME_RATE) { _, oldValue, newValue ->
             if (oldValue != newValue) {
@@ -119,8 +119,6 @@ class VideoCodec : MediaCodec(MIME) {
      */
     var colorFormat = DEFAULT_COLOR_FORMAT
 
-    var fpsControllerClass: Class<*>? = null
-
     override var codec: android.media.MediaCodec?
         get() = super.codec
         set(value) {
@@ -171,7 +169,6 @@ class VideoCodec : MediaCodec(MIME) {
     override fun configure(codec: android.media.MediaCodec) {
         super.configure(codec)
         if (mode == Mode.ENCODE) {
-            pixelTransform.fpsControllerClass = fpsControllerClass
             pixelTransform.imageExtent = Size(width, height)
             pixelTransform.outputSurface = codec.createInputSurface()
         }

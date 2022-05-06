@@ -5,7 +5,6 @@ import android.opengl.EGL14
 import android.opengl.EGLConfig
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
-import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -21,44 +20,53 @@ import javax.microedition.khronos.opengles.GL10
 internal class GlKernel(
     override var utilizable: Boolean = false
 ) : Utilize {
-    var surface: Surface? = null
+    var outputSurface: Surface? = null
         set(value) {
             field = value
             inputSurfaceWindow.setSurface(value)
         }
+
     var imageOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
             field = value
             invalidateLayout = true
         }
+
     var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
             field = value
             invalidateLayout = true
         }
-    var extent: Size = Size(0, 0)
+
+    var imageExtent: Size = Size(0, 0)
         set(value) {
             field = value
             invalidateLayout = true
         }
+
     var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
-    var surfaceRotation: Int = Surface.ROTATION_0
+
+    var deviceOrientation: Int = Surface.ROTATION_0
         set(value) {
             field = value
             invalidateLayout = true
         }
+
     var expectedOrientationSynchronize = true
+
     var videoEffect: VideoEffect = DefaultVideoEffect()
         set(value) {
             field = value
             program = shaderLoader.createProgram(videoEffect.name)
         }
+
     var assetManager: AssetManager? = null
         set(value) {
             field = value
             shaderLoader.assetManager = assetManager
             program = shaderLoader.createProgram(videoEffect.name)
         }
+
     private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
     private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
     private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
@@ -68,16 +76,19 @@ internal class GlKernel(
             field = value
             inputSurfaceWindow.display = value
         }
+
     private var context = EGL14.EGL_NO_CONTEXT
         set(value) {
             field = value
             inputSurfaceWindow.context = value
         }
+
     private val shaderLoader by lazy {
         val shaderLoader = GlShaderLoader()
         shaderLoader.assetManager = assetManager
         shaderLoader
     }
+
     private var program: GlShaderLoader.Program? = null
         set(value) {
             field?.dispose()
@@ -198,7 +209,7 @@ internal class GlKernel(
         }
 
         if (expectedOrientationSynchronize) {
-            degrees += when (surfaceRotation) {
+            degrees += when (deviceOrientation) {
                 0 -> 0
                 1 -> 90
                 2 -> 180
@@ -237,45 +248,45 @@ internal class GlKernel(
                 GLES20.glViewport(
                     0,
                     0,
-                    extent.width,
-                    extent.height
+                    imageExtent.width,
+                    imageExtent.height
                 )
             }
             VideoGravity.RESIZE_ASPECT -> {
-                val xRatio = extent.width.toFloat() / textureSize.width.toFloat()
-                val yRatio = extent.height.toFloat() / textureSize.height.toFloat()
+                val xRatio = imageExtent.width.toFloat() / textureSize.width.toFloat()
+                val yRatio = imageExtent.height.toFloat() / textureSize.height.toFloat()
                 if (yRatio < xRatio) {
                     GLES20.glViewport(
-                        ((extent.width - textureSize.width * yRatio) / 2).toInt(),
+                        ((imageExtent.width - textureSize.width * yRatio) / 2).toInt(),
                         0,
                         (textureSize.width * yRatio).toInt(),
-                        extent.height
+                        imageExtent.height
                     )
                 } else {
                     GLES20.glViewport(
                         0,
-                        ((extent.height - textureSize.height * xRatio) / 2).toInt(),
-                        extent.width,
+                        ((imageExtent.height - textureSize.height * xRatio) / 2).toInt(),
+                        imageExtent.width,
                         (textureSize.height * xRatio).toInt()
                     )
                 }
             }
             VideoGravity.RESIZE_ASPECT_FILL -> {
-                val iRatio = extent.aspectRatio
+                val iRatio = imageExtent.aspectRatio
                 val fRatio = textureSize.aspectRatio
                 if (iRatio < fRatio) {
                     GLES20.glViewport(
-                        ((extent.width - extent.height * fRatio) / 2).toInt(),
+                        ((imageExtent.width - imageExtent.height * fRatio) / 2).toInt(),
                         0,
-                        (extent.height * fRatio).toInt(),
-                        extent.height
+                        (imageExtent.height * fRatio).toInt(),
+                        imageExtent.height
                     )
                 } else {
                     GLES20.glViewport(
                         0,
-                        ((extent.height - extent.width / fRatio) / 2).toInt(),
-                        extent.width,
-                        (extent.width / fRatio).toInt()
+                        ((imageExtent.height - imageExtent.width / fRatio) / 2).toInt(),
+                        imageExtent.width,
+                        (imageExtent.width / fRatio).toInt()
                     )
                 }
             }

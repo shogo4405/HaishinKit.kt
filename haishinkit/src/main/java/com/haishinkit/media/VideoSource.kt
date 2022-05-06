@@ -7,8 +7,7 @@ import android.util.Size
  */
 interface VideoSource : Source {
     /**
-     * The video size that is current capturing.
+     * The video size that is the current source.
      */
     val resolution: Size
-    val fpsControllerClass: Class<*>?
 }

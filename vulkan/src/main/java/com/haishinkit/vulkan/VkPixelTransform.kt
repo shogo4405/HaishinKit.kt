@@ -62,8 +62,6 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             nativeSetImageExtent(imageExtent.width, imageExtent.height)
         }
 
-    override var fpsControllerClass: Class<*>? = null
-
     override var expectedOrientationSynchronize = false
         set(value) {
             if (field == value) {
@@ -100,16 +98,25 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
             nativeSetAssetManager(value)
         }
 
-    override var surfaceRotation: Int = Surface.ROTATION_0
+    override var deviceOrientation: Int = Surface.ROTATION_0
         set(value) {
             if (field == value) {
                 return
             }
             field = value
-            nativeSetSurfaceRotation(value)
+            nativeSetDeviceOrientation(value)
         }
 
     override var videoEffect: VideoEffect = DefaultVideoEffect()
+
+    override var frameRate: Int = 30
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            nativeSetFrameRate(frameRate)
+        }
 
     @Suppress("unused")
     private var memory: Long = 0
@@ -128,12 +135,13 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
     private external fun nativeIsSupported(): Boolean
     private external fun nativeSetImageOrientation(imageOrientation: Int)
     private external fun nativeSetSurface(surface: Surface?)
-    private external fun nativeSetSurfaceRotation(surfaceRotation: Int)
+    private external fun nativeSetDeviceOrientation(surfaceRotation: Int)
     private external fun nativeSetResampleFilter(resampleFilter: Int)
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetImageExtent(width: Int, height: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
     private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface
     private external fun nativeSetExpectedOrientationSynchronize(expectedOrientationSynchronize: Boolean)
+    private external fun nativeSetFrameRate(frameRate: Int)
     private external fun nativeDispose()
 }

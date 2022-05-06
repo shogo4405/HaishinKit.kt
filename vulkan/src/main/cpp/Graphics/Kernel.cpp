@@ -112,7 +112,7 @@ bool Kernel::IsAvailable() const {
     return available && nativeWindow != nullptr;
 }
 
-void Kernel::SetSurfaceRotation(SurfaceRotation surfaceRotation) {
+void Kernel::SetDeviceOrientation(SurfaceRotation surfaceRotation) {
     swapChain.SetSurfaceRotation(surfaceRotation);
 }
 

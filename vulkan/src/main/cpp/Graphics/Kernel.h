@@ -32,7 +32,7 @@ namespace Graphics {
 
         ~Kernel();
 
-        void SetSurfaceRotation(SurfaceRotation surfaceRotation);
+        void SetDeviceOrientation(SurfaceRotation surfaceRotation);
 
         void SetAssetManager(AAssetManager *newAssetManager);
 

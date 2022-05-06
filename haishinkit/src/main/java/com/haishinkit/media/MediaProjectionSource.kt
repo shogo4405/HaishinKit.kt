@@ -11,7 +11,6 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
-import com.haishinkit.codec.util.ScheduledFpsController
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.net.NetStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -23,17 +22,12 @@ class MediaProjectionSource(
     private val context: Context,
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
-    override val fpsControllerClass: Class<*>? = ScheduledFpsController::class.java,
     override var utilizable: Boolean = false
 ) :
     VideoSource, PixelTransform.Listener {
     var scale = 1.0f
     var rotatesWithContent = true
     override var stream: NetStream? = null
-        set(value) {
-            field = value
-            stream?.videoCodec?.fpsControllerClass = fpsControllerClass
-        }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(1, 1)
     private var virtualDisplay: VirtualDisplay? = null

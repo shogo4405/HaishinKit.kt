@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class Camera2Source(
     private val context: Context,
-    override val fpsControllerClass: Class<*>? = null,
     override var utilizable: Boolean = false
 ) : VideoSource, PixelTransform.Listener {
     var device: CameraDevice? = null
@@ -38,10 +37,6 @@ class Camera2Source(
     var characteristics: CameraCharacteristics? = null
         private set
     override var stream: NetStream? = null
-        set(value) {
-            field = value
-            stream?.videoCodec?.fpsControllerClass = fpsControllerClass
-        }
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(0, 0)
     private var cameraId: String = DEFAULT_CAMERA_ID

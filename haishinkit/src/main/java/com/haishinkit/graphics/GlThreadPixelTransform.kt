@@ -10,13 +10,6 @@ import com.haishinkit.graphics.filter.VideoEffect
 import java.lang.ref.WeakReference
 
 internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener {
-    override var fpsControllerClass: Class<*>?
-        get() = pixelTransform.fpsControllerClass
-        set(value) {
-            handler?.let {
-                it.sendMessage(it.obtainMessage(MSG_SET_FPS_CONTROLLER_CLASS, value))
-            }
-        }
     override var outputSurface: Surface?
         get() = pixelTransform.outputSurface
         set(value) {
@@ -32,8 +25,8 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                 it.sendMessage(it.obtainMessage(MSG_SET_IMAGE_ORIENTATION, value))
             }
         }
-    override var surfaceRotation: Int
-        get() = pixelTransform.surfaceRotation
+    override var deviceOrientation: Int
+        get() = pixelTransform.deviceOrientation
         set(value) {
             handler?.let {
                 it.sendMessage(it.obtainMessage(MSG_SET_SURFACE_ORIENTATION, value))
@@ -94,6 +87,15 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                 )
             }
         }
+    override var frameRate: Int
+        get() = pixelTransform.frameRate
+        set(value) {
+            handler?.let {
+                it.sendMessage(
+                    it.obtainMessage(MSG_SET_FRAME_RATE, value)
+                )
+            }
+        }
     private var handler: Handler? = null
         get() {
             if (field == null) {
@@ -144,7 +146,7 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                     transform.imageOrientation = message.obj as ImageOrientation
                 }
                 MSG_SET_SURFACE_ORIENTATION -> {
-                    transform.surfaceRotation = message.obj as Int
+                    transform.deviceOrientation = message.obj as Int
                 }
                 MSG_SET_VIDEO_GRAVITY -> {
                     transform.videoGravity = message.obj as VideoGravity
@@ -172,12 +174,8 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                         transform.assetManager = message.obj as AssetManager
                     }
                 }
-                MSG_SET_FPS_CONTROLLER_CLASS -> {
-                    if (message.obj == null) {
-                        transform.fpsControllerClass = null
-                    } else {
-                        transform.fpsControllerClass = message.obj as? Class<*>
-                    }
+                MSG_SET_FRAME_RATE -> {
+                    transform.frameRate = message.obj as Int
                 }
                 MSG_DISPOSE -> {
                     transform.dispose()
@@ -206,7 +204,7 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
         private const val MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE = 7
         private const val MSG_SET_VIDEO_EFFECT = 8
         private const val MSG_SET_ASSET_MANAGER = 9
-        private const val MSG_SET_FPS_CONTROLLER_CLASS = 10
+        private const val MSG_SET_FRAME_RATE = 10
         private const val MSG_DISPOSE = 11
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName

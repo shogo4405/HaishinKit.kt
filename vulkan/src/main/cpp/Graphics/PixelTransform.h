@@ -8,12 +8,15 @@
 #include "SurfaceRotation.hpp"
 #include "ResampleFilter.h"
 #include "ImageReader.h"
+#include "FpsController.h"
 
 namespace Graphics {
 
-    class PixelTransform {
+    class PixelTransform  {
     public:
-        static void OnImageAvailable(void *ctx, AImageReader *reader);
+        static void *OnRunning(void *data);
+
+        static void OnFrame(long frameTimeNanos, void *data);
 
         PixelTransform();
 
@@ -33,17 +36,21 @@ namespace Graphics {
 
         void SetImageOrientation(ImageOrientation imageOrientation);
 
-        void SetSurfaceRotation(SurfaceRotation surfaceRotation);
+        void SetDeviceOrientation(SurfaceRotation surfaceRotation);
 
         void SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize);
+
+        void SetFrameRate(int frameRate);
 
         ANativeWindow *GetInputSurface();
 
         bool HasFeatures();
 
-        void OnImageAvailable(AImageReader *reader);
-
         std::string InspectDevices();
+
+        void OnRunning();
+
+        void OnFrame(long frameTimeNanos);
 
     private:
         std::vector<Texture *> textures;
@@ -52,6 +59,15 @@ namespace Graphics {
         ResampleFilter resampleFilter = LINEAR;
         ImageOrientation imageOrientation = UP;
         ImageReader *imageReader;
+        FpsController *fpsController;
+        pthread_t pthread{};
+        ALooper *looper = nullptr;
+        AChoreographer *choreographer = nullptr;
+        bool running = false;
+
+        void StartRunning();
+
+        void StopRunning();
     };
 }
 
