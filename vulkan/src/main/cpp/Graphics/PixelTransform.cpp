@@ -20,6 +20,7 @@ namespace Graphics {
     }
 
     PixelTransform::~PixelTransform() {
+        delete imageReader;
         delete kernel;
     }
 
