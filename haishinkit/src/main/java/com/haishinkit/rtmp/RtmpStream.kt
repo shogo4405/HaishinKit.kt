@@ -25,8 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Suppress("unused")
 open class RtmpStream(internal var connection: RtmpConnection) :
     NetStream(),
-    IEventDispatcher,
-    PixelTransform.Listener {
+    IEventDispatcher {
     data class Info(
         var resourceName: String? = null
     )
@@ -278,10 +277,9 @@ open class RtmpStream(internal var connection: RtmpConnection) :
      * Plays a media file or a live stream from server.
      */
     open fun play(vararg arguments: Any) {
-        renderer?.pixelTransform?.expectedOrientationSynchronize = false
-        renderer?.pixelTransform?.listener = this
-        renderer?.pixelTransform?.createInputSurface(1024, 1024, ImageFormat.NV21)
-
+        renderer?.createInputSurface(1024, 1024, ImageFormat.NV21) { it
+            videoCodec.surface = it
+        }
         val streamName = if (arguments.isEmpty()) null else arguments[0]
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
@@ -360,13 +358,6 @@ open class RtmpStream(internal var connection: RtmpConnection) :
 
     override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
         dispatcher.removeEventListener(type, listener, useCapture)
-    }
-
-    override fun onPixelTransformInputSurfaceCreated(
-        pixelTransform: PixelTransform,
-        surface: Surface
-    ) {
-        videoCodec.surface = surface
     }
 
     internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {

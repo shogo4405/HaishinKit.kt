@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class Camera2Source(
     private val context: Context,
     override var utilizable: Boolean = false
-) : VideoSource, PixelTransform.Listener {
+) : VideoSource {
     var device: CameraDevice? = null
         private set(value) {
             session = null
@@ -100,15 +100,23 @@ class Camera2Source(
                     this@Camera2Source.device = camera
                     surfaces.clear()
                     resolution = resolver.getCameraSize(characteristics)
-                    stream?.renderer?.pixelTransform?.apply {
-                        listener = this@Camera2Source
+                    stream?.renderer?.apply {
                         imageOrientation = this@Camera2Source.imageOrientation
-                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
+                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) { it
+                            if (!surfaces.contains(it)) {
+                                surfaces.add(it)
+                            }
+                            createCaptureSession()
+                        }
                     }
                     stream?.videoCodec?.pixelTransform?.apply {
-                        listener = this@Camera2Source
                         imageOrientation = this@Camera2Source.imageOrientation
-                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT)
+                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
+                            if (!surfaces.contains(it)) {
+                                surfaces.add(it)
+                            }
+                            createCaptureSession()
+                        }
                     }
                     this@Camera2Source.setUp()
                 }
@@ -146,7 +154,6 @@ class Camera2Source(
     override fun setUp() {
         if (utilizable) return
         stream?.videoCodec?.setAssetManager(context.assets)
-        stream?.videoCodec?.setListener(this)
         super.setUp()
     }
 
@@ -184,16 +191,6 @@ class Camera2Source(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
         }
-    }
-
-    override fun onPixelTransformInputSurfaceCreated(
-        pixelTransform: PixelTransform,
-        surface: Surface
-    ) {
-        if (!surfaces.contains(surface)) {
-            surfaces.add(surface)
-        }
-        createCaptureSession()
     }
 
     private fun createCaptureSession() {

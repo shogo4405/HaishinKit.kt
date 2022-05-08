@@ -53,7 +53,7 @@ abstract class NetStream {
     var videoEffect: VideoEffect? = null
         set(value) {
             videoCodec.pixelTransform.videoEffect = value ?: DefaultVideoEffect.shared
-            renderer?.pixelTransform?.videoEffect = value ?: DefaultVideoEffect.shared
+            renderer?.videoEffect = value ?: DefaultVideoEffect.shared
             field = value
         }
 

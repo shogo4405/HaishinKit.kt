@@ -1,6 +1,7 @@
 package com.haishinkit.graphics
 
 import android.content.res.AssetManager
+import android.graphics.ImageFormat
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
@@ -9,7 +10,7 @@ import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
 import java.lang.ref.WeakReference
 
-internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener {
+internal class GlThreadPixelTransform : PixelTransform {
     override var outputSurface: Surface?
         get() = pixelTransform.outputSurface
         set(value) {
@@ -17,7 +18,6 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                 it.sendMessage(it.obtainMessage(MSG_SET_SURFACE, value))
             }
         }
-    override var listener: PixelTransform.Listener? = null
     override var imageOrientation: ImageOrientation
         get() = pixelTransform.imageOrientation
         set(value) {
@@ -111,14 +111,12 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
             field = value
         }
     private val pixelTransform: GlPixelTransform by lazy {
-        val pixelTransform = GlPixelTransform()
-        pixelTransform.listener = this
-        pixelTransform
+        GlPixelTransform()
     }
 
-    override fun createInputSurface(width: Int, height: Int, format: Int) {
+    override fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit)) {
         handler?.let {
-            it.sendMessage(it.obtainMessage(MSG_CREATE_INPUT_SURFACE, width, height, format))
+            it.sendMessage(it.obtainMessage(MSG_CREATE_INPUT_SURFACE, width, height, lambda))
         }
     }
 
@@ -156,7 +154,7 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                 }
                 MSG_CREATE_INPUT_SURFACE -> {
                     val obj = message.obj
-                    transform.createInputSurface(message.arg1, message.arg2, obj as Int)
+                    transform.createInputSurface(message.arg1, message.arg2, ImageFormat.PRIVATE, obj as ((surface: Surface) -> Unit))
                 }
                 MSG_SET_RESAMPLE_FILTER -> {
                     transform.resampleFilter = message.obj as ResampleFilter
@@ -184,13 +182,6 @@ internal class GlThreadPixelTransform : PixelTransform, PixelTransform.Listener 
                     throw RuntimeException("Unhandled msg what=$message.what")
             }
         }
-    }
-
-    override fun onPixelTransformInputSurfaceCreated(
-        pixelTransform: PixelTransform,
-        surface: Surface
-    ) {
-        listener?.onPixelTransformInputSurfaceCreated(this, surface)
     }
 
     companion object {

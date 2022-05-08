@@ -3,12 +3,15 @@ package com.haishinkit.view
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Size
+import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
+import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
+import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.net.NetStream
 
 @Suppress("unused")
@@ -21,7 +24,25 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             pixelTransform.videoGravity = value
         }
 
-    override val pixelTransform: PixelTransform by lazy {
+    override var frameRate: Int
+        get() = pixelTransform.frameRate
+        set(value) {
+            pixelTransform.frameRate = value
+        }
+
+    override var imageOrientation: ImageOrientation
+        get() = pixelTransform.imageOrientation
+        set(value) {
+            pixelTransform.imageOrientation = value
+        }
+
+    override var videoEffect: VideoEffect
+        get() = pixelTransform.videoEffect
+        set(value) {
+            pixelTransform.videoEffect = value
+        }
+
+    private val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create()
     }
 
@@ -62,6 +83,14 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
 
     override fun attachStream(stream: NetStream?) {
         this.stream = stream
+    }
+
+    override fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit)) {
+        pixelTransform.createInputSurface(width, height, format, lambda)
+    }
+
+    override fun dispose() {
+        pixelTransform.dispose()
     }
 
     companion object {

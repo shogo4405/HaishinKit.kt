@@ -134,10 +134,6 @@ class VideoCodec : MediaCodec(MIME) {
         }
     }
 
-    internal fun setListener(listener: PixelTransform.Listener?) {
-        pixelTransform.listener = listener
-    }
-
     internal fun setAssetManager(assetManager: AssetManager?) {
         pixelTransform.assetManager = assetManager
     }

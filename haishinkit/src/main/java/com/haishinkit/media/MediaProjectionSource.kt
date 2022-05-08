@@ -24,7 +24,7 @@ class MediaProjectionSource(
     private val metrics: DisplayMetrics,
     override var utilizable: Boolean = false
 ) :
-    VideoSource, PixelTransform.Listener {
+    VideoSource {
     var scale = 1.0f
     var rotatesWithContent = true
     override var stream: NetStream? = null
@@ -49,8 +49,22 @@ class MediaProjectionSource(
         if (utilizable) return
         resolution = Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
         stream?.videoCodec?.setAssetManager(context.assets)
-        stream?.videoCodec?.setListener(this)
-        stream?.videoCodec?.pixelTransform?.createInputSurface(resolution.width, resolution.height, 0x1)
+        stream?.videoCodec?.pixelTransform?.createInputSurface(resolution.width, resolution.height, 0x1)  { it
+            var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
+            if (rotatesWithContent) {
+                flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT
+            }
+            virtualDisplay = mediaProjection.createVirtualDisplay(
+                DEFAULT_DISPLAY_NAME,
+                resolution.width,
+                resolution.height,
+                metrics.densityDpi,
+                flags,
+                it,
+                null,
+                handler
+            )
+        }
         super.setUp()
     }
 
@@ -75,26 +89,6 @@ class MediaProjectionSource(
         }
         virtualDisplay?.release()
         isRunning.set(false)
-    }
-
-    override fun onPixelTransformInputSurfaceCreated(
-        pixelTransform: PixelTransform,
-        surface: Surface
-    ) {
-        var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
-        if (rotatesWithContent) {
-            flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT
-        }
-        virtualDisplay = mediaProjection.createVirtualDisplay(
-            DEFAULT_DISPLAY_NAME,
-            resolution.width,
-            resolution.height,
-            metrics.densityDpi,
-            flags,
-            surface,
-            null,
-            handler
-        )
     }
 
     companion object {

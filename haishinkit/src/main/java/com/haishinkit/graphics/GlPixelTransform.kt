@@ -9,9 +9,7 @@ import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlTexture
 
-internal class GlPixelTransform(
-    override var listener: PixelTransform.Listener? = null,
-) : PixelTransform, Choreographer.FrameCallback {
+internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
     override var outputSurface: Surface?
         get() = kernel.outputSurface
         set(value) {
@@ -99,16 +97,16 @@ internal class GlPixelTransform(
         }
     private var running = false
 
-    override fun createInputSurface(width: Int, height: Int, format: Int) {
+    override fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit)) {
         if (texture != null && texture?.isValid(width, height) == true) {
             texture?.surface?.let {
-                listener?.onPixelTransformInputSurfaceCreated(this, it)
+                lambda(it)
             }
             return
         }
         texture = GlTexture.create(width, height).apply {
             surface?.let {
-                listener?.onPixelTransformInputSurfaceCreated(this@GlPixelTransform, it)
+                lambda(it)
             }
         }
         choreographer = Choreographer.getInstance()
@@ -140,7 +138,6 @@ internal class GlPixelTransform(
     override fun dispose() {
         running = false
         texture = null
-        listener = null
         kernel.tearDown()
     }
 

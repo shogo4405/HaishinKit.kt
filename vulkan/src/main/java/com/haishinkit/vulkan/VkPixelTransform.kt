@@ -11,7 +11,7 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
 
-class VkPixelTransform(override var listener: PixelTransform.Listener? = null) : PixelTransform {
+class VkPixelTransform : PixelTransform {
     companion object {
         init {
             System.loadLibrary("hkvulkan")
@@ -123,9 +123,13 @@ class VkPixelTransform(override var listener: PixelTransform.Listener? = null) :
 
     external fun inspectDevices(): String
 
-    override fun createInputSurface(width: Int, height: Int, format: Int) {
-        val surface = nativeCreateInputSurface(width, height, format)
-        listener?.onPixelTransformInputSurfaceCreated(this, surface)
+    override fun createInputSurface(
+        width: Int,
+        height: Int,
+        format: Int,
+        lambda: (surface: Surface) -> Unit
+    ) {
+        lambda(nativeCreateInputSurface(width, height, format))
     }
 
     override fun dispose() {
