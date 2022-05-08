@@ -51,6 +51,7 @@ public:
             env->ThrowNew(clazz, "");
             env->DeleteLocalRef(clazz);
         }
+        return nullptr;
     }
 
     T *TakeRetainedValue() {
