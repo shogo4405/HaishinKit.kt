@@ -25,17 +25,9 @@ void Texture::SetImageOrientation(ImageOrientation newImageOrientation) {
 
 void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
     if (!sampler) {
-        vk::Filter filter = vk::Filter::eLinear;
-        switch (resampleFilter) {
-            case LINEAR:
-                filter = vk::Filter::eLinear;
-                break;
-            case NEAREST:
-                filter = vk::Filter::eNearest;
-                break;
-            case CUBIC:
-                filter = vk::Filter::eCubicIMG;
-                break;
+        vk::Filter filter = vk::Filter::eNearest;
+        if (resampleFilter != NEAREST) {
+            LOGI("failed to set resampleFilter, use a nearest.");
         }
 
         vk::AndroidHardwareBufferFormatPropertiesANDROID format;
@@ -55,7 +47,7 @@ void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
                         .setComponents(format.samplerYcbcrConversionComponents)
                         .setXChromaOffset(format.suggestedXChromaOffset)
                         .setYChromaOffset(format.suggestedYChromaOffset)
-                        .setChromaFilter(vk::Filter::eNearest)
+                        .setChromaFilter(filter)
                         .setForceExplicitReconstruction(false));
 
         auto samplerCreate = vk::SamplerCreateInfo()
