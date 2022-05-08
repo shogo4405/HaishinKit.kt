@@ -20,15 +20,17 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
         set(value) {
             pixelTransform.videoGravity = value
         }
-    override var stream: NetStream? = null
+
+    override val pixelTransform: PixelTransform by lazy {
+        PixelTransformFactory().create()
+    }
+
+    private var stream: NetStream? = null
         set(value) {
             field?.renderer = null
             field = value
             field?.renderer = this
         }
-    override val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create()
-    }
 
     init {
         pixelTransform.assetManager = context.assets
@@ -56,6 +58,10 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
                 pixelTransform.outputSurface = null
             }
         })
+    }
+
+    override fun attachStream(stream: NetStream?) {
+        this.stream = stream
     }
 
     companion object {

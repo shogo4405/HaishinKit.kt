@@ -21,19 +21,25 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
         set(value) {
             pixelTransform.videoGravity = value
         }
-    override var stream: NetStream? = null
+
+    override val pixelTransform: PixelTransform by lazy {
+        PixelTransformFactory().create()
+    }
+
+    private var stream: NetStream? = null
         set(value) {
             field?.renderer = null
             field = value
             field?.renderer = this
         }
-    override val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create()
-    }
 
     init {
         pixelTransform.assetManager = context.assets
         surfaceTextureListener = this
+    }
+
+    override fun attachStream(stream: NetStream?) {
+        this.stream = stream
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {

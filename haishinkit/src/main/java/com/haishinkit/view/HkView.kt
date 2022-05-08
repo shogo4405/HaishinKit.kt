@@ -7,15 +7,12 @@ import com.haishinkit.net.NetStream
 
 interface HkView {
     var videoGravity: VideoGravity
-    var stream: NetStream?
     val pixelTransform: PixelTransform
 
     /**
      * Attaches a video stream to the view.
      */
-    fun attachStream(stream: NetStream?) {
-        this.stream = stream
-    }
+    fun attachStream(stream: NetStream?)
 
     /**
      * Disposes the view for a memory management.
