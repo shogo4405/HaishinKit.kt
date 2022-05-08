@@ -34,10 +34,12 @@ PixelTransform::~PixelTransform() {
 }
 
 void PixelTransform::SetFrameRate(int frameRate) {
+    std::lock_guard<std::mutex> lock(mutex);
     fpsController->SetFrameRate(frameRate);
 }
 
 void PixelTransform::SetImageExtent(int32_t width, int32_t height) {
+    std::lock_guard<std::mutex> lock(mutex);
     kernel->SetImageExtent(width, height);
 }
 
@@ -46,6 +48,7 @@ ANativeWindow *PixelTransform::GetInputSurface() {
 }
 
 void PixelTransform::SetVideoGravity(VideoGravity newVideoGravity) {
+    std::lock_guard<std::mutex> lock(mutex);
     videoGravity = newVideoGravity;
     for (auto &texture: textures) {
         texture->videoGravity = newVideoGravity;
@@ -53,6 +56,7 @@ void PixelTransform::SetVideoGravity(VideoGravity newVideoGravity) {
 }
 
 void PixelTransform::SetImageOrientation(ImageOrientation newImageOrientation) {
+    std::lock_guard<std::mutex> lock(mutex);
     imageOrientation = newImageOrientation;
     for (auto &texture : textures) {
         texture->SetImageOrientation(newImageOrientation);
@@ -60,6 +64,7 @@ void PixelTransform::SetImageOrientation(ImageOrientation newImageOrientation) {
 }
 
 void PixelTransform::SetResampleFilter(ResampleFilter newResampleFilter) {
+    std::lock_guard<std::mutex> lock(mutex);
     resampleFilter = newResampleFilter;
     for (auto &texture : textures) {
         texture->resampleFilter = newResampleFilter;
@@ -80,10 +85,12 @@ void PixelTransform::SetImageReader(int32_t width, int32_t height, int32_t forma
 }
 
 void PixelTransform::SetDeviceOrientation(SurfaceRotation surfaceRotation) {
+    std::lock_guard<std::mutex> lock(mutex);
     kernel->SetDeviceOrientation(surfaceRotation);
 }
 
 void PixelTransform::SetAssetManager(AAssetManager *assetManager) {
+    std::lock_guard<std::mutex> lock(mutex);
     kernel->SetAssetManager(assetManager);
 }
 
@@ -115,7 +122,10 @@ void PixelTransform::StartRunning() {
     }
     running = true;
     fpsController->Clear();
-    pthread_create(&pthread, nullptr, &OnRunning, this);
+    auto result = pthread_create(&pthread, nullptr, &OnRunning, this);
+    if (result != 0) {
+        LOGE("failed to create pthread error no: %d", result);
+    }
 }
 
 void PixelTransform::StopRunning() {
@@ -142,12 +152,14 @@ void PixelTransform::OnRunning() {
 }
 
 void PixelTransform::OnFrame(long frameTimeNanos) {
+    mutex.lock();
     if (choreographer) {
         AChoreographer_postFrameCallback(choreographer, OnFrame, this);
     }
     if (fpsController->Advanced(frameTimeNanos)) {
         AHardwareBuffer *buffer = imageReader->GetLatestBuffer();
         if (!kernel->IsAvailable() || buffer == nullptr) {
+            mutex.unlock();
             return;
         }
         const auto &texture = textures[0];
@@ -157,6 +169,7 @@ void PixelTransform::OnFrame(long frameTimeNanos) {
             texture->LayoutAt(*kernel, index);
         });
     }
+    mutex.unlock();
 }
 
 extern "C"

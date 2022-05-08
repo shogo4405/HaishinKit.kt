@@ -61,6 +61,7 @@ namespace Graphics {
         ImageReader *imageReader;
         FpsController *fpsController;
         pthread_t pthread{};
+        std::mutex mutex;
         ALooper *looper = nullptr;
         AChoreographer *choreographer = nullptr;
         bool running = false;
