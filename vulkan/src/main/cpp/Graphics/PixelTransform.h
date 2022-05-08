@@ -12,7 +12,7 @@
 
 namespace Graphics {
 
-    class PixelTransform  {
+    class PixelTransform {
     public:
         static void *OnRunning(void *data);
 

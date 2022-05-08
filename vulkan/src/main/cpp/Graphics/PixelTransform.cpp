@@ -169,9 +169,10 @@ Java_com_haishinkit_vulkan_VkPixelTransform_00024Companion_isSupported(JNIEnv *e
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetVideoGravity(JNIEnv *env, jobject thiz,
                                                                   jint value) {
-    Unmanaged<PixelTransform>::fromOpaque(env,
-                                          thiz)->takeRetainedValue()->SetVideoGravity(
-            static_cast<VideoGravity>(value));
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
+        self->SetVideoGravity(static_cast<VideoGravity>(value));
+        return nullptr;
+    });
 }
 
 JNIEXPORT void JNICALL
@@ -181,16 +182,18 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetSurface(JNIEnv *env, jobjec
     if (surface != nullptr) {
         window = ANativeWindow_fromSurface(env, surface);
     }
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetNativeWindow(window);
+        return nullptr;
     });
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageOrientation(JNIEnv *env, jobject thiz,
                                                                       jint value) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetImageOrientation(static_cast<ImageOrientation>(value));
+        return nullptr;
     });
 }
 
@@ -198,26 +201,28 @@ JNIEXPORT jobject JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeCreateInputSurface(JNIEnv *env, jobject thiz,
                                                                      jint width,
                                                                      jint height, jint format) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
-        self->SetImageReader(width, height, format);
-    });
-    return ANativeWindow_toSurface(env, Unmanaged<PixelTransform>::fromOpaque(env,
-                                                                              thiz)->takeRetainedValue()->GetInputSurface());
+    return static_cast<jobject>(Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe(
+            [=](PixelTransform *self) {
+                self->SetImageReader(width, height, format);
+                return ANativeWindow_toSurface(env, self->GetInputSurface());
+            }));
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetDeviceOrientation(JNIEnv *env, jobject thiz,
                                                                        jint value) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetDeviceOrientation(static_cast<SurfaceRotation>(value));
+        return nullptr;
     });
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetResampleFilter(JNIEnv *env, jobject thiz,
                                                                     jint value) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetResampleFilter(static_cast<ResampleFilter>(value));
+        return nullptr;
     });
 }
 
@@ -225,16 +230,19 @@ JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetAssetManager(JNIEnv *env, jobject thiz,
                                                                   jobject asset_manager) {
     AAssetManager *manager = AAssetManager_fromJava(env, asset_manager);
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetAssetManager(manager);
+        return nullptr;
     });
 }
 
 JNIEXPORT jstring JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_inspectDevices(JNIEnv *env, jobject thiz) {
-    std::string string = Unmanaged<PixelTransform>::fromOpaque(env,
-                                                               thiz)->takeRetainedValue()->InspectDevices();
-    return env->NewStringUTF(string.c_str());
+    return static_cast<jstring>(Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe(
+            [=](PixelTransform *self) {
+                std::string string = self->InspectDevices();
+                return env->NewStringUTF(string.c_str());
+            }));
 }
 
 JNIEXPORT jboolean JNICALL
@@ -242,20 +250,21 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeIsSupported(JNIEnv *env, jobje
     if (!DynamicLoader::GetInstance().Load()) {
         return false;
     }
-    return Unmanaged<PixelTransform>::fromOpaque(env, thiz)->takeRetainedValue()->HasFeatures();
+    return Unmanaged<PixelTransform>::FromOpaque(env, thiz)->TakeRetainedValue()->HasFeatures();
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeDispose(JNIEnv *env, jobject thiz) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->release();
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Release();
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageExtent(JNIEnv *env, jobject thiz,
                                                                  jint width,
                                                                  jint height) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetImageExtent(width, height);
+        return nullptr;
     });
 }
 
@@ -263,16 +272,18 @@ JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetExpectedOrientationSynchronize(JNIEnv *env,
                                                                                     jobject thiz,
                                                                                     jboolean expectedOrientationSynchronize) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetExpectedOrientationSynchronize(expectedOrientationSynchronize);
+        return nullptr;
     });
 }
 
 JNIEXPORT void JNICALL
 Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetFrameRate(JNIEnv *env, jobject thiz,
                                                                jint frameRate) {
-    Unmanaged<PixelTransform>::fromOpaque(env, thiz)->safe([=](PixelTransform *self) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetFrameRate(frameRate);
+        return nullptr;
     });
 }
 }
