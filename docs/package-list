@@ -4,7 +4,6 @@ $dokka.linkExtension:html
 module:haishinkit
 com.haishinkit.amf.data
 com.haishinkit.codec
-com.haishinkit.codec.util
 com.haishinkit.event
 com.haishinkit.flv
 com.haishinkit.flv.tag
