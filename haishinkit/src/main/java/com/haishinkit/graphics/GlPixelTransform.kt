@@ -5,8 +5,6 @@ import android.os.Handler
 import android.util.Size
 import android.view.Choreographer
 import android.view.Surface
-import com.haishinkit.graphics.util.FpsController
-import com.haishinkit.graphics.util.ScheduledFpsController
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.GlKernel
 import com.haishinkit.graphics.gles.GlTexture
@@ -92,7 +90,7 @@ internal class GlPixelTransform(
         GlKernel()
     }
     private val fpsController: FpsController by lazy {
-        ScheduledFpsController()
+        ChoreographerFpsController()
     }
     private var texture: GlTexture? = null
         set(value) {
@@ -151,6 +149,7 @@ internal class GlPixelTransform(
             return
         }
         running = true
+        fpsController.clear()
         choreographer?.postFrameCallback(this)
     }
 

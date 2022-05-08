@@ -1,4 +1,4 @@
-package com.haishinkit.graphics.util
+package com.haishinkit.graphics
 
 internal interface FpsController {
     /**
@@ -6,7 +6,7 @@ internal interface FpsController {
      */
     var frameRate: Int
 
-    fun advanced(timestamp: Long): Boolean
-    fun timestamp(timestamp: Long): Long
+    fun advanced(frameTime: Long): Boolean
+    fun timestamp(frameTime: Long): Long
     fun clear()
 }

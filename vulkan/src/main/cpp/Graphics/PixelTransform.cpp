@@ -114,6 +114,7 @@ void PixelTransform::StartRunning() {
         return;
     }
     running = true;
+    fpsController->Clear();
     pthread_create(&pthread, nullptr, &OnRunning, this);
 }
 

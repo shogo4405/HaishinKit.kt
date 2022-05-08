@@ -12,14 +12,14 @@ namespace Graphics {
 
         void SetFrameRate(int frameRate);
 
-        bool Advanced(long timestamp);
-
-        long Timestamp(long timestamp);
+        bool Advanced(long frameTime);
 
         void Clear();
 
     private:
-        int frameRate = 60;
+        int frameRate = 30;
+        long timestamp = 0;
+        long elapsed = 1000000000 / 30;
     };
 }
 
