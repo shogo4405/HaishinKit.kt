@@ -88,6 +88,10 @@ class VideoCodec : MediaCodec(MIME) {
      * Specifies the frame rate of a video format in frames/sec.
      */
     var frameRate = DEFAULT_FRAME_RATE
+        set(value) {
+            field = value
+            pixelTransform.frameRate = value
+        }
 
     /**
      * Specifies the IFrameInterval for a video output.
@@ -131,6 +135,7 @@ class VideoCodec : MediaCodec(MIME) {
     val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create().apply {
             videoGravity = DEFAULT_VIDEO_GRAVITY
+            frameRate = DEFAULT_FRAME_RATE
         }
     }
 

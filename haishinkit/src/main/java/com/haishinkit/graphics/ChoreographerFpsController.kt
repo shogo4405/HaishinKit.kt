@@ -8,7 +8,7 @@ internal class ChoreographerFpsController : FpsController {
         }
 
     private var timestamp: Long = 0
-    private var elapsed: Long = 1000000000 / 30
+    private var elapsed: Long = 1000000000 / 60
 
     override fun advanced(frameTime: Long): Boolean {
         if (timestamp == 0L) {
@@ -30,6 +30,6 @@ internal class ChoreographerFpsController : FpsController {
     }
 
     companion object {
-        const val DEFAULT_FRAME_RATE = 30
+        const val DEFAULT_FRAME_RATE = 60
     }
 }

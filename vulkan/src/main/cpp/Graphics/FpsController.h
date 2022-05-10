@@ -17,9 +17,9 @@ namespace Graphics {
         void Clear();
 
     private:
-        int frameRate = 30;
+        int frameRate = 60;
         long timestamp = 0;
-        long elapsed = 1000000000 / 30;
+        long elapsed = 1000000000 / 60;
     };
 }
 
