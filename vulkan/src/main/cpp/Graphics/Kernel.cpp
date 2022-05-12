@@ -127,8 +127,8 @@ vk::ShaderModule Kernel::LoadShader(const std::string &fileName) {
 
 bool Kernel::IsValidationLayersSupported() {
     const auto properties = vk::enumerateInstanceLayerProperties();
-    for (auto layerName : validationLayers) {
-        for (auto layerProperties : properties) {
+    for (auto layerName: validationLayers) {
+        for (auto layerProperties: properties) {
             if (strcmp(layerName, layerProperties.layerName) == 0) {
                 return true;
             }
@@ -242,8 +242,8 @@ bool Kernel::HasFeatures() {
         auto count = 0;
         const auto extensions = featureManager->GetExtensions(DEVICE);
         const auto properties = device.enumerateDeviceExtensionProperties();
-        for (const auto &extension : extensions) {
-            for (const auto &property : properties) {
+        for (const auto &extension: extensions) {
+            for (const auto &property: properties) {
                 if (strcmp(property.extensionName, extension) == 0) {
                     ++count;
                 }
@@ -279,7 +279,7 @@ std::string Kernel::InspectDevices() {
         data.emplace(std::make_pair("vendor_id", (double) properties.vendorID));
         data.emplace(std::make_pair("device_id", (double) properties.deviceID));
         picojson::array extensions;
-        for (const auto extension : device.enumerateDeviceExtensionProperties()) {
+        for (const auto extension: device.enumerateDeviceExtensionProperties()) {
             extensions.emplace_back((std::string) extension.extensionName);
         }
         data.emplace(std::make_pair("extensions", extensions));
@@ -318,7 +318,7 @@ vk::SurfaceCapabilitiesKHR Kernel::GetSurfaceCapabilities() {
 
 vk::SurfaceFormatKHR Kernel::GetSurfaceFormat() {
     const auto formats = physicalDevice.getSurfaceFormatsKHR(surface.get());
-    for (const auto &format : formats) {
+    for (const auto &format: formats) {
         if (format.format == vk::Format::eR8G8B8A8Unorm) {
             return format;
         }

@@ -26,7 +26,7 @@ FeatureManager::~FeatureManager() = default;
 
 std::vector<const char *> FeatureManager::GetExtensions(FeatureType type) {
     std::vector<const char *> extensions;
-    for (auto &feature : features) {
+    for (auto &feature: features) {
         if (feature->type == type) {
             extensions.push_back(feature->name);
         }
@@ -36,7 +36,7 @@ std::vector<const char *> FeatureManager::GetExtensions(FeatureType type) {
 
 void *FeatureManager::GetNext(FeatureType type) {
     void *next = nullptr;
-    for (auto &feature : features) {
+    for (auto &feature: features) {
         if (feature->type == type) {
             feature->Create(&next);
         }

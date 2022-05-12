@@ -77,10 +77,10 @@ void CommandBuffer::SetUp(Kernel &kernel) {
 void CommandBuffer::TearDown(Kernel &kernel) {
     commandBuffers.clear();
     commandBuffers.shrink_to_fit();
-    for (auto &buffer : buffers) {
+    for (auto &buffer: buffers) {
         kernel.device->destroy(buffer);
     }
-    for (auto &framebuffer : framebuffers) {
+    for (auto &framebuffer: framebuffers) {
         kernel.device->destroy(framebuffer);
     }
 }

@@ -80,7 +80,7 @@ void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
         kernel.commandBuffer.SetUp(kernel);
 
         storages.resize(kernel.swapChain.GetImagesCount());
-        for (auto &storage : storages) {
+        for (auto &storage: storages) {
             storage.extent = extent;
             storage.format = vk::Format::eUndefined;
             storage.SetExternalFormat(this->externalFormat);

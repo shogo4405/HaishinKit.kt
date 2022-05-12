@@ -24,10 +24,10 @@ void Queue::SetUp(Kernel &kernel, uint32_t newQueueFamilyIndex) {
 }
 
 void Queue::TearDown(Kernel &kernel) {
-    for (auto &fence : fences) {
+    for (auto &fence: fences) {
         kernel.device->destroy(fence);
     }
-    for (auto &image : images) {
+    for (auto &image: images) {
         kernel.device->destroy(image);
     }
 }

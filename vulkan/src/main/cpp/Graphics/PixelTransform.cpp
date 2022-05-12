@@ -58,7 +58,7 @@ void PixelTransform::SetVideoGravity(VideoGravity newVideoGravity) {
 void PixelTransform::SetImageOrientation(ImageOrientation newImageOrientation) {
     std::lock_guard<std::mutex> lock(mutex);
     imageOrientation = newImageOrientation;
-    for (auto &texture : textures) {
+    for (auto &texture: textures) {
         texture->SetImageOrientation(newImageOrientation);
     }
 }
@@ -66,7 +66,7 @@ void PixelTransform::SetImageOrientation(ImageOrientation newImageOrientation) {
 void PixelTransform::SetResampleFilter(ResampleFilter newResampleFilter) {
     std::lock_guard<std::mutex> lock(mutex);
     resampleFilter = newResampleFilter;
-    for (auto &texture : textures) {
+    for (auto &texture: textures) {
         texture->resampleFilter = newResampleFilter;
     }
 }
