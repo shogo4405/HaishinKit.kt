@@ -10,7 +10,7 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
     private val listeners = ConcurrentHashMap<String, MutableList<IEventListener>>()
 
     override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
-        val key: String = "$type/$useCapture"
+        val key = "$type/$useCapture"
         listeners.putIfAbsent(key, Collections.synchronizedList(mutableListOf<IEventListener>()))
         listeners[key]?.add(listener)
     }

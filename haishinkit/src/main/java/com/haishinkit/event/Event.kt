@@ -1,18 +1,41 @@
 package com.haishinkit.event
 
+/**
+ * The Event interface is used to provide information.
+ */
 open class Event(type: String, bubbles: Boolean, data: Any?) {
+    /**
+     * The type represents the event name.
+     */
     var type: String? = null
         internal set
+
+    /**
+     * The target indicates the IEventDispatcher.
+     */
     var target: IEventDispatcher? = null
         internal set
+
+    /**
+     * The currentTarget indicates the IEventDispatchers are currently being evaluated.
+     */
     var currentTarget: IEventDispatcher? = null
         internal set
-    internal var eventPhase = EVENT_PHASE_NONE
+
+    /**
+     * The data indicates the to provide information.
+     */
     var data: Any? = null
         internal set
+
+    /**
+     * The isBubbles indicates whether ot not an event is a bubbling event.
+     */
     var isBubbles = false
         internal set
+
     internal var propagationStopped = false
+    internal var eventPhase = EVENT_PHASE_NONE
 
     init {
         this.type = type
