@@ -69,8 +69,8 @@ internal class GlThreadPixelTransform : PixelTransform {
                 )
             }
         }
-    override var expectedOrientationSynchronize: Boolean
-        get() = pixelTransform.expectedOrientationSynchronize
+    override var isRotatesWithContent: Boolean
+        get() = pixelTransform.isRotatesWithContent
         set(value) {
             handler?.let {
                 it.sendMessage(
@@ -160,7 +160,7 @@ internal class GlThreadPixelTransform : PixelTransform {
                     transform.resampleFilter = message.obj as ResampleFilter
                 }
                 MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE -> {
-                    transform.expectedOrientationSynchronize = message.obj as Boolean
+                    transform.isRotatesWithContent = message.obj as Boolean
                 }
                 MSG_SET_VIDEO_EFFECT -> {
                     transform.videoEffect = message.obj as VideoEffect

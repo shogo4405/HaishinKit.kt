@@ -42,6 +42,12 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
             pixelTransform.videoEffect = value
         }
 
+    override var isRotatesWithContent: Boolean
+        get() = pixelTransform.isRotatesWithContent
+        set(value) {
+            pixelTransform.isRotatesWithContent = value
+        }
+
     private val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create()
     }

@@ -54,6 +54,7 @@ class PlaybackTabFragment : Fragment(), IEventListener {
         } else {
             v.findViewById(R.id.textureView)
         }
+        playbackView.isRotatesWithContent = false
         playbackView.videoGravity = VideoGravity.RESIZE_ASPECT
         playbackView.attachStream(stream)
 

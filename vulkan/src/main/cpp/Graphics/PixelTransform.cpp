@@ -112,8 +112,9 @@ bool PixelTransform::HasFeatures() {
     return kernel->HasFeatures();
 }
 
-void PixelTransform::SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize) {
-    kernel->SetExpectedOrientationSynchronize(expectedOrientationSynchronize);
+void PixelTransform::SetRotatesWithContent(bool expectedOrientationSynchronize) {
+    std::lock_guard<std::mutex> lock(mutex);
+    kernel->SetRotatesWithContent(expectedOrientationSynchronize);
 }
 
 void PixelTransform::StartRunning() {
@@ -283,11 +284,11 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetImageExtent(JNIEnv *env, jo
 }
 
 JNIEXPORT void JNICALL
-Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetExpectedOrientationSynchronize(JNIEnv *env,
-                                                                                    jobject thiz,
-                                                                                    jboolean expectedOrientationSynchronize) {
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetRotatesWithContent(JNIEnv *env,
+                                                                        jobject thiz,
+                                                                        jboolean expectedOrientationSynchronize) {
     Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
-        self->SetExpectedOrientationSynchronize(expectedOrientationSynchronize);
+        self->SetRotatesWithContent(expectedOrientationSynchronize);
         return nullptr;
     });
 }

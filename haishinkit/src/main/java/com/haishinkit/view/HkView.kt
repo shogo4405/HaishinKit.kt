@@ -28,6 +28,11 @@ interface HkView {
     var imageOrientation: ImageOrientation
 
     /**
+     * Specifies whether displayed images rotates(true), or not(false).
+     */
+    var isRotatesWithContent: Boolean
+
+    /**
      * Attaches a video stream to the view.
      */
     fun attachStream(stream: NetStream?)

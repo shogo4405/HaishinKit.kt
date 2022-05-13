@@ -62,13 +62,13 @@ class VkPixelTransform : PixelTransform {
             nativeSetImageExtent(imageExtent.width, imageExtent.height)
         }
 
-    override var expectedOrientationSynchronize = false
+    override var isRotatesWithContent = true
         set(value) {
             if (field == value) {
                 return
             }
             field = value
-            nativeSetExpectedOrientationSynchronize(value)
+            nativeSetRotatesWithContent(value)
         }
 
     override var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
@@ -145,7 +145,7 @@ class VkPixelTransform : PixelTransform {
     private external fun nativeSetImageExtent(width: Int, height: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
     private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface
-    private external fun nativeSetExpectedOrientationSynchronize(expectedOrientationSynchronize: Boolean)
+    private external fun nativeSetRotatesWithContent(expectedOrientationSynchronize: Boolean)
     private external fun nativeSetFrameRate(frameRate: Int)
     private external fun nativeDispose()
 }

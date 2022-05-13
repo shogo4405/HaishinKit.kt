@@ -58,10 +58,10 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
             kernel.resampleFilter = value
         }
 
-    override var expectedOrientationSynchronize: Boolean
-        get() = kernel.expectedOrientationSynchronize
+    override var isRotatesWithContent: Boolean
+        get() = kernel.isRotatesWithContent
         set(value) {
-            kernel.expectedOrientationSynchronize = value
+            kernel.isRotatesWithContent = value
         }
 
     override var assetManager: AssetManager?

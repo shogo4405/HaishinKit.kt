@@ -112,8 +112,8 @@ bool Kernel::IsAvailable() const {
     return available && nativeWindow != nullptr;
 }
 
-void Kernel::SetDeviceOrientation(SurfaceRotation surfaceRotation) {
-    swapChain.SetSurfaceRotation(surfaceRotation);
+void Kernel::SetDeviceOrientation(SurfaceRotation newSurfaceRotation) {
+    swapChain.SetSurfaceRotation(newSurfaceRotation);
 }
 
 vk::ShaderModule Kernel::LoadShader(const std::string &fileName) {
@@ -137,12 +137,12 @@ bool Kernel::IsValidationLayersSupported() {
     return false;
 }
 
-bool Kernel::IsExpectedOrientationSynchronize() const {
-    return expectedOrientationSynchronize;
+bool Kernel::IsRotatesWithContent() const {
+    return rotatesWithContent;
 }
 
-void Kernel::SetExpectedOrientationSynchronize(bool newExpectedOrientationSynchronize) {
-    expectedOrientationSynchronize = newExpectedOrientationSynchronize;
+void Kernel::SetRotatesWithContent(bool newRotatesWithContent) {
+    rotatesWithContent = newRotatesWithContent;
 }
 
 void Kernel::SelectPhysicalDevice() {

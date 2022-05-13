@@ -36,9 +36,9 @@ namespace Graphics {
 
         void SetAssetManager(AAssetManager *newAssetManager);
 
-        bool IsExpectedOrientationSynchronize() const;
+        bool IsRotatesWithContent() const;
 
-        void SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize);
+        void SetRotatesWithContent(bool rotatesWithContent);
 
         void SetImageExtent(int32_t width, int32_t height);
 
@@ -74,10 +74,9 @@ namespace Graphics {
         const std::vector<const char *> validationLayers = {
                 "VK_LAYER_KHRONOS_validation"
         };
-        SurfaceRotation surfaceRotation = ROTATION_0;
         bool validationLayersEnabled;
         bool available = false;
-        bool expectedOrientationSynchronize = true;
+        bool rotatesWithContent = true;
         AAssetManager *assetManager = nullptr;
         FeatureManager *featureManager = nullptr;
         ANativeWindow *nativeWindow = nullptr;

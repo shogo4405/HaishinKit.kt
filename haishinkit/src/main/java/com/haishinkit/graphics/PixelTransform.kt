@@ -52,7 +52,7 @@ interface PixelTransform {
     /**
      * Specifies whether displayed images rotates(true), or not(false).
      */
-    var expectedOrientationSynchronize: Boolean
+    var isRotatesWithContent: Boolean
 
     /**
      * Specifies the frameRate for a an output source in frames/sec.

@@ -9,9 +9,7 @@ import android.os.HandlerThread
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
-import android.view.Surface
 import com.haishinkit.BuildConfig
-import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.net.NetStream
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -26,7 +24,7 @@ class MediaProjectionSource(
 ) :
     VideoSource {
     var scale = 1.0f
-    var rotatesWithContent = true
+    var isRotatesWithContent = true
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
     override var resolution = Size(1, 1)
@@ -51,7 +49,7 @@ class MediaProjectionSource(
         stream?.videoCodec?.setAssetManager(context.assets)
         stream?.videoCodec?.pixelTransform?.createInputSurface(resolution.width, resolution.height, 0x1)  { it
             var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
-            if (rotatesWithContent) {
+            if (isRotatesWithContent) {
                 flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT
             }
             virtualDisplay = mediaProjection.createVirtualDisplay(

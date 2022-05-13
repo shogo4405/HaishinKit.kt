@@ -56,9 +56,13 @@ void ImageStorage::SetUp(Kernel &kernel, vk::UniqueSamplerYcbcrConversion &conve
 void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *buffer) {
     layout = vk::ImageLayout::eUndefined;
 
+    AHardwareBuffer_Desc desc;
+    AHardwareBuffer_describe(buffer, &desc);
+
     image = kernel.device->createImageUnique(
             imageCreateInfo
                     .setInitialLayout(layout)
+                    .setArrayLayers(desc.layers)
                     .setPNext(&vk::ExternalMemoryImageCreateInfo()
                             .setHandleTypes(
                                     vk::ExternalMemoryHandleTypeFlagBits::eAndroidHardwareBufferANDROID)
@@ -68,6 +72,7 @@ void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *buffer) {
 
     const auto hardwareBufferProperties = kernel.device->getAndroidHardwareBufferPropertiesANDROID(
             *buffer);
+
     memory = kernel.device->allocateMemoryUnique(
             memoryAllocateInfo
                     .setAllocationSize(hardwareBufferProperties.allocationSize)

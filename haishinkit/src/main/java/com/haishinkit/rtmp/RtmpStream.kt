@@ -277,7 +277,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
      * Plays a media file or a live stream from server.
      */
     open fun play(vararg arguments: Any) {
-        renderer?.createInputSurface(1024, 1024, ImageFormat.NV21) { it
+        renderer?.createInputSurface(1024, 1024, ImageFormat.YUV_420_888) { it
             videoCodec.surface = it
         }
         val streamName = if (arguments.isEmpty()) null else arguments[0]

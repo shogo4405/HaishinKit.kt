@@ -52,7 +52,7 @@ internal class GlKernel(
             invalidateLayout = true
         }
 
-    var expectedOrientationSynchronize = true
+    var isRotatesWithContent = true
 
     var videoEffect: VideoEffect = DefaultVideoEffect()
         set(value) {
@@ -208,7 +208,7 @@ internal class GlKernel(
             ImageOrientation.RIGHT_MIRRORED -> 90
         }
 
-        if (expectedOrientationSynchronize) {
+        if (isRotatesWithContent) {
             degrees += when (deviceOrientation) {
                 0 -> 0
                 1 -> 90

@@ -38,7 +38,7 @@ namespace Graphics {
 
         void SetDeviceOrientation(SurfaceRotation surfaceRotation);
 
-        void SetExpectedOrientationSynchronize(bool expectedOrientationSynchronize);
+        void SetRotatesWithContent(bool rotatesWithContent);
 
         void SetFrameRate(int frameRate);
 

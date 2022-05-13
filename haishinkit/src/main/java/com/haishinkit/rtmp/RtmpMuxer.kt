@@ -204,12 +204,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         when (mime) {
             MediaCodec.MIME_VIDEO_RAW -> {
                 mediaFormat.apply {
-                    val width = MediaFormatUtil.getWidth(this)
-                    val height = MediaFormatUtil.getHeight(this)
                     stream.renderer?.createInputSurface(
-                        width,
-                        height,
-                        ImageFormat.NV21
+                        mediaFormat.getInteger(MediaFormat.KEY_WIDTH),
+                        mediaFormat.getInteger(MediaFormat.KEY_HEIGHT),
+                        ImageFormat.YUV_420_888
                     ) {
                         stream.videoCodec.surface = it
                     }
