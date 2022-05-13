@@ -9,6 +9,7 @@
 #include "VideoGravity.h"
 #include "ResampleFilter.h"
 #include "ImageOrientation.h"
+#include "VideoEffect.h"
 
 namespace Graphics {
     class Kernel;
@@ -16,12 +17,16 @@ namespace Graphics {
     struct ImageStorage;
 
     struct Texture {
-        VideoGravity videoGravity = RESIZE_ASPECT;
-        ResampleFilter resampleFilter = CUBIC;
 
         Texture(vk::Extent2D extent, int32_t format);
 
         ~Texture();
+
+        void SetVideoEffect(VideoEffect *videoEffect);
+
+        void SetVideoGravity(VideoGravity newVideoGravity);
+
+        void SetResampleFilter(ResampleFilter newResampleFilter);
 
         void SetUp(Kernel &kernel, AHardwareBuffer *buffer);
 
@@ -43,6 +48,10 @@ namespace Graphics {
         ImageOrientation imageOrientation = UP;
         vk::UniqueSamplerYcbcrConversion conversion;
         uint64_t externalFormat = 0;
+        VideoEffect *videoEffect = nullptr;
+        bool invalidateLayout = true;
+        VideoGravity videoGravity = RESIZE_ASPECT;
+        ResampleFilter resampleFilter = NEAREST;
 
         std::vector<vk::Rect2D> scissors;
         std::vector<vk::ClearValue> colors;

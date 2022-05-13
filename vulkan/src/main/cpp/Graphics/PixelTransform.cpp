@@ -51,7 +51,7 @@ void PixelTransform::SetVideoGravity(VideoGravity newVideoGravity) {
     std::lock_guard<std::mutex> lock(mutex);
     videoGravity = newVideoGravity;
     for (auto &texture: textures) {
-        texture->videoGravity = newVideoGravity;
+        texture->SetVideoGravity(newVideoGravity);
     }
 }
 
@@ -67,14 +67,15 @@ void PixelTransform::SetResampleFilter(ResampleFilter newResampleFilter) {
     std::lock_guard<std::mutex> lock(mutex);
     resampleFilter = newResampleFilter;
     for (auto &texture: textures) {
-        texture->resampleFilter = newResampleFilter;
+        texture->SetResampleFilter(newResampleFilter);
     }
 }
 
 void PixelTransform::SetImageReader(int32_t width, int32_t height, int32_t format) {
     auto texture = new Texture(vk::Extent2D(width, height), format);
-    texture->videoGravity = videoGravity;
-    texture->resampleFilter = resampleFilter;
+    texture->SetVideoGravity(videoGravity);
+    texture->SetResampleFilter(resampleFilter);
+    texture->SetVideoEffect(videoEffect);
     texture->SetImageOrientation(imageOrientation);
     textures.clear();
     textures.push_back(texture);
@@ -171,6 +172,14 @@ void PixelTransform::OnFrame(long frameTimeNanos) {
         });
     }
     mutex.unlock();
+}
+
+void PixelTransform::SetVideoEffect(VideoEffect *newVideoEffect) {
+    std::lock_guard<std::mutex> lock(mutex);
+    videoEffect = newVideoEffect;
+    for (auto &texture: textures) {
+        texture->SetVideoEffect(newVideoEffect);
+    }
 }
 
 extern "C"
@@ -298,6 +307,15 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetFrameRate(JNIEnv *env, jobj
                                                                jint frameRate) {
     Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetFrameRate(frameRate);
+        return nullptr;
+    });
+}
+
+JNIEXPORT void JNICALL
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetVideoEffect(JNIEnv *env, jobject thiz,
+                                                                 jobject videoEffect) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
+        self->SetVideoEffect(new VideoEffect(env, videoEffect));
         return nullptr;
     });
 }

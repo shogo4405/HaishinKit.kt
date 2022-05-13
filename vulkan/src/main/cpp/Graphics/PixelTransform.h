@@ -9,6 +9,7 @@
 #include "ResampleFilter.h"
 #include "ImageReader.h"
 #include "FpsController.h"
+#include "VideoEffect.h"
 
 namespace Graphics {
 
@@ -42,6 +43,8 @@ namespace Graphics {
 
         void SetFrameRate(int frameRate);
 
+        void SetVideoEffect(VideoEffect *videoEffect);
+
         ANativeWindow *GetInputSurface();
 
         bool HasFeatures();
@@ -65,6 +68,7 @@ namespace Graphics {
         ALooper *looper = nullptr;
         AChoreographer *choreographer = nullptr;
         bool running = false;
+        VideoEffect *videoEffect = nullptr;
 
         void StartRunning();
 

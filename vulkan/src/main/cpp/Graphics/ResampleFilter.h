@@ -4,8 +4,7 @@
 namespace Graphics {
     enum ResampleFilter {
         LINEAR = 0,
-        NEAREST = 1,
-        CUBIC = 2
+        NEAREST = 1
     };
 }
 

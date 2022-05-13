@@ -76,8 +76,9 @@ void Texture::SetUp(Kernel &kernel, AHardwareBuffer *buffer) {
         std::vector<vk::Sampler> samplers(1);
         samplers[0] = sampler.get();
 
-        kernel.pipeline.SetUp(kernel, samplers);
+        kernel.pipeline.SetUp(kernel, samplers, videoEffect);
         kernel.commandBuffer.SetUp(kernel);
+        invalidateLayout = false;
 
         storages.resize(kernel.swapChain.GetImagesCount());
         for (auto &storage: storages) {
@@ -93,6 +94,12 @@ void Texture::TearDown(Kernel &kernel) {
 }
 
 void Texture::UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *buffer) {
+    if (invalidateLayout) {
+        std::vector<vk::Sampler> samplers(1);
+        samplers[0] = sampler.get();
+        kernel.pipeline.SetUp(kernel, samplers, videoEffect);
+        invalidateLayout = false;
+    }
     auto storage = &storages[currentFrame];
     storage->Update(kernel, buffer);
     storage->GetDescriptorImageInfo().setSampler(sampler.get());
@@ -257,4 +264,17 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
     commandBuffer.draw(4, 1, 0, 0);
     commandBuffer.endRenderPass();
     commandBuffer.end();
+}
+
+void Texture::SetVideoEffect(VideoEffect *newVideoEffect) {
+    videoEffect = newVideoEffect;
+    invalidateLayout = true;
+}
+
+void Texture::SetVideoGravity(VideoGravity newVideoGravity) {
+    videoGravity = newVideoGravity;
+}
+
+void Texture::SetResampleFilter(ResampleFilter newResampleFilter) {
+    resampleFilter = newResampleFilter;
 }

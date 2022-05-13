@@ -6,7 +6,7 @@
 
 using namespace Graphics;
 
-void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers) {
+void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEffect *videoEffect) {
     descriptorSetLayout = kernel.device->createDescriptorSetLayoutUnique(
             vk::DescriptorSetLayoutCreateInfo()
                     .setBindingCount(1)
@@ -46,8 +46,8 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers) {
 
     pipelineCache = kernel.device->createPipelineCacheUnique(vk::PipelineCacheCreateInfo());
 
-    const auto vert = kernel.LoadShader("shaders/default.vert.spv");
-    const auto frag = kernel.LoadShader("shaders/default.frag.spv");
+    const auto vert = kernel.LoadShader(videoEffect->GetShaderPath("vert"));
+    const auto frag = kernel.LoadShader(videoEffect->GetShaderPath("frag"));
 
     // pipeline
     std::vector<vk::PipelineShaderStageCreateInfo> shaderStages = {

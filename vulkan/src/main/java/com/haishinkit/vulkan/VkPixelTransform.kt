@@ -33,6 +33,7 @@ class VkPixelTransform : PixelTransform {
         } else {
             throw UnsupportedOperationException()
         }
+        nativeSetVideoEffect(DefaultVideoEffect.shared)
     }
 
     override var outputSurface: Surface? = null
@@ -107,9 +108,16 @@ class VkPixelTransform : PixelTransform {
             nativeSetDeviceOrientation(value)
         }
 
-    override var videoEffect: VideoEffect = DefaultVideoEffect()
+    override var videoEffect: VideoEffect = DefaultVideoEffect.shared
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            nativeSetVideoEffect(videoEffect)
+        }
 
-    override var frameRate: Int = 30
+    override var frameRate: Int = 60
         set(value) {
             if (field == value) {
                 return
@@ -147,5 +155,6 @@ class VkPixelTransform : PixelTransform {
     private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface
     private external fun nativeSetRotatesWithContent(expectedOrientationSynchronize: Boolean)
     private external fun nativeSetFrameRate(frameRate: Int)
+    private external fun nativeSetVideoEffect(videoEffect: VideoEffect)
     private external fun nativeDispose()
 }

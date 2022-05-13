@@ -38,6 +38,7 @@ add_library(
         src/main/cpp/Graphics/Pipeline.cpp
         src/main/cpp/Graphics/Texture.cpp
         src/main/cpp/Graphics/ImageReader.cpp
+        src/main/cpp/Graphics/VideoEffect.cpp
         src/main/cpp/Graphics/Util.cpp
         src/main/cpp/Graphics/Vertex.hpp
         src/main/cpp/Graphics/Feature/Feature.cpp

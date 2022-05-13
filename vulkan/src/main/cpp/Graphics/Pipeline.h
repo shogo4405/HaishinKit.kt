@@ -8,6 +8,8 @@
 namespace Graphics {
     class Kernel;
 
+    class VideoEffect;
+
     struct ImageStorage;
 
     struct Pipeline {
@@ -18,7 +20,7 @@ namespace Graphics {
         vk::UniquePipelineCache pipelineCache;
         vk::UniquePipeline pipeline;
 
-        void SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers);
+        void SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEffect *videoEffect);
 
         void TearDown(Kernel &kernel);
 

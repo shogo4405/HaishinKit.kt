@@ -291,12 +291,20 @@ std::string Kernel::InspectDevices() {
 
 std::vector<char> Kernel::ReadFile(const std::string &fileName) {
     if (assetManager == nullptr) {
-        throw std::runtime_error("");
+        throw std::runtime_error("java.lang.IllegalStateException");
     }
+
     AAsset *file = AAssetManager_open(assetManager, fileName.c_str(), AASSET_MODE_BUFFER);
     if (file == nullptr) {
-        throw std::runtime_error("");
+        if (fileName.find("vert") != std::string::npos) {
+            file = AAssetManager_open(assetManager, "shaders/default.vert.spv", AASSET_MODE_BUFFER);
+        } else if (fileName.find("frag") != std::string::npos) {
+            file = AAssetManager_open(assetManager, "shaders/default.frag.spv", AASSET_MODE_BUFFER);
+        } else {
+            throw std::runtime_error("java.io.FileNotFoundException");
+        }
     }
+
     const auto length = AAsset_getLength(file);
     std::vector<char> contents(length);
     AAsset_read(file, static_cast<void *>(contents.data()), length);

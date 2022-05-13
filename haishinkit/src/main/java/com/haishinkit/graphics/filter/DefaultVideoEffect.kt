@@ -1,6 +1,6 @@
 package com.haishinkit.graphics.filter
 
-class DefaultVideoEffect(
+class DefaultVideoEffect private constructor(
     override val name: String = "default"
 ) : VideoEffect {
 

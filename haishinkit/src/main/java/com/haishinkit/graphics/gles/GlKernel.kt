@@ -54,7 +54,7 @@ internal class GlKernel(
 
     var isRotatesWithContent = true
 
-    var videoEffect: VideoEffect = DefaultVideoEffect()
+    var videoEffect: VideoEffect = DefaultVideoEffect.shared
         set(value) {
             field = value
             program = shaderLoader.createProgram(videoEffect.name)
