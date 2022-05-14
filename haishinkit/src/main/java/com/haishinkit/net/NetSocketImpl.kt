@@ -48,6 +48,9 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
     private var keepAlive = false
 
     override fun connect(dstName: String, dstPort: Int, isSecure: Boolean) {
+        if (socket?.isConnected == true) {
+            return
+        }
         keepAlive = true
         totalBytesIn.set(0)
         totalBytesOut.set(0)
@@ -58,11 +61,15 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
     }
 
     override fun close(disconnected: Boolean) {
+        if (socket?.isClosed == true) {
+            return
+        }
         keepAlive = false
         inputStream = null
         outputStream = null
         socket?.close()
         outputQueue.add(ByteBuffer.allocate(0))
+        listener?.onClose(disconnected)
     }
 
     override fun doOutput(buffer: ByteBuffer) {
@@ -104,6 +111,8 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
                 } else {
                     inputBuffer.clear()
                 }
+            } else {
+                close(true)
             }
         } catch (e: IOException) {
             Log.w(TAG, "", e)

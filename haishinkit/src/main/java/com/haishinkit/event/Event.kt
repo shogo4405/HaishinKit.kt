@@ -11,13 +11,13 @@ open class Event(type: String, bubbles: Boolean, data: Any?) {
         internal set
 
     /**
-     * The target indicates the IEventDispatcher.
+     * The target indicates the [IEventDispatcher].
      */
     var target: IEventDispatcher? = null
         internal set
 
     /**
-     * The currentTarget indicates the IEventDispatchers are currently being evaluated.
+     * The currentTarget indicates the [IEventDispatcher]s are currently being evaluated.
      */
     var currentTarget: IEventDispatcher? = null
         internal set

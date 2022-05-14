@@ -90,6 +90,10 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
         socket?.doOutput(handshake.c0C1Packet)
     }
 
+    override fun onClose(disconnected: Boolean) {
+        close(disconnected)
+    }
+
     override fun onInput(buffer: ByteBuffer) {
         when (readyState) {
             ReadyState.VersionSent -> {

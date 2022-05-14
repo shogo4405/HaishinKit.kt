@@ -109,7 +109,7 @@ class CameraTabFragment : Fragment(), IEventListener {
     }
 
     override fun handleEvent(event: Event) {
-        Log.i("$TAG#handleEvent", event.toString())
+        Log.i("$TAG#handleEvent", event.data.toString())
         val data = EventUtils.toMap(event)
         val code = data["code"].toString()
         if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
