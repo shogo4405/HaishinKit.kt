@@ -34,7 +34,7 @@ import kotlin.concurrent.schedule
  * flash.net.NetConnection for Kotlin
  */
 @Suppress("unused")
-open class RtmpConnection : EventDispatcher(null) {
+class RtmpConnection : EventDispatcher(null) {
     /**
      * NetStatusEvent#info.code for NetConnection
      */
@@ -204,7 +204,7 @@ open class RtmpConnection : EventDispatcher(null) {
     /**
      * Calls a command or method on RTMP Server.
      */
-    open fun call(commandName: String, responder: Responder?, vararg arguments: Any) {
+    fun call(commandName: String, responder: Responder?, vararg arguments: Any) {
         if (!isConnected) {
             return
         }
@@ -227,7 +227,7 @@ open class RtmpConnection : EventDispatcher(null) {
     /**
      * Creates a two-way connection to an application on RTMP Server.
      */
-    open fun connect(command: String, vararg arguments: Any?) {
+    fun connect(command: String, vararg arguments: Any?) {
         uri = URI.create(command)
         val uri = this.uri ?: return
         if (isConnected || !SUPPORTED_PROTOCOLS.containsKey(uri.scheme)) {
@@ -247,7 +247,7 @@ open class RtmpConnection : EventDispatcher(null) {
     /**
      * Closes the connection from the server.
      */
-    open fun close() {
+    fun close() {
         if (!isConnected) {
             return
         }
@@ -262,7 +262,7 @@ open class RtmpConnection : EventDispatcher(null) {
     /**
      * Dispose the connection for a memory management.
      */
-    open fun dispose() {
+    fun dispose() {
         timerTask = null
         for (stream in streams) {
             stream.value.dispose()
@@ -374,6 +374,8 @@ open class RtmpConnection : EventDispatcher(null) {
                 messages.clear()
                 streamsmap.clear()
                 responders.clear()
+            }
+            else -> {
             }
         }
     }

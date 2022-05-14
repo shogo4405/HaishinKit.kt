@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * An object that provides the interface to control a one-way channel over a RtmpConnection.
  */
 @Suppress("unused")
-open class RtmpStream(internal var connection: RtmpConnection) :
+class RtmpStream(internal var connection: RtmpConnection) :
     NetStream(),
     IEventDispatcher {
     data class Info(
@@ -128,6 +128,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
     }
 
     var info: Info = Info()
+        private set
     var listener: Listener? = null
 
     /**
@@ -238,7 +239,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
     /**
      * Sends streaming audio, video and data messages from a client to server.
      */
-    open fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
+    fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
         message.commandName = if (name != null) "publish" else "closeStream"
@@ -276,7 +277,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
     /**
      * Plays a media file or a live stream from server.
      */
-    open fun play(vararg arguments: Any) {
+    fun play(vararg arguments: Any) {
         renderer?.createInputSurface(1024, 1024, ImageFormat.YUV_420_888) { it
             videoCodec.surface = it
         }
@@ -313,7 +314,7 @@ open class RtmpStream(internal var connection: RtmpConnection) :
     /**
      * Sends a message on a published stream.
      */
-    open fun send(handlerName: String, vararg arguments: Any) {
+    fun send(handlerName: String, vararg arguments: Any) {
         readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED
         val message = RtmpDataMessage(connection.objectEncoding)
         message.handlerName = handlerName
