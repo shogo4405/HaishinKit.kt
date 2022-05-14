@@ -66,7 +66,7 @@ abstract class MediaCodec(private val mime: String) : Running {
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
                 if (listener?.onSampleOutput(mime, index, info, buffer) == true) {
-                    codec.releaseOutputBuffer(index, info.presentationTimeUs * 1000)
+                    codec.releaseOutputBuffer(index, false)
                 }
             } catch (e: IllegalStateException) {
                 if (BuildConfig.DEBUG) {
