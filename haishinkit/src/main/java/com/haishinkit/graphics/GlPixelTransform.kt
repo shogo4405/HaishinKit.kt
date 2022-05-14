@@ -113,6 +113,7 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
         if (outputSurface != null) {
             startRunning()
         }
+        kernel.invalidateLayout()
     }
 
     override fun doFrame(frameTimeNanos: Long) {

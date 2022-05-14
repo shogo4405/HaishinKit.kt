@@ -44,13 +44,6 @@ internal class GlTexture {
         surfaceTexture?.updateTexImage()
     }
 
-    fun setOnFrameAvailableListener(
-        listener: SurfaceTexture.OnFrameAvailableListener?,
-        handler: Handler?
-    ) {
-        surfaceTexture?.setOnFrameAvailableListener(listener, handler)
-    }
-
     fun release() {
         surfaceTexture?.release()
         surfaceTexture = null

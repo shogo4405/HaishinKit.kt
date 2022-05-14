@@ -196,6 +196,10 @@ internal class GlKernel(
         inputSurfaceWindow.swapBuffers()
     }
 
+    fun invalidateLayout() {
+        invalidateLayout = true
+    }
+
     private fun layout(newTextureSize: Size) {
         var degrees = when (imageOrientation) {
             ImageOrientation.UP -> 0
