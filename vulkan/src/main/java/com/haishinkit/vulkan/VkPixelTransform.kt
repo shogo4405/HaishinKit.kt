@@ -80,7 +80,7 @@ class VkPixelTransform : PixelTransform {
             nativeSetVideoGravity(field.rawValue)
         }
 
-    override var resampleFilter: ResampleFilter = ResampleFilter.CUBIC
+    override var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
         set(value) {
             if (field == value) {
                 return

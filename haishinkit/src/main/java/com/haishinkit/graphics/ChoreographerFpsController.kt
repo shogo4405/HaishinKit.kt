@@ -18,7 +18,7 @@ internal class ChoreographerFpsController : FpsController {
             timestamp = frameTime
             return true
         }
-        return true
+        return false
     }
 
     override fun timestamp(frameTime: Long): Long {

@@ -25,6 +25,16 @@ abstract class MediaCodec(private val mime: String) : Running {
 
     @Suppress("unused")
     open class Setting(private var codec: com.haishinkit.codec.MediaCodec?) {
+        /**
+         * Specifies the [MediaCodec]'s [MediaFormat] options if necessary.
+         *
+         * ```kotlin
+         * var options = mutableListOf<CodecOption>()
+         * options.add(CodecOption(KEY_LOW_LATENCY, 0))
+         * options.add(CodecOption(KEY_TEMPORAL_LAYERING, "android.generic.N, android.generic.N+M"))
+         * netStream.videoSettings.options = options
+         * ```
+         */
         var options: List<CodecOption> by Delegates.observable(listOf()) { _, _, newValue ->
             codec?.options = newValue
         }
@@ -39,7 +49,6 @@ abstract class MediaCodec(private val mime: String) : Running {
             info: MediaCodec.BufferInfo,
             buffer: ByteBuffer
         ): Boolean
-
         fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 

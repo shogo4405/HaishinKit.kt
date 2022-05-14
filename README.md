@@ -227,7 +227,20 @@ git submodule update --init
 # Open [Android Studio] -> [Open] ...
 ```
 
-### RTML URL Format
+### How can I use the vulkan module with Android 5 project?
+#### AndroidManifest.xml
+```xml
+<uses-sdk tools:overrideLibrary="com.haishinkit.vulkan" />
+```
+
+#### MainActivity
+```kotlin
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    PixelTransformFactory.registerPixelTransform(VkPixelTransform::class)
+}
+```
+
+## RTML URL Format
 * rtmp://server-ip-address[:port]/application/[appInstance]/[prefix:[path1[/path2/]]]streamName
   - [] mark is an Optional.
   ```

@@ -7,6 +7,9 @@ import java.util.concurrent.atomic.AtomicLong
  * The NetSocket interface establish a two-way TCP/IP socket connections.
  */
 interface NetSocket {
+    /**
+     * The Listener interface is the primary method for handling events.
+     */
     interface Listener {
         fun onInput(buffer: ByteBuffer)
         fun onTimeout()

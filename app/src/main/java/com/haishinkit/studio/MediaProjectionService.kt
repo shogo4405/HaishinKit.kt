@@ -75,8 +75,6 @@ class MediaProjectionService : Service(), IEventListener {
             stream.videoSetting.height = source.resolution.height shr 2
             Log.e(TAG, "${stream.videoSetting.width}:${stream.videoSetting.height}")
         }
-        stream.recordSetting.directory = getExternalFilesDir(null)
-        // stream.videoSetting.capturing = true
         connection.connect(Preference.shared.rtmpURL)
         return START_NOT_STICKY
     }

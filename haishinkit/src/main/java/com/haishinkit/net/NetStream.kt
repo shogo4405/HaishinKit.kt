@@ -21,6 +21,9 @@ import java.nio.ByteBuffer
  * The `NetStream` class is the foundation of a RtmpStream.
  */
 abstract class NetStream {
+    /**
+     * The Listener interface is the primary method for handling events.
+     */
     interface Listener {
         /**
          * Tells the receiver to setUp.
@@ -38,18 +41,23 @@ abstract class NetStream {
         fun onCaptureOutput(stream: NetStream, type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
+    /**
+     * Specifies the video codec settings.
+     */
     val videoSetting: VideoCodec.Setting by lazy {
         VideoCodec.Setting(videoCodec)
     }
 
+    /**
+     * Specifies the audio codec settings.
+     */
     val audioSetting: AudioCodec.Setting by lazy {
         AudioCodec.Setting(audioCodec)
     }
 
-    val recordSetting: RecordSetting by lazy {
-        RecordSetting()
-    }
-
+    /**
+     * Specifies the videoEffect such as a monochrome, a sepia.
+     */
     var videoEffect: VideoEffect? = null
         set(value) {
             videoCodec.pixelTransform.videoEffect = value ?: DefaultVideoEffect.shared

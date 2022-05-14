@@ -62,3 +62,8 @@ ktlint {
         include("**/kotlin/**")
     }
 }
+
+tasks.dokkaHtmlMultiModule.configure {
+    outputDirectory.set(file("docs"))
+}
+
