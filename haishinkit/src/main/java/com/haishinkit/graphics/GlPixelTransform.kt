@@ -88,7 +88,7 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
         GlKernel()
     }
     private val fpsController: FpsController by lazy {
-        ChoreographerFpsController()
+        ScheduledFpsController()
     }
     private var texture: GlTexture? = null
         set(value) {
