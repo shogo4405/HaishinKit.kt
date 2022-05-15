@@ -2,7 +2,6 @@ package com.haishinkit.graphics.gles
 
 import android.graphics.SurfaceTexture
 import android.opengl.GLES20
-import android.os.Handler
 import android.util.Size
 import android.view.Surface
 

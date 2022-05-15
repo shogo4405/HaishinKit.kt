@@ -4,7 +4,6 @@ import android.content.res.AssetManager
 import android.opengl.GLES20
 import android.util.Log
 import java.io.FileNotFoundException
-import java.lang.Exception
 
 internal class GlShaderLoader {
     var assetManager: AssetManager? = null

@@ -97,7 +97,12 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
         }
     private var running = false
 
-    override fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit)) {
+    override fun createInputSurface(
+        width: Int,
+        height: Int,
+        format: Int,
+        lambda: ((surface: Surface) -> Unit)
+    ) {
         if (texture != null && texture?.isValid(width, height) == true) {
             texture?.surface?.let {
                 lambda(it)

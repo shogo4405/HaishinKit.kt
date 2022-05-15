@@ -10,7 +10,6 @@ import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.lang.Running
 import com.haishinkit.media.MediaLink
-import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.Deque
 import java.util.concurrent.atomic.AtomicBoolean
@@ -49,6 +48,7 @@ abstract class MediaCodec(private val mime: String) : Running {
             info: MediaCodec.BufferInfo,
             buffer: ByteBuffer
         ): Boolean
+
         fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 

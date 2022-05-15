@@ -1,7 +1,6 @@
 package com.haishinkit.event
 
 import androidx.core.util.Pools
-import java.util.ArrayList
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 

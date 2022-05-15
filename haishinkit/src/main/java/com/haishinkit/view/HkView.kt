@@ -37,7 +37,12 @@ interface HkView {
      */
     fun attachStream(stream: NetStream?)
 
-    fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit))
+    fun createInputSurface(
+        width: Int,
+        height: Int,
+        format: Int,
+        lambda: ((surface: Surface) -> Unit)
+    )
 
     /**
      * Disposes the view for a memory management.

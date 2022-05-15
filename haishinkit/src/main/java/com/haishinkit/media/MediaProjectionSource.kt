@@ -45,9 +45,14 @@ class MediaProjectionSource(
 
     override fun setUp() {
         if (utilizable) return
-        resolution = Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
+        resolution =
+            Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
         stream?.videoCodec?.setAssetManager(context.assets)
-        stream?.videoCodec?.pixelTransform?.createInputSurface(resolution.width, resolution.height, 0x1)  { it
+        stream?.videoCodec?.pixelTransform?.createInputSurface(
+            resolution.width,
+            resolution.height,
+            0x1
+        ) {
             var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
             if (isRotatesWithContent) {
                 flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT

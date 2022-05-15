@@ -5,7 +5,6 @@ import com.haishinkit.amf.Amf0Serializer
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpObjectEncoding
 import java.nio.ByteBuffer
-import java.util.ArrayList
 
 /**
  * 7.1.2. Data Message (18, 15)

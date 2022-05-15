@@ -6,7 +6,6 @@ import com.haishinkit.event.Event
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpObjectEncoding
 import java.nio.ByteBuffer
-import java.util.ArrayList
 
 /**
  *  7.1.1. Command Message (20, 17)

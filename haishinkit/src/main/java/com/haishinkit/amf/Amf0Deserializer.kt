@@ -7,7 +7,6 @@ import com.haishinkit.amf.data.AsXmlDocument
 import java.io.UnsupportedEncodingException
 import java.nio.ByteBuffer
 import java.util.Date
-import java.util.HashMap
 import java.util.IllegalFormatFlagsException
 
 internal class Amf0Deserializer(private val buffer: ByteBuffer) {

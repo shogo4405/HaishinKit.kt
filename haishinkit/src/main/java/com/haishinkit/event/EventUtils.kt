@@ -1,7 +1,5 @@
 package com.haishinkit.event
 
-import java.util.HashMap
-
 object EventUtils {
     fun toMap(event: Event): Map<String, Any> {
         val data = event.data

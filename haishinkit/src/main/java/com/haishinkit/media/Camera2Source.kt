@@ -16,7 +16,6 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
-import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -102,7 +101,7 @@ class Camera2Source(
                     resolution = resolver.getCameraSize(characteristics)
                     stream?.renderer?.apply {
                         imageOrientation = this@Camera2Source.imageOrientation
-                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) { it
+                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
                             if (!surfaces.contains(it)) {
                                 surfaces.add(it)
                             }

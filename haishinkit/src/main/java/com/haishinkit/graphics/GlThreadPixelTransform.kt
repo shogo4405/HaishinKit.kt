@@ -114,7 +114,12 @@ internal class GlThreadPixelTransform : PixelTransform {
         GlPixelTransform()
     }
 
-    override fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit)) {
+    override fun createInputSurface(
+        width: Int,
+        height: Int,
+        format: Int,
+        lambda: ((surface: Surface) -> Unit)
+    ) {
         handler?.let {
             it.sendMessage(it.obtainMessage(MSG_CREATE_INPUT_SURFACE, width, height, lambda))
         }
@@ -154,7 +159,12 @@ internal class GlThreadPixelTransform : PixelTransform {
                 }
                 MSG_CREATE_INPUT_SURFACE -> {
                     val obj = message.obj
-                    transform.createInputSurface(message.arg1, message.arg2, ImageFormat.PRIVATE, obj as ((surface: Surface) -> Unit))
+                    transform.createInputSurface(
+                        message.arg1,
+                        message.arg2,
+                        ImageFormat.PRIVATE,
+                        obj as ((surface: Surface) -> Unit)
+                    )
                 }
                 MSG_SET_RESAMPLE_FILTER -> {
                     transform.resampleFilter = message.obj as ResampleFilter

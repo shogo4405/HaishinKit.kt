@@ -1,7 +1,5 @@
 package com.haishinkit.graphics
 
-import android.util.Log
-
 /**
  * This source code from grafika.
  * https://github.com/google/grafika/blob/c747398a8f0d5c8ec7be2c66522a80b43dfc9a1e/app/src/main/java/com/android/grafika/ScheduledSwapActivity.java#L76

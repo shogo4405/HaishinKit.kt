@@ -7,7 +7,6 @@ import android.os.Build
 import android.util.Log
 import com.haishinkit.BuildConfig
 import com.haishinkit.net.NetStream
-import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.Arrays
 import java.util.concurrent.atomic.AtomicBoolean

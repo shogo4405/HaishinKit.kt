@@ -1,6 +1,5 @@
 package com.haishinkit.graphics
 
-import java.lang.Exception
 import kotlin.reflect.KClass
 
 class PixelTransformFactory {

@@ -91,7 +91,12 @@ class HkSurfaceView(context: Context, attributes: AttributeSet) :
         this.stream = stream
     }
 
-    override fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit)) {
+    override fun createInputSurface(
+        width: Int,
+        height: Int,
+        format: Int,
+        lambda: ((surface: Surface) -> Unit)
+    ) {
         pixelTransform.createInputSurface(width, height, format, lambda)
     }
 

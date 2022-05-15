@@ -7,7 +7,6 @@ import com.haishinkit.codec.CodecOption
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
-import java.util.ArrayList
 
 data class AvcConfigurationRecord(
     val configurationVersion: Byte = 0x01,

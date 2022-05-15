@@ -1,8 +1,5 @@
 package com.haishinkit.amf.data
 
-import java.util.ArrayList
-import java.util.HashMap
-
 class AsArray(capacity: Int) : ArrayList<Any>(capacity) {
     private val properties = HashMap<String, Any?>()
 

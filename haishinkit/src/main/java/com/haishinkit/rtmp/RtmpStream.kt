@@ -2,21 +2,17 @@ package com.haishinkit.rtmp
 
 import android.graphics.ImageFormat
 import android.util.Log
-import android.view.Surface
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
-import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpDataMessage
 import com.haishinkit.rtmp.message.RtmpMessage
 import com.haishinkit.rtmp.message.RtmpMessageFactory
-import java.util.ArrayList
-import java.util.HashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -278,7 +274,7 @@ class RtmpStream(internal var connection: RtmpConnection) :
      * Plays a media file or a live stream from server.
      */
     fun play(vararg arguments: Any) {
-        renderer?.createInputSurface(1024, 1024, ImageFormat.YUV_420_888) { it
+        renderer?.createInputSurface(1024, 1024, ImageFormat.YUV_420_888) {
             videoCodec.surface = it
         }
         val streamName = if (arguments.isEmpty()) null else arguments[0]

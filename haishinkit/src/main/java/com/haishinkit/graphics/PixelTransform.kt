@@ -59,7 +59,12 @@ interface PixelTransform {
      */
     var frameRate: Int
 
-    fun createInputSurface(width: Int, height: Int, format: Int, lambda: ((surface: Surface) -> Unit))
+    fun createInputSurface(
+        width: Int,
+        height: Int,
+        format: Int,
+        lambda: ((surface: Surface) -> Unit)
+    )
 
     /**
      * Disposes the pixelTransform for the memory management.

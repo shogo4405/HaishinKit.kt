@@ -8,7 +8,6 @@ import android.media.MediaFormat
 import android.os.Build
 import android.util.Log
 import com.haishinkit.codec.AudioCodec
-import com.haishinkit.codec.RecordSetting
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
@@ -123,36 +122,49 @@ abstract class NetStream {
         } else {
             AudioFormat.CHANNEL_OUT_MONO
         }
-        Log.d(TAG, "sampleRate=$sampleRate, channelCount=$channelCount")
-        return if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-            AudioTrack.Builder()
-                .setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-                        .build()
+        val bufferSize =
+            AudioTrack.getMinBufferSize(sampleRate, channelCount, AudioFormat.ENCODING_PCM_16BIT)
+        Log.d(TAG, "sampleRate=$sampleRate, channelCount=$channelCount, bufferSize=$bufferSize")
+        try {
+            return if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+                AudioTrack.Builder()
+                    .setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                            .build()
+                    )
+                    .setAudioFormat(
+                        AudioFormat.Builder()
+                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                            .setSampleRate(sampleRate)
+                            .setChannelMask(channelMask)
+                            .build()
+                    )
+                    .setBufferSizeInBytes(bufferSize)
+                    .setTransferMode(AudioTrack.MODE_STREAM)
+                    .apply {
+                        if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
+                            setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
+                        }
+                    }.build()
+            } else {
+                return AudioTrack(
+                    AudioManager.STREAM_MUSIC,
+                    sampleRate,
+                    channelMask,
+                    AudioFormat.ENCODING_PCM_16BIT,
+                    bufferSize,
+                    AudioTrack.MODE_STREAM
                 )
-                .setAudioFormat(
-                    AudioFormat.Builder()
-                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(sampleRate)
-                        .setChannelMask(channelMask)
-                        .build()
-                )
-                .setBufferSizeInBytes(1024 * 2)
-                .setTransferMode(AudioTrack.MODE_STREAM)
-                .apply {
-                    if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
-                        setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
-                    }
-                }.build()
-        } else {
+            }
+        } catch (e: Exception) {
             return AudioTrack(
                 AudioManager.STREAM_MUSIC,
                 sampleRate,
                 channelMask,
                 AudioFormat.ENCODING_PCM_16BIT,
-                1024 * 2,
+                bufferSize,
                 AudioTrack.MODE_STREAM
             )
         }
