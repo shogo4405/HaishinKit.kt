@@ -22,12 +22,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 
 /**
- * MediaLink class can be used to synchronously play audio and video streams.
+ * The MediaLink class can be used to synchronously play audio and video streams.
  */
 class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
     Running,
     CoroutineScope,
     Choreographer.FrameCallback {
+
     data class Buffer(
         val index: Int,
         val payload: ByteBuffer? = null,
@@ -35,28 +36,18 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         val sync: Boolean = false
     )
 
-    override val isRunning = AtomicBoolean(false)
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
-
     /**
-     * The instance of an AudioTrack.
+     * Specifies the hasVideo indicates the video is present(TRUE), or not(FALSE).
      */
-    var audioTrack: AudioTrack? = null
-        set(value) {
-            syncMode = if (value == null) {
-                field?.stop()
-                field?.flush()
-                field?.release()
-                SYNC_MODE_CLOCK
-            } else {
-                SYNC_MODE_AUDIO
-            }
-            field = value
-        }
+    var hasVideo = false
 
     /**
-     * Paused audio playback of a media.
+     * Specifies the hasAudio indicates the audio is present(TRUE), or not(FALSE).
+     */
+    var hasAudio = false
+
+    /**
+     * Specifies the paused indicates the playback of a media pause(TRUE) or not(FALSE).
      */
     var paused: Boolean
         get() = audioTrack?.playState == AudioTrack.PLAYSTATE_PAUSED
@@ -77,15 +68,22 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
             }
         }
 
-    /**
-     * Video are present.
-     */
-    var hasVideo = false
+    override val isRunning = AtomicBoolean(false)
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
-    /**
-     * Audio are present.
-     */
-    var hasAudio = false
+    internal var audioTrack: AudioTrack? = null
+        set(value) {
+            syncMode = if (value == null) {
+                field?.stop()
+                field?.flush()
+                field?.release()
+                SYNC_MODE_CLOCK
+            } else {
+                SYNC_MODE_AUDIO
+            }
+            field = value
+        }
 
     private var syncMode = SYNC_MODE_CLOCK
     private var hasKeyframe = false
@@ -112,7 +110,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
     private var keepAlive = true
     private var frameTracker: FrameTracker? = null
         get() {
-            if (field == null && BuildConfig.DEBUG) {
+            if (field == null && VERBOSE) {
                 field = FrameTracker()
             }
             return field
@@ -124,6 +122,35 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         }
     private var audioCorrection = 0L
     private var audioPlaybackJob: Job? = null
+
+    /**
+     * Queues the audio data asynchronously for playback.
+     */
+    fun queueAudio(index: Int, payload: ByteBuffer?, timestamp: Long, sync: Boolean) {
+        audioBuffers.add(Buffer(index, payload, timestamp, sync))
+        if (!hasVideo) {
+            val track = audioTrack ?: return
+            if (track.playbackHeadPosition <= 0) {
+                if (track.playState != AudioTrack.PLAYSTATE_PLAYING) {
+                    track.play()
+                }
+                return
+            }
+        }
+    }
+
+    /**
+     * Queues the video data asynchronously for playback.
+     */
+    fun queueVideo(index: Int, payload: ByteBuffer?, timestamp: Long, sync: Boolean) {
+        videoBuffers.add(Buffer(index, payload, timestamp, sync))
+        if (choreographer == null) {
+            handler?.post {
+                choreographer = Choreographer.getInstance()
+                choreographer?.postFrameCallback(this)
+            }
+        }
+    }
 
     @Synchronized
     override fun startRunning() {
@@ -168,35 +195,6 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         isRunning.set(false)
     }
 
-    /**
-     * Queues the audio data asynchronously for playback.
-     */
-    fun queueAudio(buffer: Buffer) {
-        audioBuffers.add(buffer)
-        if (!hasVideo) {
-            val track = audioTrack ?: return
-            if (track.playbackHeadPosition <= 0) {
-                if (track.playState != AudioTrack.PLAYSTATE_PLAYING) {
-                    track.play()
-                }
-                return
-            }
-        }
-    }
-
-    /**
-     * Queues the video data asynchronously for playback.
-     */
-    fun queueVideo(buffer: Buffer) {
-        videoBuffers.add(buffer)
-        if (choreographer == null) {
-            handler?.post {
-                choreographer = Choreographer.getInstance()
-                choreographer?.postFrameCallback(this)
-            }
-        }
-    }
-
     override fun doFrame(frameTimeNanos: Long) {
         choreographer?.postFrameCallback(this)
         val duration: Long
@@ -224,7 +222,9 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
                 }
                 if (buffer.timestamp <= duration) {
                     if (frameCount == 0 && hasKeyframe) {
-                        frameTracker?.track(FrameTracker.TYPE_VIDEO, SystemClock.uptimeMillis())
+                        if (VERBOSE) {
+                            frameTracker?.track(FrameTracker.TYPE_VIDEO, SystemClock.uptimeMillis())
+                        }
                         video.codec?.releaseOutputBuffer(buffer.index, buffer.timestamp * 1000)
                     } else {
                         video.codec?.releaseOutputBuffer(buffer.index, false)
@@ -250,7 +250,9 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
             try {
                 val audio = audioBuffers.take()
                 val payload = audio.payload ?: continue
-                frameTracker?.track(FrameTracker.TYPE_AUDIO, SystemClock.uptimeMillis())
+                if (VERBOSE) {
+                    frameTracker?.track(FrameTracker.TYPE_AUDIO, SystemClock.uptimeMillis())
+                }
                 while (payload.hasRemaining()) {
                     if (keepAlive) {
                         audioTrack?.write(
@@ -280,7 +282,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         private const val SYNC_MODE_VSYNC = 1
         private const val SYNC_MODE_CLOCK = 2
 
-        private const val VERBOSE = true
+        private const val VERBOSE = false
         private val TAG = MediaLink::class.java.simpleName
     }
 }

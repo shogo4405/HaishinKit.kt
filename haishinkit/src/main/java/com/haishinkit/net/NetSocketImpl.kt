@@ -188,7 +188,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         const val DEFAULT_TIMEOUT: Int = 1000
 
         private const val DEFAULT_WINDOW_SIZE_C = Short.MAX_VALUE.toInt()
-        private const val KEEP_ALIVE_SLEEP_INTERVAL = 100L
+        private const val KEEP_ALIVE_SLEEP_INTERVAL = 10L
         private val TAG = NetSocketImpl::class.java.simpleName
     }
 }

@@ -265,12 +265,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     return false
                 }
                 mediaLink.queueVideo(
-                    MediaLink.Buffer(
-                        index,
-                        null,
-                        info.presentationTimeUs,
-                        (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
-                    )
+                    index,
+                    null,
+                    info.presentationTimeUs,
+                    (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
                 )
                 return false
             }
@@ -299,7 +297,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 return true
             }
             MediaCodec.MIME_AUDIO_RAW -> {
-                mediaLink.queueAudio(MediaLink.Buffer(index, buffer, info.presentationTimeUs, true))
+                mediaLink.queueAudio(index, buffer, info.presentationTimeUs, true)
                 return false
             }
             MediaCodec.MIME_AUDIO_MP4A -> {
