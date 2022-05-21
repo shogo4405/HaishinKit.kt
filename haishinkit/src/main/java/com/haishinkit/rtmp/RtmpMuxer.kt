@@ -324,10 +324,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         return true
     }
 
-    override fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long) {
-        stream.listener?.onCaptureOutput(stream, type, buffer, timestamp)
-    }
-
     override fun <T> onBufferFull(controller: BufferController<T>) {
         if (controller == videoBufferController) {
             if (stream.receiveVideo) {

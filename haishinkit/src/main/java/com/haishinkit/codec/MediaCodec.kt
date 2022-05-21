@@ -48,8 +48,6 @@ abstract class MediaCodec(private val mime: String) : Running {
             info: MediaCodec.BufferInfo,
             buffer: ByteBuffer
         ): Boolean
-
-        fun onCaptureOutput(type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
     class Callback : MediaCodec.Callback() {

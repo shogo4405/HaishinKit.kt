@@ -33,11 +33,6 @@ abstract class NetStream {
          * Tells the receiver to tearDown.
          */
         fun onTearDown(stream: NetStream)
-
-        /**
-         * Tells the receiver to captureOutput.
-         */
-        fun onCaptureOutput(stream: NetStream, type: Byte, buffer: ByteBuffer, timestamp: Long)
     }
 
     /**
