@@ -1,6 +1,7 @@
 package com.haishinkit.view
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.util.AttributeSet
 import android.util.Size
@@ -13,6 +14,7 @@ import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.net.NetStream
+import java.nio.ByteBuffer
 
 class HkTextureView(context: Context, attributes: AttributeSet) :
     TextureView(context, attributes),
@@ -66,6 +68,10 @@ class HkTextureView(context: Context, attributes: AttributeSet) :
 
     override fun attachStream(stream: NetStream?) {
         this.stream = stream
+    }
+
+    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
+        pixelTransform.readPixels(lambda)
     }
 
     override fun createInputSurface(

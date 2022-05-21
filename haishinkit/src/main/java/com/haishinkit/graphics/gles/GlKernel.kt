@@ -1,6 +1,8 @@
 package com.haishinkit.graphics.gles
 
 import android.content.res.AssetManager
+import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.opengl.EGL14
 import android.opengl.EGLConfig
 import android.opengl.GLES11Ext
@@ -15,6 +17,8 @@ import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.lang.Utilize
 import com.haishinkit.util.aspectRatio
 import com.haishinkit.util.swap
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import javax.microedition.khronos.opengles.GL10
 
 internal class GlKernel(
@@ -194,6 +198,33 @@ internal class GlKernel(
 
         inputSurfaceWindow.setPresentationTime(timestamp)
         inputSurfaceWindow.swapBuffers()
+    }
+
+    fun readPixels(): Bitmap? {
+        if (outputSurface == null) {
+            return null
+        }
+        val bitmap =
+            Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
+        val byteBuffer =
+            ByteBuffer.allocateDirect(imageExtent.width * imageExtent.height * 4).apply {
+                order(ByteOrder.LITTLE_ENDIAN)
+            }
+        inputSurfaceWindow.readPixels(imageExtent.width, imageExtent.height, byteBuffer)
+        bitmap.copyPixelsFromBuffer(byteBuffer)
+        return Bitmap.createBitmap(
+            bitmap,
+            0,
+            0,
+            imageExtent.width,
+            imageExtent.height,
+            Matrix().apply {
+                setRotate(
+                    180.0F
+                )
+            },
+            false
+        )
     }
 
     fun invalidateLayout() {

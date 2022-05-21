@@ -2,8 +2,11 @@ package com.haishinkit.studio
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.hardware.camera2.CameraCharacteristics
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +14,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
@@ -22,6 +27,8 @@ import com.haishinkit.media.Camera2Source
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.view.HkView
+import java.io.File
+import java.io.FileOutputStream
 
 class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
@@ -70,6 +77,48 @@ class CameraTabFragment : Fragment(), IEventListener {
                 button.text = "Publish"
             }
         }
+
+        val save = v.findViewById<Button>(R.id.save_button)
+        save.setOnClickListener {
+            cameraView.readPixels {
+                val bitmap = it ?: return@readPixels
+
+                val file = File(requireContext().externalCacheDir, "share_temp.jpeg")
+                FileOutputStream(file).use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                    outputStream.flush()
+                }
+
+                val fileUri: Uri? = try {
+                    FileProvider.getUriForFile(
+                        requireContext(),
+                        requireContext().packageName + ".fileprovider",
+                        file
+                    )
+                } catch (e: IllegalArgumentException) {
+                    null
+                }
+
+                fileUri ?: run {
+                    return@readPixels
+                }
+
+                val builder = this@CameraTabFragment.activity?.let { it1 ->
+                    ShareCompat.IntentBuilder.from(
+                        it1
+                    )
+                }?.apply {
+                    addStream(fileUri)
+                    setType(requireContext().contentResolver.getType(fileUri))
+                }?.createChooserIntent()?.apply {
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    resolveActivity(requireContext().packageManager)?.also {
+                        startActivity(this);
+                    }
+                }
+            }
+        }
+
         val filter = v.findViewById<Button>(R.id.filter_button)
         filter.setOnClickListener {
             if (filter.text == "Normal") {

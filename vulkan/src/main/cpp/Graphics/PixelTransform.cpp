@@ -182,6 +182,10 @@ void PixelTransform::SetVideoEffect(VideoEffect *newVideoEffect) {
     }
 }
 
+void *PixelTransform::ReadPixels() {
+    return kernel->ReadPixels();
+}
+
 extern "C"
 {
 JNIEXPORT jboolean JNICALL
@@ -317,6 +321,13 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetVideoEffect(JNIEnv *env, jo
     Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
         self->SetVideoEffect(new VideoEffect(env, videoEffect));
         return nullptr;
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeReadPixels(JNIEnv *env, jobject thiz) {
+    Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
+        return self->ReadPixels();
     });
 }
 }

@@ -1,6 +1,7 @@
 package com.haishinkit.graphics
 
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.graphics.ImageFormat
 import android.os.HandlerThread
 import android.os.Looper
@@ -9,6 +10,7 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
 import java.lang.ref.WeakReference
+import java.nio.ByteBuffer
 
 internal class GlThreadPixelTransform : PixelTransform {
     override var outputSurface: Surface?
@@ -114,6 +116,12 @@ internal class GlThreadPixelTransform : PixelTransform {
         GlPixelTransform()
     }
 
+    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
+        handler?.let {
+            it.sendMessage(it.obtainMessage(MSG_READ_PIXELS, lambda))
+        }
+    }
+
     override fun createInputSurface(
         width: Int,
         height: Int,
@@ -185,6 +193,9 @@ internal class GlThreadPixelTransform : PixelTransform {
                 MSG_SET_FRAME_RATE -> {
                     transform.frameRate = message.obj as Int
                 }
+                MSG_READ_PIXELS -> {
+                    transform.readPixels(message.obj as ((bitmap: Bitmap?) -> Unit))
+                }
                 MSG_DISPOSE -> {
                     transform.dispose()
                 }
@@ -206,7 +217,8 @@ internal class GlThreadPixelTransform : PixelTransform {
         private const val MSG_SET_VIDEO_EFFECT = 8
         private const val MSG_SET_ASSET_MANAGER = 9
         private const val MSG_SET_FRAME_RATE = 10
-        private const val MSG_DISPOSE = 11
+        private const val MSG_READ_PIXELS = 11
+        private const val MSG_DISPOSE = 12
 
         private val TAG = GlThreadPixelTransform::class.java.simpleName
     }

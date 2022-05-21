@@ -1,9 +1,11 @@
 package com.haishinkit.graphics
 
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
+import java.nio.ByteBuffer
 
 /**
  * The PixelTransform interface provides some graphics operations.
@@ -55,9 +57,14 @@ interface PixelTransform {
     var isRotatesWithContent: Boolean
 
     /**
-     * Specifies the frameRate for a an output source in frames/sec.
+     * Specifies the frameRate for an output source in frames/sec.
      */
     var frameRate: Int
+
+    /**
+     * Reads the pixels of a displayed image.
+     */
+    fun readPixels(lambda: ((bitmap: Bitmap?) -> Unit))
 
     fun createInputSurface(
         width: Int,

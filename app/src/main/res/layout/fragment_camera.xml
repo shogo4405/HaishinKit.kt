@@ -38,14 +38,30 @@
             android:layout_margin="16px"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true" />
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="16px"
+            android:layout_marginTop="16px"
+            android:layout_marginEnd="16px"
+            android:layout_marginBottom="16px"
+            android:text="Save" />
+
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Publish"
-            android:layout_margin="16px"
+            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true" />
+            android:layout_marginStart="16px"
+            android:layout_marginTop="16px"
+            android:layout_marginEnd="16px"
+            android:layout_marginBottom="16px"
+            android:text="Publish" />
     </RelativeLayout>
 
 </FrameLayout>

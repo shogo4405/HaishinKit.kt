@@ -49,6 +49,8 @@ namespace Graphics {
 
         bool HasFeatures();
 
+        void *ReadPixels();
+
         std::string InspectDevices();
 
         void OnRunning();

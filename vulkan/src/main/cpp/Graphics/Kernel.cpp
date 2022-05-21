@@ -333,3 +333,10 @@ vk::SurfaceFormatKHR Kernel::GetSurfaceFormat() {
     }
     throw std::runtime_error("failed to find suitable surface format!");
 }
+
+void* Kernel::ReadPixels() {
+    if (nativeWindow == nullptr) {
+        throw std::runtime_error("java.lang.IllegalStateException");
+    }
+    return nullptr;
+}

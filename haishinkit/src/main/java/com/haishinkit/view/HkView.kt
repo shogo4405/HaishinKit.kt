@@ -1,10 +1,12 @@
 package com.haishinkit.view
 
+import android.graphics.Bitmap
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.net.NetStream
+import java.nio.ByteBuffer
 
 interface HkView {
     /**
@@ -36,6 +38,11 @@ interface HkView {
      * Attaches a video stream to the view.
      */
     fun attachStream(stream: NetStream?)
+
+    /**
+     * Reads the pixels of a displayed image.
+     */
+    fun readPixels(lambda: ((bitmap: Bitmap?) -> Unit))
 
     fun createInputSurface(
         width: Int,

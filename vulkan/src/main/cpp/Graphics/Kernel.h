@@ -68,6 +68,8 @@ namespace Graphics {
 
         vk::SurfaceFormatKHR GetSurfaceFormat();
 
+        void *ReadPixels();
+
     private:
         const std::string applicationName = "HaishinKit";
         const std::string engineName = "Vulkan::Kernel";

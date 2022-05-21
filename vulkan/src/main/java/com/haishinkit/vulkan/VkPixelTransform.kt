@@ -1,6 +1,7 @@
 package com.haishinkit.vulkan
 
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
 import android.view.Surface
@@ -10,6 +11,7 @@ import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
+import java.nio.ByteBuffer
 
 class VkPixelTransform : PixelTransform {
     companion object {
@@ -131,6 +133,11 @@ class VkPixelTransform : PixelTransform {
 
     external fun inspectDevices(): String
 
+    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
+        val bitmap = Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
+        lambda(bitmap)
+    }
+
     override fun createInputSurface(
         width: Int,
         height: Int,
@@ -156,5 +163,6 @@ class VkPixelTransform : PixelTransform {
     private external fun nativeSetRotatesWithContent(expectedOrientationSynchronize: Boolean)
     private external fun nativeSetFrameRate(frameRate: Int)
     private external fun nativeSetVideoEffect(videoEffect: VideoEffect)
+    private external fun nativeReadPixels(): ByteBuffer
     private external fun nativeDispose()
 }

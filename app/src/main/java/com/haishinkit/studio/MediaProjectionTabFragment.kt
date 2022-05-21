@@ -33,14 +33,6 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
         MediaProjectionService.listener = object : RtmpStream.Listener {
-            override fun onCaptureOutput(
-                stream: NetStream,
-                type: Byte,
-                buffer: ByteBuffer,
-                timestamp: Long
-            ) {
-            }
-
             override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
                 activity?.runOnUiThread {
                     v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
