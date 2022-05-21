@@ -3,6 +3,7 @@
 #include "SwapChain.h"
 #include "Texture.h"
 #include "Vertex.hpp"
+#include "PushConstants.hpp"
 
 using namespace Graphics;
 
@@ -42,6 +43,11 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEf
                     .setSetLayoutCount(1)
                     .setSetLayouts(
                             descriptorSetLayout.get())
+                    .setPushConstantRangeCount(1)
+                    .setPPushConstantRanges(&vk::PushConstantRange()
+                            .setOffset(0)
+                            .setStageFlags(vk::ShaderStageFlagBits::eVertex)
+                            .setSize(sizeof(Graphics::PushConstants)))
     );
 
     pipelineCache = kernel.device->createPipelineCacheUnique(vk::PipelineCacheCreateInfo());

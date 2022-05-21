@@ -10,6 +10,7 @@
 #include "ResampleFilter.h"
 #include "ImageOrientation.h"
 #include "VideoEffect.h"
+#include "PushConstants.hpp"
 
 namespace Graphics {
     class Kernel;
@@ -52,6 +53,7 @@ namespace Graphics {
         bool invalidateLayout = true;
         VideoGravity videoGravity = RESIZE_ASPECT;
         ResampleFilter resampleFilter = NEAREST;
+        PushConstants pushConstantsBlock;
 
         std::vector<vk::Rect2D> scissors;
         std::vector<vk::ClearValue> colors;

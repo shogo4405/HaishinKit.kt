@@ -181,31 +181,39 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
     scissors[0].setExtent(surface);
     auto newImageExtent = swapped ? vk::Extent2D(extent.height, extent.width) : extent;
 
+    viewports[0]
+            .setX(0)
+            .setY(0)
+            .setWidth((float) surface.width)
+            .setHeight((float) surface.height);
+
     switch (videoGravity) {
         case RESIZE: {
-            viewports[0]
-                    .setX(0)
-                    .setY(0)
-                    .setWidth((float) surface.width)
-                    .setHeight((float) surface.height);
+            pushConstantsBlock.mvpMatrix = glm::scale(glm::mat4(1.0F), glm::vec3(1.0F, 1.0f, 1.0F));
             break;
         }
         case RESIZE_ASPECT: {
-            const float xRatio = (float) surface.width / (float) newImageExtent.width;
-            const float yRatio =
-                    (float) surface.height / (float) newImageExtent.height;
-            if (yRatio < xRatio) {
-                viewports[0]
-                        .setX(((float) surface.width - (float) newImageExtent.width * yRatio) / 2)
-                        .setY(0)
-                        .setWidth((float) newImageExtent.width * yRatio)
-                        .setHeight((float) surface.height);
+            const float iRatio = (float) surface.width / (float) surface.height;
+            const float fRatio = (float) newImageExtent.width / (float) newImageExtent.height;
+            if (iRatio < fRatio) {
+                pushConstantsBlock.mvpMatrix = glm::scale(
+                        glm::mat4(1.0F),
+                        glm::vec3(1.0F,
+                                  (float) newImageExtent.height /
+                                  (float) newImageExtent.width *
+                                  iRatio, 1.0F
+                        )
+                );
             } else {
-                viewports[0]
-                        .setX(0)
-                        .setY(((float) surface.height - (float) newImageExtent.height * xRatio) / 2)
-                        .setWidth((float) surface.width)
-                        .setHeight((float) newImageExtent.height * xRatio);
+                pushConstantsBlock.mvpMatrix = glm::scale(
+                        glm::mat4(1.0F),
+                        glm::vec3((float) newImageExtent.width /
+                                  (float) newImageExtent.height /
+                                  iRatio,
+                                  1.0f,
+                                  1.0F
+                        )
+                );
             }
             break;
         }
@@ -213,17 +221,23 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
             const float iRatio = (float) surface.width / (float) surface.height;
             const float fRatio = (float) newImageExtent.width / (float) newImageExtent.height;
             if (iRatio < fRatio) {
-                viewports[0]
-                        .setX(((float) surface.width - (float) surface.height * fRatio) / 2)
-                        .setY(0)
-                        .setWidth((float) surface.height * fRatio)
-                        .setHeight((float) surface.height);
+                pushConstantsBlock.mvpMatrix = glm::scale(
+                        glm::mat4(1.0F),
+                        glm::vec3(
+                                (float) surface.height /
+                                (float) surface.width *
+                                fRatio, 1.0f, 1.0F
+                        )
+                );
             } else {
-                viewports[0]
-                        .setX(0)
-                        .setY(((float) surface.height - (float) surface.width / fRatio) / 2)
-                        .setWidth((float) surface.width)
-                        .setHeight((float) surface.width / fRatio);
+                pushConstantsBlock.mvpMatrix = glm::scale(
+                        glm::mat4(1.0F),
+                        glm::vec3(1.0f, (float) surface.width /
+                                        (float) surface.height /
+                                        fRatio,
+                                  1.0F
+                        )
+                );
             }
             break;
         }
@@ -236,6 +250,13 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
 
     commandBuffer.setViewport(0, viewports);
     commandBuffer.setScissor(0, scissors);
+
+    commandBuffer.pushConstants(
+            kernel.pipeline.pipelineLayout.get(),
+            vk::ShaderStageFlagBits::eVertex,
+            0,
+            sizeof(PushConstants),
+            &pushConstantsBlock);
 
     commandBuffer.beginRenderPass(
             vk::RenderPassBeginInfo()
