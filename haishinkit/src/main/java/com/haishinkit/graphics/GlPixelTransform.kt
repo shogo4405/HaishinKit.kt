@@ -7,9 +7,8 @@ import android.util.Size
 import android.view.Choreographer
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
-import com.haishinkit.graphics.gles.GlKernel
-import com.haishinkit.graphics.gles.GlTexture
-import java.nio.ByteBuffer
+import com.haishinkit.graphics.gles.Kernel
+import com.haishinkit.graphics.gles.Texture
 
 internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
     override var outputSurface: Surface?
@@ -86,13 +85,13 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
         }
 
     private var choreographer: Choreographer? = null
-    private val kernel: GlKernel by lazy {
-        GlKernel()
+    private val kernel: Kernel by lazy {
+        Kernel()
     }
     private val fpsController: FpsController by lazy {
         ScheduledFpsController()
     }
-    private var texture: GlTexture? = null
+    private var texture: Texture? = null
         set(value) {
             field?.release()
             field = value
@@ -111,7 +110,7 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
             }
             return
         }
-        texture = GlTexture.create(width, height).apply {
+        texture = Texture.create(width, height).apply {
             surface?.let {
                 lambda(it)
             }

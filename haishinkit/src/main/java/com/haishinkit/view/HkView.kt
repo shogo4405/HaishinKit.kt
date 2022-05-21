@@ -6,7 +6,6 @@ import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.net.NetStream
-import java.nio.ByteBuffer
 
 interface HkView {
     /**

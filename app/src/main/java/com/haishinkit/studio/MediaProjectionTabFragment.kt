@@ -38,12 +38,6 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                     v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
                 }
             }
-
-            override fun onSetUp(stream: NetStream) {
-            }
-
-            override fun onTearDown(stream: NetStream) {
-            }
         }
         button.setOnClickListener {
             if (button.text == "Publish") {

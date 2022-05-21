@@ -14,27 +14,11 @@ import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
 import com.haishinkit.view.HkView
-import java.nio.ByteBuffer
 
 /**
- * The `NetStream` class is the foundation of a RtmpStream.
+ * The NetStream class is the foundation of a RtmpStream.
  */
 abstract class NetStream {
-    /**
-     * The Listener interface is the primary method for handling events.
-     */
-    interface Listener {
-        /**
-         * Tells the receiver to setUp.
-         */
-        fun onSetUp(stream: NetStream)
-
-        /**
-         * Tells the receiver to tearDown.
-         */
-        fun onTearDown(stream: NetStream)
-    }
-
     /**
      * Specifies the video codec settings.
      */

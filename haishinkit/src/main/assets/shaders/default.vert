@@ -1,7 +1,9 @@
-attribute vec4 position;
-attribute vec2 texcoord;
-varying vec2 texcoordVarying;
+uniform mediump mat4 uMVPMatrix;
+attribute mediump vec4 aPosition;
+attribute mediump vec2 aTexcoord;
+varying mediump vec2 vTexcoord;
+
 void main() {
-    gl_Position = position;
-    texcoordVarying = texcoord;
+    gl_Position = uMVPMatrix * aPosition;
+    vTexcoord = aTexcoord;
 }

@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
-import java.nio.ByteBuffer
 
 /**
  * The PixelTransform interface provides some graphics operations.

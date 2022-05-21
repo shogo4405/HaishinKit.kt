@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.Surface
 import java.nio.ByteBuffer
 
-internal class GlWindowSurface {
+internal class WindowSurface {
 
     var config: EGLConfig? = null
     var display = EGL14.EGL_NO_DISPLAY
@@ -49,7 +49,7 @@ internal class GlWindowSurface {
     }
 
     companion object {
-        private val TAG = GlWindowSurface::class.java.simpleName
+        private val TAG = WindowSurface::class.java.simpleName
         private val SURFACE_ATTRIBUTES = intArrayOf(EGL14.EGL_NONE)
     }
 }

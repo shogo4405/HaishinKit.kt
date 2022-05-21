@@ -7,8 +7,10 @@ import android.opengl.EGL14
 import android.opengl.EGLConfig
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
+import android.util.Log
 import android.util.Size
 import android.view.Surface
+import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
@@ -21,7 +23,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.microedition.khronos.opengles.GL10
 
-internal class GlKernel(
+internal class Kernel(
     override var utilizable: Boolean = false
 ) : Utilize {
     var outputSurface: Surface? = null
@@ -30,25 +32,31 @@ internal class GlKernel(
             inputSurfaceWindow.setSurface(value)
         }
 
-    var imageOrientation: ImageOrientation = ImageOrientation.UP
+    var imageOrientation = ImageOrientation.UP
         set(value) {
             field = value
             invalidateLayout = true
         }
 
-    var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
+    var videoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
             field = value
             invalidateLayout = true
         }
 
-    var imageExtent: Size = Size(0, 0)
+    var imageExtent = Size(0, 0)
         set(value) {
             field = value
+            GLES20.glViewport(
+                0,
+                0,
+                imageExtent.width,
+                imageExtent.height
+            )
             invalidateLayout = true
         }
 
-    var resampleFilter: ResampleFilter = ResampleFilter.NEAREST
+    var resampleFilter = ResampleFilter.NEAREST
 
     var deviceOrientation: Int = Surface.ROTATION_0
         set(value) {
@@ -71,9 +79,10 @@ internal class GlKernel(
             program = shaderLoader.createProgram(videoEffect.name)
         }
 
-    private val inputSurfaceWindow: GlWindowSurface = GlWindowSurface()
-    private val vertexBuffer = GlUtil.createFloatBuffer(VERTECES)
-    private val texCoordBuffer = GlUtil.createFloatBuffer(TEX_COORDS_ROTATION_0)
+    private val matrix = FloatArray(16)
+    private val inputSurfaceWindow = WindowSurface()
+    private val vertexBuffer = Util.createFloatBuffer(VERTECES)
+    private val texCoordBuffer = Util.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private var invalidateLayout = true
     private var display = EGL14.EGL_NO_DISPLAY
         set(value) {
@@ -88,12 +97,12 @@ internal class GlKernel(
         }
 
     private val shaderLoader by lazy {
-        val shaderLoader = GlShaderLoader()
+        val shaderLoader = ShaderLoader()
         shaderLoader.assetManager = assetManager
         shaderLoader
     }
 
-    private var program: GlShaderLoader.Program? = null
+    private var program: ShaderLoader.Program? = null
         set(value) {
             field?.dispose()
             field = value
@@ -121,7 +130,7 @@ internal class GlKernel(
             CONTEXT_ATTRIBUTES,
             0
         )
-        GlUtil.checkGlError("eglCreateContext")
+        Util.checkGlError("eglCreateContext")
         EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, context)
 
         GLES20.glTexParameteri(
@@ -164,6 +173,9 @@ internal class GlKernel(
 
         GLES20.glUseProgram(program.id)
 
+        GLES20.glUniformMatrix4fv(program.mvpMatrixHandle, 1, false, matrix, 0)
+        Util.checkGlError("glUniformMatrix4fv")
+
         GLES20.glVertexAttribPointer(
             program.texCoordHandle,
             2,
@@ -180,16 +192,16 @@ internal class GlKernel(
             0,
             vertexBuffer
         )
-        GlUtil.checkGlError("glVertexAttribPointer")
+        Util.checkGlError("glVertexAttribPointer")
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
         GLES20.glUniform1i(program.textureHandle, 0)
-        GlUtil.checkGlError("glUniform1i")
+        Util.checkGlError("glUniform1i")
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
-        GlUtil.checkGlError("glBindTexture")
+        Util.checkGlError("glBindTexture")
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
@@ -280,51 +292,44 @@ internal class GlKernel(
 
         when (videoGravity) {
             VideoGravity.RESIZE -> {
-                GLES20.glViewport(
-                    0,
-                    0,
-                    imageExtent.width,
-                    imageExtent.height
-                )
+                matrix[0] = 1f
+                matrix[5] = 1f
+                matrix[10] = 1f
+                matrix[15] = 1f
             }
             VideoGravity.RESIZE_ASPECT -> {
-                val xRatio = imageExtent.width.toFloat() / textureSize.width.toFloat()
-                val yRatio = imageExtent.height.toFloat() / textureSize.height.toFloat()
-                if (yRatio < xRatio) {
-                    GLES20.glViewport(
-                        ((imageExtent.width - textureSize.width * yRatio) / 2).toInt(),
-                        0,
-                        (textureSize.width * yRatio).toInt(),
-                        imageExtent.height
-                    )
+                val iRatio = imageExtent.aspectRatio
+                val fRatio = textureSize.aspectRatio
+                if (iRatio < fRatio) {
+                    matrix[0] = 1f
+                    matrix[5] = textureSize.height.toFloat() / textureSize.width.toFloat() * iRatio
+                    matrix[10] = 1f
+                    matrix[15] = 1f
                 } else {
-                    GLES20.glViewport(
-                        0,
-                        ((imageExtent.height - textureSize.height * xRatio) / 2).toInt(),
-                        imageExtent.width,
-                        (textureSize.height * xRatio).toInt()
-                    )
+                    matrix[0] = textureSize.width.toFloat() / textureSize.height.toFloat() / iRatio
+                    matrix[5] = 1f // y
+                    matrix[10] = 1f
+                    matrix[15] = 1f
                 }
             }
             VideoGravity.RESIZE_ASPECT_FILL -> {
                 val iRatio = imageExtent.aspectRatio
                 val fRatio = textureSize.aspectRatio
                 if (iRatio < fRatio) {
-                    GLES20.glViewport(
-                        ((imageExtent.width - imageExtent.height * fRatio) / 2).toInt(),
-                        0,
-                        (imageExtent.height * fRatio).toInt(),
-                        imageExtent.height
-                    )
+                    matrix[0] = imageExtent.height.toFloat() / imageExtent.width.toFloat() * fRatio
+                    matrix[5] = 1f
+                    matrix[10] = 1f
+                    matrix[15] = 1f
                 } else {
-                    GLES20.glViewport(
-                        0,
-                        ((imageExtent.height - imageExtent.width / fRatio) / 2).toInt(),
-                        imageExtent.width,
-                        (imageExtent.width / fRatio).toInt()
-                    )
+                    matrix[0] = 1f
+                    matrix[5] = imageExtent.width.toFloat() / imageExtent.height.toFloat() / fRatio
+                    matrix[10] = 1f
+                    matrix[15] = 1f
                 }
             }
+        }
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, matrix.contentToString())
         }
     }
 
@@ -349,6 +354,7 @@ internal class GlKernel(
     }
 
     companion object {
+        private val TAG = Kernel::class.java.toString()
         private const val EGL_RECORDABLE_ANDROID: Int = 0x3142
 
         private val CONTEXT_ATTRIBUTES =
@@ -365,10 +371,10 @@ internal class GlKernel(
         )
 
         private val VERTECES = floatArrayOf(
-            -1.0f, 1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f
+            -1.0f, 1.0f, 0.0f, // top-left
+            -1.0f, -1.0f, 0.0f, // bottom-left
+            1.0f, 1.0f, 0.0f, // bottom-right
+            1.0f, -1.0f, 0.0f // top-right
         )
         private val TEX_COORDS_ROTATION_0 = floatArrayOf(
             0.0f, 0.0f,

@@ -87,7 +87,7 @@ class RtmpStream(internal var connection: RtmpConnection) :
         }
     }
 
-    interface Listener : NetStream.Listener {
+    interface Listener {
         fun onStatics(stream: RtmpStream, connection: RtmpConnection)
     }
 

@@ -5,10 +5,10 @@ import android.opengl.GLES20
 import android.util.Size
 import android.view.Surface
 
-internal class GlTexture {
+internal class Texture {
     companion object {
-        fun create(width: Int, height: Int): GlTexture {
-            return GlTexture().apply {
+        fun create(width: Int, height: Int): Texture {
+            return Texture().apply {
                 val textures = intArrayOf(1)
                 GLES20.glGenTextures(1, textures, 0)
                 id = textures[0]

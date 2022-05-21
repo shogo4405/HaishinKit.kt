@@ -5,7 +5,7 @@ import android.opengl.GLES20
 import android.util.Log
 import java.io.FileNotFoundException
 
-internal class GlShaderLoader {
+internal class ShaderLoader {
     var assetManager: AssetManager? = null
 
     data class Program(
@@ -14,7 +14,8 @@ internal class GlShaderLoader {
         val fragmentShaper: Int = INVALID_VALUE,
         val positionHandle: Int = INVALID_VALUE,
         val texCoordHandle: Int = INVALID_VALUE,
-        val textureHandle: Int = INVALID_VALUE
+        val textureHandle: Int = INVALID_VALUE,
+        val mvpMatrixHandle: Int = INVALID_VALUE,
     ) {
         init {
             GLES20.glEnableVertexAttribArray(positionHandle)
@@ -40,14 +41,14 @@ internal class GlShaderLoader {
             return null
         }
         var program = GLES20.glCreateProgram()
-        GlUtil.checkGlError(GL_CREATE_PROGRAM)
+        Util.checkGlError(GL_CREATE_PROGRAM)
         if (program == 0) {
             Log.e(TAG, "Could not create program")
         }
         GLES20.glAttachShader(program, vertexShader)
-        GlUtil.checkGlError(GL_ATTACH_SHADER)
+        Util.checkGlError(GL_ATTACH_SHADER)
         GLES20.glAttachShader(program, fragmentShader)
-        GlUtil.checkGlError(GL_ATTACH_SHADER)
+        Util.checkGlError(GL_ATTACH_SHADER)
         GLES20.glLinkProgram(program)
         val linkStatus = IntArray(1)
         GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0)
@@ -61,14 +62,15 @@ internal class GlShaderLoader {
             program,
             vertexShader,
             fragmentShader,
-            GLES20.glGetAttribLocation(program, "position"),
-            GLES20.glGetAttribLocation(program, "texcoord"),
-            GLES20.glGetAttribLocation(program, "texture")
+            GLES20.glGetAttribLocation(program, "aPosition"),
+            GLES20.glGetAttribLocation(program, "aTexcoord"),
+            GLES20.glGetAttribLocation(program, "uTexture"),
+            GLES20.glGetUniformLocation(program, "uMVPMatrix")
         )
     }
 
     private fun readFile(shaderType: Int, source: String?): String {
-        var fileName = "shaders/" + (source ?: "main.")
+        var fileName = "shaders/" + (source ?: "default.")
         fileName += if (shaderType == GLES20.GL_VERTEX_SHADER) {
             ".vert"
         } else {
@@ -90,7 +92,7 @@ internal class GlShaderLoader {
 
     private fun loadShader(shaderType: Int, source: String?): Int {
         var shader = GLES20.glCreateShader(shaderType)
-        GlUtil.checkGlError("glCreateShader type=$shaderType")
+        Util.checkGlError("glCreateShader type=$shaderType")
         GLES20.glShaderSource(shader, readFile(shaderType, source))
         GLES20.glCompileShader(shader)
         val compiled = IntArray(1)
@@ -106,7 +108,7 @@ internal class GlShaderLoader {
 
     companion object {
         private const val INVALID_VALUE = 0
-        private val TAG = GlShaderLoader::class.java.simpleName
+        private val TAG = ShaderLoader::class.java.simpleName
 
         private const val GL_CREATE_PROGRAM = "glCreateProgram"
         private const val GL_ATTACH_SHADER = "glAttachShader"
