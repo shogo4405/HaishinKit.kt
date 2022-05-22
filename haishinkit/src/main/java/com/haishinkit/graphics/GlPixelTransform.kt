@@ -3,12 +3,14 @@ package com.haishinkit.graphics
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.os.Handler
+import android.util.Log
 import android.util.Size
 import android.view.Choreographer
 import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.Kernel
 import com.haishinkit.graphics.gles.Texture
+import java.lang.RuntimeException
 
 internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
     override var outputSurface: Surface?
@@ -137,7 +139,11 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
                 return
             }
             texture?.let {
-                kernel.render(it.id, it.extent, timestamp)
+                try {
+                    kernel.render(it.id, it.extent, timestamp)
+                } catch (e: RuntimeException) {
+                    Log.e(TAG, "", e)
+                }
             }
         }
     }
