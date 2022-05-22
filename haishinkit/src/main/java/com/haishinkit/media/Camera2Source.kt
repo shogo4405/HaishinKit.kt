@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class Camera2Source(
     private val context: Context,
     override var utilizable: Boolean = false
-) : VideoSource {
+) : VideoSource, CameraDevice.StateCallback() {
     var device: CameraDevice? = null
         private set(value) {
             session = null
@@ -92,44 +92,7 @@ class Camera2Source(
         }
         characteristics = manager.getCameraCharacteristics(cameraId)
         device = null
-        manager.openCamera(
-            cameraId,
-            object : CameraDevice.StateCallback() {
-                override fun onOpened(camera: CameraDevice) {
-                    this@Camera2Source.device = camera
-                    surfaces.clear()
-                    resolution = resolver.getCameraSize(characteristics)
-                    stream?.renderer?.apply {
-                        imageOrientation = this@Camera2Source.imageOrientation
-                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
-                            if (!surfaces.contains(it)) {
-                                surfaces.add(it)
-                            }
-                            createCaptureSession()
-                        }
-                    }
-                    stream?.videoCodec?.pixelTransform?.apply {
-                        imageOrientation = this@Camera2Source.imageOrientation
-                        createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
-                            if (!surfaces.contains(it)) {
-                                surfaces.add(it)
-                            }
-                            createCaptureSession()
-                        }
-                    }
-                    this@Camera2Source.setUp()
-                }
-
-                override fun onDisconnected(camera: CameraDevice) {
-                    this@Camera2Source.device = null
-                }
-
-                override fun onError(camera: CameraDevice, error: Int) {
-                    Log.w(TAG, error.toString())
-                }
-            },
-            null
-        )
+        manager.openCamera(cameraId, this, null)
     }
 
     fun close() {
@@ -192,9 +155,40 @@ class Camera2Source(
         }
     }
 
-    private fun createCaptureSession() {
+    override fun onOpened(camera: CameraDevice) {
+        device = camera
+        surfaces.clear()
+        resolution = resolver.getCameraSize(characteristics)
+        stream?.renderer?.apply {
+            imageOrientation = this@Camera2Source.imageOrientation
+            createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
+                createCaptureSession(it)
+            }
+        }
+        stream?.videoCodec?.pixelTransform?.apply {
+            imageOrientation = this@Camera2Source.imageOrientation
+            createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
+                createCaptureSession(it)
+            }
+        }
+        setUp()
+    }
+
+    override fun onDisconnected(camera: CameraDevice) {
+        device = null
+    }
+
+    override fun onError(camera: CameraDevice, error: Int) {
+        device = null
+        Log.w(TAG, error.toString())
+    }
+
+    private fun createCaptureSession(surface: Surface) {
+        if (!surfaces.contains(surface)) {
+            surfaces.add(surface)
+        }
         val device = device ?: return
-        if (surfaces.isEmpty()) {
+        if (surfaces.size < 2) {
             return
         }
         for (request in requests) {
