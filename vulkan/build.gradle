@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 
-version = "0.9.2"
+version = "0.9.3"
 
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
