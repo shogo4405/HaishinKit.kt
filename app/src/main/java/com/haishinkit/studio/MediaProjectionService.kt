@@ -15,7 +15,9 @@ import androidx.core.app.NotificationCompat
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
+import com.haishinkit.graphics.filter.BicubicVideoEffect
 import com.haishinkit.graphics.filter.DefaultVideoEffect
+import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.MediaProjectionSource
 import com.haishinkit.rtmp.RtmpConnection
@@ -31,6 +33,9 @@ class MediaProjectionService : Service(), IEventListener {
             when (msg.what) {
                 MSG_CONNECT -> connection.connect(Preference.shared.rtmpURL)
                 MSG_CLOSE -> connection.close()
+                MSG_SET_VIDEO_EFFECT -> {
+                    stream.videoEffect = msg.obj as VideoEffect
+                }
             }
         }
     }
@@ -65,7 +70,7 @@ class MediaProjectionService : Service(), IEventListener {
             getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         stream.attachAudio(AudioRecordSource())
         stream.listener = listener
-        stream.videoEffect = DefaultVideoEffect.shared
+        stream.videoEffect = BicubicVideoEffect()
         data?.let {
             val source = MediaProjectionSource(
                 this,
@@ -114,8 +119,9 @@ class MediaProjectionService : Service(), IEventListener {
         var data: Intent? = null
         var listener: RtmpStream.Listener? = null
 
-        private const val MSG_CONNECT = 0
-        private const val MSG_CLOSE = 1
+        const val MSG_CONNECT = 0
+        const val MSG_CLOSE = 1
+        const val MSG_SET_VIDEO_EFFECT = 2
 
         private val TAG = MediaProjectionSource::class.java.simpleName
     }

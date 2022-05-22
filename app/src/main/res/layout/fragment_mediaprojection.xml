@@ -30,6 +30,14 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             />
+        <Button
+            android:id="@+id/filter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Normal"
+            android:layout_margin="16px"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <RelativeLayout

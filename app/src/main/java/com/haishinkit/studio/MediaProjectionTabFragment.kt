@@ -16,6 +16,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.haishinkit.graphics.filter.BicubicVideoEffect
+import com.haishinkit.graphics.filter.BilinearVideoEffect
+import com.haishinkit.graphics.filter.DefaultVideoEffect
+import com.haishinkit.graphics.filter.MonochromeVideoEffect
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
@@ -39,6 +43,20 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                 }
             }
         }
+        val filter = v.findViewById<Button>(R.id.filter_button)
+        filter.setOnClickListener {
+            if (filter.text == "Normal") {
+                messenger?.send(Message.obtain(null, MediaProjectionService.MSG_SET_VIDEO_EFFECT, BicubicVideoEffect()))
+                filter.text = "Bicubic"
+            } else if (filter.text == "Bicubic") {
+                messenger?.send(Message.obtain(null, MediaProjectionService.MSG_SET_VIDEO_EFFECT, BilinearVideoEffect()))
+                filter.text = "Bilinear"
+            } else {
+                messenger?.send(Message.obtain(null, MediaProjectionService.MSG_SET_VIDEO_EFFECT, DefaultVideoEffect.shared))
+                filter.text = "Normal"
+            }
+        }
+
         button.setOnClickListener {
             if (button.text == "Publish") {
                 if (messenger == null) {
@@ -90,10 +108,6 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
 
     override fun onServiceDisconnected(name: ComponentName?) {
         messenger = null
-    }
-
-    private fun isExternalStorageWritable(): Boolean {
-        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
     }
 
     companion object {
