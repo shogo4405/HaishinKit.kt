@@ -88,8 +88,8 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEf
     };
 
     const auto bindingDescription = Vertex::CreateBindingDescription();
-
     vk::Extent2D imageExtent = kernel.swapChain.GetImageExtent();
+
     pipeline = kernel.device->createGraphicsPipelineUnique(
             pipelineCache.get(),
             vk::GraphicsPipelineCreateInfo()
@@ -146,7 +146,7 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEf
                     )
                     .setLayout(pipelineLayout.get())
                     .setRenderPass(kernel.swapChain.renderPass.get())
-    );
+    ).value;
 
     kernel.device->destroy(vert);
     kernel.device->destroy(frag);
