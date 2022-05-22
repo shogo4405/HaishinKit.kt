@@ -10,7 +10,6 @@ import android.view.Surface
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.graphics.gles.Kernel
 import com.haishinkit.graphics.gles.Texture
-import java.lang.RuntimeException
 
 internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
     override var outputSurface: Surface?

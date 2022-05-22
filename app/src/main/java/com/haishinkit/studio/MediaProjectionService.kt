@@ -7,7 +7,12 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.media.projection.MediaProjectionManager
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.Message
+import android.os.Messenger
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -16,7 +21,6 @@ import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.filter.BicubicVideoEffect
-import com.haishinkit.graphics.filter.DefaultVideoEffect
 import com.haishinkit.graphics.filter.VideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.MediaProjectionSource

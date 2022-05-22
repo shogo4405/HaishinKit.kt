@@ -6,10 +6,14 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.Choreographer
+import android.view.LayoutInflater
+import android.view.SurfaceHolder
+import android.view.SurfaceView
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import java.lang.Exception
 
 class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
     private lateinit var holderA: SurfaceHolder
@@ -22,7 +26,10 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "VkPixelTransform::isSupported() = ${com.haishinkit.vulkan.VkPixelTransform.isSupported()}")
+        Log.i(
+            TAG,
+            "VkPixelTransform::isSupported() = ${com.haishinkit.vulkan.VkPixelTransform.isSupported()}"
+        )
         context?.let {
             Log.d(TAG, "setAssetManager")
             renderer?.assetManager = it.assets

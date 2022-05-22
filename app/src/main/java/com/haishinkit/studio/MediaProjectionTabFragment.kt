@@ -8,7 +8,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.media.projection.MediaProjectionManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.IBinder
+import android.os.Message
+import android.os.Messenger
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +23,8 @@ import androidx.fragment.app.Fragment
 import com.haishinkit.graphics.filter.BicubicVideoEffect
 import com.haishinkit.graphics.filter.BilinearVideoEffect
 import com.haishinkit.graphics.filter.DefaultVideoEffect
-import com.haishinkit.graphics.filter.MonochromeVideoEffect
-import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
-import java.nio.ByteBuffer
 
 class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
@@ -46,13 +47,31 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         val filter = v.findViewById<Button>(R.id.filter_button)
         filter.setOnClickListener {
             if (filter.text == "Normal") {
-                messenger?.send(Message.obtain(null, MediaProjectionService.MSG_SET_VIDEO_EFFECT, BicubicVideoEffect()))
+                messenger?.send(
+                    Message.obtain(
+                        null,
+                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                        BicubicVideoEffect()
+                    )
+                )
                 filter.text = "Bicubic"
             } else if (filter.text == "Bicubic") {
-                messenger?.send(Message.obtain(null, MediaProjectionService.MSG_SET_VIDEO_EFFECT, BilinearVideoEffect()))
+                messenger?.send(
+                    Message.obtain(
+                        null,
+                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                        BilinearVideoEffect()
+                    )
+                )
                 filter.text = "Bilinear"
             } else {
-                messenger?.send(Message.obtain(null, MediaProjectionService.MSG_SET_VIDEO_EFFECT, DefaultVideoEffect.shared))
+                messenger?.send(
+                    Message.obtain(
+                        null,
+                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                        DefaultVideoEffect.shared
+                    )
+                )
                 filter.text = "Normal"
             }
         }

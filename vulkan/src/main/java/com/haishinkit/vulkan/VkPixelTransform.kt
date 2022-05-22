@@ -134,7 +134,8 @@ class VkPixelTransform : PixelTransform {
     external fun inspectDevices(): String
 
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
-        val bitmap = Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
+        val bitmap =
+            Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
         lambda(bitmap)
     }
 
