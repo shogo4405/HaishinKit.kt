@@ -58,7 +58,7 @@ Kernel::Kernel() : validationLayersEnabled(true), assetManager(nullptr),
 }
 
 Kernel::~Kernel() {
-    if (available) {
+    if (device) {
         device->waitIdle();
     }
     commandBuffer.TearDown(*this);
