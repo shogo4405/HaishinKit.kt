@@ -13,7 +13,7 @@ class AudioSpecificConfigTest : TestCase() {
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
         buffer.flip()
-        val decodeConfig = AudioSpecificConfig().decode(buffer)
+        val decodeConfig = AudioSpecificConfig.decode(buffer)
         assertEquals(config, decodeConfig)
     }
 
@@ -26,7 +26,7 @@ class AudioSpecificConfigTest : TestCase() {
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
         buffer.flip()
-        val decodeConfig = AudioSpecificConfig().decode(buffer)
+        val decodeConfig = AudioSpecificConfig.decode(buffer)
         assertEquals(config, decodeConfig)
     }
 
@@ -39,13 +39,13 @@ class AudioSpecificConfigTest : TestCase() {
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
         buffer.flip()
-        val decodeConfig = AudioSpecificConfig().decode(buffer)
+        val decodeConfig = AudioSpecificConfig.decode(buffer)
         assertEquals(config, decodeConfig)
     }
 
     fun testEncode() {
         val buffer1 = ByteBuffer.wrap(byteArrayOf(18, 8))
-        val config = AudioSpecificConfig().decode(buffer1)
+        val config = AudioSpecificConfig.decode(buffer1)
         val buffer2 = ByteBuffer.allocate(2)
         config.encode(buffer2)
         print(buffer2.array().contentToString())

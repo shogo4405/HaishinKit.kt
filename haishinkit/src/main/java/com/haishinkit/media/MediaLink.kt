@@ -40,11 +40,33 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
      * Specifies the hasVideo indicates the video is present(TRUE), or not(FALSE).
      */
     var hasVideo = false
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            if (value) {
+                video.startRunning()
+            } else {
+                video.stopRunning()
+            }
+        }
 
     /**
      * Specifies the hasAudio indicates the audio is present(TRUE), or not(FALSE).
      */
     var hasAudio = false
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            if (value) {
+                audio.startRunning()
+            } else {
+                audio.stopRunning()
+            }
+        }
 
     /**
      * Specifies the paused indicates the playback of a media pause(TRUE) or not(FALSE).
@@ -159,9 +181,6 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
             Log.d(TAG, "startRunning()")
         }
         audio.mode = MediaCodec.Mode.DECODE
-        audio.startRunning()
-        video.mode = MediaCodec.Mode.DECODE
-        video.startRunning()
         keepAlive = true
         audioPlaybackJob = launch(coroutineContext) {
             doAudio()
@@ -175,8 +194,6 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        hasAudio = false
-        hasVideo = false
         hasKeyframe = false
         handler = null
         choreographer?.removeFrameCallback(this)
@@ -189,9 +206,9 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         videoTimestamp.clear()
         frameTracker?.clear()
         audio.release(audioBuffers)
-        audio.stopRunning()
+        hasAudio = false
         video.release(videoBuffers)
-        video.stopRunning()
+        hasVideo = false
         isRunning.set(false)
     }
 

@@ -1,6 +1,5 @@
 package com.haishinkit.rtmp
 
-import android.graphics.ImageFormat
 import android.media.MediaFormat
 import android.os.SystemClock
 import android.util.Log
@@ -202,15 +201,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
         when (mime) {
             MediaCodec.MIME_VIDEO_RAW -> {
-                mediaFormat.apply {
-                    stream.renderer?.createInputSurface(
-                        mediaFormat.getInteger(MediaFormat.KEY_WIDTH),
-                        mediaFormat.getInteger(MediaFormat.KEY_HEIGHT),
-                        ImageFormat.YUV_420_888
-                    ) {
-                        stream.videoCodec.surface = it
-                    }
-                }
                 stream.dispatchEventWith(
                     Event.RTMP_STATUS,
                     false,

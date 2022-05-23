@@ -1,19 +1,13 @@
 package com.haishinkit.iso
 
+import android.util.Log
 import junit.framework.TestCase
 import java.nio.ByteBuffer
 
 class AvcConfigurationRecordTest : TestCase() {
     fun testDecode() {
         val byteBuffer = ByteBuffer.wrap(SAMPLE_DATA_0)
-        val record = AvcConfigurationRecord()
-        record.decode(byteBuffer)
-    }
-
-    fun testOptions() {
-        val byteBuffer = ByteBuffer.wrap(SAMPLE_DATA_0)
-        val record = AvcConfigurationRecord()
-        record.decode(byteBuffer)
+        val record = AvcConfigurationRecord.decode(byteBuffer)
     }
 
     companion object {

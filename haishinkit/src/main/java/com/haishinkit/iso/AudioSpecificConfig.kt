@@ -67,18 +67,6 @@ data class AudioSpecificConfig(
         return this
     }
 
-    fun decode(buffer: ByteBuffer): AudioSpecificConfig {
-        val first = buffer.get().toPositiveInt()
-        val second = buffer.get().toPositiveInt()
-        return AudioSpecificConfig(
-            type = AudioObjectType.values().first { n -> n.rawValue.toInt() == first shr 3 },
-            frequency = SamplingFrequency.values()
-                .first { n -> n.rawValue.toInt() == (first and 7 shl 1 or (second and 0xFF shr 7)) },
-            channel = ChannelConfiguration.values()
-                .first { n -> n.rawValue.toInt() == second and 120 shr 3 }
-        )
-    }
-
     internal fun apply(codec: AudioCodec) {
         codec.sampleRate = frequency.int
         codec.channelCount = channel.rawValue.toInt()
@@ -102,5 +90,17 @@ data class AudioSpecificConfig(
     companion object {
         private const val CSD0 = "csd-0"
         private var TAG = AudioSpecificConfig::class.java.simpleName
+
+        fun decode(buffer: ByteBuffer): AudioSpecificConfig {
+            val first = buffer.get().toPositiveInt()
+            val second = buffer.get().toPositiveInt()
+            return AudioSpecificConfig(
+                type = AudioObjectType.values().first { n -> n.rawValue.toInt() == first shr 3 },
+                frequency = SamplingFrequency.values()
+                    .first { n -> n.rawValue.toInt() == (first and 7 shl 1 or (second and 0xFF shr 7)) },
+                channel = ChannelConfiguration.values()
+                    .first { n -> n.rawValue.toInt() == second and 120 shr 3 }
+            )
+        }
     }
 }

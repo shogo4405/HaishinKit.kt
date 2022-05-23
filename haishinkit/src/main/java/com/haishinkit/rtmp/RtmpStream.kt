@@ -1,6 +1,5 @@
 package com.haishinkit.rtmp
 
-import android.graphics.ImageFormat
 import android.util.Log
 import com.haishinkit.codec.MediaCodec
 import com.haishinkit.event.Event
@@ -274,9 +273,6 @@ class RtmpStream(internal var connection: RtmpConnection) :
      * Plays a media file or a live stream from server.
      */
     fun play(vararg arguments: Any) {
-        renderer?.createInputSurface(1024, 1024, ImageFormat.YUV_420_888) {
-            videoCodec.surface = it
-        }
         val streamName = if (arguments.isEmpty()) null else arguments[0]
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0

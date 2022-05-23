@@ -46,43 +46,6 @@ data class AvcConfigurationRecord(
         return this
     }
 
-    fun decode(buffer: ByteBuffer): AvcConfigurationRecord {
-        val configurationVersion = buffer.get()
-        val avcProfileIndication = buffer.get()
-        val profileCompatibility = buffer.get()
-        val avcLevelIndication = buffer.get()
-        val lengthSizeMinusOneWithReserved = buffer.get()
-        val numOfSequenceParameterSetsWithReserved = buffer.get()
-
-        val numOfSequenceParameterSets =
-            numOfSequenceParameterSetsWithReserved.toPositiveInt() and RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS.inv()
-        val sequenceParameterSets = mutableListOf<ByteArray>()
-        for (i in 0 until numOfSequenceParameterSets) {
-            val bytes = ByteArray(buffer.short.toInt())
-            buffer.get(bytes)
-            sequenceParameterSets.add(bytes)
-        }
-
-        val numPictureParameterSets = buffer.get().toPositiveInt()
-        val pictureParameterSets = mutableListOf<ByteArray>()
-        for (i in 0 until numPictureParameterSets) {
-            val bytes = ByteArray(buffer.short.toInt())
-            buffer.get(bytes)
-            pictureParameterSets.add(bytes)
-        }
-
-        return AvcConfigurationRecord(
-            configurationVersion = configurationVersion,
-            avcProfileIndication = avcProfileIndication,
-            profileCompatibility = profileCompatibility,
-            avcLevelIndication = avcLevelIndication,
-            lengthSizeMinusOneWithReserved = lengthSizeMinusOneWithReserved,
-            numOfSequenceParameterSetsWithReserved = numOfSequenceParameterSetsWithReserved,
-            sequenceParameterSets = sequenceParameterSets,
-            pictureParameterSets = pictureParameterSets
-        )
-    }
-
     internal fun allocate(): ByteBuffer {
         var capacity = 5
         sequenceParameterSets?.let {
@@ -186,6 +149,43 @@ data class AvcConfigurationRecord(
         private const val CSD1 = "csd-1"
 
         private var TAG = AvcConfigurationRecord::class.java.simpleName
+
+        fun decode(buffer: ByteBuffer): AvcConfigurationRecord {
+            val configurationVersion = buffer.get()
+            val avcProfileIndication = buffer.get()
+            val profileCompatibility = buffer.get()
+            val avcLevelIndication = buffer.get()
+            val lengthSizeMinusOneWithReserved = buffer.get()
+            val numOfSequenceParameterSetsWithReserved = buffer.get()
+
+            val numOfSequenceParameterSets =
+                numOfSequenceParameterSetsWithReserved.toPositiveInt() and RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS.inv()
+            val sequenceParameterSets = mutableListOf<ByteArray>()
+            for (i in 0 until numOfSequenceParameterSets) {
+                val bytes = ByteArray(buffer.short.toInt())
+                buffer.get(bytes)
+                sequenceParameterSets.add(bytes)
+            }
+
+            val numPictureParameterSets = buffer.get().toPositiveInt()
+            val pictureParameterSets = mutableListOf<ByteArray>()
+            for (i in 0 until numPictureParameterSets) {
+                val bytes = ByteArray(buffer.short.toInt())
+                buffer.get(bytes)
+                pictureParameterSets.add(bytes)
+            }
+
+            return AvcConfigurationRecord(
+                configurationVersion = configurationVersion,
+                avcProfileIndication = avcProfileIndication,
+                profileCompatibility = profileCompatibility,
+                avcLevelIndication = avcLevelIndication,
+                lengthSizeMinusOneWithReserved = lengthSizeMinusOneWithReserved,
+                numOfSequenceParameterSetsWithReserved = numOfSequenceParameterSetsWithReserved,
+                sequenceParameterSets = sequenceParameterSets,
+                pictureParameterSets = pictureParameterSets
+            )
+        }
 
         internal fun create(mediaFormat: MediaFormat): AvcConfigurationRecord {
             // SPS => 0x00,0x00,0x00,0x01,0x67,0x42,0x00,0x29,0x8d,0x8d,0x40,0xa0,0xfd,0x00,0xf0,0x88,0x45,0x38
