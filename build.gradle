@@ -6,6 +6,8 @@ apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
     ext.kotlin_version = '1.6.21'
+    ext.library_group = 'com.github.shogo4405'
+    ext.version_name = "0.9.3"
 
     repositories {
         mavenCentral()
@@ -32,6 +34,7 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+        maven { url "https://jitpack.io" }
     }
 }
 

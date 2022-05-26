@@ -3,33 +3,16 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 
-version = "0.9.3"
-
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     archiveClassifier.set("sources")
 }
 
-buildscript {
-    ext.kotlin_version = '1.6.21'
-
-    repositories {
-        mavenCentral()
-        google()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 android {
-    compileSdkVersion 31
-
+    compileSdkVersion 32
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 32
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
@@ -40,7 +23,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -48,6 +30,22 @@ android {
         }
     }
     productFlavors {
+    }
+    publishing {
+        singleVariant("release")
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = "$library_group"
+                artifactId = "haishinkit"
+                version = "$version_name"
+            }
+        }
     }
 }
 
@@ -83,7 +81,7 @@ publishing {
         maven(MavenPublication) {
             groupId "com.haishinkit"
             artifactId "haishinkit"
-            version "$version"
+            version "$version_name"
             artifact sourceJar
             artifact "$buildDir/outputs/aar/haishinkit-release.aar"
             pom {
