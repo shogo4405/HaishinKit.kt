@@ -117,8 +117,8 @@ dependencies {
 ### Dependencies
 |-|minSdk|Android|Requirements|Status|
 |:----|:----|:----|:-----|:----|
-|com.haishinkit:haishinkit|21+|5|Require|Stable|
-|com.haishinkit:vulkan|26+|8|Optional|Technical preview|
+|haishinkit|21+|5|Require|Stable|
+|vulkan|26+|8|Optional|Technical preview|
 
 ### Android manifest
 ```xml
