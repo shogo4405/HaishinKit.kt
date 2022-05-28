@@ -59,6 +59,14 @@ void ImageStorage::Update(Kernel &kernel, AHardwareBuffer *buffer) {
     AHardwareBuffer_Desc desc;
     AHardwareBuffer_describe(buffer, &desc);
 
+    if (extent.width != desc.width || extent.height != desc.height) {
+        LOGI("expected size is (%d,%d) but actual size is (%d,%d)", extent.width, extent.height,
+             desc.width, desc.height);
+        extent.width = desc.width;
+        extent.height = desc.height;
+        imageCreateInfo.setExtent(vk::Extent3D(extent.width, extent.height, 1));
+    }
+
     image = kernel.device->createImageUnique(
             imageCreateInfo
                     .setInitialLayout(layout)
