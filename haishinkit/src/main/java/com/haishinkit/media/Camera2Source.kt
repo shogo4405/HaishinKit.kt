@@ -3,6 +3,7 @@ package com.haishinkit.media
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.ImageFormat
+import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
@@ -16,7 +17,6 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
-import com.haishinkit.media.camera2.CameraResolver
 import com.haishinkit.net.NetStream
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -54,9 +54,6 @@ class Camera2Source(
             field?.looper?.quitSafely()
             field = value
         }
-    private val resolver: CameraResolver by lazy {
-        CameraResolver(manager)
-    }
     private var session: CameraCaptureSession? = null
         private set(value) {
             field?.close()
@@ -88,7 +85,7 @@ class Camera2Source(
         if (position == null) {
             this.cameraId = DEFAULT_CAMERA_ID
         } else {
-            this.cameraId = resolver.getCameraId(position) ?: DEFAULT_CAMERA_ID
+            this.cameraId = getCameraId(position) ?: DEFAULT_CAMERA_ID
         }
         characteristics = manager.getCameraCharacteristics(cameraId)
         device = null
@@ -104,7 +101,7 @@ class Camera2Source(
      */
     fun switchCamera() {
         val characteristics = characteristics ?: return
-        val facing = resolver.getFacing(characteristics)
+        val facing = getFacing()
         val expect = if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
             CameraCharacteristics.LENS_FACING_BACK
         } else {
@@ -158,7 +155,7 @@ class Camera2Source(
     override fun onOpened(camera: CameraDevice) {
         device = camera
         surfaces.clear()
-        resolution = resolver.getCameraSize(characteristics)
+        resolution = getCameraSize()
         stream?.renderer?.apply {
             imageOrientation = this@Camera2Source.imageOrientation
             createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
@@ -217,6 +214,26 @@ class Camera2Source(
             },
             handler
         )
+    }
+
+    private fun getCameraId(facing: Int): String? {
+        for (id in manager.cameraIdList) {
+            val chars = manager.getCameraCharacteristics(id)
+            if (chars.get(CameraCharacteristics.LENS_FACING) == facing) {
+                return id
+            }
+        }
+        return null
+    }
+
+    private fun getFacing(): Int? {
+        return characteristics?.get(CameraCharacteristics.LENS_FACING)
+    }
+
+    private fun getCameraSize(): Size {
+        val scm = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+        val cameraSizes = scm?.getOutputSizes(SurfaceTexture::class.java) ?: return Size(0, 0)
+        return cameraSizes[0]
     }
 
     companion object {
