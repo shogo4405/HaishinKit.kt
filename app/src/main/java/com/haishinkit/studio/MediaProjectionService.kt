@@ -74,7 +74,6 @@ class MediaProjectionService : Service(), IEventListener {
             getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         stream.attachAudio(AudioRecordSource())
         stream.listener = listener
-        stream.videoEffect = BicubicVideoEffect()
         data?.let {
             val source = MediaProjectionSource(
                 this,
