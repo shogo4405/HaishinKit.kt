@@ -19,20 +19,6 @@ void CommandBuffer::SetUp(Kernel &kernel) {
                     .setQueueFamilyIndex(kernel.queue.queueFamilyIndex)
     );
 
-    auto imagesCount = kernel.swapChain.GetImagesCount();
-    commandBuffers = kernel.device->allocateCommandBuffersUnique(
-            vk::CommandBufferAllocateInfo()
-                    .setPNext(nullptr)
-                    .setCommandPool(commandPool.get())
-                    .setLevel(vk::CommandBufferLevel::ePrimary)
-                    .setCommandBufferCount(imagesCount)
-    );
-
-    framebuffers.resize(imagesCount);
-    for (auto i = 0; i < imagesCount; ++i) {
-        framebuffers[i] = kernel.swapChain.CreateFramebuffer(kernel, i);
-    }
-
     buffers.resize(4);
     const Vertex rotation_0[] = {
             {{-1.f, -1.f}, {0.f, 0.f}},
@@ -72,6 +58,24 @@ void CommandBuffer::SetUp(Kernel &kernel) {
 
     offsets.resize(1);
     offsets[0] = {0};
+
+    Reset(kernel);
+}
+
+void CommandBuffer::Reset(Kernel &kernel) {
+    auto imagesCount = kernel.swapChain.GetImagesCount();
+    commandBuffers = kernel.device->allocateCommandBuffersUnique(
+            vk::CommandBufferAllocateInfo()
+                    .setPNext(nullptr)
+                    .setCommandPool(commandPool.get())
+                    .setLevel(vk::CommandBufferLevel::ePrimary)
+                    .setCommandBufferCount(imagesCount)
+    );
+
+    framebuffers.resize(imagesCount);
+    for (auto i = 0; i < imagesCount; ++i) {
+        framebuffers[i] = kernel.swapChain.CreateFramebuffer(kernel, i);
+    }
 }
 
 void CommandBuffer::TearDown(Kernel &kernel) {

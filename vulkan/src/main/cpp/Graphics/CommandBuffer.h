@@ -24,6 +24,8 @@ namespace Graphics {
 
         void SetUp(Kernel &kernel);
 
+        void Reset(Kernel &kernel);
+
         void TearDown(Kernel &kernel);
 
         vk::CommandBuffer Allocate(Kernel &kernel);

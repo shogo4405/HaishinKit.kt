@@ -316,7 +316,7 @@ void Kernel::OnOrientationChange() {
     device->waitIdle();
     if (swapChain.SetUp(*this, true)) {
         queue.SetImagesCount(*this, swapChain.GetImagesCount());
-        commandBuffer.SetUp(*this);
+        commandBuffer.Reset(*this);
     }
 }
 
