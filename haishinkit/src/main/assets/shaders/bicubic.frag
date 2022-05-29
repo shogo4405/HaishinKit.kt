@@ -1,12 +1,9 @@
-#version 450
-
-// https://stackoverflow.com/questions/13501081/efficient-bicubic-filtering-code-in-glsl
-
+#version 300 es
+#extension GL_OES_EGL_image_external_essl3 : require
 precision mediump float;
-
-layout (binding = 0) uniform sampler2D tex;
-layout (location = 0) in vec2 texcoord;
-layout (location = 0) out vec4 uFragColor;
+in vec2 vTexcoord;
+out vec4 fragColor;
+uniform samplerExternalOES uTexture;
 
 vec4 cubic(float v) {
     vec4 n = vec4(1.0, 2.0, 3.0, 4.0) - v;
@@ -19,7 +16,7 @@ vec4 cubic(float v) {
 }
 
 vec4 textureBicubic(sampler2D tex, vec2 texCoords) {
-    vec2 texSize = textureSize(tex, 0);
+    vec2 texSize = vec2(textureSize(tex, 0));
     vec2 invTexSize = 1.0 / texSize;
 
     texCoords = texCoords * texSize - 0.5;
@@ -51,5 +48,5 @@ vec4 textureBicubic(sampler2D tex, vec2 texCoords) {
 }
 
 void main() {
-    uFragColor = textureBicubic(tex, texcoord);
+    fragColor = textureBicubic(uTexture, vTexcoord);
 }

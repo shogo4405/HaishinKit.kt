@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.opengl.EGL14
 import android.opengl.EGLConfig
+import android.opengl.EGLExt
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Log
@@ -79,6 +80,9 @@ internal class Kernel(
             program = shaderLoader.createProgram(videoEffect.name)
         }
 
+    var version: Int = 0
+        private set
+
     private val matrix = FloatArray(16)
     private val inputSurfaceWindow = WindowSurface()
     private val vertexBuffer = Util.createFloatBuffer(VERTECES)
@@ -113,23 +117,46 @@ internal class Kernel(
 
         display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
         if (display === EGL14.EGL_NO_DISPLAY) {
-            throw RuntimeException()
+            throw RuntimeException("unable to get EGL14 display")
         }
 
         val version = IntArray(2)
         if (!EGL14.eglInitialize(display, version, 0, version, 1)) {
-            throw RuntimeException()
+            throw RuntimeException("unable to initialize EGL14")
         }
 
-        val config = chooseConfig() ?: return
+        var config = chooseConfig(3)
+        if (config != null) {
+            val context = EGL14.eglCreateContext(
+                display,
+                config,
+                EGL14.EGL_NO_CONTEXT,
+                intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE),
+                0
+            )
+            if (EGL14.eglGetError() == EGL14.EGL_SUCCESS) {
+                this.context = context
+                this.version = 3
+            }
+        }
+
+        // fall back to 2.0
+        if (context == EGL14.EGL_NO_CONTEXT) {
+            config = chooseConfig(2)
+            if (config == null) {
+                throw RuntimeException("unable to find a suitable EGLConfig")
+            }
+            context = EGL14.eglCreateContext(
+                display,
+                config,
+                EGL14.EGL_NO_CONTEXT,
+                intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE),
+                0
+            )
+            this.version = 2
+        }
+
         inputSurfaceWindow.config = config
-        context = EGL14.eglCreateContext(
-            display,
-            config,
-            EGL14.EGL_NO_CONTEXT,
-            CONTEXT_ATTRIBUTES,
-            0
-        )
         Util.checkGlError("eglCreateContext")
         EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, context)
 
@@ -333,8 +360,16 @@ internal class Kernel(
         }
     }
 
-    private fun chooseConfig(): EGLConfig? {
-        val attributes: IntArray = CONFIG_ATTRIBUTES_WITH_CONTEXT
+    private fun chooseConfig(version: Int): EGLConfig? {
+        var renderableType = EGL14.EGL_OPENGL_ES2_BIT
+
+        if (2 < version) {
+            renderableType = renderableType or EGLExt.EGL_OPENGL_ES3_BIT_KHR
+        }
+
+        val attributes = CONFIG_ATTRIBUTES_WITH_CONTEXT
+        attributes[9] = renderableType
+
         val configs: Array<EGLConfig?> = arrayOfNulls(1)
         val numConfigs = IntArray(1)
         if (!EGL14.eglChooseConfig(
@@ -348,17 +383,16 @@ internal class Kernel(
                 0
             )
         ) {
+            Log.e(TAG, "unable to find RGB8888 EGLConfig($version)")
             return null
         }
+
         return configs[0]
     }
 
     companion object {
         private val TAG = Kernel::class.java.toString()
         private const val EGL_RECORDABLE_ANDROID: Int = 0x3142
-
-        private val CONTEXT_ATTRIBUTES =
-            intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
 
         private val CONFIG_ATTRIBUTES_WITH_CONTEXT = intArrayOf(
             EGL14.EGL_RED_SIZE, 8,
