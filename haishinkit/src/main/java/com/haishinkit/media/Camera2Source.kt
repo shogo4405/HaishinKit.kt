@@ -89,7 +89,7 @@ class Camera2Source(
         }
         characteristics = manager.getCameraCharacteristics(cameraId)
         device = null
-        manager.openCamera(cameraId, this, null)
+        manager.openCamera(cameraId, this, handler)
     }
 
     fun close() {
@@ -100,7 +100,6 @@ class Camera2Source(
      * Switches an using camera front or back.
      */
     fun switchCamera() {
-        val characteristics = characteristics ?: return
         val facing = getFacing()
         val expect = if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
             CameraCharacteristics.LENS_FACING_BACK
@@ -177,10 +176,15 @@ class Camera2Source(
 
     override fun onError(camera: CameraDevice, error: Int) {
         device = null
-        Log.w(TAG, error.toString())
     }
 
     private fun createCaptureSession(surface: Surface) {
+        if (Thread.currentThread() != handler?.looper?.thread) {
+            handler?.post {
+                createCaptureSession(surface)
+            }
+            return
+        }
         if (!surfaces.contains(surface)) {
             surfaces.add(surface)
         }

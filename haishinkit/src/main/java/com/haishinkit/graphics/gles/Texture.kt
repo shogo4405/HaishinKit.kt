@@ -16,6 +16,9 @@ internal class Texture {
                 surfaceTexture = SurfaceTexture(textures[0]).apply {
                     setDefaultBufferSize(width, height)
                 }
+                surface = surfaceTexture?.let {
+                    Surface(it)
+                }
             }
         }
     }
@@ -25,14 +28,7 @@ internal class Texture {
     var extent: Size = Size(0, 0)
         private set
     var surface: Surface? = null
-        get() {
-            if (field == null) {
-                surfaceTexture?.let {
-                    field = Surface(it)
-                }
-            }
-            return field
-        }
+        private set
     private var surfaceTexture: SurfaceTexture? = null
 
     fun isValid(width: Int, height: Int): Boolean {
