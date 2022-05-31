@@ -1,5 +1,5 @@
 package com.haishinkit.graphics.filter
 
-class MonochromeVideoEffect(
+data class MonochromeVideoEffect(
     override val name: String = "monochrome"
 ) : VideoEffect

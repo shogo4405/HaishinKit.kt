@@ -1,5 +1,5 @@
 package com.haishinkit.graphics.filter
 
-class BicubicVideoEffect(
+data class BicubicVideoEffect(
     override val name: String = "bicubic"
 ) : VideoEffect
