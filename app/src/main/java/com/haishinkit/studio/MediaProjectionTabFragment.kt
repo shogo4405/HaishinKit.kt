@@ -20,9 +20,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.haishinkit.graphics.filter.BicubicVideoEffect
-import com.haishinkit.graphics.filter.BilinearVideoEffect
-import com.haishinkit.graphics.filter.DefaultVideoEffect
+import com.haishinkit.graphics.effect.BicubicVideoEffect
+import com.haishinkit.graphics.effect.BilinearVideoEffect
+import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.graphics.effect.LanczosVideoEffect
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 
@@ -64,6 +65,15 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                     )
                 )
                 filter.text = "Bilinear"
+            } else if (filter.text == "Bilinear") {
+                messenger?.send(
+                    Message.obtain(
+                        null,
+                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                        LanczosVideoEffect()
+                    )
+                )
+                filter.text = "Lanczos"
             } else {
                 messenger?.send(
                     Message.obtain(

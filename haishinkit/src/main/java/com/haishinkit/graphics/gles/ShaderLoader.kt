@@ -3,40 +3,20 @@ package com.haishinkit.graphics.gles
 import android.content.res.AssetManager
 import android.opengl.GLES20
 import android.util.Log
+import com.haishinkit.graphics.effect.VideoEffect
+import com.haishinkit.graphics.glsl.Layout
 import java.io.FileNotFoundException
+import java.lang.reflect.Method
 
 internal class ShaderLoader {
     var assetManager: AssetManager? = null
 
-    data class Program(
-        val id: Int = INVALID_VALUE,
-        val vertexShader: Int = INVALID_VALUE,
-        val fragmentShaper: Int = INVALID_VALUE,
-        val positionHandle: Int = INVALID_VALUE,
-        val texCoordHandle: Int = INVALID_VALUE,
-        val textureHandle: Int = INVALID_VALUE,
-        val mvpMatrixHandle: Int = INVALID_VALUE,
-    ) {
-        init {
-            GLES20.glEnableVertexAttribArray(positionHandle)
-            GLES20.glEnableVertexAttribArray(texCoordHandle)
-        }
-
-        fun dispose() {
-            GLES20.glDetachShader(id, vertexShader)
-            GLES20.glDeleteShader(vertexShader)
-            GLES20.glDetachShader(id, fragmentShaper)
-            GLES20.glDeleteShader(fragmentShaper)
-            GLES20.glDeleteProgram(id)
-        }
-    }
-
-    fun createProgram(name: String): Program? {
-        val vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, name)
+    fun createProgram(videoEffect: VideoEffect): Program? {
+        val vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, videoEffect.name)
         if (vertexShader == 0) {
             return null
         }
-        val fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, name)
+        val fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, videoEffect.name)
         if (fragmentShader == 0) {
             return null
         }
@@ -65,8 +45,27 @@ internal class ShaderLoader {
             GLES20.glGetAttribLocation(program, "aPosition"),
             GLES20.glGetAttribLocation(program, "aTexcoord"),
             GLES20.glGetAttribLocation(program, "uTexture"),
-            GLES20.glGetUniformLocation(program, "uMVPMatrix")
+            GLES20.glGetUniformLocation(program, "uMVPMatrix"),
+            handlers(program, videoEffect)
         )
+    }
+
+    private fun handlers(program: Int, videoEffect: VideoEffect): Map<Int, Method> {
+        val clazz = videoEffect::class.java
+        val layouts = mutableMapOf<Layout, Method>()
+        for (method in clazz.methods) {
+            val layout = method.getAnnotation(Layout::class.java) ?: continue
+            layouts[layout] = clazz.getDeclaredMethod(method.name.split("$")[0])
+        }
+        val locations = mutableMapOf<Layout, Int>()
+        for (layout in layouts) {
+            locations[layout.key] = GLES20.glGetUniformLocation(program, layout.key.name)
+        }
+        val handlers = mutableMapOf<Int, Method>()
+        for (location in locations) {
+            handlers[location.value] = layouts[location.key]!!
+        }
+        return handlers
     }
 
     private fun readFile(shaderType: Int, source: String?): String {
@@ -107,7 +106,6 @@ internal class ShaderLoader {
     }
 
     companion object {
-        private const val INVALID_VALUE = 0
         private val TAG = ShaderLoader::class.java.simpleName
 
         private const val GL_CREATE_PROGRAM = "glCreateProgram"

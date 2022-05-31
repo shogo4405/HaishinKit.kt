@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.VideoGravity
-import com.haishinkit.graphics.filter.VideoEffect
+import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.net.NetStream
 
 interface HkView {

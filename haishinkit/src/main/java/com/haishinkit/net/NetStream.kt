@@ -9,8 +9,8 @@ import android.os.Build
 import android.util.Log
 import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.VideoCodec
-import com.haishinkit.graphics.filter.DefaultVideoEffect
-import com.haishinkit.graphics.filter.VideoEffect
+import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
 import com.haishinkit.view.HkView

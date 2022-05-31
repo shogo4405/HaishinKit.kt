@@ -1,5 +1,6 @@
 package com.haishinkit.graphics
 
+import com.haishinkit.graphics.gles.GlThreadPixelTransform
 import kotlin.reflect.KClass
 
 class PixelTransformFactory {

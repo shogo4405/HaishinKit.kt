@@ -15,8 +15,8 @@ import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
-import com.haishinkit.graphics.filter.DefaultVideoEffect
-import com.haishinkit.graphics.filter.VideoEffect
+import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.lang.Utilize
 import com.haishinkit.util.aspectRatio
 import com.haishinkit.util.swap
@@ -70,14 +70,14 @@ internal class Kernel(
     var videoEffect: VideoEffect = DefaultVideoEffect.shared
         set(value) {
             field = value
-            program = shaderLoader.createProgram(videoEffect.name)
+            program = shaderLoader.createProgram(videoEffect)
         }
 
     var assetManager: AssetManager? = null
         set(value) {
             field = value
             shaderLoader.assetManager = assetManager
-            program = shaderLoader.createProgram(videoEffect.name)
+            program = shaderLoader.createProgram(videoEffect)
         }
 
     var version: Int = 0
@@ -106,7 +106,7 @@ internal class Kernel(
         shaderLoader
     }
 
-    private var program: ShaderLoader.Program? = null
+    private var program: Program? = null
         set(value) {
             field?.dispose()
             field = value
@@ -199,6 +199,8 @@ internal class Kernel(
         val program = program ?: return
 
         GLES20.glUseProgram(program.id)
+
+        program.bind(videoEffect)
 
         GLES20.glUniformMatrix4fv(program.mvpMatrixHandle, 1, false, matrix, 0)
         Util.checkGlError("glUniformMatrix4fv")

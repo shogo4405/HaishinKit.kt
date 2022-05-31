@@ -12,7 +12,7 @@ import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
-import com.haishinkit.graphics.filter.VideoEffect
+import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.net.NetStream
 
 class HkTextureView(context: Context, attributes: AttributeSet) :

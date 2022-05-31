@@ -4,7 +4,7 @@ import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.util.Size
 import android.view.Surface
-import com.haishinkit.graphics.filter.VideoEffect
+import com.haishinkit.graphics.effect.VideoEffect
 
 /**
  * The PixelTransform interface provides some graphics operations.

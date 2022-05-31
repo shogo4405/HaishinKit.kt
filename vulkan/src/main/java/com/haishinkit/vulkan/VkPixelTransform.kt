@@ -9,8 +9,8 @@ import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
-import com.haishinkit.graphics.filter.DefaultVideoEffect
-import com.haishinkit.graphics.filter.VideoEffect
+import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.graphics.effect.VideoEffect
 import java.nio.ByteBuffer
 
 class VkPixelTransform : PixelTransform {

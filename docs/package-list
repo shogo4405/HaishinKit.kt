@@ -8,11 +8,11 @@ com.haishinkit.event
 com.haishinkit.flv
 com.haishinkit.flv.tag
 com.haishinkit.graphics
-com.haishinkit.graphics.filter
+com.haishinkit.graphics.effect
+com.haishinkit.graphics.glsl
 com.haishinkit.iso
 com.haishinkit.lang
 com.haishinkit.media
-com.haishinkit.media.camera2
 com.haishinkit.metric
 com.haishinkit.net
 com.haishinkit.rtmp
