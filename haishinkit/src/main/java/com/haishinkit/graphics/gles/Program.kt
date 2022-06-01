@@ -1,8 +1,11 @@
 package com.haishinkit.graphics.gles
 
 import android.opengl.GLES20
+import android.util.Log
 import com.haishinkit.graphics.effect.VideoEffect
 import java.lang.reflect.Method
+import java.nio.FloatBuffer
+import java.nio.IntBuffer
 
 internal data class Program(
     val id: Int = INVALID_VALUE,
@@ -16,6 +19,7 @@ internal data class Program(
 ) {
     companion object {
         private const val INVALID_VALUE = 0
+        private const val TAG = "Program"
     }
 
     init {
@@ -28,8 +32,26 @@ internal data class Program(
             val value = handler.value.invoke(visualEffect)
             when (true) {
                 (value is Int) -> GLES20.glUniform1i(handler.key, value)
+                (value is IntBuffer) -> {
+                    when (value.remaining()) {
+                        1 -> GLES20.glUniform1iv(handler.key, 1, value)
+                        2 -> GLES20.glUniform2iv(handler.key, 1, value)
+                        3 -> GLES20.glUniform3iv(handler.key, 1, value)
+                        4 -> GLES20.glUniform4iv(handler.key, 1, value)
+                    }
+                }
                 (value is Float) -> GLES20.glUniform1f(handler.key, value)
-                else -> {}
+                (value is FloatBuffer) -> {
+                    when (value.remaining()) {
+                        1 -> GLES20.glUniform1fv(handler.key, 1, value)
+                        2 -> GLES20.glUniform2fv(handler.key, 1, value)
+                        3 -> GLES20.glUniform3fv(handler.key, 1, value)
+                        4 -> GLES20.glUniform4fv(handler.key, 1, value)
+                    }
+                }
+                else -> {
+                    Log.e(TAG, "value type not supported")
+                }
             }
         }
     }

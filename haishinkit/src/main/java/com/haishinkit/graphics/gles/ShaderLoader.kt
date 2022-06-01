@@ -63,7 +63,9 @@ internal class ShaderLoader {
         }
         val handlers = mutableMapOf<Int, Method>()
         for (location in locations) {
-            handlers[location.value] = layouts[location.key]!!
+            layouts[location.key]?.let {
+                handlers[location.value] = it
+            }
         }
         return handlers
     }
