@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.haishinkit.studio">
+    package="com.haishinkit.app">
 
     <uses-sdk tools:overrideLibrary="com.haishinkit.vulkan" />
 
@@ -29,12 +29,12 @@
                 android:resource="@xml/filepaths" />
         </provider>
         <service
-            android:name=".MediaProjectionService"
+            android:name="com.haishinkit.app.MediaProjectionService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.haishinkit.app.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:label="@string/app_name">

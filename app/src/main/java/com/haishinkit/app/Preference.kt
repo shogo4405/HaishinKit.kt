@@ -1,4 +1,4 @@
-package com.haishinkit.studio
+package com.haishinkit.app
 
 data class Preference(var rtmpURL: String, var streamName: String) {
     companion object {

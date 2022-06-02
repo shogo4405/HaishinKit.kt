@@ -1,4 +1,4 @@
-package com.haishinkit.studio
+package com.haishinkit.app
 
 import android.os.Build
 import android.os.Bundle
@@ -6,8 +6,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.haishinkit.graphics.PixelTransformFactory
-import com.haishinkit.vulkan.VkPixelTransform
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var fragment: Fragment? = null

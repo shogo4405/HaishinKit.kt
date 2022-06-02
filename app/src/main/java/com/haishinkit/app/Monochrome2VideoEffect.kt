@@ -1,4 +1,4 @@
-package com.haishinkit.studio
+package com.haishinkit.app
 
 import com.haishinkit.graphics.effect.VideoEffect
 

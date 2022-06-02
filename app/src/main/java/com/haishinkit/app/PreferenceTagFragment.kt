@@ -1,4 +1,4 @@
-package com.haishinkit.studio
+package com.haishinkit.app
 
 import android.annotation.SuppressLint
 import android.graphics.Color
