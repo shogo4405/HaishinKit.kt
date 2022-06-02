@@ -1,6 +1,6 @@
 # HaishinKit.kt
 [![GitHub license](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.kt/master/LICENSE.md)
-[![](https://jitpack.io/v/shogo4405/HaishinKit.kt.svg)](https://jitpack.io/#shogo4405/HaishinKit.kt)
+[![](https://jitpack.io/v/shogo4405/HaishinKit~kt.svg)](https://jitpack.io/#shogo4405/HaishinKit~kt)
 
 * Camera and Microphone streaming library via RTMP for Android.
 * [API Documentation](https://shogo4405.github.io/HaishinKit.kt/)
@@ -28,7 +28,7 @@
   - [x] Native (RTMP over SSL/TSL)
 
 ### Filter
-- [x] Monochrome
+- [Table Of Filters](https://shogo4405.github.io/HaishinKit.kt/haishinkit/com.haishinkit.graphics.effect/index.html)
 
 ### Sources
 - [x] Camera with Camera2 api
@@ -109,8 +109,8 @@ allprojects {
 }
 
 dependencies {
-  implementation 'com.github.shogo4405:HaishinKit.kt:haishinkit:x.x.x'
-  implementation 'com.github.shogo4405:HaishinKit.kt:vulkan:x.x.x'
+  implementation 'com.github.shogo4405:HaishinKit~kt:haishinkit:x.x.x'
+  implementation 'com.github.shogo4405:HaishinKit~kt:vulkan:x.x.x'
 }
 ```
 
