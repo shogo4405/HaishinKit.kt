@@ -1,13 +1,16 @@
 package com.haishinkit.graphics.effect
 
-import com.haishinkit.graphics.glsl.Layout
+import com.haishinkit.graphics.glsl.Uniform
 
-data class LanczosVideoEffect(
+/**
+ * An object that provides a resampling filter by lanczos algorithm.
+ */
+class LanczosVideoEffect(
     override val name: String = "lanczos"
 ) : VideoEffect {
-    @Layout(name = "uTexelWidth")
+    @Uniform(name = "uTexelWidth")
     var texelWidth = 1f
 
-    @Layout(name = "uTexelHeight")
+    @Uniform(name = "uTexelHeight")
     var texelHeight = 1f
 }

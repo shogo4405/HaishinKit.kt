@@ -1,6 +1,9 @@
 package com.haishinkit.graphics.effect
 
-data class DefaultVideoEffect private constructor(
+/**
+ * An object that provides a no effect.
+ */
+class DefaultVideoEffect private constructor(
     override val name: String = "default"
 ) : VideoEffect {
 

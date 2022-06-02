@@ -1,5 +1,8 @@
 package com.haishinkit.graphics.effect
 
-data class BicubicVideoEffect(
+/**
+ * An object that provides a resampling filter by bicubic algorithm.
+ */
+class BicubicVideoEffect(
     override val name: String = "bicubic"
 ) : VideoEffect

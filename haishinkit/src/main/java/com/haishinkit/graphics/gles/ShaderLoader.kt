@@ -4,7 +4,7 @@ import android.content.res.AssetManager
 import android.opengl.GLES20
 import android.util.Log
 import com.haishinkit.graphics.effect.VideoEffect
-import com.haishinkit.graphics.glsl.Layout
+import com.haishinkit.graphics.glsl.Uniform
 import java.io.FileNotFoundException
 import java.lang.reflect.Method
 
@@ -52,12 +52,12 @@ internal class ShaderLoader {
 
     private fun handlers(program: Int, videoEffect: VideoEffect): Map<Int, Method> {
         val clazz = videoEffect::class.java
-        val layouts = mutableMapOf<Layout, Method>()
+        val layouts = mutableMapOf<Uniform, Method>()
         for (method in clazz.methods) {
-            val layout = method.getAnnotation(Layout::class.java) ?: continue
-            layouts[layout] = clazz.getDeclaredMethod(method.name.split("$")[0])
+            val uniform = method.getAnnotation(Uniform::class.java) ?: continue
+            layouts[uniform] = clazz.getDeclaredMethod(method.name.split("$")[0])
         }
-        val locations = mutableMapOf<Layout, Int>()
+        val locations = mutableMapOf<Uniform, Int>()
         for (layout in layouts) {
             locations[layout.key] = GLES20.glGetUniformLocation(program, layout.key.name)
         }

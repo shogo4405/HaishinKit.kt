@@ -1,5 +1,8 @@
 package com.haishinkit.graphics.effect
 
-data class MonochromeVideoEffect(
+/**
+ * An object that provides a monochrome effect.
+ */
+class MonochromeVideoEffect(
     override val name: String = "monochrome"
 ) : VideoEffect
