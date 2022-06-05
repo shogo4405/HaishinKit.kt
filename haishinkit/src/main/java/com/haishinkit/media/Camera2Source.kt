@@ -27,6 +27,26 @@ class Camera2Source(
     private val context: Context,
     override var utilizable: Boolean = false
 ) : VideoSource, CameraDevice.StateCallback() {
+    /**
+     * The Listener interface is the primary method for handling events.
+     */
+    interface Listener {
+        /**
+         * Tells the receiver to error.
+         */
+        fun onError(camera: CameraDevice, error: Int)
+
+        /**
+         * Tells the receiver to create a capture request.
+         */
+        fun onCreateCaptureRequest(builder: CaptureRequest.Builder)
+    }
+
+    /**
+     * Specifies the listener indicates the [Camera2Source.Listener] are currently being evaluated.
+     */
+    var listener: Listener? = null
+
     var device: CameraDevice? = null
         private set(value) {
             session = null
@@ -175,6 +195,7 @@ class Camera2Source(
     }
 
     override fun onError(camera: CameraDevice, error: Int) {
+        listener?.onError(camera, error)
         device = null
     }
 
@@ -200,6 +221,7 @@ class Camera2Source(
         requests.clear()
         requests.add(
             device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
+                listener?.onCreateCaptureRequest(this)
                 surfaces.forEach {
                     addTarget(it)
                 }

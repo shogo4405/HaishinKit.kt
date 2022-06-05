@@ -6,6 +6,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.haishinkit.graphics.PixelTransformFactory
+import com.haishinkit.app.R
+import com.haishinkit.vulkan.VkPixelTransform
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var fragment: Fragment? = null
@@ -14,7 +17,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // PixelTransformFactory.registerPixelTransform(VkPixelTransform::class)
+            PixelTransformFactory.registerPixelTransform(VkPixelTransform::class)
         }
 
         setContentView(R.layout.activity_main)

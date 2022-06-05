@@ -29,12 +29,12 @@
                 android:resource="@xml/filepaths" />
         </provider>
         <service
-            android:name="com.haishinkit.app.MediaProjectionService"
+            android:name=".MediaProjectionService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
         <activity
-            android:name="com.haishinkit.app.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:label="@string/app_name">

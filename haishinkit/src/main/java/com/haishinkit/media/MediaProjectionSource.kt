@@ -164,6 +164,20 @@ class MediaProjectionSource(
         isRunning.set(false)
     }
 
+    /**
+     * Register a listener to receive notifications about when the MediaProjection changes state.
+     */
+    fun registerCallback(callback: MediaProjection.Callback, handler: Handler?) {
+        mediaProjection.registerCallback(callback, handler)
+    }
+
+    /**
+     * Unregister a MediaProjection listener.
+     */
+    fun unregisterCallback(callback: MediaProjection.Callback) {
+        mediaProjection.unregisterCallback(callback)
+    }
+
     companion object {
         const val DEFAULT_DISPLAY_NAME = "MediaProjectionSourceDisplay"
         private const val VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT = 128
