@@ -4,6 +4,7 @@ import android.content.res.AssetManager
 import android.opengl.GLES20
 import android.util.Log
 import com.haishinkit.graphics.effect.VideoEffect
+import com.haishinkit.graphics.glsl.RequirementsDirective
 import com.haishinkit.graphics.glsl.Uniform
 import java.io.FileNotFoundException
 import java.lang.reflect.Method
@@ -12,11 +13,11 @@ internal class ShaderLoader {
     var assetManager: AssetManager? = null
 
     fun createProgram(videoEffect: VideoEffect): Program? {
-        val vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, videoEffect.name)
+        val vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, videoEffect)
         if (vertexShader == 0) {
             return null
         }
-        val fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, videoEffect.name)
+        val fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, videoEffect)
         if (fragmentShader == 0) {
             return null
         }
@@ -70,8 +71,28 @@ internal class ShaderLoader {
         return handlers
     }
 
-    private fun readFile(shaderType: Int, source: String?): String {
-        var fileName = "shaders/" + (source ?: "default.")
+    private fun loadShader(shaderType: Int, videoEffect: VideoEffect): Int {
+        var suffix = ""
+        var shader = GLES20.glCreateShader(shaderType)
+        Util.checkGlError("glCreateShader type=$shaderType")
+        if (shaderType == GLES20.GL_VERTEX_SHADER && videoEffect::class.java.getAnnotation(RequirementsDirective::class.java) != null) {
+            suffix = "-300"
+        }
+        GLES20.glShaderSource(shader, readFile(shaderType, videoEffect.name, suffix))
+        GLES20.glCompileShader(shader)
+        val compiled = IntArray(1)
+        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0)
+        if (compiled[0] == 0) {
+            Log.e(TAG, "Could not compile shader $shaderType:")
+            Log.e(TAG, " " + GLES20.glGetShaderInfoLog(shader))
+            GLES20.glDeleteShader(shader)
+            shader = 0
+        }
+        return shader
+    }
+
+    private fun readFile(shaderType: Int, source: String, suffix: String = ""): String {
+        var fileName = "shaders/$source$suffix"
         fileName += if (shaderType == GLES20.GL_VERTEX_SHADER) {
             ".vert"
         } else {
@@ -84,27 +105,11 @@ internal class ShaderLoader {
             inputStream.read(buffer)
             return String(buffer)
         } catch (e: FileNotFoundException) {
-            return readFile(shaderType, "default")
+            return readFile(shaderType, "default", suffix)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             return ""
         }
-    }
-
-    private fun loadShader(shaderType: Int, source: String?): Int {
-        var shader = GLES20.glCreateShader(shaderType)
-        Util.checkGlError("glCreateShader type=$shaderType")
-        GLES20.glShaderSource(shader, readFile(shaderType, source))
-        GLES20.glCompileShader(shader)
-        val compiled = IntArray(1)
-        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0)
-        if (compiled[0] == 0) {
-            Log.e(TAG, "Could not compile shader $shaderType:")
-            Log.e(TAG, " " + GLES20.glGetShaderInfoLog(shader))
-            GLES20.glDeleteShader(shader)
-            shader = 0
-        }
-        return shader
     }
 
     companion object {
