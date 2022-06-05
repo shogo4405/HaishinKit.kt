@@ -113,7 +113,7 @@ class CameraTabFragment : Fragment(), IEventListener {
                 }?.createChooserIntent()?.apply {
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     resolveActivity(requireContext().packageManager)?.also {
-                        startActivity(this);
+                        startActivity(this)
                     }
                 }
             }

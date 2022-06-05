@@ -9,6 +9,7 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_android.h"
 #include "DynamicLoader.h"
+#include "Util.h"
 #include <android/native_window.h>
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
@@ -334,9 +335,127 @@ vk::SurfaceFormatKHR Kernel::GetSurfaceFormat() {
     throw std::runtime_error("failed to find suitable surface format!");
 }
 
-void *Kernel::ReadPixels() {
+void Kernel::ReadPixels(void *buffer) {
     if (nativeWindow == nullptr) {
         throw std::runtime_error("java.lang.IllegalStateException");
     }
-    return nullptr;
+
+    auto imageExtent = swapChain.GetImageExtent();
+    auto srcImage = swapChain.GetImage(queue.GetCurrentFrame());
+    auto dstImage = device->createImageUnique(
+            vk::ImageCreateInfo()
+                    .setExtent({imageExtent.width, imageExtent.height, 1})
+                    .setImageType(vk::ImageType::e2D)
+                    .setArrayLayers(1)
+                    .setMipLevels(1)
+                    .setFormat(vk::Format::eR8G8B8A8Unorm)
+                    .setInitialLayout(vk::ImageLayout::eUndefined)
+                    .setSamples(vk::SampleCountFlagBits::e1)
+                    .setTiling(vk::ImageTiling::eLinear)
+                    .setUsage(
+                            vk::ImageUsageFlagBits::eTransferDst)
+    );
+    auto memoryRequirements = device->getImageMemoryRequirements(dstImage.get());
+    auto dstImageMemory = device->allocateMemory(
+            vk::MemoryAllocateInfo()
+                    .setMemoryTypeIndex(FindMemoryType(memoryRequirements.memoryTypeBits,
+                                                       vk::MemoryPropertyFlagBits::eHostVisible |
+                                                       vk::MemoryPropertyFlagBits::eHostCoherent))
+                    .setAllocationSize(memoryRequirements.size)
+    );
+    device->bindImageMemory(dstImage.get(), dstImageMemory, 0);
+
+    Submit([&dstImage, &srcImage, &imageExtent](vk::CommandBuffer commandBuffer) {
+        commandBuffer.pipelineBarrier(
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::DependencyFlags(),
+                nullptr,
+                nullptr,
+                Util::CreateImageMemoryBarrier(
+                        vk::ImageLayout::eUndefined,
+                        vk::ImageLayout::eTransferDstOptimal)
+                        .setImage(dstImage.get())
+                        .setSubresourceRange({vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1})
+        );
+
+        commandBuffer.pipelineBarrier(
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::DependencyFlags(),
+                nullptr,
+                nullptr,
+                Util::CreateImageMemoryBarrier(
+                        vk::ImageLayout::ePresentSrcKHR,
+                        vk::ImageLayout::eTransferSrcOptimal)
+                        .setImage(srcImage)
+                        .setSubresourceRange({vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1})
+        );
+
+        auto subresource = vk::ImageSubresourceLayers()
+                .setAspectMask(vk::ImageAspectFlagBits::eColor)
+                .setMipLevel(0)
+                .setBaseArrayLayer(0)
+                .setLayerCount(1);
+
+        commandBuffer.copyImage(
+                srcImage,
+                vk::ImageLayout::eTransferSrcOptimal,
+                dstImage.get(),
+                vk::ImageLayout::eTransferDstOptimal,
+                vk::ImageCopy()
+                        .setExtent(
+                                {imageExtent.width, imageExtent.height, 1})
+                        .setDstSubresource(subresource)
+                        .setDstOffset({0, 0, 0})
+                        .setSrcSubresource(subresource)
+                        .setSrcOffset({0, 0, 0})
+        );
+
+        commandBuffer.pipelineBarrier(
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::DependencyFlags(),
+                nullptr,
+                nullptr,
+                Util::CreateImageMemoryBarrier(
+                        vk::ImageLayout::eTransferDstOptimal,
+                        vk::ImageLayout::eUndefined)
+                        .setImage(dstImage.get())
+                        .setSubresourceRange({vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1})
+        );
+
+        commandBuffer.pipelineBarrier(
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::DependencyFlags(),
+                nullptr,
+                nullptr,
+                Util::CreateImageMemoryBarrier(
+                        vk::ImageLayout::eTransferSrcOptimal,
+                        vk::ImageLayout::ePresentSrcKHR)
+                        .setImage(srcImage)
+                        .setSubresourceRange({vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1})
+        );
+    });
+
+    const char *data;
+    device->mapMemory(dstImageMemory, 0, memoryRequirements.size, vk::MemoryMapFlagBits(),
+                      (void **) &data);
+
+    auto imageSubresource = vk::SubresourceLayout();
+    auto imageSubresourceLayout = vk::ImageSubresource().setAspectMask(
+            vk::ImageAspectFlagBits::eColor);
+    device->getImageSubresourceLayout(dstImage.get(), &imageSubresourceLayout, &imageSubresource);
+    data += imageSubresource.offset;
+
+    for (uint32_t y = 0; y < imageExtent.height; ++y) {
+        auto *dst = reinterpret_cast<unsigned char *> ((char *) buffer + imageExtent.width * 4 * y);
+        auto *src = reinterpret_cast<unsigned char *> ((char *) data +
+                                                       imageSubresource.rowPitch * y);
+        memcpy(dst, src, 4 * imageExtent.width);
+    }
+
+    device->unmapMemory(dstImageMemory);
+    device->free(dstImageMemory);
 }

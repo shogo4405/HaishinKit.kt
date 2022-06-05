@@ -68,7 +68,7 @@ namespace Graphics {
 
         vk::SurfaceFormatKHR GetSurfaceFormat();
 
-        void *ReadPixels();
+        void ReadPixels(void *buffer);
 
     private:
         const std::string applicationName = "HaishinKit";

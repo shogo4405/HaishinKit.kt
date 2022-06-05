@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.haishinkit.studio"
+        applicationId "com.haishinkit.app"
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 1

@@ -136,6 +136,9 @@ class VkPixelTransform : PixelTransform {
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
         val bitmap =
             Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
+        val byteBuffer = ByteBuffer.allocateDirect(imageExtent.width * imageExtent.height * 4)
+        nativeReadPixels(byteBuffer)
+        bitmap.copyPixelsFromBuffer(byteBuffer)
         lambda(bitmap)
     }
 
@@ -164,6 +167,6 @@ class VkPixelTransform : PixelTransform {
     private external fun nativeSetRotatesWithContent(expectedOrientationSynchronize: Boolean)
     private external fun nativeSetFrameRate(frameRate: Int)
     private external fun nativeSetVideoEffect(videoEffect: VideoEffect)
-    private external fun nativeReadPixels(): ByteBuffer
+    private external fun nativeReadPixels(buffer: ByteBuffer)
     private external fun nativeDispose()
 }

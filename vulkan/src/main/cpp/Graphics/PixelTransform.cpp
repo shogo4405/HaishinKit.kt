@@ -182,8 +182,8 @@ void PixelTransform::SetVideoEffect(VideoEffect *newVideoEffect) {
     }
 }
 
-void *PixelTransform::ReadPixels() {
-    return kernel->ReadPixels();
+void PixelTransform::ReadPixels(void *data) {
+    kernel->ReadPixels(data);
 }
 
 extern "C"
@@ -324,10 +324,13 @@ Java_com_haishinkit_vulkan_VkPixelTransform_nativeSetVideoEffect(JNIEnv *env, jo
     });
 }
 
-JNIEXPORT jobject JNICALL
-Java_com_haishinkit_vulkan_VkPixelTransform_nativeReadPixels(JNIEnv *env, jobject thiz) {
+JNIEXPORT void JNICALL
+Java_com_haishinkit_vulkan_VkPixelTransform_nativeReadPixels(JNIEnv *env, jobject thiz,
+                                                             jobject byteBuffer) {
     Unmanaged<PixelTransform>::FromOpaque(env, thiz)->Safe([=](PixelTransform *self) {
-        return self->ReadPixels();
+        void *buffer = env->GetDirectBufferAddress(byteBuffer);
+        self->ReadPixels(buffer);
+        return nullptr;
     });
 }
 }

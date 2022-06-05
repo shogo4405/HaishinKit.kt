@@ -14,6 +14,8 @@ namespace Graphics {
 
         uint32_t queueFamilyIndex{};
 
+        int32_t GetCurrentFrame();
+
         void SetImagesCount(Kernel &kernel, int32_t imagesCount);
 
         void SetUp(Kernel &kernel, uint32_t queueFamilyIndex);

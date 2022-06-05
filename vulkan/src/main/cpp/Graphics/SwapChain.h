@@ -24,6 +24,8 @@ namespace Graphics {
 
         void SetSurfaceRotation(SurfaceRotation surfaceRotation);
 
+        vk::Image GetImage(int index);
+
         bool IsInvalidate() const;
 
         bool SetUp(Kernel &kernel, bool requestRecreate);

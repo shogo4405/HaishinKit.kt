@@ -3,6 +3,10 @@
 
 using namespace Graphics;
 
+int32_t Queue::GetCurrentFrame() {
+    return currentFrame;
+}
+
 void Queue::SetImagesCount(Kernel &kernel, int32_t imagesCount) {
     currentFrame = 0;
     images.resize(imagesCount);

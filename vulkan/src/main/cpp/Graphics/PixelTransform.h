@@ -49,7 +49,7 @@ namespace Graphics {
 
         bool HasFeatures();
 
-        void *ReadPixels();
+        void ReadPixels(void *buffer);
 
         std::string InspectDevices();
 

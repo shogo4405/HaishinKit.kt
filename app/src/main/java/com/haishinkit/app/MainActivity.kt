@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.haishinkit.graphics.PixelTransformFactory
-import com.haishinkit.app.R
 import com.haishinkit.vulkan.VkPixelTransform
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {

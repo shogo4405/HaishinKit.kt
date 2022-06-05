@@ -3,6 +3,10 @@
 
 using namespace Graphics;
 
+vk::Image SwapChain::GetImage(int index) {
+    return images[index];
+}
+
 void SwapChain::SetImageExtent(int32_t width, int height) {
     if (info.imageExtent.width == width && info.imageExtent.height == height) {
         return;
