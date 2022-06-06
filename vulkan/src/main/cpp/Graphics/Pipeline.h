@@ -13,9 +13,9 @@ namespace Graphics {
     struct ImageStorage;
 
     struct Pipeline {
-        vk::UniqueDescriptorSetLayout descriptorSetLayout;
+        std::vector<vk::DescriptorSetLayout> descriptorSetLayouts;
         vk::UniqueDescriptorPool descriptorPool;
-        std::vector<vk::UniqueDescriptorSet> descriptorSets;
+        std::vector<vk::DescriptorSet> descriptorSets;
         vk::UniquePipelineLayout pipelineLayout;
         vk::UniquePipelineCache pipelineCache;
         vk::UniquePipeline pipeline;
@@ -24,7 +24,7 @@ namespace Graphics {
 
         void TearDown(Kernel &kernel);
 
-        void UpdateDescriptorSets(Kernel &kernel, ImageStorage &storage);
+        void UpdateDescriptorSets(Kernel &kernel, ImageStorage &storage, VideoEffect *videoEffect);
     };
 }
 

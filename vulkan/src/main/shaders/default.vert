@@ -1,5 +1,7 @@
 #version 450
 
+precision mediump float;
+
 layout (push_constant) uniform PushConstants {
     mat4 mvpMatrix;
 } pushConstants;

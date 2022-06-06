@@ -177,6 +177,10 @@ void PixelTransform::OnFrame(long frameTimeNanos) {
 void PixelTransform::SetVideoEffect(VideoEffect *newVideoEffect) {
     std::lock_guard<std::mutex> lock(mutex);
     videoEffect = newVideoEffect;
+    // TODO
+    if (kernel->device) {
+        videoEffect->SetUp(*kernel);
+    }
     for (auto &texture: textures) {
         texture->SetVideoEffect(newVideoEffect);
     }

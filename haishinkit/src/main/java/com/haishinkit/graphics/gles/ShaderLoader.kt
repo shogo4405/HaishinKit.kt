@@ -75,7 +75,10 @@ internal class ShaderLoader {
         var suffix = ""
         var shader = GLES20.glCreateShader(shaderType)
         Util.checkGlError("glCreateShader type=$shaderType")
-        if (shaderType == GLES20.GL_VERTEX_SHADER && videoEffect::class.java.getAnnotation(RequirementsDirective::class.java) != null) {
+        if (shaderType == GLES20.GL_VERTEX_SHADER && videoEffect::class.java.getAnnotation(
+                RequirementsDirective::class.java
+            ) != null
+        ) {
             suffix = "-300"
         }
         GLES20.glShaderSource(shader, readFile(shaderType, videoEffect.name, suffix))

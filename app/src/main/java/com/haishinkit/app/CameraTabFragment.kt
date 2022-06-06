@@ -21,6 +21,8 @@ import androidx.fragment.app.Fragment
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
+import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.graphics.effect.LanczosVideoEffect
 import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
@@ -125,7 +127,7 @@ class CameraTabFragment : Fragment(), IEventListener {
                 stream.videoEffect = MonochromeVideoEffect()
                 filter.text = "Mono"
             } else {
-                stream.videoEffect = null
+                stream.videoEffect = DefaultVideoEffect.shared
                 filter.text = "Normal"
             }
         }

@@ -103,7 +103,7 @@ void Texture::UpdateAt(Kernel &kernel, uint32_t currentFrame, AHardwareBuffer *b
     auto storage = &storages[currentFrame];
     storage->Update(kernel, buffer);
     storage->GetDescriptorImageInfo().setSampler(sampler.get());
-    kernel.pipeline.UpdateDescriptorSets(kernel, *storage);
+    kernel.pipeline.UpdateDescriptorSets(kernel, *storage, videoEffect);
 }
 
 void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
@@ -277,8 +277,8 @@ void Texture::LayoutAt(Kernel &kernel, uint32_t currentFrame) {
             vk::PipelineBindPoint::eGraphics,
             kernel.pipeline.pipelineLayout.get(),
             0,
-            1,
-            &kernel.pipeline.descriptorSets[0].get(),
+            kernel.pipeline.descriptorSets.size(),
+            kernel.pipeline.descriptorSets.data(),
             0,
             nullptr);
 

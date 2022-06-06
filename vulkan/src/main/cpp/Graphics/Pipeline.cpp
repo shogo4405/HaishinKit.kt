@@ -8,7 +8,10 @@
 using namespace Graphics;
 
 void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEffect *videoEffect) {
-    descriptorSetLayout = kernel.device->createDescriptorSetLayoutUnique(
+    descriptorSetLayouts.clear();
+    descriptorSetLayouts.shrink_to_fit();
+
+    descriptorSetLayouts.push_back(kernel.device->createDescriptorSetLayout(
             vk::DescriptorSetLayoutCreateInfo()
                     .setBindingCount(1)
                     .setBindings(
@@ -20,35 +23,67 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEf
                                     .setImmutableSamplers(samplers)
                                     .setStageFlags(vk::ShaderStageFlagBits::eFragment)
                     )
+    ));
+
+    std::vector<vk::DescriptorSetLayoutBinding> descriptorSetLayoutBinding = videoEffect->GetDescriptorSetLayoutBindings();
+    if (!descriptorSetLayoutBinding.empty()) {
+        descriptorSetLayouts.push_back(kernel.device->createDescriptorSetLayout(
+                vk::DescriptorSetLayoutCreateInfo()
+                        .setBindingCount(descriptorSetLayoutBinding.size())
+                        .setBindings(descriptorSetLayoutBinding)
+        ));
+    }
+
+    std::vector<vk::DescriptorPoolSize> descriptorPoolSizes;
+    descriptorPoolSizes.push_back(
+            vk::DescriptorPoolSize()
+                    .setType(vk::DescriptorType::eCombinedImageSampler)
+                    .setDescriptorCount(1)
     );
+
+    if (!descriptorSetLayoutBinding.empty()) {
+        descriptorPoolSizes.push_back(
+                vk::DescriptorPoolSize()
+                        .setType(vk::DescriptorType::eUniformBuffer)
+                        .setDescriptorCount(descriptorSetLayoutBinding.size())
+        );
+    }
 
     descriptorPool = kernel.device->createDescriptorPoolUnique(
             vk::DescriptorPoolCreateInfo()
-                    .setMaxSets(1)
-                    .setPoolSizes(
-                            vk::DescriptorPoolSize()
-                                    .setType(vk::DescriptorType::eCombinedImageSampler)
-                                    .setDescriptorCount(1))
+                    .setMaxSets(descriptorSetLayouts.size())
+                    .setPoolSizes(descriptorPoolSizes)
     );
 
-    descriptorSets = kernel.device->allocateDescriptorSetsUnique(
+    descriptorSets = kernel.device->allocateDescriptorSets(
             vk::DescriptorSetAllocateInfo()
-                    .setDescriptorSetCount(1)
+                    .setDescriptorSetCount(descriptorSetLayouts.size())
                     .setDescriptorPool(descriptorPool.get())
-                    .setSetLayouts(descriptorSetLayout.get())
+                    .setSetLayouts(descriptorSetLayouts)
     );
 
     pipelineLayout = kernel.device->createPipelineLayoutUnique(
             vk::PipelineLayoutCreateInfo()
-                    .setSetLayoutCount(1)
-                    .setSetLayouts(
-                            descriptorSetLayout.get())
+                    .setSetLayoutCount(descriptorSetLayouts.size())
+                    .setSetLayouts(descriptorSetLayouts)
                     .setPushConstantRangeCount(1)
                     .setPPushConstantRanges(&vk::PushConstantRange()
                             .setOffset(0)
                             .setStageFlags(vk::ShaderStageFlagBits::eVertex)
                             .setSize(sizeof(Graphics::PushConstants)))
     );
+
+    std::vector<vk::DescriptorBufferInfo> bufferInfo = videoEffect->GetDescriptorBufferInfo();
+    if (!bufferInfo.empty()) {
+        kernel.device->updateDescriptorSets(
+                vk::WriteDescriptorSet()
+                        .setDstSet(descriptorSets[1])
+                        .setDescriptorCount(1)
+                        .setDescriptorType(vk::DescriptorType::eUniformBuffer)
+                        .setBufferInfo(bufferInfo),
+                nullptr
+        );
+    }
 
     pipelineCache = kernel.device->createPipelineCacheUnique(vk::PipelineCacheCreateInfo());
 
@@ -155,19 +190,19 @@ void Pipeline::SetUp(Kernel &kernel, std::vector<vk::Sampler> &samplers, VideoEf
 void Pipeline::TearDown(Kernel &kernel) {
 }
 
-void Pipeline::UpdateDescriptorSets(Kernel &kernel, ImageStorage &storage) {
+void
+Pipeline::UpdateDescriptorSets(Kernel &kernel, ImageStorage &storage, VideoEffect *videoEffect) {
     std::vector<vk::DescriptorImageInfo> images(1);
     for (auto i = 0; i < images.size(); ++i) {
         images[i] = storage.GetDescriptorImageInfo();
     }
-    for (auto &descriptorSet: descriptorSets) {
-        kernel.device->updateDescriptorSets(
-                vk::WriteDescriptorSet()
-                        .setDstSet(descriptorSet.get())
-                        .setDescriptorCount(1)
-                        .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-                        .setImageInfo(images),
-                nullptr
-        );
-    }
+
+    kernel.device->updateDescriptorSets(
+            vk::WriteDescriptorSet()
+                    .setDstSet(descriptorSets[0])
+                    .setDescriptorCount(1)
+                    .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+                    .setImageInfo(images),
+            nullptr
+    );
 }
