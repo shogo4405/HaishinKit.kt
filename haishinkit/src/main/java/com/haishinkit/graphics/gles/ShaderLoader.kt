@@ -8,6 +8,7 @@ import com.haishinkit.graphics.glsl.RequirementsDirective
 import com.haishinkit.graphics.glsl.Uniform
 import java.io.FileNotFoundException
 import java.lang.reflect.Method
+import java.util.Locale
 
 internal class ShaderLoader {
     var assetManager: AssetManager? = null
@@ -52,21 +53,14 @@ internal class ShaderLoader {
     }
 
     private fun handlers(program: Int, videoEffect: VideoEffect): Map<Int, Method> {
-        val clazz = videoEffect::class.java
-        val layouts = mutableMapOf<Uniform, Method>()
-        for (method in clazz.methods) {
-            val uniform = method.getAnnotation(Uniform::class.java) ?: continue
-            layouts[uniform] = clazz.getDeclaredMethod(method.name.split("$")[0])
-        }
-        val locations = mutableMapOf<Uniform, Int>()
-        for (layout in layouts) {
-            locations[layout.key] = GLES20.glGetUniformLocation(program, layout.key.name)
-        }
         val handlers = mutableMapOf<Int, Method>()
-        for (location in locations) {
-            layouts[location.key]?.let {
-                handlers[location.value] = it
-            }
+        val clazz = videoEffect::class.java
+        for (method in clazz.methods) {
+            method.getAnnotation(Uniform::class.java) ?: continue
+            val propertyName = method.name.split("$")[0].substring(3, 4).lowercase(Locale.ROOT) +
+                method.name.split("$")[0].substring(4)
+            val location = GLES20.glGetUniformLocation(program, propertyName)
+            handlers[location] = clazz.getDeclaredMethod(method.name.split("$")[0])
         }
         return handlers
     }

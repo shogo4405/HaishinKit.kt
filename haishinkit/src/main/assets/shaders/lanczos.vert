@@ -3,8 +3,8 @@ uniform mediump mat4 uMVPMatrix;
 attribute mediump vec4 aPosition;
 attribute mediump vec2 aTexcoord;
 
-uniform mediump float uTexelWidth;
-uniform mediump float uTexelHeight;
+uniform mediump float texelWidth;
+uniform mediump float texelHeight;
 
 varying vec2 centerTextureCoordinate;
 varying vec2 oneStepLeftTextureCoordinate;
@@ -16,11 +16,12 @@ varying vec2 twoStepsRightTextureCoordinate;
 varying vec2 threeStepsRightTextureCoordinate;
 varying vec2 fourStepsRightTextureCoordinate;
 
+// https://github.com/BradLarson/GPUImage/blob/master/framework/Source/GPUImageLanczosResamplingFilter.m
 void main() {
     gl_Position = uMVPMatrix * aPosition;
 
-    float texelWidthOffset = 1.0 / uTexelWidth;
-    float texelHeightOffset = 1.0 / uTexelHeight;
+    float texelWidthOffset = 1.0 / texelWidth;
+    float texelHeightOffset = 1.0 / texelHeight;
 
     vec2 firstOffset = vec2(texelWidthOffset, texelHeightOffset);
     vec2 secondOffset = vec2(2.0 * texelWidthOffset, 2.0 * texelHeightOffset);
