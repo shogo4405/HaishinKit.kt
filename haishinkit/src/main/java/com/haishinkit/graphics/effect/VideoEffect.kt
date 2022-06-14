@@ -31,6 +31,6 @@ interface VideoEffect {
                 val uniform = method.getAnnotation(Uniform::class.java) ?: continue
                 values[uniform.binding] = javaClass.getMethod(method.name.split("$")[0])
             }
-            return values.values.toTypedArray()
+            return MutableList(values.size) { index -> values[index]!! }.toTypedArray()
         }
 }

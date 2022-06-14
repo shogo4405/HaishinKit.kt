@@ -100,6 +100,23 @@ void VideoEffect::SetUp(Kernel &kernel) {
                             .setBuffer(buffer)
                             .setOffset(0)
                             .setRange(sizeof(float)));
+        } else if (cTypeString == "class [F") {
+            const auto cMethod = env->GetStringUTFChars(name, nullptr);
+            const auto values = (jfloatArray) env->CallObjectMethod(
+                    object,
+                    env->GetMethodID(env->GetObjectClass(object),
+                                     cMethod,
+                                     "()[F"));
+
+            const auto value = env->GetFloatArrayElements(values, nullptr);
+            const auto methodCount = env->GetArrayLength(values);
+            vk::Buffer buffer = CreateBuffer(kernel, (void *) &value,
+                                             sizeof(float) * methodCount);
+            descriptorBufferInfo.push_back(
+                    vk::DescriptorBufferInfo()
+                            .setBuffer(buffer)
+                            .setOffset(0)
+                            .setRange(sizeof(float) * methodCount));
         }
     }
 }
