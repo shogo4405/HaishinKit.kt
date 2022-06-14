@@ -1,4 +1,4 @@
-# HaishinKit.kt
+# HaishinKit for Android, [iOS, macOS and tvOS](https://github.com/shogo4405/HaishinKit.swift).
 [![GitHub license](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.kt/master/LICENSE.md)
 [![](https://jitpack.io/v/shogo4405/HaishinKit~kt.svg)](https://jitpack.io/#shogo4405/HaishinKit~kt)
 
