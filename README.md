@@ -6,15 +6,15 @@
 * [API Documentation](https://shogo4405.github.io/HaishinKit.kt/)
 
 ## Communication
-* If you need help with making LiveStreaming requests using HaishinKit, use a GitHub issue with **Bug report template**
+* If you need help with making LiveStreaming requests using HaishinKit, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.kt/discussions) with **Q&A**.
+* If you'd like to discuss a feature request, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.kt/discussions) with **Idea**
+* If you met a HaishinKit's bug🐛, use a [GitHub Issue](https://github.com/shogo4405/HaishinKit.kt/issues) with **Bug report template**
   - The trace level log is very useful. Please set `Logboard.with(HaishinKitIdentifier).level = .trace`. 
   - If you don't use an issue template. I will immediately close the your issue without a comment.
-  - Issuesの言語は、日本語が分かる方は日本語でお願いします！
-* If you'd like to discuss a feature request, use a GitHub issue with **Feature request template**.
-* If you want to support e-mail based communication without GitHub issue.
-  - Consulting fee is [$50](https://www.paypal.me/shogo4405/50USD)/1 incident. I'm able to response a few days.
 * If you **want to contribute**, submit a pull request!
-* [Discord](https://discord.gg/8nkshPnanr)でCommunityを開設しました。スマートフォンでのカメラ、マイク、ライブストリーミング。グラフィックなどのコミニティになればと思います。
+* If you want to support e-mail based communication without GitHub.
+  - Consulting fee is [$50](https://www.paypal.me/shogo4405/50USD)/1 incident. I'm able to response a few days.
+* 日本語が分かる方は日本語でお願いします！
 
 ## Features
 
