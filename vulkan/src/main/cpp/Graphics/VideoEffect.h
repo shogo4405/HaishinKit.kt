@@ -4,6 +4,7 @@
 #include <string>
 #include <jni.h>
 #include "Kernel.h"
+#include "../Binding/VisualEffect.h"
 
 namespace Graphics {
     class VideoEffect {
@@ -23,10 +24,7 @@ namespace Graphics {
     private:
         static vk::Buffer CreateBuffer(Kernel &kernel, void *data, vk::DeviceSize size);
 
-        std::string name;
-        JNIEnv *env;
-        jobject object;
-        jobject ref;
+        Binding::VisualEffect *binding;
         std::vector<vk::DescriptorBufferInfo> descriptorBufferInfo;
         std::vector<vk::DescriptorSetLayoutBinding> descriptorSetLayoutBindings;
     };

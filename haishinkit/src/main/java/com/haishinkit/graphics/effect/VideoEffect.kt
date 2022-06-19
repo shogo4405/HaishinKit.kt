@@ -20,7 +20,6 @@ interface VideoEffect {
                 values.add(uniform)
             }
             values.sortBy { uniform -> uniform.binding }
-            methods
             return values.toTypedArray()
         }
 

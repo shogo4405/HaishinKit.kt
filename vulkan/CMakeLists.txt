@@ -46,6 +46,12 @@ add_library(
         src/main/cpp/Graphics/Feature/PhysicalDeviceFeature.cpp
         src/main/cpp/Graphics/Feature/PhysicalDeviceSamplerYcbcrConversionFeature.cpp
         src/main/cpp/Graphics/Feature/DebugUtilsMessengerFeature.cpp
+        src/main/cpp/Binding/Object.cpp
+        src/main/cpp/Binding/Method.cpp
+        src/main/cpp/Binding/Uniform.cpp
+        src/main/cpp/Binding/Class.cpp
+        src/main/cpp/Binding/ShaderStage.cpp
+        src/main/cpp/Binding/VisualEffect.cpp
 )
 
 # Searches for a specified prebuilt library and stores the path as a
