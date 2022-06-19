@@ -22,20 +22,19 @@ import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.effect.DefaultVideoEffect
-import com.haishinkit.graphics.effect.LanczosVideoEffect
 import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.view.HkView
+import com.haishinkit.view.NetStreamDrawable
 import java.io.File
 import java.io.FileOutputStream
 
 class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var cameraView: HkView
+    private lateinit var cameraView: NetStreamDrawable
     private lateinit var cameraSource: Camera2Source
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -18,7 +18,7 @@ import com.haishinkit.net.NetStream
 @Suppress("unused")
 class HkSurfaceView(context: Context, attributes: AttributeSet) :
     SurfaceView(context, attributes),
-    HkView {
+    NetStreamDrawable {
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity
         set(value) {

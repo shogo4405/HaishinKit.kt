@@ -17,7 +17,7 @@ import com.haishinkit.net.NetStream
 
 class HkTextureView(context: Context, attributes: AttributeSet) :
     TextureView(context, attributes),
-    HkView,
+    NetStreamDrawable,
     TextureView.SurfaceTextureListener {
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity

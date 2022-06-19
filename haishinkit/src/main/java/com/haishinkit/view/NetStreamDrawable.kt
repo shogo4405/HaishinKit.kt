@@ -7,7 +7,7 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.net.NetStream
 
-interface HkView {
+interface NetStreamDrawable {
     /**
      * Specifies the videoGravity how the displays the visual content.
      */

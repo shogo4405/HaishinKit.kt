@@ -13,7 +13,7 @@ import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
-import com.haishinkit.view.HkView
+import com.haishinkit.view.NetStreamDrawable
 
 /**
  * The NetStream class is the foundation of a RtmpStream.
@@ -45,7 +45,7 @@ abstract class NetStream {
 
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()
-    internal var renderer: HkView? = null
+    internal var renderer: NetStreamDrawable? = null
     internal var audio: AudioSource? = null
     internal var video: VideoSource? = null
 
