@@ -55,7 +55,7 @@ class CameraTabFragment : Fragment(), IEventListener {
         }
         connection = RtmpConnection()
         stream = RtmpStream(connection)
-        stream.attachAudio(AudioRecordSource())
+        stream.attachAudio(AudioRecordSource(requireContext()))
 
         cameraSource = Camera2Source(requireContext())
         stream.attachVideo(cameraSource)
