@@ -15,7 +15,7 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: gradle
-        submodules: recursive
+        submodules: true
     - name: setup Ruby
       uses: ruby/setup-ruby@v1
       with:
