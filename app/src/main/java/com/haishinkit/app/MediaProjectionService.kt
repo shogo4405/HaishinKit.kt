@@ -80,7 +80,7 @@ class MediaProjectionService : Service(), IEventListener {
         }
         val mediaProjectionManager =
             getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        stream.attachAudio(AudioRecordSource())
+        stream.attachAudio(AudioRecordSource(this))
         stream.listener = listener
         data?.let {
             val source = MediaProjectionSource(

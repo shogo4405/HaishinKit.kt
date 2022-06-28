@@ -1,10 +1,14 @@
 package com.haishinkit.media
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import com.haishinkit.BuildConfig
 import com.haishinkit.net.NetStream
 import java.nio.ByteBuffer
@@ -14,7 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * An audio source that captures a microphone by the AudioRecord api.
  */
-class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource {
+class AudioRecordSource(
+    private val context: Context,
+    override var utilizable: Boolean = false
+) : AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
@@ -34,6 +41,13 @@ class AudioRecordSource(override var utilizable: Boolean = false) : AudioSource 
 
     var audioRecord: AudioRecord? = null
         get() {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return null
+            }
             if (field == null) {
                 if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
                     field = AudioRecord.Builder()
