@@ -5,19 +5,19 @@
 * Camera and Microphone streaming library via RTMP for Android.
 * [API Documentation](https://shogo4405.github.io/HaishinKit.kt/)
 
-## Communication
-* If you need help with making LiveStreaming requests using HaishinKit, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.kt/discussions) with **Q&A**.
-* If you'd like to discuss a feature request, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.kt/discussions) with **Idea**
-* If you met a HaishinKit's bug🐛, use a [GitHub Issue](https://github.com/shogo4405/HaishinKit.kt/issues) with **Bug report template**
+## 💬 Communication
+* If you need help with making LiveStreaming requests using HaishinKit, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.swift/discussions) with **Q&A**.
+* If you'd like to discuss a feature request, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.swift/discussions) with **Idea**
+* If you met a HaishinKit's bug🐛, use a [GitHub Issue](https://github.com/shogo4405/HaishinKit.swift/issues) with **Bug report template**
   - The trace level log is very useful. Please set `Logboard.with(HaishinKitIdentifier).level = .trace`. 
   - If you don't use an issue template. I will immediately close the your issue without a comment.
 * If you **want to contribute**, submit a pull request!
 * If you want to support e-mail based communication without GitHub.
   - Consulting fee is [$50](https://www.paypal.me/shogo4405/50USD)/1 incident. I'm able to response a few days.
+* [Discord chatroom](https://discord.com/invite/8nkshPnanr).
 * 日本語が分かる方は日本語でお願いします！
 
-## Features
-
+## 🎨 Features
 ### RTMP
 - [x] Authentication
 - [x] Publish (H264/AAC) 
@@ -62,25 +62,25 @@ stream.videoSettings.bitrate = 160 * 1000 // The bitRate of video output.
 stream.videoSettings.IFrameInterval = 2 // The key-frmae interval
 ```
 
-## Architecture Overview
+## 🌏 Architecture Overview
 ### Publishing Feature
 <p align="center">
   <img width="732" alt="" src="https://user-images.githubusercontent.com/810189/164874912-3cdc0dde-2cfb-4c94-9404-eeb2ff6091ac.png">
 </p>
 
-## License
-BSD-3-Clause
+## 🐾 Examples
+Examples project are available for Android.
+- [x] Camera and microphone publish.
+- [x] RTMP Playback  
+```sh
+git clone https://github.com/shogo4405/HaishinKit.kt.git
+cd HaishinKit.kt
+git submodule update --init
 
-## Donation
-Paypal
- - https://www.paypal.me/shogo4405
-
-Bitcoin
-```txt
-3FnjC3CmwFLTzNY5WPNz4LjTo1uxGNozUR
+# Open [Android Studio] -> [Open] ...
 ```
 
-## Usage
+## 🔧 Usage
 
 ### Gradle dependency
 **GitHub Packages**
@@ -236,16 +236,7 @@ class Monochrome2VideoEffect(
 stream.videoEffect = Monochrome2VideoEffect()
 ```
 
-## FAQ
-### How can I run example project?
-```sh
-git clone https://github.com/shogo4405/HaishinKit.kt.git
-cd HaishinKit.kt
-git submodule update --init
-
-# Open [Android Studio] -> [Open] ...
-```
-
+## 📓 FAQ
 ### How can I use the vulkan module with Android 5 project?
 #### AndroidManifest.xml
 ```xml
@@ -259,7 +250,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 }
 ```
 
-## RTML URL Format
+### RTMP URL Format
 * rtmp://server-ip-address[:port]/application/[appInstance]/[prefix:[path1[/path2/]]]streamName
   - [] mark is an Optional.
   ```
@@ -272,6 +263,15 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
   rtmpStream.publish("streamName")
   ```
 
-## Related Project
+### Related Project
 * HaishinKit.swift - Camera and Microphone streaming library via RTMP, HLS for iOS, macOS and tvOS.
   * https://github.com/shogo4405/HaishinKit.swift
+
+## 💠 Donation
+- GitHub Sponsors
+  - https://github.com/sponsors/shogo4405
+- Paypal
+  - https://www.paypal.me/shogo4405
+
+## 📜 License
+BSD-3-Clause
