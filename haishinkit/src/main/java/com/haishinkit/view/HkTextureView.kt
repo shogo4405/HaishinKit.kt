@@ -8,6 +8,7 @@ import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.view.WindowManager
+import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
@@ -15,9 +16,17 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.net.NetStream
 
-class HkTextureView(context: Context, attributes: AttributeSet) :
-    TextureView(context, attributes),
-    NetStreamDrawable,
+/**
+ * A view that displays a video content of a NetStream object which uses [TextureView].
+ */
+class HkTextureView
+@JvmOverloads
+constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+    defStyleRes: Int = 0
+) : TextureView(context, attrs, defStyleAttr, defStyleRes), NetStreamDrawable,
     TextureView.SurfaceTextureListener {
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity

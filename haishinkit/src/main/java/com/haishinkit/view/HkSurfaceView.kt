@@ -8,6 +8,7 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
+import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
@@ -15,10 +16,18 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.net.NetStream
 
-@Suppress("unused")
-class HkSurfaceView(context: Context, attributes: AttributeSet) :
-    SurfaceView(context, attributes),
-    NetStreamDrawable {
+/**
+ * A view that displays a video content of a NetStream object which uses [SurfaceView].
+ */
+class HkSurfaceView
+@JvmOverloads
+constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+    defStyleRes: Int = 0
+) : SurfaceView(context, attrs, defStyleAttr, defStyleRes), NetStreamDrawable {
+
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity
         set(value) {
