@@ -8,7 +8,6 @@ import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.view.WindowManager
-import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
