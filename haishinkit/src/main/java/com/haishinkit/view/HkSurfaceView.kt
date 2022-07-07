@@ -63,9 +63,9 @@ constructor(
 
     private var stream: NetStream? = null
         set(value) {
-            field?.renderer = null
+            field?.drawable = null
             field = value
-            field?.renderer = this
+            field?.drawable = this
         }
 
     init {

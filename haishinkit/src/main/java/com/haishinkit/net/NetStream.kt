@@ -39,13 +39,14 @@ abstract class NetStream {
     var videoEffect: VideoEffect? = null
         set(value) {
             videoCodec.pixelTransform.videoEffect = value ?: DefaultVideoEffect.shared
-            renderer?.videoEffect = value ?: DefaultVideoEffect.shared
+            drawable?.videoEffect = value ?: DefaultVideoEffect.shared
             field = value
         }
 
+    var drawable: NetStreamDrawable? = null
+
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()
-    internal var renderer: NetStreamDrawable? = null
     internal var audio: AudioSource? = null
     internal var video: VideoSource? = null
 
@@ -90,7 +91,7 @@ abstract class NetStream {
         audioCodec.dispose()
         video?.tearDown()
         videoCodec.dispose()
-        renderer?.dispose()
+        drawable?.dispose()
     }
 
     internal fun createAudioTrack(mediaFormat: MediaFormat): AudioTrack {

@@ -88,7 +88,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                         val byteArray = it.firstOrNull() ?: return@let
                         val byteBuffer = ByteBuffer.wrap(byteArray)
                         val sequenceParameterSet = SequenceParameterSet.decode(byteBuffer)
-                        stream.renderer?.createInputSurface(
+                        stream.drawable?.createInputSurface(
                             sequenceParameterSet.videoWidth,
                             sequenceParameterSet.videoHeight,
                             ImageFormat.YUV_420_888

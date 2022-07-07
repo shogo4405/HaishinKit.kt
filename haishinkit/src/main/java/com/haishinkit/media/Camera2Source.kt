@@ -175,7 +175,7 @@ class Camera2Source(
         device = camera
         surfaces.clear()
         resolution = getCameraSize()
-        stream?.renderer?.apply {
+        stream?.drawable?.apply {
             imageOrientation = this@Camera2Source.imageOrientation
             createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
                 createCaptureSession(it)
