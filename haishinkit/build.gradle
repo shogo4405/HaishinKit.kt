@@ -9,10 +9,10 @@ task sourceJar(type: Jar) {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.version_name}\""
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
