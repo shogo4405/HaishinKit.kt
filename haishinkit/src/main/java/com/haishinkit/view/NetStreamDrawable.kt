@@ -34,6 +34,11 @@ interface NetStreamDrawable {
     var isRotatesWithContent: Boolean
 
     /**
+     * Specifies the deviceOrientation that is current phone device orientation.
+     */
+    var deviceOrientation: Int
+
+    /**
      * Attaches a video stream to the view.
      */
     fun attachStream(stream: NetStream?)

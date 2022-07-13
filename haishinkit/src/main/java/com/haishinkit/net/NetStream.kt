@@ -43,6 +43,16 @@ abstract class NetStream {
             field = value
         }
 
+    /**
+     * Specifies the deviceOrientation that is current phone device orientation.
+     */
+    var deviceOrientation: Int = 0
+        set(value) {
+            videoCodec.pixelTransform.deviceOrientation = value
+            drawable?.deviceOrientation = value
+            field = value
+        }
+
     var drawable: NetStreamDrawable? = null
 
     internal val audioCodec = AudioCodec()
