@@ -57,6 +57,12 @@ constructor(
             pixelTransform.isRotatesWithContent = value
         }
 
+    override var deviceOrientation: Int
+        get() = pixelTransform.deviceOrientation
+        set(value) {
+            pixelTransform.deviceOrientation = value
+        }
+
     private val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create()
     }
@@ -85,8 +91,7 @@ constructor(
             ) {
                 pixelTransform.imageExtent = Size(width, height)
                 (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
-                    pixelTransform.deviceOrientation = it
-                    stream?.videoCodec?.pixelTransform?.deviceOrientation = it
+                    stream?.deviceOrientation = it
                 }
             }
 
