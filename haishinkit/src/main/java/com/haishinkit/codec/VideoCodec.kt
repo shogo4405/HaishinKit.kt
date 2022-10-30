@@ -2,6 +2,7 @@ package com.haishinkit.codec
 
 import android.content.res.AssetManager
 import android.media.MediaCodecInfo
+import android.media.MediaCodec
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
@@ -78,7 +79,7 @@ class VideoCodec : Codec(MIME) {
             field = value
             if (FeatureUtil.isEnabled(FeatureUtil.FEATURE_BITRATE_CHANGE) && isRunning.get()) {
                 val bundle = Bundle().apply {
-                    putInt(android.media.MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
+                    putInt(MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
                 }
                 codec?.setParameters(bundle)
             }
@@ -123,7 +124,7 @@ class VideoCodec : Codec(MIME) {
      */
     var colorFormat = DEFAULT_COLOR_FORMAT
 
-    override var codec: android.media.MediaCodec?
+    override var codec: MediaCodec?
         get() = super.codec
         set(value) {
             if (value == null) {
@@ -167,7 +168,7 @@ class VideoCodec : Codec(MIME) {
         }
     }
 
-    override fun configure(codec: android.media.MediaCodec) {
+    override fun configure(codec: MediaCodec) {
         super.configure(codec)
         if (mode == Mode.ENCODE) {
             pixelTransform.imageExtent = Size(width, height)

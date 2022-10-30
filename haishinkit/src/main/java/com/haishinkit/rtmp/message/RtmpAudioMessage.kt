@@ -7,6 +7,7 @@ import com.haishinkit.flv.FlvAudioCodec
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
+import android.media.MediaCodec
 
 internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
     RtmpMessage(TYPE_AUDIO, pool) {
@@ -83,7 +84,7 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
     fun toFlags(): Int {
         return when (data?.get(0)) {
             FlvAacPacketType.SEQ -> {
-                android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG
+                MediaCodec.BUFFER_FLAG_CODEC_CONFIG
             }
             else -> {
                 0

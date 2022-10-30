@@ -1,6 +1,7 @@
 package com.haishinkit.rtmp.message
 
 import android.graphics.ImageFormat
+import android.media.MediaCodec
 import android.util.Log
 import androidx.core.util.Pools
 import com.haishinkit.flv.FlvAvcPacketType
@@ -129,11 +130,11 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
 
     fun toFlags(): Int {
         if (frame == FlvFlameType.KEY) {
-            return android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME
+            return MediaCodec.BUFFER_FLAG_KEY_FRAME
         }
         return when (data?.get(0)) {
             FlvAvcPacketType.SEQ -> {
-                android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG
+                MediaCodec.BUFFER_FLAG_CODEC_CONFIG
             }
             else -> {
                 0
