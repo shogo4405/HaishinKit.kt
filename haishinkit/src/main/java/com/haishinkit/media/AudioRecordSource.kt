@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import com.haishinkit.BuildConfig
 import com.haishinkit.net.NetStream
 import java.nio.ByteBuffer
-import java.util.Arrays
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -26,8 +25,6 @@ class AudioRecordSource(
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
 
-    @Volatile
-    var muted = false
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
 
@@ -74,7 +71,7 @@ class AudioRecordSource(
             return field
         }
 
-    var currentPresentationTimestamp = DEFAULT_TIMESTAMP
+    override var currentPresentationTimestamp = DEFAULT_TIMESTAMP
         private set
 
     private var encoding = DEFAULT_ENCODING
@@ -109,25 +106,9 @@ class AudioRecordSource(
         isRunning.set(false)
     }
 
-    override fun onInputBufferAvailable(codec: android.media.MediaCodec, index: Int) {
-        try {
-            if (!isRunning.get()) return
-            val inputBuffer = codec.getInputBuffer(index) ?: return
-            val result = read(inputBuffer)
-            if (0 <= result) {
-                codec.queueInputBuffer(index, 0, result, currentPresentationTimestamp, 0)
-            }
-        } catch (e: IllegalStateException) {
-            Log.w(TAG, e)
-        }
-    }
-
-    private fun read(audioBuffer: ByteBuffer): Int {
-        val result = audioRecord?.read(audioBuffer, sampleCount * 2) ?: -1
+    override fun read(byteBuffer: ByteBuffer): Int {
+        val result = audioRecord?.read(byteBuffer, sampleCount * 2) ?: -1
         if (0 <= result) {
-            if (muted) {
-                Arrays.fill(audioBuffer.array(), audioBuffer.position(), result, 0.toByte())
-            }
             currentPresentationTimestamp += timestamp(result / 2)
         } else {
             val error = when (result) {

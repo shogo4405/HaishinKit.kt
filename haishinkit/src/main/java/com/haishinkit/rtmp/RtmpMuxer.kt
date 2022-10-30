@@ -22,9 +22,7 @@ import com.haishinkit.rtmp.message.RtmpVideoMessage
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class RtmpMuxer(private val stream: RtmpStream) :
-    Running,
-    BufferController.Listener,
+internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferController.Listener,
     Codec.Listener {
     override var isRunning = AtomicBoolean(false)
 
@@ -34,16 +32,19 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             stream.videoCodec.mode = value
             field = value
         }
+
     var hasAudio: Boolean
         get() = mediaLink.hasAudio
         set(value) {
             mediaLink.hasAudio = value
         }
+
     var hasVideo: Boolean
         get() = mediaLink.hasVideo
         set(value) {
             mediaLink.hasVideo = value
         }
+
     var bufferTime = BufferController.DEFAULT_BUFFER_TIME
         set(value) {
             audioBufferController.bufferTime = bufferTime
@@ -64,7 +65,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     private val mediaLink: MediaLink by lazy {
         MediaLink(stream.audioCodec, stream.videoCodec)
     }
-
+    private var noSignalBuffer = ByteBuffer.allocateDirect(0)
     private val audioBufferController: BufferController<RtmpAudioMessage> by lazy {
         val controller = BufferController<RtmpAudioMessage>("audio")
         controller.bufferTime = bufferTime
@@ -147,9 +148,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
 
     override fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int) {
         when (mime) {
-            Codec.MIME_AUDIO_MP4A -> {
-                stream.audio?.onInputBufferAvailable(codec, index)
-            }
             Codec.MIME_VIDEO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
@@ -162,11 +160,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     }
                     videoTimestamp += message.timestamp * 1000
                     codec.queueInputBuffer(
-                        index,
-                        0,
-                        message.length - 5,
-                        videoTimestamp,
-                        message.toFlags()
+                        index, 0, message.length - 5, videoTimestamp, message.toFlags()
                     )
                     message.release()
                 } catch (e: InterruptedException) {
@@ -185,15 +179,48 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     }
                     audioTimestamp += message.timestamp * 1000
                     codec.queueInputBuffer(
-                        index,
-                        0,
-                        message.length - 2,
-                        audioTimestamp,
-                        message.toFlags()
+                        index, 0, message.length - 2, audioTimestamp, message.toFlags()
                     )
                     message.release()
                 } catch (e: InterruptedException) {
                     Log.w(TAG, "", e)
+                }
+            }
+            else -> {
+                try {
+                    val inputBuffer = codec.getInputBuffer(index) ?: return
+                    val muted = if (mime.contains("audio")) {
+                        stream.audioCodec.muted
+                    } else if (mime.contains("video")) {
+                        stream.videoCodec.muted
+                    } else {
+                        false
+                    }
+                    (if (mime.contains("audio")) {
+                        stream.audio
+                    } else if (mime.contains("video")) {
+                        stream.video
+                    } else {
+                        null
+                    })?.let { source ->
+                        if (!source.isRunning.get()) return@let
+                        val result = source.read(inputBuffer)
+                        if (0 <= result) {
+                            if (muted) {
+                                if (noSignalBuffer.capacity() < result) {
+                                    noSignalBuffer = ByteBuffer.allocateDirect(result)
+                                }
+                                noSignalBuffer.clear()
+                                inputBuffer.clear()
+                                inputBuffer.put(noSignalBuffer)
+                            }
+                            codec.queueInputBuffer(
+                                index, 0, result, source.currentPresentationTimestamp, 0
+                            )
+                        }
+                    }
+                } catch (e: IllegalStateException) {
+                    Log.w(TAG, e)
                 }
             }
         }
@@ -203,9 +230,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         when (mime) {
             Codec.MIME_VIDEO_RAW -> {
                 stream.dispatchEventWith(
-                    Event.RTMP_STATUS,
-                    false,
-                    RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data("")
+                    Event.RTMP_STATUS, false, RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data("")
                 )
             }
             Codec.MIME_VIDEO_AVC -> {
@@ -242,16 +267,12 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     }
 
     override fun onSampleOutput(
-        mime: String,
-        index: Int,
-        info: MediaCodec.BufferInfo,
-        buffer: ByteBuffer
+        mime: String, index: Int, info: MediaCodec.BufferInfo, buffer: ByteBuffer
     ): Boolean {
         when (mime) {
             Codec.MIME_VIDEO_RAW -> {
                 if (!hasFirstFlame) {
-                    hasFirstFlame =
-                        (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
+                    hasFirstFlame = (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
                     stream.videoCodec.codec?.releaseOutputBuffer(index, hasFirstFlame)
                     return false
                 }
