@@ -33,6 +33,15 @@ class AudioCodec : Codec(MIME) {
                 codec?.sampleRate = newValue
             }
         }
+
+        /**
+         * Specifies the muted indicates whether the media muted.
+         */
+        var muted: Boolean by Delegates.observable(DEFAULT_MUTED) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.muted = newValue
+            }
+        }
     }
 
     var sampleRate = DEFAULT_SAMPLE_RATE
@@ -58,7 +67,6 @@ class AudioCodec : Codec(MIME) {
         const val DEFAULT_CHANNEL_COUNT: Int = 1
         const val DEFAULT_BIT_RATE: Int = 64000
         const val DEFAULT_AAC_PROFILE = MediaCodecInfo.CodecProfileLevel.AACObjectLC
-
         const val DEFAULT_KEY_MAX_INPUT_SIZE = 1024 * 2
     }
 }

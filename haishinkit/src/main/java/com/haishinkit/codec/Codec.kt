@@ -94,6 +94,11 @@ abstract class Codec(private val mime: String) : Running {
     }
 
     /**
+     * Specifies the muted indicates whether the media muted.
+     */
+    var muted = DEFAULT_MUTED
+
+    /**
      * The listener of which callback method.
      */
     var listener: Listener? = null
@@ -153,7 +158,9 @@ abstract class Codec(private val mime: String) : Running {
                 }
             }
         }
+
     override val isRunning = AtomicBoolean(false)
+
     var outputFormat: MediaFormat? = null
         private set(value) {
             if (field != value && value != null) {
@@ -165,11 +172,13 @@ abstract class Codec(private val mime: String) : Running {
             }
             field = value
         }
+
     private var callback: Callback = Callback()
         set(value) {
             field = value
             callback.codec = this
         }
+
     private var backgroundHandler: Handler? = null
         get() {
             if (field == null) {
@@ -279,7 +288,7 @@ abstract class Codec(private val mime: String) : Running {
         const val MIME_AUDIO_G711A = "audio/g711-alaw"
         const val MIME_AUDIO_G711U = "audio/g711-mlaw"
         const val MIME_AUDIO_RAW = "audio/raw"
-
+        const val DEFAULT_MUTED = false
         private val TAG = MediaCodec::class.java.simpleName
     }
 }
