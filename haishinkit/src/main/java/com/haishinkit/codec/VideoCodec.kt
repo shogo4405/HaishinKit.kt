@@ -12,9 +12,9 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.util.FeatureUtil
 import kotlin.properties.Delegates
 
-class VideoCodec : MediaCodec(MIME) {
+class VideoCodec : Codec(MIME) {
     @Suppress("unused")
-    data class Setting(private val codec: VideoCodec? = null) : MediaCodec.Setting(codec) {
+    data class Setting(private val codec: VideoCodec? = null) : Codec.Setting(codec) {
         /**
          * Specifies the width resolution for a video output.
          */

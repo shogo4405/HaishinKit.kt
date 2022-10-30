@@ -1,10 +1,11 @@
 package com.haishinkit.rtmp
 
+import android.media.MediaCodec
 import android.media.MediaFormat
 import android.os.SystemClock
 import android.util.Log
 import com.haishinkit.BuildConfig
-import com.haishinkit.codec.MediaCodec
+import com.haishinkit.codec.Codec
 import com.haishinkit.event.Event
 import com.haishinkit.flv.FlvAacPacketType
 import com.haishinkit.flv.FlvAudioCodec
@@ -24,10 +25,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal class RtmpMuxer(private val stream: RtmpStream) :
     Running,
     BufferController.Listener,
-    MediaCodec.Listener {
+    Codec.Listener {
     override var isRunning = AtomicBoolean(false)
 
-    var mode = MediaCodec.Mode.DECODE
+    var mode = Codec.Mode.DECODE
         set(value) {
             stream.audioCodec.mode = value
             stream.videoCodec.mode = value
@@ -94,7 +95,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         }
         hasFirstFlame = false
         when (mode) {
-            MediaCodec.Mode.ENCODE -> {
+            Codec.Mode.ENCODE -> {
                 stream.audio?.let {
                     it.startRunning()
                     stream.audioCodec.listener = this
@@ -106,7 +107,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     stream.videoCodec.startRunning()
                 }
             }
-            MediaCodec.Mode.DECODE -> {
+            Codec.Mode.DECODE -> {
                 mediaLink.startRunning()
             }
         }
@@ -120,7 +121,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             Log.d(TAG, "stopRunning()")
         }
         when (mode) {
-            MediaCodec.Mode.ENCODE -> {
+            Codec.Mode.ENCODE -> {
                 stream.audio?.stopRunning()
                 stream.audioCodec.stopRunning()
                 if (stream.drawable == null) {
@@ -128,7 +129,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 }
                 stream.videoCodec.stopRunning()
             }
-            MediaCodec.Mode.DECODE -> {
+            Codec.Mode.DECODE -> {
                 clear()
                 mediaLink.stopRunning()
             }
@@ -144,12 +145,12 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         videoBufferController.clear()
     }
 
-    override fun onInputBufferAvailable(mime: String, codec: android.media.MediaCodec, index: Int) {
+    override fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int) {
         when (mime) {
-            MediaCodec.MIME_AUDIO_MP4A -> {
+            Codec.MIME_AUDIO_MP4A -> {
                 stream.audio?.onInputBufferAvailable(codec, index)
             }
-            MediaCodec.MIME_VIDEO_RAW -> {
+            Codec.MIME_VIDEO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
                     videoBufferController.stop(!hasFirstFlame)
@@ -172,7 +173,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     Log.w(TAG, "", e)
                 }
             }
-            MediaCodec.MIME_AUDIO_RAW -> {
+            Codec.MIME_AUDIO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
                     audioBufferController.stop()
@@ -200,14 +201,14 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
 
     override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
         when (mime) {
-            MediaCodec.MIME_VIDEO_RAW -> {
+            Codec.MIME_VIDEO_RAW -> {
                 stream.dispatchEventWith(
                     Event.RTMP_STATUS,
                     false,
                     RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data("")
                 )
             }
-            MediaCodec.MIME_VIDEO_AVC -> {
+            Codec.MIME_VIDEO_AVC -> {
                 val config = AvcConfigurationRecord.create(mediaFormat)
                 val video = stream.messageFactory.createRtmpVideoMessage()
                 video.packetType = FlvAvcPacketType.SEQ
@@ -223,10 +224,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 video.compositeTime = 0
                 stream.doOutput(RtmpChunk.ZERO, video)
             }
-            MediaCodec.MIME_AUDIO_RAW -> {
+            Codec.MIME_AUDIO_RAW -> {
                 mediaLink.audioTrack = stream.createAudioTrack(mediaFormat)
             }
-            MediaCodec.MIME_AUDIO_MP4A -> {
+            Codec.MIME_AUDIO_MP4A -> {
                 val config = mediaFormat.getByteBuffer("csd-0") ?: return
                 val audio = stream.messageFactory.createRtmpAudioMessage()
                 audio.codec = FlvAudioCodec.AAC
@@ -243,14 +244,14 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     override fun onSampleOutput(
         mime: String,
         index: Int,
-        info: android.media.MediaCodec.BufferInfo,
+        info: MediaCodec.BufferInfo,
         buffer: ByteBuffer
     ): Boolean {
         when (mime) {
-            MediaCodec.MIME_VIDEO_RAW -> {
+            Codec.MIME_VIDEO_RAW -> {
                 if (!hasFirstFlame) {
                     hasFirstFlame =
-                        (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
+                        (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
                     stream.videoCodec.codec?.releaseOutputBuffer(index, hasFirstFlame)
                     return false
                 }
@@ -258,12 +259,12 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     index,
                     null,
                     info.presentationTimeUs,
-                    (info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
+                    (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
                 )
                 return false
             }
-            MediaCodec.MIME_VIDEO_AVC -> {
-                if (info.flags and android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
+            Codec.MIME_VIDEO_AVC -> {
+                if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     return true
                 }
                 frameTracker?.track(FrameTracker.TYPE_VIDEO, SystemClock.uptimeMillis())
@@ -271,7 +272,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     videoTimestamp = info.presentationTimeUs
                 }
                 val timestamp = (info.presentationTimeUs - videoTimestamp).toInt()
-                val keyframe = info.flags and android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
+                val keyframe = info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
                 val video = stream.messageFactory.createRtmpVideoMessage()
                 video.packetType = FlvAvcPacketType.NAL
                 video.frame = if (keyframe) FlvFlameType.KEY else FlvFlameType.INTER
@@ -286,12 +287,12 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 videoTimestamp = info.presentationTimeUs
                 return true
             }
-            MediaCodec.MIME_AUDIO_RAW -> {
+            Codec.MIME_AUDIO_RAW -> {
                 mediaLink.queueAudio(index, buffer, info.presentationTimeUs, true)
                 return false
             }
-            MediaCodec.MIME_AUDIO_MP4A -> {
-                if (info.flags and android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
+            Codec.MIME_AUDIO_MP4A -> {
+                if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     return true
                 }
                 frameTracker?.track(FrameTracker.TYPE_AUDIO, SystemClock.uptimeMillis())

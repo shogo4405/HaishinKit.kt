@@ -4,9 +4,9 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import kotlin.properties.Delegates
 
-class AudioCodec : MediaCodec(MIME) {
+class AudioCodec : Codec(MIME) {
     @Suppress("unused")
-    data class Setting(private var codec: AudioCodec? = null) : MediaCodec.Setting(codec) {
+    data class Setting(private var codec: AudioCodec? = null) : Codec.Setting(codec) {
         /**
          * The channel of audio output.
          */

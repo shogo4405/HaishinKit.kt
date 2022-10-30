@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.Choreographer
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.AudioCodec
-import com.haishinkit.codec.MediaCodec
+import com.haishinkit.codec.Codec
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.lang.Running
 import com.haishinkit.metric.FrameTracker
@@ -180,7 +180,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
-        audio.mode = MediaCodec.Mode.DECODE
+        audio.mode = Codec.Mode.DECODE
         keepAlive = true
         audioPlaybackJob = launch(coroutineContext) {
             doAudio()

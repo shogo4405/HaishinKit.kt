@@ -1,7 +1,7 @@
 package com.haishinkit.rtmp
 
 import android.util.Log
-import com.haishinkit.codec.MediaCodec
+import com.haishinkit.codec.Codec
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
@@ -193,11 +193,11 @@ class RtmpStream(internal var connection: RtmpConnection) :
                     messages.clear()
                 }
                 ReadyState.PLAY -> {
-                    muxer.mode = MediaCodec.Mode.DECODE
+                    muxer.mode = Codec.Mode.DECODE
                     muxer.startRunning()
                 }
                 ReadyState.PUBLISHING -> {
-                    muxer.mode = MediaCodec.Mode.ENCODE
+                    muxer.mode = Codec.Mode.ENCODE
                     muxer.startRunning()
                     send("@setDataFrame", "onMetaData", toMetaData())
                 }

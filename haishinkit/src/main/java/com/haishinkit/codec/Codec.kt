@@ -16,14 +16,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
 @Suppress("unused")
-abstract class MediaCodec(private val mime: String) : Running {
+abstract class Codec(private val mime: String) : Running {
     enum class Mode {
         ENCODE,
         DECODE
     }
 
     @Suppress("unused")
-    open class Setting(private var codec: com.haishinkit.codec.MediaCodec?) {
+    open class Setting(private var codec: Codec?) {
         /**
          * Specifies the [MediaCodec]'s [MediaFormat] options if necessary.
          *
@@ -52,7 +52,7 @@ abstract class MediaCodec(private val mime: String) : Running {
 
     class Callback : MediaCodec.Callback() {
         var listener: Listener? = null
-        var codec: com.haishinkit.codec.MediaCodec? = null
+        var codec: Codec? = null
         var mime: String = ""
 
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
