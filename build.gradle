@@ -7,7 +7,7 @@ apply plugin: 'org.jetbrains.dokka'
 buildscript {
     ext.kotlin_version = '1.7.20'
     ext.library_group = 'com.haishinkit'
-    ext.version_name = "0.10.2"
+    ext.version_name = "0.10.3"
 
     repositories {
         mavenCentral()

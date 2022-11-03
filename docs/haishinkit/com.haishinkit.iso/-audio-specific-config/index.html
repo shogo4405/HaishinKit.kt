@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>AudioSpecificConfig</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,17 +47,17 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="haishinkit::com.haishinkit.iso/AudioSpecificConfig///PointingToDeclaration//524763335">
-  <div class="breadcrumbs"><a href="../../index.html">haishinkit</a><span class="delimiter">/</span><a href="../index.html">com.haishinkit.iso</a><span class="delimiter">/</span><a href="index.html">AudioSpecificConfig</a></div>
+  <div class="breadcrumbs"><a href="../../index.html">haishinkit</a><span class="delimiter">/</span><a href="../index.html">com.haishinkit.iso</a><span class="delimiter">/</span><span class="current">AudioSpecificConfig</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Audio</span><wbr><span>Specific</span><wbr><span><span>Config</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">AudioSpecificConfig</a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>type<span class="token operator">: </span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a><span class="token operator"> = </span>AudioObjectType.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>frequency<span class="token operator">: </span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a><span class="token operator"> = </span>SamplingFrequency.HZ44100<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>channel<span class="token operator">: </span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a><span class="token operator"> = </span>ChannelConfiguration.FRONT_OF_CENTER</span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">The Audio Specific Config is the global header for MPEG-4 Audio</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">AudioSpecificConfig</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a><span class="token operator"> = </span>AudioObjectType.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>frequency<span class="token operator">: </span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a><span class="token operator"> = </span>SamplingFrequency.HZ44100<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>channel<span class="token operator">: </span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a><span class="token operator"> = </span>ChannelConfiguration.FRONT_OF_CENTER</span></span><span class="token punctuation">)</span></div><p class="paragraph">The Audio Specific Config is the global header for MPEG-4 Audio</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="See also">See also</button></div>
     <div class="tabs-section-body">
-      <h2 class="">See also</h2>
+      <h4 class="">See also</h4>
       <div data-togglable="See also">
-        <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="See also"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div data-togglable="See also"><div class="table" data-togglable="See also"><div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><span><span>http</span></span></div></span></div><div><div class="title"><div data-togglable="See also"><p class="paragraph">://wiki.multimedia.cx/?title=Understanding_AAC</p></div></div></div></div></div></div></div></div></div>
+        <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="See also"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div data-togglable="See also"><div class="table" data-togglable="See also"><div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><span><span>http</span></span></div></span></div><div><div class="title"><div data-togglable="See also"><p class="paragraph">://wiki.multimedia.cx/?title=Understanding_AAC</p></div></div></div></div></div></div></div></div></div>
       </div>
       <h2 class="tabbedcontent">Constructors</h2>
       <div class="table" data-togglable="Constructors"><a data-name="210839088%2FConstructors%2F524763335" anchor-label="AudioSpecificConfig" id="210839088%2FConstructors%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
@@ -61,7 +70,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-audio-specific-config.html"><span class="token function">AudioSpecificConfig</span></a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;type<span class="token operator">: </span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a><span class="token operator"> = </span>AudioObjectType.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;frequency<span class="token operator">: </span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a><span class="token operator"> = </span>SamplingFrequency.HZ44100<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;channel<span class="token operator">: </span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a><span class="token operator"> = </span>ChannelConfiguration.FRONT_OF_CENTER</span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-audio-specific-config.html"><span class="token function">AudioSpecificConfig</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a><span class="token operator"> = </span>AudioObjectType.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter ">frequency<span class="token operator">: </span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a><span class="token operator"> = </span>SamplingFrequency.HZ44100<span class="token punctuation">, </span></span><span class="parameter ">channel<span class="token operator">: </span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a><span class="token operator"> = </span>ChannelConfiguration.FRONT_OF_CENTER</span></span><span class="token punctuation">)</span></div></div></div>
               </div>
             </div>
           </div>
@@ -78,7 +87,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-audio-object-type/index.html">AudioObjectType</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a><span class="token operator">&gt; </span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-audio-object-type/index.html">AudioObjectType</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a><span class="token operator">&gt; </span></div></div></div>
               </div>
             </div>
           </div>
@@ -93,7 +102,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-channel-configuration/index.html">ChannelConfiguration</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a><span class="token operator">&gt; </span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-channel-configuration/index.html">ChannelConfiguration</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a><span class="token operator">&gt; </span></div></div></div>
               </div>
             </div>
           </div>
@@ -108,7 +117,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
               </div>
             </div>
           </div>
@@ -123,7 +132,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-sampling-frequency/index.html">SamplingFrequency</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a><span class="token operator">&gt; </span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-sampling-frequency/index.html">SamplingFrequency</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a><span class="token operator">&gt; </span></div></div></div>
               </div>
             </div>
           </div>
@@ -140,7 +149,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="encode.html"><span class="token function">encode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">buffer<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/nio/ByteBuffer.html">ByteBuffer</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">AudioSpecificConfig</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="encode.html"><span class="token function">encode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">buffer<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/nio/ByteBuffer.html">ByteBuffer</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">AudioSpecificConfig</a></div></div></div>
               </div>
             </div>
           </div>
@@ -157,7 +166,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="1312218206%2FProperties%2F524763335" anchor-label="channel" id="1312218206%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="channel.html">channel</a><span class="token operator">: </span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="1312218206%2FProperties%2F524763335" anchor-label="channel" id="1312218206%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="channel.html">channel</a><span class="token operator">: </span><a href="-channel-configuration/index.html">AudioSpecificConfig.ChannelConfiguration</a></div></div></div>
               </div>
             </div>
           </div>
@@ -172,7 +181,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-1526744795%2FProperties%2F524763335" anchor-label="frequency" id="-1526744795%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="frequency.html">frequency</a><span class="token operator">: </span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-1526744795%2FProperties%2F524763335" anchor-label="frequency" id="-1526744795%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="frequency.html">frequency</a><span class="token operator">: </span><a href="-sampling-frequency/index.html">AudioSpecificConfig.SamplingFrequency</a></div></div></div>
               </div>
             </div>
           </div>
@@ -187,7 +196,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-916474881%2FProperties%2F524763335" anchor-label="type" id="-916474881%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="type.html">type</a><span class="token operator">: </span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-916474881%2FProperties%2F524763335" anchor-label="type" id="-916474881%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="type.html">type</a><span class="token operator">: </span><a href="-audio-object-type/index.html">AudioSpecificConfig.AudioObjectType</a></div></div></div>
               </div>
             </div>
           </div>

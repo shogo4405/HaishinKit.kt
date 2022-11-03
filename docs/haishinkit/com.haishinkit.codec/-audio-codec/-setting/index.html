@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>Setting</title>
 <link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../../styles/style.css" rel="Stylesheet">
 <link href="../../../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,10 +47,10 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="haishinkit::com.haishinkit.codec/AudioCodec.Setting///PointingToDeclaration//524763335">
-  <div class="breadcrumbs"><a href="../../../index.html">haishinkit</a><span class="delimiter">/</span><a href="../../index.html">com.haishinkit.codec</a><span class="delimiter">/</span><a href="../index.html">AudioCodec</a><span class="delimiter">/</span><a href="index.html">Setting</a></div>
+  <div class="breadcrumbs"><a href="../../../index.html">haishinkit</a><span class="delimiter">/</span><a href="../../index.html">com.haishinkit.codec</a><span class="delimiter">/</span><a href="../index.html">AudioCodec</a><span class="delimiter">/</span><span class="current">Setting</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Setting</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">Setting</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">codec<span class="token operator">: </span><a href="../index.html">AudioCodec</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../../-media-codec/-setting/index.html">MediaCodec.Setting</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">Setting</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">codec<span class="token operator">: </span><a href="../index.html">AudioCodec</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../../-codec/-setting/index.html">Codec.Setting</a></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
@@ -57,7 +66,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-setting.html"><span class="token function">Setting</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">codec<span class="token operator">: </span><a href="../index.html">AudioCodec</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-setting.html"><span class="token function">Setting</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">codec<span class="token operator">: </span><a href="../index.html">AudioCodec</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
               </div>
             </div>
           </div>
@@ -74,7 +83,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-1753709521%2FProperties%2F524763335" anchor-label="bitRate" id="-1753709521%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="bit-rate.html">bitRate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-1753709521%2FProperties%2F524763335" anchor-label="bitRate" id="-1753709521%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">The bitRate of audio output.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-1753709521%2FProperties%2F524763335" anchor-label="bitRate" id="-1753709521%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="bit-rate.html">bitRate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><a data-name="-1753709521%2FProperties%2F524763335" anchor-label="bitRate" id="-1753709521%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">The bitRate of audio output.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -89,22 +98,37 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-163475598%2FProperties%2F524763335" anchor-label="channelCount" id="-163475598%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="channel-count.html">channelCount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-163475598%2FProperties%2F524763335" anchor-label="channelCount" id="-163475598%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">The channel of audio output.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-163475598%2FProperties%2F524763335" anchor-label="channelCount" id="-163475598%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="channel-count.html">channelCount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><a data-name="-163475598%2FProperties%2F524763335" anchor-label="channelCount" id="-163475598%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">The channel of audio output.</p></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="1528708556%2FProperties%2F524763335" anchor-label="options" id="1528708556%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+<a data-name="838075345%2FProperties%2F524763335" anchor-label="muted" id="838075345%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="../../-media-codec/-setting/options.html"><span><span>options</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1528708556%2FProperties%2F524763335"></span>
+                <div><a href="muted.html"><span><span>muted</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="838075345%2FProperties%2F524763335"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="1528708556%2FProperties%2F524763335" anchor-label="options" id="1528708556%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="../../-media-codec/-setting/options.html">options</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../-codec-option/index.html">CodecOption</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1528708556%2FProperties%2F524763335" anchor-label="options" id="1528708556%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">Specifies the <a href="https://developer.android.com/reference/kotlin/android/media/MediaCodec.html">MediaCodec</a>'s <a href="https://developer.android.com/reference/kotlin/android/media/MediaFormat.html">MediaFormat</a> options if necessary.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="838075345%2FProperties%2F524763335" anchor-label="muted" id="838075345%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="muted.html">muted</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="838075345%2FProperties%2F524763335" anchor-label="muted" id="838075345%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">Specifies the muted indicates whether the media muted.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-779403420%2FProperties%2F524763335" anchor-label="options" id="-779403420%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../../-codec/-setting/options.html"><span><span>options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-779403420%2FProperties%2F524763335"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="-779403420%2FProperties%2F524763335" anchor-label="options" id="-779403420%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="../../-codec/-setting/options.html">options</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../-codec-option/index.html">CodecOption</a><span class="token operator">&gt;</span></div><div class="brief "><a data-name="-779403420%2FProperties%2F524763335" anchor-label="options" id="-779403420%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">Specifies the <a href="https://developer.android.com/reference/kotlin/android/media/MediaCodec.html">MediaCodec</a>'s <a href="https://developer.android.com/reference/kotlin/android/media/MediaFormat.html">MediaFormat</a> options if necessary.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -119,7 +143,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="1544048020%2FProperties%2F524763335" anchor-label="sampleRate" id="1544048020%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="sample-rate.html">sampleRate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1544048020%2FProperties%2F524763335" anchor-label="sampleRate" id="1544048020%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">The sampleRate of audio output.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><a data-name="1544048020%2FProperties%2F524763335" anchor-label="sampleRate" id="1544048020%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="sample-rate.html">sampleRate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><a data-name="1544048020%2FProperties%2F524763335" anchor-label="sampleRate" id="1544048020%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a><p class="paragraph">The sampleRate of audio output.</p></div></div></div>
               </div>
             </div>
           </div>
