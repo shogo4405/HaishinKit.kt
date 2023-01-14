@@ -97,6 +97,7 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         }
 
         val message = connection.messageFactory.create(type)
+        message.chunk = this
         message.chunkStreamID = chunkStreamID
         message.streamID = streamID
         message.timestamp = timestamp

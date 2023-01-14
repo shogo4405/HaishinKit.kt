@@ -166,6 +166,8 @@ class RtmpStream(internal var connection: RtmpConnection) :
             Log.d(TAG, "current=$field, change=$value")
             when (field) {
                 ReadyState.PLAYING -> {
+                    videoTimestamp = DEFAULT_TIMESTAMP
+                    audioTimestamp = DEFAULT_TIMESTAMP
                     muxer.clear()
                 }
                 ReadyState.PUBLISHING -> {
@@ -212,6 +214,8 @@ class RtmpStream(internal var connection: RtmpConnection) :
     internal val messages = ArrayList<RtmpMessage>()
     internal var frameCount = AtomicInteger(0)
     internal var messageFactory = RtmpMessageFactory(4)
+    internal var videoTimestamp = DEFAULT_TIMESTAMP
+    internal var audioTimestamp = DEFAULT_TIMESTAMP
     private var recorder = RtmpRecorder()
     private val dispatcher: EventDispatcher by lazy {
         EventDispatcher(this)
@@ -385,6 +389,7 @@ class RtmpStream(internal var connection: RtmpConnection) :
     }
 
     companion object {
+        private val DEFAULT_TIMESTAMP = 0
         private val TAG = RtmpStream::class.java.simpleName
     }
 }

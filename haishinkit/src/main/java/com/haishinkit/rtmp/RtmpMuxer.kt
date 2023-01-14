@@ -144,6 +144,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         frameTracker?.clear()
         audioBufferController.clear()
         videoBufferController.clear()
+        mediaLink.clear()
     }
 
     override fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int) {
@@ -154,14 +155,22 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     videoBufferController.stop(!hasFirstFlame)
                     val message = videoBufferController.take()
                     videoBufferController.consume(message.timestamp)
-                    message.data?.let {
+                    val success = message.data?.let {
                         it.position(4)
-                        inputBuffer.put(it)
-                    }
+                        if (it.remaining() <= inputBuffer.remaining()) {
+                            inputBuffer.put(it)
+                            true
+                        } else {
+                            Log.w(TAG, "BufferOverrun will drop a RTMPVideoMessage")
+                            false
+                        }
+                    } ?: false
                     videoTimestamp += message.timestamp * 1000
-                    codec.queueInputBuffer(
-                        index, 0, message.length - 5, videoTimestamp, message.toFlags()
-                    )
+                    if (success) {
+                        codec.queueInputBuffer(
+                            index, 0, message.length - 5, videoTimestamp, message.toFlags()
+                        )
+                    }
                     message.release()
                 } catch (e: InterruptedException) {
                     Log.w(TAG, "", e)

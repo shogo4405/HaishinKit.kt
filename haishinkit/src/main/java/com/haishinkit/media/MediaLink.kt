@@ -15,6 +15,7 @@ import com.haishinkit.metric.FrameTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingDeque
@@ -112,7 +113,12 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
     private val videoBuffers = LinkedBlockingDeque<Buffer>()
     private val audioBuffers = LinkedBlockingDeque<Buffer>()
     private var choreographer: Choreographer? = null
+        set(value) {
+            field?.removeFrameCallback(this)
+            field = value
+        }
     private var videoTimestamp = Timestamp(1000L)
+    private var videoTimestampZero: Long = -1
     private var handler: Handler? = null
         get() {
             if (field == null) {
@@ -137,13 +143,12 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
             }
             return field
         }
-    private val audioDuration: Long
-        get() {
-            val track = audioTrack ?: return 0
-            return (track.playbackHeadPosition.toLong() * 1000 / track.sampleRate) * 1000L + audioCorrection
-        }
-    private var audioCorrection = 0L
+    private var audioTimestampZero = 0L
     private var audioPlaybackJob: Job? = null
+        set(value) {
+            field?.cancel()
+            field = value
+        }
 
     /**
      * Queues the audio data asynchronously for playback.
@@ -165,6 +170,9 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
      * Queues the video data asynchronously for playback.
      */
     fun queueVideo(index: Int, payload: ByteBuffer?, timestamp: Long, sync: Boolean) {
+        if (videoTimestampZero == -1L) {
+            videoTimestampZero = timestamp
+        }
         videoBuffers.add(Buffer(index, payload, timestamp, sync))
         if (choreographer == null) {
             handler?.post {
@@ -194,24 +202,26 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        hasKeyframe = false
         handler = null
-        choreographer?.removeFrameCallback(this)
         choreographer = null
         keepAlive = false
-        audioPlaybackJob?.cancel()
         audioPlaybackJob = null
-        syncMode = SYNC_MODE_CLOCK
-        audioCorrection = 0
+        isRunning.set(false)
+    }
+
+    fun clear() {
+        audioTrack = null
         videoTimestamp.clear()
         frameTracker?.clear()
         audio.release(audioBuffers)
         hasAudio = false
         video.release(videoBuffers)
         hasVideo = false
-        isRunning.set(false)
+        hasKeyframe = false
+        audioTimestampZero = 0
+        videoTimestampZero = -1
     }
-
+    
     override fun doFrame(frameTimeNanos: Long) {
         choreographer?.postFrameCallback(this)
         val duration: Long
@@ -220,11 +230,11 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
             if (track.playbackHeadPosition <= 0) {
                 if (track.playState != AudioTrack.PLAYSTATE_PLAYING) {
                     track.play()
-                    audioCorrection = videoTimestamp.duration
+                    audioTimestampZero = videoTimestamp.duration
                 }
                 return
             }
-            duration = audioDuration
+            duration = (track.playbackHeadPosition.toLong() * 1000 / track.sampleRate) * 1000L + audioTimestampZero
         } else {
             videoTimestamp.nanoTime = frameTimeNanos
             duration = videoTimestamp.duration
@@ -237,7 +247,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
                 if (!hasKeyframe) {
                     hasKeyframe = buffer.sync
                 }
-                if (buffer.timestamp <= duration) {
+                if (buffer.timestamp - videoTimestampZero <= duration) {
                     if (frameCount == 0 && hasKeyframe) {
                         if (VERBOSE) {
                             frameTracker?.track(FrameTracker.TYPE_VIDEO, SystemClock.uptimeMillis())

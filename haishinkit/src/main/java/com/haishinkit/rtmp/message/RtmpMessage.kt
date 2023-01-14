@@ -1,10 +1,12 @@
 package com.haishinkit.rtmp.message
 
 import androidx.core.util.Pools
+import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import java.nio.ByteBuffer
 
 internal open class RtmpMessage(val type: Byte, private val pool: Pools.Pool<RtmpMessage>? = null) {
+    var chunk: RtmpChunk = RtmpChunk.ZERO
     var chunkStreamID: Short = 0
     var streamID: Int = 0
     var timestamp: Int = 0

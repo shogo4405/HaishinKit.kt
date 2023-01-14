@@ -8,6 +8,7 @@ import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 import android.media.MediaCodec
+import com.haishinkit.rtmp.RtmpChunk
 
 internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
     RtmpMessage(TYPE_AUDIO, pool) {
@@ -65,6 +66,11 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                     stream.muxer.enqueueAudio(this)
                 }
                 FlvAacPacketType.RAW -> {
+                    if (chunk == RtmpChunk.ZERO) {
+                        val currentTimestamp = timestamp
+                        timestamp -= stream.audioTimestamp
+                        stream.audioTimestamp = currentTimestamp
+                    }
                     stream.muxer.enqueueAudio(this)
                 }
                 else -> {

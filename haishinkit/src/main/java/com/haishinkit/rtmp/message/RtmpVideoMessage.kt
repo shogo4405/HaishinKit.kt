@@ -10,6 +10,7 @@ import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.iso.AvcConfigurationRecord
 import com.haishinkit.iso.AvcFormatUtils
 import com.haishinkit.iso.SequenceParameterSet
+import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
@@ -107,6 +108,11 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                 }
                 FlvAvcPacketType.NAL -> {
                     if (!it.hasRemaining()) return this
+                    if (chunk == RtmpChunk.ZERO) {
+                        val currentTimestamp = timestamp
+                        timestamp -= stream.videoTimestamp
+                        stream.videoTimestamp = currentTimestamp
+                    }
                     it.position(0)
                     AvcFormatUtils.toByteStream(it, 4)
                     it.position(it.position() + 4)
