@@ -93,8 +93,8 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                             sequenceParameterSet.videoWidth,
                             sequenceParameterSet.videoHeight,
                             ImageFormat.YUV_420_888
-                        ) {
-                            stream.videoCodec.surface = it
+                        ) { surface ->
+                            stream.videoCodec.surface = surface
                         }
                     }
 
