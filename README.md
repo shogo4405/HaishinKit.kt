@@ -82,6 +82,20 @@ git submodule update --init
 ## 🔧 Usage
 
 ### Gradle dependency
+**JitPack**
+```
+allprojects {
+  repositories {
+    maven { url 'https://jitpack.io' }
+  }
+}
+
+dependencies {
+  implementation 'com.github.shogo4405:HaishinKit~kt:haishinkit:x.x.x'
+  implementation 'com.github.shogo4405:HaishinKit~kt:vulkan:x.x.x'
+}
+```
+
 **GitHub Packages**
 ```groovy
 allprojects {
@@ -99,19 +113,6 @@ allprojects {
 dependencies {
   implementation 'com.haishinkit:haishinkit:x.x.x'
   implementation 'com.haishinkit:vulkan:x.x.x'
-}
-```
-**JitPack**
-```
-allprojects {
-  repositories {
-    maven { url 'https://jitpack.io' }
-  }
-}
-
-dependencies {
-  implementation 'com.github.shogo4405:HaishinKit~kt:haishinkit:x.x.x'
-  implementation 'com.github.shogo4405:HaishinKit~kt:vulkan:x.x.x'
 }
 ```
 
@@ -236,7 +237,7 @@ stream.videoEffect = Monochrome2VideoEffect()
 ```
 
 ## 📓 FAQ
-### How can I use the vulkan module with Android 5 project?
+### How can I compile the vulkan module with Android 5 project?
 #### AndroidManifest.xml
 ```xml
 <uses-sdk tools:overrideLibrary="com.haishinkit.vulkan" />
@@ -266,11 +267,26 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 * HaishinKit.swift - Camera and Microphone streaming library via RTMP, HLS for iOS, macOS and tvOS.
   * https://github.com/shogo4405/HaishinKit.swift
 
-## 💠 Donation
-- GitHub Sponsors
-  - https://github.com/sponsors/shogo4405
-- Paypal
-  - https://www.paypal.me/shogo4405
+## 💠 Sponsorship
+Looking for sponsors. Sponsoring I will enable us to:
+- Purchase smartphones or peripheral devices for testing purposes.
+- Pay for testing on a specific streaming service or for testing on mobile lines.
+- Potentially private use to continue the OSS development
+
+ If you use any of our libraries for work, see if your employers would be interested in sponsorship. I have some special offers.　I would greatly appreciate. Thank you.
+ - If you request I will note your name product our README.
+ - If you mention on a discussion, an issue or pull request that you are sponsoring us I will prioritise helping you even higher.
+
+スポンサーを募集しています。利用用途としては、
+- テスト目的で、スマートフォンの購入や周辺機器の購入を行います。
+- 特定のストリーミングサービスへのテストの支払いや、モバイル回線でのテストの支払いに利用します。
+- 著書のOSS開発を継続的に行う為に私的に利用する可能性もあります。
+
+このライブラリーを仕事で継続的に利用している場合は、ぜひ。雇用主に、スポンサーに興味がないか確認いただけると幸いです。いくつか特典を用意しています。
+- README.mdへの企業ロゴの掲載
+- IssueやPull Requestの優先的な対応
+
+[Sponsorship](https://github.com/sponsors/shogo4405)
 
 ## 📜 License
 BSD-3-Clause
