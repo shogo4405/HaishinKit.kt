@@ -22,6 +22,7 @@ internal class RtmpAcknowledgementMessage : RtmpMessage(TYPE_ACK) {
     }
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
+        payload.clear()
         return this
     }
 
