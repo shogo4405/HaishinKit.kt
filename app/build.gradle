@@ -14,7 +14,6 @@ android {
         jvmTarget = JavaVersion.VERSION_11
     }
 
-
     defaultConfig {
         applicationId "com.haishinkit.app"
         minSdkVersion 21
@@ -23,6 +22,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        buildFeatures {
+            buildConfig = true
+        }
     }
     buildTypes {
         release {

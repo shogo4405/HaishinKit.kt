@@ -16,6 +16,9 @@ android {
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.version_name}\""
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    buildFeatures {
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
