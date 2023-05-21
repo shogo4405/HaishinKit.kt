@@ -7,7 +7,7 @@ apply plugin: 'org.jetbrains.dokka'
 buildscript {
     ext.kotlin_version = '1.8.21'
     ext.library_group = 'com.haishinkit'
-    ext.version_name = "0.10.4"
+    ext.version_name = "0.11.0"
 
     repositories {
         mavenCentral()
@@ -47,8 +47,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 apply plugin: "org.jlleitschuh.gradle.ktlint"
