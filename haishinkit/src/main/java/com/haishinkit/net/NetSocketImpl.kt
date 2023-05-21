@@ -9,6 +9,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
+import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingDeque
@@ -114,6 +115,9 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
             } else {
                 close(true)
             }
+        } catch (e: SocketException) {
+            Log.w(TAG, "", e)
+            close(true)
         } catch (e: IOException) {
             Log.w(TAG, "", e)
             close(true)
@@ -137,6 +141,9 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
                 synchronized(outputBufferPool) {
                     outputBufferPool.release(buffer)
                 }
+            } catch (e: SocketException) {
+                Log.w(TAG, "", e)
+                close(false)
             } catch (e: IOException) {
                 Log.w(TAG, "", e)
                 close(false)
