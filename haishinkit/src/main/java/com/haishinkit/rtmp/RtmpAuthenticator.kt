@@ -73,7 +73,17 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
     private fun createAuthCommand(uri: URI, description: String): String {
         if (!description.contains("?")) return uri.toString()
         if (uri.rawUserInfo == null) return uri.toString()
-        val command = createAuthQuery(uri)
+        var command = ""
+        if (uri.path.endsWith('/')) {
+            // uri has a trailing slash at the end, but needs to end with ?
+            // remove trailing slash and everything after
+            // see https://github.com/shogo4405/HaishinKit.dart/issues/27
+            val uriString = uri.toString();
+            val uriTemp = URI(uriString.substring(0, uriString.lastIndexOf('/')) + "?")
+            command = createAuthQuery(uriTemp)
+        } else {
+            command = createAuthQuery(uri)
+        }
         val query = description.split("?")[1]
         val descriptionUri = Uri.parse("https://localhost?$query")
         val info = Info(
