@@ -11,16 +11,16 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
-    - name: set up JDK 11
+    - name: set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'adopt'
         cache: gradle
     - name: setup Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.7.0
+        ruby-version: 3.0.6
         bundler-cache: true
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
