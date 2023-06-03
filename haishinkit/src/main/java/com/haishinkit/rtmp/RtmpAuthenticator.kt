@@ -63,7 +63,7 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
     private fun createAuthQuery(uri: URI): String {
         val query = uri.query ?: ""
         val user = uri.userInfo.split(":")[0]
-        return uri.toString() + "/" + if (query.isEmpty()) {
+        return "$uri" + if (query.isEmpty()) {
             "?"
         } else {
             "&"

@@ -12,6 +12,8 @@ import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpDataMessage
 import com.haishinkit.rtmp.message.RtmpMessage
 import com.haishinkit.rtmp.message.RtmpMessageFactory
+import com.haishinkit.flv.FlvVideoCodec
+import com.haishinkit.flv.FlvAudioCodec
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -29,8 +31,7 @@ class RtmpStream(internal var connection: RtmpConnection) :
         RECORD("record"),
         APPEND("append"),
         APPEND_WITH_GAP("appendWithGap"),
-        LIVE("live"),
-        LOCAL_RECORD("localRecord")
+        LIVE("live")
     }
 
     @Suppress("unused")
@@ -97,15 +98,19 @@ class RtmpStream(internal var connection: RtmpConnection) :
                 RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
                     connection.createStream(stream)
                 }
+
                 Code.PLAY_START.rawValue -> {
                     stream.readyState = ReadyState.PLAYING
                 }
+
                 Code.PLAY_UNPUBLISH_NOTIFY.rawValue -> {
                     stream.readyState = ReadyState.PLAY
                 }
+
                 Code.PUBLISH_START.rawValue -> {
                     stream.readyState = ReadyState.PUBLISHING
                 }
+
                 else -> {
                 }
             }
@@ -170,9 +175,11 @@ class RtmpStream(internal var connection: RtmpConnection) :
                     audioTimestamp = DEFAULT_TIMESTAMP
                     muxer.clear()
                 }
+
                 ReadyState.PUBLISHING -> {
                     muxer.clear()
                 }
+
                 else -> {
                 }
             }
@@ -194,18 +201,22 @@ class RtmpStream(internal var connection: RtmpConnection) :
                     }
                     messages.clear()
                 }
+
                 ReadyState.PLAY -> {
                     muxer.mode = Codec.Mode.DECODE
                     muxer.startRunning()
                 }
+
                 ReadyState.PUBLISHING -> {
                     muxer.mode = Codec.Mode.ENCODE
                     muxer.startRunning()
                     send("@setDataFrame", "onMetaData", toMetaData())
                 }
+
                 ReadyState.CLOSED -> {
                     muxer.stopRunning()
                 }
+
                 else -> {
                 }
             }
@@ -265,10 +276,12 @@ class RtmpStream(internal var connection: RtmpConnection) :
             ReadyState.INITIALIZED, ReadyState.CLOSED -> {
                 messages.add(message)
             }
+
             ReadyState.OPEN -> {
                 connection.doOutput(RtmpChunk.ZERO, message)
                 readyState = ReadyState.PUBLISH
             }
+
             else -> {}
         }
     }
@@ -290,6 +303,7 @@ class RtmpStream(internal var connection: RtmpConnection) :
                 ReadyState.PLAYING -> {
                     connection.doOutput(RtmpChunk.ZERO, message)
                 }
+
                 else -> {}
             }
             return
@@ -299,9 +313,11 @@ class RtmpStream(internal var connection: RtmpConnection) :
             ReadyState.INITIALIZED, ReadyState.CLOSED -> {
                 messages.add(message)
             }
+
             ReadyState.OPEN, ReadyState.PLAYING -> {
                 connection.doOutput(RtmpChunk.ZERO, message)
             }
+
             else -> {
             }
         }
@@ -311,7 +327,9 @@ class RtmpStream(internal var connection: RtmpConnection) :
      * Sends a message on a published stream.
      */
     fun send(handlerName: String, vararg arguments: Any) {
-        readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED
+        if (readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED) {
+            return
+        }
         val message = RtmpDataMessage(connection.objectEncoding)
         message.handlerName = handlerName
         arguments.forEach { value ->
@@ -374,22 +392,22 @@ class RtmpStream(internal var connection: RtmpConnection) :
 
     private fun toMetaData(): Map<String, Any> {
         val metadata = mutableMapOf<String, Any>()
-        if (video != null) {
-            metadata["width"] = video?.resolution?.width ?: 0
-            metadata["height"] = video?.resolution?.height ?: 0
+        video?.let {
+            metadata["width"] = it.resolution.width
+            metadata["height"] = it.resolution.height
             metadata["framerate"] = videoCodec.frameRate
-            metadata["videocodecid"] = com.haishinkit.flv.FlvVideoCodec.AVC.toInt()
+            metadata["videocodecid"] = FlvVideoCodec.AVC.toInt()
             metadata["videodatarate"] = videoCodec.bitRate / 1000
         }
-        if (audio != null) {
-            metadata["audiocodecid"] = com.haishinkit.flv.FlvAudioCodec.AAC.toInt()
+        audio?.let {
+            metadata["audiocodecid"] = FlvAudioCodec.AAC.toInt()
             metadata["audiodatarate"] = audioCodec.bitRate / 1000
         }
         return metadata
     }
 
     companion object {
-        private val DEFAULT_TIMESTAMP = 0
+        private const val DEFAULT_TIMESTAMP = 0
         private val TAG = RtmpStream::class.java.simpleName
     }
 }
