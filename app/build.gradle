@@ -53,7 +53,7 @@ dependencies {
     implementation project(':haishinkit')
     implementation project(':vulkan')
     testImplementation 'junit:junit:4.13.2'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.11'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 }
 
 repositories {
