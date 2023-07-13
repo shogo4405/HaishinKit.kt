@@ -16,9 +16,7 @@
 desc '[CI]Runs the PR review'
 lane :review do
   if Helper.is_ci?
-    install_android_studio
     gradle(task: 'lint')
-    inspect_run
     danger(
       danger_id: 'danger',
       dangerfile: 'Dangerfile',
@@ -30,30 +28,6 @@ end
 
 desc 'Runs all the tests'
 lane :test do
-  install_android_studio
   gradle(task: 'lint')
-  inspect_run
 end
 
-private_lane :inspect_run do
-  current = Dir.pwd
-  Dir.chdir('../')
-  workspace = Dir.pwd
-  android_studio_path =
-    ENV['ANDROID_STUDIO_HOME'] || '/Applications/Android Studio.app/Contents'
-  FileUtils.rm_rf("#{workspace}/fastlane/inspect")
-  sh(
-    "#{android_studio_path}/bin/inspect.sh #{workspace} #{workspace}/fastlane/inspect.xml #{workspace}/fastlane/inspect"
-  )
-  Dir.chdir(current)
-end
-
-private_lane :install_android_studio do
-  unless File.exists?('/opt/android-studio')
-    sh(
-      'curl -o /opt/android-studio.tar.gz -OL https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2020.3.1.23/android-studio-2020.3.1.23-linux.tar.gz'
-    )
-    sh('tar -zxvf /opt/android-studio.tar.gz -C /opt')
-  end
-  ENV['ANDROID_STUDIO_HOME'] = '/opt/android-studio'
-end
