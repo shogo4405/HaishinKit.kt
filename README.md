@@ -98,8 +98,8 @@ allprojects {
 }
 
 dependencies {
-  implementation 'com.github.shogo4405:HaishinKit~kt:haishinkit:x.x.x'
-  implementation 'com.github.shogo4405:HaishinKit~kt:vulkan:x.x.x'
+  implementation 'com.github.shogo4405.HaishinKit~kt:haishinkit:x.x.x'
+  implementation 'com.github.shogo4405.HaishinKit~kt:vulkan:x.x.x'
 }
 ```
 
