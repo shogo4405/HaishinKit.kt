@@ -2,6 +2,7 @@ package com.haishinkit.app
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
@@ -19,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.haishinkit.graphics.effect.BicubicVideoEffect
 import com.haishinkit.graphics.effect.BilinearVideoEffect
@@ -29,6 +31,26 @@ import com.haishinkit.rtmp.RtmpStream
 
 class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
+    private val startMediaProjection =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            activity?.windowManager?.defaultDisplay?.getMetrics(MediaProjectionService.metrics)
+            if (result.resultCode == RESULT_OK) {
+                MediaProjectionService.data = result.data
+                Intent(activity, MediaProjectionService::class.java).also { intent ->
+                    if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
+                        activity?.startForegroundService(intent)
+                    } else {
+                        activity?.startService(intent)
+                    }
+                    activity?.bindService(
+                        intent,
+                        this@MediaProjectionTabFragment,
+                        Context.BIND_AUTO_CREATE
+                    )
+                }
+                Log.i(toString(), "mediaProjectionManager success")
+            }
+        }
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -47,88 +69,73 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         }
         val filter = v.findViewById<Button>(R.id.filter_button)
         filter.setOnClickListener {
-            if (filter.text == "Normal") {
-                messenger?.send(
-                    Message.obtain(
-                        null,
-                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                        BicubicVideoEffect()
+            when (filter.text) {
+                "Normal" -> {
+                    messenger?.send(
+                        Message.obtain(
+                            null,
+                            MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                            BicubicVideoEffect()
+                        )
                     )
-                )
-                filter.text = "Bicubic"
-            } else if (filter.text == "Bicubic") {
-                messenger?.send(
-                    Message.obtain(
-                        null,
-                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                        BilinearVideoEffect()
+                    filter.text = "Bicubic"
+                }
+
+                "Bicubic" -> {
+                    messenger?.send(
+                        Message.obtain(
+                            null,
+                            MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                            BilinearVideoEffect()
+                        )
                     )
-                )
-                filter.text = "Bilinear"
-            } else if (filter.text == "Bilinear") {
-                messenger?.send(
-                    Message.obtain(
-                        null,
-                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                        LanczosVideoEffect()
+                    filter.text = "Bilinear"
+                }
+
+                "Bilinear" -> {
+                    messenger?.send(
+                        Message.obtain(
+                            null,
+                            MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                            LanczosVideoEffect()
+                        )
                     )
-                )
-                filter.text = "Lanczos"
-            } else {
-                messenger?.send(
-                    Message.obtain(
-                        null,
-                        MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                        DefaultVideoEffect.shared
+                    filter.text = "Lanczos"
+                }
+
+                else -> {
+                    messenger?.send(
+                        Message.obtain(
+                            null,
+                            MediaProjectionService.MSG_SET_VIDEO_EFFECT,
+                            DefaultVideoEffect.shared
+                        )
                     )
-                )
-                filter.text = "Normal"
+                    filter.text = "Normal"
+                }
             }
         }
 
         button.setOnClickListener {
-            if (button.text == "Publish") {
-                if (messenger == null) {
-                    if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT) {
+            when (button.text) {
+                "Publish" -> {
+                    if (messenger == null) {
                         val mediaProjectionManager =
                             activity?.getSystemService(Service.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-                        startActivityForResult(
-                            mediaProjectionManager.createScreenCaptureIntent(),
-                            REQUEST_CAPTURE
-                        )
+                        startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
+                    } else {
+                        messenger?.send(Message.obtain(null, MediaProjectionService.MSG_CONNECT))
                     }
-                } else {
-                    messenger?.send(Message.obtain(null, 0))
+                    button.text = "Stop"
                 }
-                button.text = "Stop"
-            } else {
-                messenger?.send(Message.obtain(null, 1))
-                button.text = "Publish"
+
+                else -> {
+                    messenger?.send(Message.obtain(null, MediaProjectionService.MSG_CLOSE))
+                    button.text = "Publish"
+                }
             }
         }
         return v
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        activity?.windowManager?.defaultDisplay?.getMetrics(MediaProjectionService.metrics)
-        if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT) {
-            if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-                MediaProjectionService.data = data
-                Intent(activity, MediaProjectionService::class.java).also { intent ->
-                    if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
-                        activity?.startForegroundService(intent)
-                    } else {
-                        activity?.startService(intent)
-                    }
-                    activity?.bindService(
-                        intent,
-                        this@MediaProjectionTabFragment,
-                        Context.BIND_AUTO_CREATE
-                    )
-                }
-                Log.i(toString(), "mediaProjectionManager success")
-            }
-        }
     }
 
     override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
@@ -145,6 +152,5 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         }
 
         private val TAG = MediaProjectionTabFragment::class.java.simpleName
-        private const val REQUEST_CAPTURE = 1
     }
 }

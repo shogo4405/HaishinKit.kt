@@ -36,8 +36,14 @@ class MediaProjectionService : Service(), IEventListener {
     private var handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
-                MSG_CONNECT -> connection.connect(Preference.shared.rtmpURL)
-                MSG_CLOSE -> connection.close()
+                MSG_CONNECT -> {
+                    connection.connect(Preference.shared.rtmpURL)
+                }
+
+                MSG_CLOSE -> {
+                    connection.close()
+                }
+
                 MSG_SET_VIDEO_EFFECT -> {
                     if (msg.obj is LanczosVideoEffect) {
                         val lanczosVideoEffect = msg.obj as LanczosVideoEffect
