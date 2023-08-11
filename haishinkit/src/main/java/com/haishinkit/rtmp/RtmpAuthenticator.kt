@@ -24,7 +24,7 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
                     response += it
                 }
             } else {
-                result += "&opaque=$opaque"
+                result += "&opaque=${Uri.encode(opaque)}"
                 response += "$opaque"
             }
             val clientChallenge = String.format("%08x", (0 until Int.MAX_VALUE).random())
