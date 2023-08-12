@@ -338,7 +338,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                 audio.timestamp = timestamp / 1000
                 audio.streamID = stream.id
                 stream.doOutput(RtmpChunk.ONE, audio)
-                audioTimestamp = info.presentationTimeUs
+                audioTimestamp += audio.timestamp * 1000
                 return true
             }
         }
