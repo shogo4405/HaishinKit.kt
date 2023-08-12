@@ -7,6 +7,7 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.haishinkit.BuildConfig
@@ -79,11 +80,14 @@ class AudioRecordSource(
 
     override fun setUp() {
         if (utilizable) return
+        currentPresentationTimestamp = DEFAULT_TIMESTAMP
+        audioRecord?.startRecording()
         super.setUp()
     }
 
     override fun tearDown() {
         if (!utilizable) return
+        audioRecord?.stop()
         super.tearDown()
     }
 
@@ -92,8 +96,6 @@ class AudioRecordSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
-        currentPresentationTimestamp = DEFAULT_TIMESTAMP
-        audioRecord?.startRecording()
         isRunning.set(true)
     }
 
@@ -102,14 +104,17 @@ class AudioRecordSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        audioRecord?.stop()
         isRunning.set(false)
     }
 
     override fun read(byteBuffer: ByteBuffer): Int {
         val result = audioRecord?.read(byteBuffer, sampleCount * 2) ?: -1
         if (0 <= result) {
-            currentPresentationTimestamp += timestamp(result / 2)
+            if (currentPresentationTimestamp == DEFAULT_TIMESTAMP) {
+                currentPresentationTimestamp = System.nanoTime()
+            } else {
+                currentPresentationTimestamp += timestamp(result / 2)
+            }
         } else {
             val error = when (result) {
                 AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
