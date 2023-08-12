@@ -53,39 +53,52 @@ abstract class NetStream {
             field = value
         }
 
+    /**
+     * Specifies the NetStreamDrawable object.
+     */
     var drawable: NetStreamDrawable? = null
+
+    /**
+     * The current audioSource object.
+     */
+    var audioSource: AudioSource? = null
+        internal set
+
+    /**
+     * The current videoSource object.
+     */
+    var videoSource: VideoSource? = null
+        internal set
 
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()
-    internal var audio: AudioSource? = null
-    internal var video: VideoSource? = null
 
     /**
      * Attaches an audio stream to a NetStream.
      */
-    open fun attachAudio(audio: AudioSource?) {
+    fun attachAudio(audio: AudioSource?) {
         if (audio == null) {
-            this.audio?.tearDown()
-            this.audio = null
+            this.audioSource?.tearDown()
+            this.audioSource = null
             return
         }
-        this.audio = audio
-        this.audio?.stream = this
-        this.audio?.setUp()
+        this.audioSource = audio
+        this.audioSource?.stream = this
+        this.audioSource?.setUp()
     }
 
     /**
      * Attaches a video stream to a NetStream.
      */
-    open fun attachVideo(video: VideoSource?) {
+    fun attachVideo(video: VideoSource?) {
         if (video == null) {
-            this.video?.tearDown()
-            this.video = null
+            this.videoSource?.tearDown()
+            this.videoSource = null
             return
         }
-        this.video = video
-        this.video?.stream = this
-        this.video?.setUp()
+        this.videoSource = video
+        this.videoSource?.stream = this
+        this.videoSource?.setUp()
     }
 
     /**
@@ -97,9 +110,9 @@ abstract class NetStream {
      * Disposes the stream of memory management.
      */
     open fun dispose() {
-        audio?.tearDown()
+        audioSource?.tearDown()
         audioCodec.dispose()
-        video?.tearDown()
+        videoSource?.tearDown()
         videoCodec.dispose()
         drawable?.dispose()
     }

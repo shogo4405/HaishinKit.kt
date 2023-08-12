@@ -97,12 +97,12 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         hasFirstFlame = false
         when (mode) {
             Codec.Mode.ENCODE -> {
-                stream.audio?.let {
+                stream.audioSource?.let {
                     it.startRunning()
                     stream.audioCodec.listener = this
                     stream.audioCodec.startRunning()
                 }
-                stream.video?.let {
+                stream.videoSource?.let {
                     it.startRunning()
                     stream.videoCodec.listener = this
                     stream.videoCodec.startRunning()
@@ -123,10 +123,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         }
         when (mode) {
             Codec.Mode.ENCODE -> {
-                stream.audio?.stopRunning()
+                stream.audioSource?.stopRunning()
                 stream.audioCodec.stopRunning()
                 if (stream.drawable == null) {
-                    stream.video?.stopRunning()
+                    stream.videoSource?.stopRunning()
                 }
                 stream.videoCodec.stopRunning()
             }
@@ -206,9 +206,9 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                         false
                     }
                     (if (mime.contains("audio")) {
-                        stream.audio
+                        stream.audioSource
                     } else if (mime.contains("video")) {
-                        stream.video
+                        stream.videoSource
                     } else {
                         null
                     })?.let { source ->
