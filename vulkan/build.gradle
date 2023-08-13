@@ -1,9 +1,9 @@
-apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 
 android {
+    namespace 'com.haishinkit.vulkan'
     compileSdkVersion 33
 
     defaultConfig {
@@ -54,20 +54,6 @@ android {
     publishing {
         singleVariant("release")
     }
-    namespace 'com.haishinkit.vulkan'
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = "$library_group"
-                artifactId = "vulkan"
-                version = "$version_name"
-            }
-        }
-    }
 }
 
 dependencies {
@@ -75,22 +61,4 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-}
-
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    archiveClassifier.set("sources")
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "HaishinKit.kt"
-            url = uri("https://maven.pkg.github.com/shogo4405/HaishinKit.kt")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USER")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_API_TOKEN")
-            }
-        }
-    }
 }

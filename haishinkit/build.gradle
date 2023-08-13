@@ -1,4 +1,3 @@
-apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
@@ -9,6 +8,7 @@ task sourceJar(type: Jar) {
 }
 
 android {
+    namespace 'com.haishinkit'
     compileSdkVersion 33
     defaultConfig {
         minSdkVersion 21
@@ -38,20 +38,6 @@ android {
     publishing {
         singleVariant("release")
     }
-    namespace 'com.haishinkit'
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = "$library_group"
-                artifactId = "haishinkit"
-                version = "$version_name"
-            }
-        }
-    }
 }
 
 dependencies {
@@ -64,23 +50,3 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.10.1'
     testImplementation 'junit:junit:4.13.2'
 }
-
-repositories {
-    mavenCentral()
-    google()
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "HaishinKit.kt"
-            url = uri("https://maven.pkg.github.com/shogo4405/HaishinKit.kt")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USER")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_API_TOKEN")
-            }
-        }
-    }
-}
-
-
