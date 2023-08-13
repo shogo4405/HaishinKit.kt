@@ -108,6 +108,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     stream.videoCodec.startRunning()
                 }
             }
+
             Codec.Mode.DECODE -> {
                 mediaLink.startRunning()
             }
@@ -130,6 +131,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                 }
                 stream.videoCodec.stopRunning()
             }
+
             Codec.Mode.DECODE -> {
                 clear()
                 mediaLink.stopRunning()
@@ -176,6 +178,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     Log.w(TAG, "", e)
                 }
             }
+
             Codec.MIME_AUDIO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
@@ -195,6 +198,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     Log.w(TAG, "", e)
                 }
             }
+
             else -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
@@ -242,6 +246,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     Event.RTMP_STATUS, false, RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data("")
                 )
             }
+
             Codec.MIME_VIDEO_AVC -> {
                 val config = AvcConfigurationRecord.create(mediaFormat)
                 val video = stream.messageFactory.createRtmpVideoMessage()
@@ -258,9 +263,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                 video.compositeTime = 0
                 stream.doOutput(RtmpChunk.ZERO, video)
             }
+
             Codec.MIME_AUDIO_RAW -> {
                 mediaLink.audioTrack = stream.createAudioTrack(mediaFormat)
             }
+
             Codec.MIME_AUDIO_MP4A -> {
                 val config = mediaFormat.getByteBuffer("csd-0") ?: return
                 val audio = stream.messageFactory.createRtmpAudioMessage()
@@ -293,13 +300,20 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                 )
                 return false
             }
+
             Codec.MIME_VIDEO_AVC -> {
                 if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     return true
                 }
                 frameTracker?.track(FrameTracker.TYPE_VIDEO, SystemClock.uptimeMillis())
                 if (videoTimestamp == 0L) {
-                    videoTimestamp = info.presentationTimeUs
+                    val diff =
+                        if (stream.audioSource != null && 0 < audioTimestamp) {
+                            info.presentationTimeUs - audioTimestamp / 1000
+                        } else {
+                            0
+                        }
+                    videoTimestamp = info.presentationTimeUs - diff
                 }
                 val timestamp = (info.presentationTimeUs - videoTimestamp).toInt()
                 val keyframe = info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
@@ -314,13 +328,15 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                 video.compositeTime = 0
                 stream.doOutput(RtmpChunk.ONE, video)
                 stream.frameCount.incrementAndGet()
-                videoTimestamp = info.presentationTimeUs
+                videoTimestamp += video.timestamp * 1000
                 return true
             }
+
             Codec.MIME_AUDIO_RAW -> {
                 mediaLink.queueAudio(index, buffer, info.presentationTimeUs, true)
                 return false
             }
+
             Codec.MIME_AUDIO_MP4A -> {
                 if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     return true
