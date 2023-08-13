@@ -103,26 +103,6 @@ dependencies {
 }
 ```
 
-**GitHub Packages**
-```groovy
-allprojects {
-  repositories {
-    maven {
-      url = uri("https://maven.pkg.github.com/shogo4405/HaishinKit.kt")
-      credentials {
-        username = System.getenv("GITHUB_USER")
-        password = System.getenv("GITHUB_API_TOKEN")
-      }
-    }
-  }
-}
-
-dependencies {
-  implementation 'com.haishinkit:haishinkit:x.x.x'
-  implementation 'com.haishinkit:vulkan:x.x.x'
-}
-```
-
 ### Dependencies
 |-|minSdk|Android|Requirements|Status|
 |:----|:----|:----|:-----|:----|
