@@ -5,7 +5,7 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '1.9.22'
     ext.library_group = 'com.haishinkit'
     ext.version_name = "0.11.0"
 
