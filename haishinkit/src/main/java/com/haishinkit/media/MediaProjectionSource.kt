@@ -30,6 +30,24 @@ class MediaProjectionSource(
     override var utilizable: Boolean = false
 ) :
     VideoSource {
+
+    private class Callback : MediaProjection.Callback() {
+        override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
+            super.onCapturedContentVisibilityChanged(isVisible)
+            Log.d(TAG, "Callback#onCapturedContentVisibilityChanged")
+        }
+
+        override fun onCapturedContentResize(width: Int, height: Int) {
+            super.onCapturedContentResize(width, height)
+            Log.d(TAG, "Callback#onCapturedContentResize")
+        }
+
+        override fun onStop() {
+            super.onStop()
+            Log.d(TAG, "Callback#onStop")
+        }
+    }
+
     /**
      * Specifies scale that defines a transformation that resizes an image.
      */
@@ -124,6 +142,8 @@ class MediaProjectionSource(
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
     private var isAvailableRotatesWithContentFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
+    private val callback: Callback by lazy { Callback() }
+
     override fun setUp() {
         if (utilizable) return
         val windowManager =
@@ -132,6 +152,8 @@ class MediaProjectionSource(
         if (isRotatesWithContent) {
             orientationEventListener?.enable()
         }
+        // Android 14 must register an callback.
+        mediaProjection.registerCallback(callback, null)
         rotation = windowManager.defaultDisplay.rotation
         resolution =
             Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
@@ -143,6 +165,7 @@ class MediaProjectionSource(
         if (isRotatesWithContent) {
             orientationEventListener?.disable()
         }
+        mediaProjection.unregisterCallback(callback)
         mediaProjection.stop()
         super.tearDown()
     }
@@ -167,6 +190,7 @@ class MediaProjectionSource(
     /**
      * Register a listener to receive notifications about when the MediaProjection changes state.
      */
+    @Suppress("UNUSED")
     fun registerCallback(callback: MediaProjection.Callback, handler: Handler?) {
         mediaProjection.registerCallback(callback, handler)
     }
@@ -174,6 +198,7 @@ class MediaProjectionSource(
     /**
      * Unregister a MediaProjection listener.
      */
+    @Suppress("UNUSED")
     fun unregisterCallback(callback: MediaProjection.Callback) {
         mediaProjection.unregisterCallback(callback)
     }

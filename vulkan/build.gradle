@@ -4,11 +4,11 @@ apply plugin: 'org.jetbrains.dokka'
 
 android {
     namespace 'com.haishinkit.vulkan'
-    compileSdkVersion 33
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 33
+        targetSdkVersion 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

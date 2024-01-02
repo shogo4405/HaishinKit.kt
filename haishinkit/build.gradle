@@ -2,17 +2,17 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 
-task sourceJar(type: Jar) {
+tasks.register('sourceJar', Jar) {
     from android.sourceSets.main.java.srcDirs
     archiveClassifier.set("sources")
 }
 
 android {
     namespace 'com.haishinkit'
-    compileSdkVersion 33
+    compileSdk 34
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.version_name}\""
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
