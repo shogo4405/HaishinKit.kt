@@ -34,17 +34,23 @@ class MediaProjectionSource(
     private class Callback : MediaProjection.Callback() {
         override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
             super.onCapturedContentVisibilityChanged(isVisible)
-            Log.d(TAG, "Callback#onCapturedContentVisibilityChanged")
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Callback#onCapturedContentVisibilityChanged")
+            }
         }
 
         override fun onCapturedContentResize(width: Int, height: Int) {
             super.onCapturedContentResize(width, height)
-            Log.d(TAG, "Callback#onCapturedContentResize")
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Callback#onCapturedContentResize")
+            }
         }
 
         override fun onStop() {
             super.onStop()
-            Log.d(TAG, "Callback#onStop")
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Callback#onStop")
+            }
         }
     }
 
