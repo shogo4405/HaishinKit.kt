@@ -13,16 +13,19 @@ void ImageReader::SetUp(int32_t width, int32_t height, int32_t format) {
     buffers.resize(maxImages);
     images.resize(maxImages);
 
-    AImageReader_newWithUsage(
+    auto result = AImageReader_newWithUsage(
             width,
             height,
             format,
-            AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
-            AHARDWAREBUFFER_USAGE_CPU_READ_RARELY,
+            AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE,
             maxImages + 2,
             &reader);
 
-    AImageReader_getWindow(reader, &window);
+    if (result == AMEDIA_OK) {
+        AImageReader_getWindow(reader, &window);
+    } else {
+        LOGE("Failed to AImageReader_newWithUsage error: %d", result);
+    }
 }
 
 void ImageReader::TearDown() {
@@ -38,6 +41,9 @@ ANativeWindow *ImageReader::GetWindow() {
 }
 
 AHardwareBuffer *ImageReader::GetLatestBuffer() {
+    if (reader == nullptr) {
+        return nullptr;
+    }
     if (cursor == buffers.size()) {
         cursor = 0;
     }

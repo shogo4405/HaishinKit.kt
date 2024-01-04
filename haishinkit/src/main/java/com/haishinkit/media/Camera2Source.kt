@@ -263,8 +263,7 @@ class Camera2Source(
     }
 
     companion object {
-        private const val IMAGE_FORMAT = ImageFormat.YUV_420_888
-
+        private const val IMAGE_FORMAT = 0x00000022 // AIMAGE_FORMAT_PRIVATE
         private const val DEFAULT_CAMERA_ID = "0"
         private val TAG = Camera2Source::class.java.simpleName
     }

@@ -148,7 +148,7 @@ class VkPixelTransform : PixelTransform {
         format: Int,
         lambda: (surface: Surface) -> Unit
     ) {
-        lambda(nativeCreateInputSurface(width, height, format))
+        nativeCreateInputSurface(width, height, format)?.let { lambda(it) }
     }
 
     override fun dispose() {
@@ -163,7 +163,7 @@ class VkPixelTransform : PixelTransform {
     private external fun nativeSetVideoGravity(videoGravity: Int)
     private external fun nativeSetImageExtent(width: Int, height: Int)
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
-    private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface
+    private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface?
     private external fun nativeSetRotatesWithContent(expectedOrientationSynchronize: Boolean)
     private external fun nativeSetFrameRate(frameRate: Int)
     private external fun nativeSetVideoEffect(videoEffect: VideoEffect)
