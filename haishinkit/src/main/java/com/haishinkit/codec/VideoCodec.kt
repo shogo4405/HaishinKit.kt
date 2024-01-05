@@ -179,11 +179,11 @@ class VideoCodec : Codec(MIME) {
     companion object {
         const val MIME = MIME_VIDEO_AVC
 
-        const val DEFAULT_BIT_RATE = 500 * 1000
+        const val DEFAULT_BIT_RATE = 640 * 1000
         const val DEFAULT_FRAME_RATE = 30
         const val DEFAULT_I_FRAME_INTERVAL = 2
-        const val DEFAULT_WIDTH = 640
-        const val DEFAULT_HEIGHT = 360
+        const val DEFAULT_WIDTH = 854
+        const val DEFAULT_HEIGHT = 480
         const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
         const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
         const val DEFAULT_COLOR_FORMAT = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
