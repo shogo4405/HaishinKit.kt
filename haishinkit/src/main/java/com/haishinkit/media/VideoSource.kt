@@ -9,5 +9,5 @@ interface VideoSource : Source {
     /**
      * The video size that is the current source.
      */
-    val resolution: Size
+    val size: Size
 }

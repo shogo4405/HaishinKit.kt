@@ -47,8 +47,8 @@ class MediaProjectionService : Service(), IEventListener {
                 MSG_SET_VIDEO_EFFECT -> {
                     if (msg.obj is LanczosVideoEffect) {
                         val lanczosVideoEffect = msg.obj as LanczosVideoEffect
-                        lanczosVideoEffect.texelWidth = videoSource.resolution.width.toFloat()
-                        lanczosVideoEffect.texelHeight = videoSource.resolution.height.toFloat()
+                        lanczosVideoEffect.texelWidth = videoSource.size.width.toFloat()
+                        lanczosVideoEffect.texelHeight = videoSource.size.height.toFloat()
                         stream.videoEffect = lanczosVideoEffect
                         return
                     }
@@ -95,8 +95,8 @@ class MediaProjectionService : Service(), IEventListener {
                 metrics
             )
             stream.attachVideo(source)
-            stream.videoSetting.width = source.resolution.width shr 2
-            stream.videoSetting.height = source.resolution.height shr 2
+            stream.videoSetting.width = source.size.width shr 2
+            stream.videoSetting.height = source.size.height shr 2
             videoSource = source
             Log.e(TAG, "${stream.videoSetting.width}:${stream.videoSetting.height}")
         }

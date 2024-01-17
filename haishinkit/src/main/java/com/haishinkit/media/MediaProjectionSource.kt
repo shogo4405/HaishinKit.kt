@@ -64,15 +64,15 @@ class MediaProjectionSource(
     var isRotatesWithContent = true
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
-    override var resolution = Size(0, 0)
+    override var size = Size(0, 0)
         set(value) {
             if (field == value) {
                 return
             }
             field = value
             stream?.videoCodec?.pixelTransform?.createInputSurface(
-                resolution.width,
-                resolution.height,
+                size.width,
+                size.height,
                 0x1
             ) {
                 var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
@@ -81,8 +81,8 @@ class MediaProjectionSource(
                 }
                 virtualDisplay = mediaProjection.createVirtualDisplay(
                     DEFAULT_DISPLAY_NAME,
-                    resolution.width,
-                    resolution.height,
+                    size.width,
+                    size.height,
                     metrics.densityDpi,
                     flags,
                     it,
@@ -134,10 +134,10 @@ class MediaProjectionSource(
                     val windowManager =
                         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                     rotation = windowManager.defaultDisplay.rotation
-                    resolution = if (resolution.width < resolution.height) {
-                        resolution.swap(rotation == 1 || rotation == 3)
+                    size = if (size.width < size.height) {
+                        size.swap(rotation == 1 || rotation == 3)
                     } else {
-                        resolution.swap(rotation == 0 || rotation == 4)
+                        size.swap(rotation == 0 || rotation == 4)
                     }
                 }
             }
@@ -163,7 +163,7 @@ class MediaProjectionSource(
         // Android 14 must register an callback.
         mediaProjection.registerCallback(callback, null)
         rotation = windowManager.defaultDisplay.rotation
-        resolution =
+        size =
             Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
         isRunning.set(true)
     }

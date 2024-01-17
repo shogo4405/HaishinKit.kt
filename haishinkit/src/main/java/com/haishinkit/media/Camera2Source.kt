@@ -56,7 +56,7 @@ class Camera2Source(
         private set
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
-    override var resolution = Size(0, 0)
+    override var size = Size(0, 0)
     private var cameraId: String = DEFAULT_CAMERA_ID
     private var manager: CameraManager =
         context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -162,16 +162,16 @@ class Camera2Source(
     override fun onOpened(camera: CameraDevice) {
         device = camera
         surfaces.clear()
-        resolution = getCameraSize()
+        size = getCameraSize()
         stream?.drawable?.apply {
             imageOrientation = this@Camera2Source.imageOrientation
-            createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
+            createInputSurface(size.width, size.height, IMAGE_FORMAT) {
                 createCaptureSession(it)
             }
         }
         stream?.videoCodec?.pixelTransform?.apply {
             imageOrientation = this@Camera2Source.imageOrientation
-            createInputSurface(resolution.width, resolution.height, IMAGE_FORMAT) {
+            createInputSurface(size.width, size.height, IMAGE_FORMAT) {
                 createCaptureSession(it)
             }
         }

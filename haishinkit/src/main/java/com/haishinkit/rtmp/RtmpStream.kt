@@ -393,8 +393,8 @@ class RtmpStream(internal var connection: RtmpConnection) :
     private fun toMetaData(): Map<String, Any> {
         val metadata = mutableMapOf<String, Any>()
         videoSource?.let {
-            metadata["width"] = it.resolution.width
-            metadata["height"] = it.resolution.height
+            metadata["width"] = it.size.width
+            metadata["height"] = it.size.height
             metadata["framerate"] = videoCodec.frameRate
             metadata["videocodecid"] = FlvVideoCodec.AVC.toInt()
             metadata["videodatarate"] = videoCodec.bitRate / 1000
