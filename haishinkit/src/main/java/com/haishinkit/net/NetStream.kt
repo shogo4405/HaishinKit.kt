@@ -18,6 +18,7 @@ import com.haishinkit.view.NetStreamDrawable
 /**
  * The NetStream class is the foundation of a RtmpStream.
  */
+@Suppress("UNUSED")
 abstract class NetStream {
     /**
      * Specifies the video codec settings.
@@ -62,13 +63,25 @@ abstract class NetStream {
      * The current audioSource object.
      */
     var audioSource: AudioSource? = null
-        internal set
+        internal set(value) {
+            field?.stopRunning()
+            field?.stream = null
+            field = value
+            field?.stream = this
+            field?.startRunning()
+        }
 
     /**
      * The current videoSource object.
      */
     var videoSource: VideoSource? = null
-        internal set
+        internal set(value) {
+            field?.stopRunning()
+            field?.stream = null
+            field = value
+            field?.stream = this
+            field?.startRunning()
+        }
 
     internal val audioCodec = AudioCodec()
     internal val videoCodec = VideoCodec()
@@ -78,13 +91,10 @@ abstract class NetStream {
      */
     fun attachAudio(audio: AudioSource?) {
         if (audio == null) {
-            this.audioSource?.tearDown()
             this.audioSource = null
             return
         }
         this.audioSource = audio
-        this.audioSource?.stream = this
-        this.audioSource?.setUp()
     }
 
     /**
@@ -92,13 +102,10 @@ abstract class NetStream {
      */
     fun attachVideo(video: VideoSource?) {
         if (video == null) {
-            this.videoSource?.tearDown()
             this.videoSource = null
             return
         }
         this.videoSource = video
-        this.videoSource?.stream = this
-        this.videoSource?.setUp()
     }
 
     /**
@@ -110,10 +117,10 @@ abstract class NetStream {
      * Disposes the stream of memory management.
      */
     open fun dispose() {
-        audioSource?.tearDown()
         audioCodec.dispose()
-        videoSource?.tearDown()
+        audioSource = null
         videoCodec.dispose()
+        videoSource = null
         drawable?.dispose()
     }
 

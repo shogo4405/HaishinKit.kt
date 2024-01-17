@@ -17,16 +17,17 @@ import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
-import com.haishinkit.lang.Utilize
+import com.haishinkit.lang.Running
 import com.haishinkit.util.aspectRatio
 import com.haishinkit.util.swap
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.opengles.GL10
 
 internal class Kernel(
-    override var utilizable: Boolean = false
-) : Utilize {
+    override val isRunning: AtomicBoolean = AtomicBoolean(false)
+) : Running {
     var outputSurface: Surface? = null
         set(value) {
             field = value
@@ -112,8 +113,8 @@ internal class Kernel(
             field = value
         }
 
-    override fun setUp() {
-        if (utilizable) return
+    override fun startRunning() {
+        if (isRunning.get()) return
 
         display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
         if (display === EGL14.EGL_NO_DISPLAY) {
@@ -181,13 +182,13 @@ internal class Kernel(
             GL10.GL_CLAMP_TO_EDGE
         )
 
-        utilizable = true
+        isRunning.set(false)
     }
 
-    override fun tearDown() {
-        if (!utilizable) return
+    override fun stopRunning() {
+        if (!isRunning.get()) return
         program = null
-        utilizable = false
+        isRunning.set(false)
     }
 
     fun render(textureId: Int, textureSize: Size, timestamp: Long) {

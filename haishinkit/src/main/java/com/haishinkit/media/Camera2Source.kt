@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * A video source that captures a camera by the Camera2 API.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 class Camera2Source(
-    private val context: Context,
-    override var utilizable: Boolean = false
+    private val context: Context
 ) : VideoSource, CameraDevice.StateCallback() {
     /**
      * The Listener interface is the primary method for handling events.
@@ -128,23 +128,12 @@ class Camera2Source(
         open(expect)
     }
 
-    override fun setUp() {
-        if (utilizable) return
-        stream?.videoCodec?.setAssetManager(context.assets)
-        super.setUp()
-    }
-
-    override fun tearDown() {
-        if (!utilizable) return
-        device = null
-        super.tearDown()
-    }
-
     override fun startRunning() {
         Log.d(TAG, "${this::startRunning.name}: $device")
         if (isRunning.get()) {
             return
         }
+        stream?.videoCodec?.setAssetManager(context.assets)
         isRunning.set(true)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -186,7 +175,6 @@ class Camera2Source(
                 createCaptureSession(it)
             }
         }
-        setUp()
     }
 
     override fun onDisconnected(camera: CameraDevice) {

@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * An audio source that captures a microphone by the AudioRecord api.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 class AudioRecordSource(
-    private val context: Context,
-    override var utilizable: Boolean = false
+    private val context: Context
 ) : AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
@@ -77,24 +77,13 @@ class AudioRecordSource(
     private var encoding = DEFAULT_ENCODING
     private var sampleCount = DEFAULT_SAMPLE_COUNT
 
-    override fun setUp() {
-        if (utilizable) return
-        currentPresentationTimestamp = DEFAULT_TIMESTAMP
-        audioRecord?.startRecording()
-        super.setUp()
-    }
-
-    override fun tearDown() {
-        if (!utilizable) return
-        audioRecord?.stop()
-        super.tearDown()
-    }
-
     override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
+        currentPresentationTimestamp = DEFAULT_TIMESTAMP
+        audioRecord?.startRecording()
         isRunning.set(true)
     }
 
@@ -103,6 +92,7 @@ class AudioRecordSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
+        audioRecord?.stop()
         isRunning.set(false)
     }
 

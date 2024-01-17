@@ -84,8 +84,8 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
 
     var handler: Handler? = null
         set(value) {
-            field?.post { kernel.tearDown() }
-            value?.post { kernel.setUp() }
+            field?.post { kernel.stopRunning() }
+            value?.post { kernel.startRunning() }
             field = value
         }
 
@@ -158,7 +158,7 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
     override fun dispose() {
         running = false
         texture = null
-        kernel.tearDown()
+        kernel.stopRunning()
     }
 
     private fun startRunning() {

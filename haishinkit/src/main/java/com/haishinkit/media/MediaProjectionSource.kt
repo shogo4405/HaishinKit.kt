@@ -27,7 +27,6 @@ class MediaProjectionSource(
     private val context: Context,
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
-    override var utilizable: Boolean = false
 ) :
     VideoSource {
 
@@ -150,8 +149,11 @@ class MediaProjectionSource(
 
     private val callback: Callback by lazy { Callback() }
 
-    override fun setUp() {
-        if (utilizable) return
+    override fun startRunning() {
+        if (isRunning.get()) return
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "startRunning()")
+        }
         val windowManager =
             context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         stream?.videoCodec?.setAssetManager(context.assets)
@@ -163,24 +165,6 @@ class MediaProjectionSource(
         rotation = windowManager.defaultDisplay.rotation
         resolution =
             Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
-        super.setUp()
-    }
-
-    override fun tearDown() {
-        if (!utilizable) return
-        if (isRotatesWithContent) {
-            orientationEventListener?.disable()
-        }
-        mediaProjection.unregisterCallback(callback)
-        mediaProjection.stop()
-        super.tearDown()
-    }
-
-    override fun startRunning() {
-        if (isRunning.get()) return
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "startRunning()")
-        }
         isRunning.set(true)
     }
 
@@ -189,6 +173,11 @@ class MediaProjectionSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
+        if (isRotatesWithContent) {
+            orientationEventListener?.disable()
+        }
+        mediaProjection.unregisterCallback(callback)
+        mediaProjection.stop()
         virtualDisplay = null
         isRunning.set(false)
     }
