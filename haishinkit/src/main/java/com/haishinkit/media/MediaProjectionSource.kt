@@ -1,6 +1,7 @@
 package com.haishinkit.media
 
 import android.content.Context
+import android.graphics.Rect
 import android.hardware.SensorManager
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
@@ -12,36 +13,38 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
 import android.view.OrientationEventListener
+import android.view.Surface
 import android.view.WindowManager
 import androidx.annotation.ChecksSdkIntAtLeast
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.net.NetStream
+import com.haishinkit.screen.Video
 import com.haishinkit.util.swap
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A video source that captures a display by the MediaProjection API.
  */
+@Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class MediaProjectionSource(
     private val context: Context,
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
-) :
-    VideoSource {
+) : VideoSource, Video.OnSurfaceChangedListener {
 
     private class Callback : MediaProjection.Callback() {
         override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
             super.onCapturedContentVisibilityChanged(isVisible)
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Callback#onCapturedContentVisibilityChanged")
+                Log.d(TAG, "Callback#onCapturedContentVisibilityChanged:${isVisible}")
             }
         }
 
         override fun onCapturedContentResize(width: Int, height: Int) {
             super.onCapturedContentResize(width, height)
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Callback#onCapturedContentResize")
+                Log.d(TAG, "Callback#onCapturedContentResize:${width}:${height}")
             }
         }
 
@@ -58,39 +61,11 @@ class MediaProjectionSource(
      */
     var scale = 1.0f
 
-    /**
-     * Specifies isRotatesWithContent indicates whether rotates a content with device orientation or not.
-     */
     var isRotatesWithContent = true
+
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
-    override var size = Size(0, 0)
-        set(value) {
-            if (field == value) {
-                return
-            }
-            field = value
-            stream?.videoCodec?.pixelTransform?.createInputSurface(
-                size.width,
-                size.height,
-                0x1
-            ) {
-                var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
-                if (isAvailableRotatesWithContentFlag) {
-                    flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT
-                }
-                virtualDisplay = mediaProjection.createVirtualDisplay(
-                    DEFAULT_DISPLAY_NAME,
-                    size.width,
-                    size.height,
-                    metrics.densityDpi,
-                    flags,
-                    it,
-                    null,
-                    handler
-                )
-            }
-        }
+    override val screen: Video by lazy { Video() }
     private var virtualDisplay: VirtualDisplay? = null
         set(value) {
             field?.release()
@@ -116,7 +91,7 @@ class MediaProjectionSource(
                 return
             }
             field = value
-            stream?.videoCodec?.pixelTransform?.imageOrientation = when (value) {
+            screen.imageOrientation = when (value) {
                 0 -> ImageOrientation.UP
                 1 -> ImageOrientation.LEFT
                 2 -> ImageOrientation.DOWN
@@ -134,11 +109,12 @@ class MediaProjectionSource(
                     val windowManager =
                         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                     rotation = windowManager.defaultDisplay.rotation
-                    size = if (size.width < size.height) {
-                        size.swap(rotation == 1 || rotation == 3)
+                    screen.videoSize = if (screen.videoSize.width < screen.videoSize.height) {
+                        screen.videoSize.swap(rotation == 1 || rotation == 3)
                     } else {
-                        size.swap(rotation == 0 || rotation == 4)
+                        screen.videoSize.swap(rotation == 0 || rotation == 4)
                     }
+
                 }
             }
         }
@@ -149,22 +125,38 @@ class MediaProjectionSource(
 
     private val callback: Callback by lazy { Callback() }
 
+    /**
+     * Register a listener to receive notifications about when the MediaProjection changes state.
+     */
+    fun registerCallback(callback: MediaProjection.Callback, handler: Handler?) {
+        mediaProjection.registerCallback(callback, handler)
+    }
+
+    /**
+     * Unregister a MediaProjection listener.
+     */
+    fun unregisterCallback(callback: MediaProjection.Callback) {
+        mediaProjection.unregisterCallback(callback)
+    }
+
     override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
-        val windowManager =
-            context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        stream?.videoCodec?.setAssetManager(context.assets)
+        screen.listener = this
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        stream?.screen?.assetManager = context.assets
         if (isRotatesWithContent) {
             orientationEventListener?.enable()
         }
         // Android 14 must register an callback.
         mediaProjection.registerCallback(callback, null)
         rotation = windowManager.defaultDisplay.rotation
-        size =
+        screen.videoSize =
             Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
+        stream?.screen?.bounds = Rect(0, 0, screen.videoSize.width, screen.videoSize.height)
+        stream?.screen?.addChild(screen)
         isRunning.set(true)
     }
 
@@ -176,26 +168,31 @@ class MediaProjectionSource(
         if (isRotatesWithContent) {
             orientationEventListener?.disable()
         }
+        stream?.screen?.removeChild(screen)
+        screen.listener = null
         mediaProjection.unregisterCallback(callback)
         mediaProjection.stop()
         virtualDisplay = null
         isRunning.set(false)
     }
 
-    /**
-     * Register a listener to receive notifications about when the MediaProjection changes state.
-     */
-    @Suppress("UNUSED")
-    fun registerCallback(callback: MediaProjection.Callback, handler: Handler?) {
-        mediaProjection.registerCallback(callback, handler)
-    }
-
-    /**
-     * Unregister a MediaProjection listener.
-     */
-    @Suppress("UNUSED")
-    fun unregisterCallback(callback: MediaProjection.Callback) {
-        mediaProjection.unregisterCallback(callback)
+    override fun onSurfaceChanged(surface: Surface?) {
+        var flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
+        if (isAvailableRotatesWithContentFlag) {
+            flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT
+        }
+        handler?.post {
+            virtualDisplay = mediaProjection.createVirtualDisplay(
+                DEFAULT_DISPLAY_NAME,
+                metrics.widthPixels,
+                metrics.heightPixels,
+                metrics.densityDpi,
+                flags,
+                surface,
+                null,
+                handler
+            )
+        }
     }
 
     companion object {

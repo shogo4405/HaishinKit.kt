@@ -15,10 +15,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PixelTransformFactory.registerPixelTransform(VkPixelTransform::class)
-        }
-
         setContentView(R.layout.activity_main)
 
         val navigation = findViewById<BottomNavigationView>(R.id.navigation)

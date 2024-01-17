@@ -1,9 +1,8 @@
 #version 300 es
-#extension GL_OES_EGL_image_external_essl3 : require
 precision mediump float;
 in vec2 vTexcoord;
 out vec4 fragColor;
-uniform samplerExternalOES uTexture;
+uniform sampler2D uTexture;
 
 vec4 textureBilinear(sampler2D tex, vec2 texCoords) {
     vec2 textureSize = vec2(textureSize(tex, 0));

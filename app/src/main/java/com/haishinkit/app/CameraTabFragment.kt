@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
 import android.os.Bundle
@@ -22,22 +23,23 @@ import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.effect.DefaultVideoEffect
-import com.haishinkit.graphics.effect.LanczosVideoEffect
 import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.screen.Text
 import com.haishinkit.view.NetStreamDrawable
 import java.io.File
 import java.io.FileOutputStream
 
 class CameraTabFragment : Fragment(), IEventListener {
+
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
     private lateinit var cameraView: NetStreamDrawable
     private lateinit var cameraSource: Camera2Source
-
+    lateinit var sample: Text
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.let {
@@ -45,10 +47,9 @@ class CameraTabFragment : Fragment(), IEventListener {
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.CAMERA), 1)
             }
-            if (ContextCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.RECORD_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
+            if (
+                ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) !=
+                PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
             }
@@ -59,6 +60,15 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         cameraSource = Camera2Source(requireContext())
         stream.attachVideo(cameraSource)
+
+        stream.screen.assetManager = requireContext().assets
+        stream.screen.bounds = Rect(0, 0, 1024, 576)
+
+        val text = Text()
+        text.textSize = 60f
+        text.textValue = "Hello World!!"
+        stream.screen.addChild(text)
+
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
 
@@ -91,33 +101,36 @@ class CameraTabFragment : Fragment(), IEventListener {
                     outputStream.flush()
                 }
 
-                val fileUri: Uri? = try {
-                    FileProvider.getUriForFile(
-                        requireContext(),
-                        requireContext().packageName + ".fileprovider",
-                        file
-                    )
-                } catch (e: IllegalArgumentException) {
-                    null
-                }
-
-                fileUri ?: run {
-                    return@readPixels
-                }
-
-                val builder = this@CameraTabFragment.activity?.let { it1 ->
-                    ShareCompat.IntentBuilder.from(
-                        it1
-                    )
-                }?.apply {
-                    addStream(fileUri)
-                    setType(requireContext().contentResolver.getType(fileUri))
-                }?.createChooserIntent()?.apply {
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    resolveActivity(requireContext().packageManager)?.also {
-                        startActivity(this)
+                val fileUri: Uri? =
+                    try {
+                        FileProvider.getUriForFile(
+                            requireContext(),
+                            requireContext().packageName + ".fileprovider",
+                            file
+                        )
+                    } catch (e: IllegalArgumentException) {
+                        null
                     }
-                }
+
+                fileUri
+                    ?: run {
+                        return@readPixels
+                    }
+
+                val builder =
+                    this@CameraTabFragment.activity
+                        ?.let { it1 -> ShareCompat.IntentBuilder.from(it1) }
+                        ?.apply {
+                            addStream(fileUri)
+                            setType(requireContext().contentResolver.getType(fileUri))
+                        }
+                        ?.createChooserIntent()
+                        ?.apply {
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            resolveActivity(requireContext().packageManager)?.also {
+                                startActivity(this)
+                            }
+                        }
             }
         }
 
@@ -133,14 +146,13 @@ class CameraTabFragment : Fragment(), IEventListener {
         }
 
         val switchButton = v.findViewById<Button>(R.id.switch_button)
-        switchButton.setOnClickListener {
-            cameraSource.switchCamera()
-        }
-        cameraView = if (Preference.useSurfaceView) {
-            v.findViewById(R.id.surface_view)
-        } else {
-            v.findViewById(R.id.texture_view)
-        }
+        switchButton.setOnClickListener { cameraSource.switchCamera() }
+        cameraView =
+            if (Preference.useSurfaceView) {
+                v.findViewById(R.id.surface_view)
+            } else {
+                v.findViewById(R.id.texture_view)
+            }
         cameraView.attachStream(stream)
         return v
     }
@@ -170,10 +182,11 @@ class CameraTabFragment : Fragment(), IEventListener {
     }
 
     companion object {
+
+        private val TAG = CameraTabFragment::class.java.simpleName
+
         fun newInstance(): CameraTabFragment {
             return CameraTabFragment()
         }
-
-        private val TAG = CameraTabFragment::class.java.simpleName
     }
 }

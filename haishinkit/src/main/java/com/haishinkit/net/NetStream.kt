@@ -13,6 +13,7 @@ import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.media.AudioSource
 import com.haishinkit.media.VideoSource
+import com.haishinkit.screen.Screen
 import com.haishinkit.view.NetStreamDrawable
 
 /**
@@ -20,6 +21,15 @@ import com.haishinkit.view.NetStreamDrawable
  */
 @Suppress("UNUSED")
 abstract class NetStream {
+    /**
+     * The offscreen renderer for video output.
+     */
+    val screen: Screen by lazy {
+        val screen = Screen.create()
+        videoCodec.pixelTransform.screen = screen
+        screen
+    }
+
     /**
      * Specifies the video codec settings.
      */
@@ -41,16 +51,6 @@ abstract class NetStream {
         set(value) {
             videoCodec.pixelTransform.videoEffect = value ?: DefaultVideoEffect.shared
             drawable?.videoEffect = value ?: DefaultVideoEffect.shared
-            field = value
-        }
-
-    /**
-     * Specifies the deviceOrientation that is current phone device orientation.
-     */
-    var deviceOrientation: Int = 0
-        set(value) {
-            videoCodec.pixelTransform.deviceOrientation = value
-            drawable?.deviceOrientation = value
             field = value
         }
 
@@ -121,7 +121,8 @@ abstract class NetStream {
         audioSource = null
         videoCodec.dispose()
         videoSource = null
-        drawable?.dispose()
+        drawable = null
+        screen.dispose()
     }
 
     internal fun createAudioTrack(mediaFormat: MediaFormat): AudioTrack {

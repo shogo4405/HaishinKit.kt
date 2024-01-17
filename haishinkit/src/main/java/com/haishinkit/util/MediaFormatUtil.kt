@@ -2,6 +2,7 @@ package com.haishinkit.util
 
 import android.media.MediaFormat
 
+@Suppress("UNUSED")
 object MediaFormatUtil {
     private const val CROP_LEFT = "crop-left"
     private const val CROP_RIGHT = "crop-right"

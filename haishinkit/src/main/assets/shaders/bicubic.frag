@@ -1,9 +1,8 @@
 #version 300 es
-#extension GL_OES_EGL_image_external_essl3 : require
 precision mediump float;
 in vec2 vTexcoord;
 out vec4 fragColor;
-uniform samplerExternalOES uTexture;
+uniform sampler2D uTexture;
 
 vec4 cubic(float v) {
     vec4 n = vec4(1.0, 2.0, 3.0, 4.0) - v;

@@ -18,8 +18,7 @@ import kotlin.properties.Delegates
 @Suppress("unused")
 abstract class Codec(private val mime: String) : Running {
     enum class Mode {
-        ENCODE,
-        DECODE
+        ENCODE, DECODE
     }
 
     @Suppress("unused")
@@ -43,10 +42,7 @@ abstract class Codec(private val mime: String) : Running {
         fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int)
         fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
         fun onSampleOutput(
-            mime: String,
-            index: Int,
-            info: MediaCodec.BufferInfo,
-            buffer: ByteBuffer
+            mime: String, index: Int, info: MediaCodec.BufferInfo, buffer: ByteBuffer
         ): Boolean
     }
 
@@ -66,9 +62,7 @@ abstract class Codec(private val mime: String) : Running {
         }
 
         override fun onOutputBufferAvailable(
-            codec: MediaCodec,
-            index: Int,
-            info: MediaCodec.BufferInfo
+            codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo
         ) {
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
@@ -211,6 +205,7 @@ abstract class Codec(private val mime: String) : Running {
             codec.start()
             isRunning.set(true)
         } catch (e: MediaCodec.CodecException) {
+            Log.w(TAG, "", e)
         }
     }
 
@@ -250,8 +245,7 @@ abstract class Codec(private val mime: String) : Running {
             option.apply(format)
         }
         codec.configure(
-            format, surface, null,
-            if (mode == Mode.ENCODE) {
+            format, surface, null, if (mode == Mode.ENCODE) {
                 MediaCodec.CONFIGURE_FLAG_ENCODE
             } else {
                 0
