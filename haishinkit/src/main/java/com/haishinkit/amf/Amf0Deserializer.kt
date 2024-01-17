@@ -19,18 +19,22 @@ internal class Amf0Deserializer(private val buffer: ByteBuffer) {
                     buffer.position(buffer.position() - 1)
                     return double
                 }
+
                 Amf0Marker.BOOL.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return boolean
                 }
+
                 Amf0Marker.STRING.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return string
                 }
+
                 Amf0Marker.OBJECT.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return map
                 }
+
                 Amf0Marker.MOVIECLIP.rawValue -> throw UnsupportedOperationException()
                 Amf0Marker.NULL.rawValue -> return null
                 Amf0Marker.UNDEFINED.rawValue -> return AsUndefined.instance
@@ -39,25 +43,30 @@ internal class Amf0Deserializer(private val buffer: ByteBuffer) {
                     buffer.position(buffer.position() - 1)
                     return list
                 }
+
                 Amf0Marker.OBJECTEND.rawValue -> throw UnsupportedOperationException()
                 Amf0Marker.STRICTARRAY.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return objects
                 }
+
                 Amf0Marker.DATE.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return date
                 }
+
                 Amf0Marker.LONGSTRING.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return string
                 }
+
                 Amf0Marker.UNSUPPORTED.rawValue -> throw UnsupportedOperationException()
                 Amf0Marker.RECORDSET.rawValue -> throw UnsupportedOperationException()
                 Amf0Marker.XMLDOCUMENT.rawValue -> {
                     buffer.position(buffer.position() - 1)
                     return xmlDocument
                 }
+
                 Amf0Marker.TYPEDOBJECT.rawValue -> throw UnsupportedOperationException()
                 Amf0Marker.AVMPLUSH.rawValue -> throw UnsupportedOperationException()
                 else -> {
@@ -91,6 +100,7 @@ internal class Amf0Deserializer(private val buffer: ByteBuffer) {
             when (marker) {
                 Amf0Marker.STRING.rawValue, Amf0Marker.LONGSTRING.rawValue -> {
                 }
+
                 else -> throw IllegalFormatFlagsException(marker.toString())
             }
             return getString(Amf0Marker.STRING.rawValue == marker)

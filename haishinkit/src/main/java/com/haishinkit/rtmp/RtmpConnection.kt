@@ -296,11 +296,13 @@ class RtmpConnection : EventDispatcher(null) {
                     RtmpChunk.ZERO -> {
                         streamsmap[chunkStreamID] = message.streamID
                     }
+
                     RtmpChunk.ONE -> {
                         streamsmap[chunkStreamID]?.let {
                             message.streamID = it
                         }
                     }
+
                     else -> {
                     }
                 }
@@ -364,6 +366,7 @@ class RtmpConnection : EventDispatcher(null) {
                 streamsmap.clear()
                 responders.clear()
             }
+
             else -> {
             }
         }

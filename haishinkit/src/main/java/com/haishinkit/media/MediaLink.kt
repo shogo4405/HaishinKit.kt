@@ -15,7 +15,6 @@ import com.haishinkit.metric.FrameTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingDeque
@@ -78,11 +77,13 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
             when (audioTrack?.playState) {
                 AudioTrack.PLAYSTATE_STOPPED -> {
                 }
+
                 AudioTrack.PLAYSTATE_PLAYING -> {
                     if (value) {
                         audioTrack?.pause()
                     }
                 }
+
                 AudioTrack.PLAYSTATE_PAUSED -> {
                     if (!value) {
                         audioTrack?.play()
@@ -221,7 +222,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         audioTimestampZero = 0
         videoTimestampZero = -1
     }
-    
+
     override fun doFrame(frameTimeNanos: Long) {
         choreographer?.postFrameCallback(this)
         val duration: Long
@@ -234,7 +235,8 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
                 }
                 return
             }
-            duration = (track.playbackHeadPosition.toLong() * 1000 / track.sampleRate) * 1000L + audioTimestampZero
+            duration =
+                (track.playbackHeadPosition.toLong() * 1000 / track.sampleRate) * 1000L + audioTimestampZero
         } else {
             videoTimestamp.nanoTime = frameTimeNanos
             duration = videoTimestamp.duration

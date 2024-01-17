@@ -46,12 +46,14 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
                         connection.close()
                         connection.connect(createAuthCommand(uri, description))
                     }
+
                     description.contains("authmod=adobe") -> {
                         val uri = connection.uri ?: return
                         if (uri.userInfo == null) return
                         connection.close()
                         connection.connect(createAuthQuery(uri))
                     }
+
                     else -> {
                         connection.close()
                     }

@@ -74,9 +74,11 @@ data class AudioSpecificConfig(
             AudioObjectType.AAC_MAIN -> {
                 codec.aacProfile = MediaCodecInfo.CodecProfileLevel.AACObjectMain
             }
+
             AudioObjectType.AAC_LC -> {
                 codec.aacProfile = MediaCodecInfo.CodecProfileLevel.AACObjectLC
             }
+
             else -> {
             }
         }

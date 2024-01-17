@@ -13,22 +13,27 @@ internal class ScheduledFpsController : FpsController {
                     field = 60
                     updatePatternIdx = 5
                 }
+
                 (48 <= value) -> {
                     field = 48
                     updatePatternIdx = 4
                 }
+
                 (30 <= value) -> {
                     field = 30
                     updatePatternIdx = 3
                 }
+
                 (25 <= value) -> {
                     field = 25
                     updatePatternIdx = 2
                 }
+
                 (24 <= value) -> {
                     field = 24
                     updatePatternIdx = 1
                 }
+
                 else -> {
                     field = 15
                     updatePatternIdx = 0

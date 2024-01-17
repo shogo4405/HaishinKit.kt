@@ -1,14 +1,14 @@
 package com.haishinkit.rtmp.message
 
+import android.media.MediaCodec
 import android.util.Log
 import androidx.core.util.Pools
 import com.haishinkit.flv.FlvAacPacketType
 import com.haishinkit.flv.FlvAudioCodec
+import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
-import android.media.MediaCodec
-import com.haishinkit.rtmp.RtmpChunk
 
 internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
     RtmpMessage(TYPE_AUDIO, pool) {
@@ -65,6 +65,7 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                     stream.muxer.hasAudio = true
                     stream.muxer.enqueueAudio(this)
                 }
+
                 FlvAacPacketType.RAW -> {
                     if (chunk == RtmpChunk.ZERO) {
                         val currentTimestamp = timestamp
@@ -73,6 +74,7 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                     }
                     stream.muxer.enqueueAudio(this)
                 }
+
                 else -> {
                     if (VERBOSE) Log.d(TAG, "unknown data=$byte")
                 }
@@ -92,6 +94,7 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
             FlvAacPacketType.SEQ -> {
                 MediaCodec.BUFFER_FLAG_CODEC_CONFIG
             }
+
             else -> {
                 0
             }

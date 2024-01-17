@@ -56,6 +56,7 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
                     responder?.onResult(arguments)
                     return this
                 }
+
                 "_error" -> {
                     responder?.onStatus(arguments)
                     return this
@@ -69,6 +70,7 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
             "close" -> {
                 connection.close()
             }
+
             "onStatus" -> {
                 val stream = connection.streams[streamID]
                 stream?.dispatchEventWith(
@@ -77,6 +79,7 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
                     if (arguments.isEmpty()) null else arguments[0]
                 )
             }
+
             else -> {
                 connection.dispatchEventWith(
                     Event.RTMP_STATUS,

@@ -156,18 +156,23 @@ internal class GlThreadPixelTransform : PixelTransform {
                         transform.outputSurface = message.obj as Surface
                     }
                 }
+
                 MSG_SET_IMAGE_ORIENTATION -> {
                     transform.imageOrientation = message.obj as ImageOrientation
                 }
+
                 MSG_SET_SURFACE_ORIENTATION -> {
                     transform.deviceOrientation = message.obj as Int
                 }
+
                 MSG_SET_VIDEO_GRAVITY -> {
                     transform.videoGravity = message.obj as VideoGravity
                 }
+
                 MSG_SET_CURRENT_EXTENT -> {
                     transform.imageExtent = Size(message.arg1, message.arg2)
                 }
+
                 MSG_CREATE_INPUT_SURFACE -> {
                     val obj = message.obj
                     transform.createInputSurface(
@@ -177,15 +182,19 @@ internal class GlThreadPixelTransform : PixelTransform {
                         obj as ((surface: Surface) -> Unit)
                     )
                 }
+
                 MSG_SET_RESAMPLE_FILTER -> {
                     transform.resampleFilter = message.obj as ResampleFilter
                 }
+
                 MSG_SET_EXCEPTED_ORIENTATION_SYNCRONIZE -> {
                     transform.isRotatesWithContent = message.obj as Boolean
                 }
+
                 MSG_SET_VIDEO_EFFECT -> {
                     transform.videoEffect = message.obj as VideoEffect
                 }
+
                 MSG_SET_ASSET_MANAGER -> {
                     if (message.obj == null) {
                         transform.assetManager = null
@@ -193,15 +202,19 @@ internal class GlThreadPixelTransform : PixelTransform {
                         transform.assetManager = message.obj as AssetManager
                     }
                 }
+
                 MSG_SET_FRAME_RATE -> {
                     transform.frameRate = message.obj as Int
                 }
+
                 MSG_READ_PIXELS -> {
                     transform.readPixels(message.obj as ((bitmap: Bitmap?) -> Unit))
                 }
+
                 MSG_DISPOSE -> {
                     transform.dispose()
                 }
+
                 else ->
                     throw RuntimeException("Unhandled msg what=$message.what")
             }

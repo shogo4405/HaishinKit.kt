@@ -40,6 +40,7 @@ internal data class Program(
                         4 -> GLES20.glUniform4iv(handler.key, 1, value)
                     }
                 }
+
                 (value is Float) -> GLES20.glUniform1f(handler.key, value)
                 (value is FloatBuffer) -> {
                     when (value.remaining()) {
@@ -49,6 +50,7 @@ internal data class Program(
                         4 -> GLES20.glUniform4fv(handler.key, 1, value)
                     }
                 }
+
                 else -> {
                     Log.e(TAG, "value type not supported")
                 }

@@ -51,6 +51,7 @@ internal class RtmpUserControlMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                 message.chunkStreamID = RtmpChunk.CONTROL
                 connection.doOutput(RtmpChunk.ZERO, message)
             }
+
             Event.BUFFER_FULL,
             Event.BUFFER_EMPTY -> {
                 val stream = connection.streams[value] ?: return this
@@ -60,6 +61,7 @@ internal class RtmpUserControlMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                     RtmpStream.Code.BUFFER_EMPTY.data("")
                 stream.dispatchEventWith(com.haishinkit.event.Event.RTMP_STATUS, false, data)
             }
+
             else -> {
             }
         }

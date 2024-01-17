@@ -58,9 +58,11 @@ class FlvWriter : Closeable {
                 (message is RtmpAudioMessage) -> {
                     audioTimestamp
                 }
+
                 (message is RtmpVideoMessage) -> {
                     videoTimestamp
                 }
+
                 else -> {
                     0
                 }

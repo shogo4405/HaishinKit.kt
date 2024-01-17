@@ -92,6 +92,7 @@ data class SequenceParameterSet(
                 0 -> {
                     log2MaxPicOrderCntLsbMinus4 = expGolombBuffer.int.toUByte()
                 }
+
                 1 -> {
 
                 }

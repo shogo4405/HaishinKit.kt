@@ -55,6 +55,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                 FlvAvcPacketType.NAL -> {
                     AvcFormatUtils.toNALFile(it, buffer)
                 }
+
                 else -> {
                     buffer.put(it)
                 }
@@ -106,6 +107,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                         stream.muxer.enqueueVideo(this)
                     }
                 }
+
                 FlvAvcPacketType.NAL -> {
                     if (!it.hasRemaining()) return this
                     if (chunk == RtmpChunk.ZERO) {
@@ -118,8 +120,10 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                     it.position(it.position() + 4)
                     stream.muxer.enqueueVideo(this)
                 }
+
                 FlvAvcPacketType.EOS -> {
                 }
+
                 else -> {
                     if (VERBOSE) Log.d(TAG, "code=$byte")
                 }
@@ -142,6 +146,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
             FlvAvcPacketType.SEQ -> {
                 MediaCodec.BUFFER_FLAG_CODEC_CONFIG
             }
+
             else -> {
                 0
             }

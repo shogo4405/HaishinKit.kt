@@ -109,6 +109,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
                     buffer.position(3073)
                 }
             }
+
             ReadyState.AckSent -> {
                 if (buffer.limit() < RtmpHandshake.SIGNAL_SIZE) {
                     return
@@ -121,6 +122,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
                     connection.doOutput(RtmpChunk.ZERO, connection.createConnectionMessage(it))
                 }
             }
+
             ReadyState.HandshakeDone ->
                 try {
                     connection.listen(buffer)
@@ -132,6 +134,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
                     if (VERBOSE) Log.w(TAG, "", e)
                     throw e
                 }
+
             else -> {}
         }
     }

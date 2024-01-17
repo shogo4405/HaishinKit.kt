@@ -33,11 +33,13 @@ internal enum class RtmpChunk(val rawValue: Byte) {
                 buffer.put(streamID.toByte()).put((streamID shr 8).toByte())
                     .put((streamID shr 16).toByte()).put((streamID shr 24).toByte())
             }
+
             ONE -> {
                 buffer.put((length shr 16).toByte()).put((length shr 8).toByte())
                     .put(length.toByte())
                 buffer.put(message.type)
             }
+
             else -> {
             }
         }
@@ -79,6 +81,7 @@ internal enum class RtmpChunk(val rawValue: Byte) {
                     timestamp = buffer.int
                 }
             }
+
             ONE -> {
                 timestamp = getInt(buffer)
                 length = getInt(buffer)
@@ -87,11 +90,13 @@ internal enum class RtmpChunk(val rawValue: Byte) {
                     timestamp = buffer.int
                 }
             }
+
             TWO -> {
                 val message = connection.messages[chunkStreamID]!!
                 message.timestamp = getInt(buffer)
                 return message
             }
+
             else -> {
             }
         }
@@ -130,11 +135,13 @@ internal enum class RtmpChunk(val rawValue: Byte) {
                 buffer.get(bytes)
                 (bytes[1] + 64).toShort()
             }
+
             1 -> {
                 val bytes = ByteArray(3)
                 buffer.get(bytes)
                 (bytes[1].toInt() shl 8 or bytes[2].toInt() or 64).toShort()
             }
+
             else -> {
                 (first and 63).toShort()
             }

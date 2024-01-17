@@ -150,6 +150,7 @@ abstract class Codec(private val mime: String) : Running {
                             value?.let { codec?.setInputSurface(it) }
                         }
                     }
+
                     Mode.DECODE -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             value?.let { codec?.setOutputSurface(it) }

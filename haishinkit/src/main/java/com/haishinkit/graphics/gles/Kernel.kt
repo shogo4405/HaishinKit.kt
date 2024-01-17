@@ -303,13 +303,16 @@ internal class Kernel(
             0 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_0)
             }
+
             90 -> {
                 swapped = true
                 texCoordBuffer.put(TEX_COORDS_ROTATION_90)
             }
+
             180 -> {
                 texCoordBuffer.put(TEX_COORDS_ROTATION_180)
             }
+
             270 -> {
                 swapped = true
                 texCoordBuffer.put(TEX_COORDS_ROTATION_270)
@@ -326,6 +329,7 @@ internal class Kernel(
                 matrix[10] = 1f
                 matrix[15] = 1f
             }
+
             VideoGravity.RESIZE_ASPECT -> {
                 val iRatio = imageExtent.aspectRatio
                 val fRatio = textureSize.aspectRatio
@@ -341,6 +345,7 @@ internal class Kernel(
                     matrix[15] = 1f
                 }
             }
+
             VideoGravity.RESIZE_ASPECT_FILL -> {
                 val iRatio = imageExtent.aspectRatio
                 val fRatio = textureSize.aspectRatio

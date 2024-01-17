@@ -68,6 +68,7 @@ class FrameTracker {
             TYPE_AUDIO -> {
                 audio.doFrame(timestamp)
             }
+
             TYPE_VIDEO -> {
                 video.doFrame(timestamp)
             }

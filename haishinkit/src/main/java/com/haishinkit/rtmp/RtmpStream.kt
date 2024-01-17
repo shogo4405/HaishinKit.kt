@@ -7,13 +7,13 @@ import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
+import com.haishinkit.flv.FlvAudioCodec
+import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.net.NetStream
 import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpDataMessage
 import com.haishinkit.rtmp.message.RtmpMessage
 import com.haishinkit.rtmp.message.RtmpMessageFactory
-import com.haishinkit.flv.FlvVideoCodec
-import com.haishinkit.flv.FlvAudioCodec
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
