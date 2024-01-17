@@ -1,4 +1,4 @@
-package com.haishinkit.graphics.gles
+package com.haishinkit.gles
 
 import android.content.res.AssetManager
 import android.opengl.GLES20
@@ -23,14 +23,14 @@ internal class ShaderLoader {
             return null
         }
         var program = GLES20.glCreateProgram()
-        Util.checkGlError(GL_CREATE_PROGRAM)
+        GlUtils.checkGlError(GL_CREATE_PROGRAM)
         if (program == 0) {
             Log.e(TAG, "Could not create program")
         }
         GLES20.glAttachShader(program, vertexShader)
-        Util.checkGlError(GL_ATTACH_SHADER)
+        GlUtils.checkGlError(GL_ATTACH_SHADER)
         GLES20.glAttachShader(program, fragmentShader)
-        Util.checkGlError(GL_ATTACH_SHADER)
+        GlUtils.checkGlError(GL_ATTACH_SHADER)
         GLES20.glLinkProgram(program)
         val linkStatus = IntArray(1)
         GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0)
@@ -68,7 +68,7 @@ internal class ShaderLoader {
     private fun loadShader(shaderType: Int, videoEffect: VideoEffect): Int {
         var suffix = ""
         var shader = GLES20.glCreateShader(shaderType)
-        Util.checkGlError("glCreateShader type=$shaderType")
+        GlUtils.checkGlError("glCreateShader type=$shaderType")
         if (shaderType == GLES20.GL_VERTEX_SHADER && videoEffect::class.java.getAnnotation(
                 RequirementsDirective::class.java
             ) != null

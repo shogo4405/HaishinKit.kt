@@ -1,4 +1,4 @@
-package com.haishinkit.graphics.gles
+package com.haishinkit.gles
 
 import android.opengl.GLES20
 import android.util.Log
@@ -6,8 +6,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-internal object Util {
-    private val TAG = Util::class.java.toString()
+internal object GlUtils {
+    private val TAG = GlUtils::class.java.toString()
 
     fun checkGlError(op: String) {
         val error = GLES20.glGetError()

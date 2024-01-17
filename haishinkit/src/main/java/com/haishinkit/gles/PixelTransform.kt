@@ -1,4 +1,4 @@
-package com.haishinkit.graphics.gles
+package com.haishinkit.gles
 
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -15,7 +15,7 @@ import com.haishinkit.graphics.ScheduledFpsController
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 
-internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
+internal class PixelTransform : PixelTransform, Choreographer.FrameCallback {
     override var outputSurface: Surface?
         get() = kernel.outputSurface
         set(value) {
@@ -178,6 +178,6 @@ internal class GlPixelTransform : PixelTransform, Choreographer.FrameCallback {
     }
 
     companion object {
-        private val TAG = GlPixelTransform::class.java.simpleName
+        private val TAG = PixelTransform::class.java.simpleName
     }
 }

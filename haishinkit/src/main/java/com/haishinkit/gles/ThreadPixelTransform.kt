@@ -1,4 +1,4 @@
-package com.haishinkit.graphics.gles
+package com.haishinkit.gles
 
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -15,7 +15,7 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 import java.lang.ref.WeakReference
 
-internal class GlThreadPixelTransform : PixelTransform {
+internal class ThreadPixelTransform : PixelTransform {
     override var outputSurface: Surface?
         get() = pixelTransform.outputSurface
         set(value) {
@@ -115,8 +115,8 @@ internal class GlThreadPixelTransform : PixelTransform {
             field?.looper?.quitSafely()
             field = value
         }
-    private val pixelTransform: GlPixelTransform by lazy {
-        GlPixelTransform()
+    private val pixelTransform: com.haishinkit.gles.PixelTransform by lazy {
+        PixelTransform()
     }
 
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
@@ -142,9 +142,9 @@ internal class GlThreadPixelTransform : PixelTransform {
         }
     }
 
-    private class Handler(frame: GlPixelTransform, looper: Looper) : android.os.Handler(looper) {
-        private val weakTransform: WeakReference<GlPixelTransform> =
-            WeakReference<GlPixelTransform>(frame)
+    private class Handler(frame: com.haishinkit.gles.PixelTransform, looper: Looper) : android.os.Handler(looper) {
+        private val weakTransform: WeakReference<com.haishinkit.gles.PixelTransform> =
+            WeakReference<com.haishinkit.gles.PixelTransform>(frame)
 
         override fun handleMessage(message: Message) {
             val transform = weakTransform.get() ?: return
@@ -236,6 +236,6 @@ internal class GlThreadPixelTransform : PixelTransform {
         private const val MSG_READ_PIXELS = 11
         private const val MSG_DISPOSE = 12
 
-        private val TAG = GlThreadPixelTransform::class.java.simpleName
+        private val TAG = ThreadPixelTransform::class.java.simpleName
     }
 }

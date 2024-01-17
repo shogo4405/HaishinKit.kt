@@ -1,4 +1,4 @@
-package com.haishinkit.graphics.gles
+package com.haishinkit.gles
 
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -86,8 +86,8 @@ internal class Kernel(
 
     private val matrix = FloatArray(16)
     private val inputSurfaceWindow = WindowSurface()
-    private val vertexBuffer = Util.createFloatBuffer(VERTECES)
-    private val texCoordBuffer = Util.createFloatBuffer(TEX_COORDS_ROTATION_0)
+    private val vertexBuffer = GlUtils.createFloatBuffer(VERTECES)
+    private val texCoordBuffer = GlUtils.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private var invalidateLayout = true
     private var display = EGL14.EGL_NO_DISPLAY
         set(value) {
@@ -158,7 +158,7 @@ internal class Kernel(
         }
 
         inputSurfaceWindow.config = config
-        Util.checkGlError("eglCreateContext")
+        GlUtils.checkGlError("eglCreateContext")
         EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, context)
 
         GLES20.glTexParameteri(
@@ -204,7 +204,7 @@ internal class Kernel(
         program.bind(videoEffect)
 
         GLES20.glUniformMatrix4fv(program.mvpMatrixHandle, 1, false, matrix, 0)
-        Util.checkGlError("glUniformMatrix4fv")
+        GlUtils.checkGlError("glUniformMatrix4fv")
 
         GLES20.glVertexAttribPointer(
             program.texCoordHandle,
@@ -222,16 +222,16 @@ internal class Kernel(
             0,
             vertexBuffer
         )
-        Util.checkGlError("glVertexAttribPointer")
+        GlUtils.checkGlError("glVertexAttribPointer")
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
         GLES20.glUniform1i(program.textureHandle, 0)
-        Util.checkGlError("glUniform1i")
+        GlUtils.checkGlError("glUniform1i")
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
-        Util.checkGlError("glBindTexture")
+        GlUtils.checkGlError("glBindTexture")
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 

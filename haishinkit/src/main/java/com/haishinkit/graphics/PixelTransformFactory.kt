@@ -1,18 +1,18 @@
 package com.haishinkit.graphics
 
-import com.haishinkit.graphics.gles.GlThreadPixelTransform
+import com.haishinkit.gles.ThreadPixelTransform
 import kotlin.reflect.KClass
 
 class PixelTransformFactory {
     fun create(): PixelTransform {
         if (pixelTransforms.isEmpty()) {
-            return GlThreadPixelTransform()
+            return ThreadPixelTransform()
         }
         return try {
             val pixelTransformClass = pixelTransforms.first()
             pixelTransformClass.java.newInstance() as PixelTransform
         } catch (e: Exception) {
-            return GlThreadPixelTransform()
+            return ThreadPixelTransform()
         }
     }
 

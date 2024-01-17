@@ -1,4 +1,4 @@
-package com.haishinkit.graphics.gles
+package com.haishinkit.gles
 
 import android.graphics.SurfaceTexture
 import android.opengl.GLES20
