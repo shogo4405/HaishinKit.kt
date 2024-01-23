@@ -8,7 +8,6 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
 import com.haishinkit.graphics.PixelTransform
-import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.net.NetStream
@@ -43,7 +42,7 @@ constructor(
             pixelTransform.videoEffect = value
         }
 
-    private val pixelTransform: PixelTransform by lazy { PixelTransformFactory().create() }
+    private val pixelTransform: PixelTransform by lazy { PixelTransform.create() }
 
     private var stream: NetStream? = null
         set(value) {

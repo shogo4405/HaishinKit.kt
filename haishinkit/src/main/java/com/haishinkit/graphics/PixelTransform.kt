@@ -3,8 +3,10 @@ package com.haishinkit.graphics
 import android.graphics.Bitmap
 import android.util.Size
 import android.view.Surface
+import com.haishinkit.gles.ThreadPixelTransform
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.screen.Screen
+import kotlin.reflect.KClass
 
 /**
  * The PixelTransform interface provides some graphics operations.
@@ -44,4 +46,37 @@ interface PixelTransform {
      * Reads the pixels of a displayed image.
      */
     fun readPixels(lambda: ((bitmap: Bitmap?) -> Unit))
+
+    companion object {
+        private var pixelTransforms: MutableList<KClass<*>> = mutableListOf()
+
+        fun create(): PixelTransform {
+            if (pixelTransforms.isEmpty()) {
+                return ThreadPixelTransform()
+            }
+            return try {
+                val pixelTransformClass = pixelTransforms.first()
+                pixelTransformClass.java.newInstance() as PixelTransform
+            } catch (e: Exception) {
+                return ThreadPixelTransform()
+            }
+        }
+
+        fun <T : PixelTransform> registerPixelTransform(clazz: KClass<T>) {
+            for (i in 0 until pixelTransforms.size) {
+                if (pixelTransforms[i] == clazz) {
+                    return
+                }
+            }
+            pixelTransforms.add(clazz)
+        }
+
+        fun <T : PixelTransform> unregisterPixelTransform(clazz: KClass<T>) {
+            for (i in (0 until pixelTransforms.size).reversed()) {
+                if (pixelTransforms[i] == clazz) {
+                    pixelTransforms.removeAt(i)
+                }
+            }
+        }
+    }
 }

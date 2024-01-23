@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Size
 import com.haishinkit.graphics.PixelTransform
-import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.util.FeatureUtil
 import kotlin.properties.Delegates
@@ -124,7 +123,7 @@ class VideoCodec : Codec(MIME) {
     var colorFormat = DEFAULT_COLOR_FORMAT
 
     val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create().apply {
+        PixelTransform.create().apply {
             videoGravity = DEFAULT_VIDEO_GRAVITY
             frameRate = DEFAULT_FRAME_RATE
         }
