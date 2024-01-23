@@ -1,13 +1,13 @@
 package com.haishinkit.media
 
-import android.util.Size
+import com.haishinkit.screen.Video
 
 /**
  * An interface that captures a video source.
  */
 interface VideoSource : Source {
     /**
-     * The video size that is the current source.
+     * The video screen object.
      */
-    val size: Size
+    val screen: Video
 }

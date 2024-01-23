@@ -6,8 +6,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-internal object GlUtils {
-    private val TAG = GlUtils::class.java.toString()
+internal object Utils {
+    private val TAG = Utils::class.java.toString()
 
     fun checkGlError(op: String) {
         val error = GLES20.glGetError()

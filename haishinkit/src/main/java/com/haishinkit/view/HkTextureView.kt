@@ -8,7 +8,6 @@ import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.view.WindowManager
-import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
@@ -25,7 +24,9 @@ constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
-) : TextureView(context, attrs, defStyleAttr, defStyleRes), NetStreamDrawable,
+) :
+    TextureView(context, attrs, defStyleAttr, defStyleRes),
+    NetStreamDrawable,
     TextureView.SurfaceTextureListener {
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity
@@ -39,43 +40,23 @@ constructor(
             pixelTransform.frameRate = value
         }
 
-    override var imageOrientation: ImageOrientation
-        get() = pixelTransform.imageOrientation
-        set(value) {
-            pixelTransform.imageOrientation = value
-        }
-
     override var videoEffect: VideoEffect
         get() = pixelTransform.videoEffect
         set(value) {
             pixelTransform.videoEffect = value
         }
 
-    override var isRotatesWithContent: Boolean
-        get() = pixelTransform.isRotatesWithContent
-        set(value) {
-            pixelTransform.isRotatesWithContent = value
-        }
-
-    override var deviceOrientation: Int
-        get() = pixelTransform.deviceOrientation
-        set(value) {
-            pixelTransform.deviceOrientation = value
-        }
-
-    private val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create()
-    }
+    private val pixelTransform: PixelTransform by lazy { PixelTransformFactory().create() }
 
     private var stream: NetStream? = null
         set(value) {
             field?.drawable = null
             field = value
             field?.drawable = this
+            pixelTransform.screen = value?.screen
         }
 
     init {
-        pixelTransform.assetManager = context.assets
         surfaceTextureListener = this
     }
 
@@ -87,38 +68,26 @@ constructor(
         pixelTransform.readPixels(lambda)
     }
 
-    override fun createInputSurface(
-        width: Int,
-        height: Int,
-        format: Int,
-        lambda: ((surface: Surface) -> Unit)
-    ) {
-        pixelTransform.createInputSurface(width, height, format, lambda)
-    }
-
-    override fun dispose() {
-        pixelTransform.dispose()
-    }
-
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
         pixelTransform.imageExtent = Size(width, height)
-        pixelTransform.outputSurface = Surface(surface)
+        pixelTransform.surface = Surface(surface)
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
         pixelTransform.imageExtent = Size(width, height)
-        (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
-            stream?.deviceOrientation = it
-        }
+        (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)
+            ?.defaultDisplay
+            ?.orientation
+            ?.let { stream?.screen?.deviceOrientation = it }
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-        pixelTransform.outputSurface = null
+        pixelTransform.surface = null
         return false
     }
 
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-    }
+    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
+
 
     companion object {
         private val TAG = HkTextureView::class.java.simpleName

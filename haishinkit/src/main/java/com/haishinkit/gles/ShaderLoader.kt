@@ -1,6 +1,7 @@
 package com.haishinkit.gles
 
 import android.content.res.AssetManager
+import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Log
 import com.haishinkit.graphics.effect.VideoEffect
@@ -13,24 +14,24 @@ import java.util.Locale
 internal class ShaderLoader {
     var assetManager: AssetManager? = null
 
-    fun createProgram(videoEffect: VideoEffect): Program? {
-        val vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, videoEffect)
+    fun createTextureProgram(target: Int, videoEffect: VideoEffect): TextureProgram? {
+        val vertexShader = loadShader(target, GLES20.GL_VERTEX_SHADER, videoEffect)
         if (vertexShader == 0) {
             return null
         }
-        val fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, videoEffect)
+        val fragmentShader = loadShader(target, GLES20.GL_FRAGMENT_SHADER, videoEffect)
         if (fragmentShader == 0) {
             return null
         }
         var program = GLES20.glCreateProgram()
-        GlUtils.checkGlError(GL_CREATE_PROGRAM)
+        Utils.checkGlError(GL_CREATE_PROGRAM)
         if (program == 0) {
             Log.e(TAG, "Could not create program")
         }
         GLES20.glAttachShader(program, vertexShader)
-        GlUtils.checkGlError(GL_ATTACH_SHADER)
+        Utils.checkGlError(GL_ATTACH_SHADER)
         GLES20.glAttachShader(program, fragmentShader)
-        GlUtils.checkGlError(GL_ATTACH_SHADER)
+        Utils.checkGlError(GL_ATTACH_SHADER)
         GLES20.glLinkProgram(program)
         val linkStatus = IntArray(1)
         GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0)
@@ -40,7 +41,7 @@ internal class ShaderLoader {
             GLES20.glDeleteProgram(program)
             program = 0
         }
-        return Program(
+        return TextureProgram(
             program,
             vertexShader,
             fragmentShader,
@@ -57,25 +58,25 @@ internal class ShaderLoader {
         val clazz = videoEffect::class.java
         for (method in clazz.methods) {
             method.getAnnotation(Uniform::class.java) ?: continue
-            val propertyName = method.name.split("$")[0].substring(3, 4).lowercase(Locale.ROOT) +
-                method.name.split("$")[0].substring(4)
+            val propertyName = method.name.split("$")[0].substring(3, 4)
+                .lowercase(Locale.ROOT) + method.name.split("$")[0].substring(4)
             val location = GLES20.glGetUniformLocation(program, propertyName)
             handlers[location] = clazz.getDeclaredMethod(method.name.split("$")[0])
         }
         return handlers
     }
 
-    private fun loadShader(shaderType: Int, videoEffect: VideoEffect): Int {
+    private fun loadShader(target: Int, shaderType: Int, videoEffect: VideoEffect): Int {
         var suffix = ""
         var shader = GLES20.glCreateShader(shaderType)
-        GlUtils.checkGlError("glCreateShader type=$shaderType")
+        Utils.checkGlError("glCreateShader type=$shaderType")
         if (shaderType == GLES20.GL_VERTEX_SHADER && videoEffect::class.java.getAnnotation(
                 RequirementsDirective::class.java
             ) != null
         ) {
             suffix = "-300"
         }
-        GLES20.glShaderSource(shader, readFile(shaderType, videoEffect.name, suffix))
+        GLES20.glShaderSource(shader, readFile(target, shaderType, videoEffect.name, suffix))
         GLES20.glCompileShader(shader)
         val compiled = IntArray(1)
         GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0)
@@ -88,7 +89,9 @@ internal class ShaderLoader {
         return shader
     }
 
-    private fun readFile(shaderType: Int, source: String, suffix: String = ""): String {
+    private fun readFile(
+        target: Int, shaderType: Int, source: String, suffix: String = ""
+    ): String {
         var fileName = "shaders/$source$suffix"
         fileName += if (shaderType == GLES20.GL_VERTEX_SHADER) {
             ".vert"
@@ -100,9 +103,15 @@ internal class ShaderLoader {
             val size = inputStream.available()
             val buffer = ByteArray(size)
             inputStream.read(buffer)
+            if (target == GLES11Ext.GL_TEXTURE_EXTERNAL_OES && shaderType == GLES20.GL_FRAGMENT_SHADER) {
+                return EXTENSION_OES + String(buffer).replace(
+                    "uniform sampler2D uTexture",
+                    "uniform samplerExternalOES uTexture"
+                )
+            }
             return String(buffer)
         } catch (e: FileNotFoundException) {
-            return readFile(shaderType, "default", suffix)
+            return readFile(target, shaderType, "default", suffix)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             return ""
@@ -112,6 +121,7 @@ internal class ShaderLoader {
     companion object {
         private val TAG = ShaderLoader::class.java.simpleName
 
+        private const val EXTENSION_OES = "#extension GL_OES_EGL_image_external : require\n\n"
         private const val GL_CREATE_PROGRAM = "glCreateProgram"
         private const val GL_ATTACH_SHADER = "glAttachShader"
     }

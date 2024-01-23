@@ -1,9 +1,7 @@
-#extension GL_OES_EGL_image_external : require
-
 precision mediump float;
 
 varying vec2 vTexcoord;
-uniform samplerExternalOES uTexture;
+uniform sampler2D uTexture;
 const vec3 cMonochromeScale = vec3(0.298912, 0.586611, 0.114478);
 
 void main() {

@@ -26,6 +26,7 @@ class PlaybackTabFragment : Fragment(), IEventListener {
 
         connection = RtmpConnection()
         stream = RtmpStream(connection)
+        stream.screen.assetManager = requireContext().assets
 
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
@@ -54,7 +55,6 @@ class PlaybackTabFragment : Fragment(), IEventListener {
         } else {
             v.findViewById(R.id.textureView)
         }
-        playbackView.isRotatesWithContent = false
         playbackView.videoGravity = VideoGravity.RESIZE_ASPECT
         playbackView.attachStream(stream)
 

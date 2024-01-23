@@ -1,6 +1,4 @@
-#extension GL_OES_EGL_image_external : require
-
-uniform samplerExternalOES uTexture;
+uniform sampler2D uTexture;
 
 varying vec2 centerTextureCoordinate;
 varying vec2 oneStepLeftTextureCoordinate;

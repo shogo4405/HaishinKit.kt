@@ -17,6 +17,7 @@ import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.net.NetStream
+import com.haishinkit.screen.Video
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Suppress("MemberVisibilityCanBePrivate")
 class Camera2Source(
     private val context: Context
-) : VideoSource, CameraDevice.StateCallback() {
+) : VideoSource, CameraDevice.StateCallback(), Video.OnSurfaceChangedListener {
     /**
      * The Listener interface is the primary method for handling events.
      */
@@ -56,7 +57,12 @@ class Camera2Source(
         private set
     override var stream: NetStream? = null
     override val isRunning = AtomicBoolean(false)
-    override var size = Size(0, 0)
+    override val screen: Video by lazy {
+        Video().apply {
+            isRotatesWithContent = true
+        }
+    }
+
     private var cameraId: String = DEFAULT_CAMERA_ID
     private var manager: CameraManager =
         context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -82,6 +88,7 @@ class Camera2Source(
                     try {
                         it.setRepeatingRequest(request.build(), null, handler)
                     } catch (e: IllegalStateException) {
+                        Log.w(TAG, "", e)
                     }
                 }
             }
@@ -130,10 +137,9 @@ class Camera2Source(
 
     override fun startRunning() {
         Log.d(TAG, "${this::startRunning.name}: $device")
-        if (isRunning.get()) {
-            return
-        }
-        stream?.videoCodec?.setAssetManager(context.assets)
+        if (isRunning.get()) return
+        screen.listener = this
+        stream?.screen?.addChild(screen)
         isRunning.set(true)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -141,9 +147,7 @@ class Camera2Source(
     }
 
     override fun stopRunning() {
-        if (!isRunning.get()) {
-            return
-        }
+        if (!isRunning.get()) return
         session?.let {
             try {
                 it.stopRepeating()
@@ -153,6 +157,8 @@ class Camera2Source(
             session = null
         }
         device = null
+        stream?.screen?.removeChild(screen)
+        screen.listener = null
         isRunning.set(false)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -162,18 +168,10 @@ class Camera2Source(
     override fun onOpened(camera: CameraDevice) {
         device = camera
         surfaces.clear()
-        size = getCameraSize()
-        stream?.drawable?.apply {
-            imageOrientation = this@Camera2Source.imageOrientation
-            createInputSurface(size.width, size.height, IMAGE_FORMAT) {
-                createCaptureSession(it)
-            }
-        }
-        stream?.videoCodec?.pixelTransform?.apply {
-            imageOrientation = this@Camera2Source.imageOrientation
-            createInputSurface(size.width, size.height, IMAGE_FORMAT) {
-                createCaptureSession(it)
-            }
+        screen.videoSize = getCameraSize()
+        screen.imageOrientation = imageOrientation
+        screen.surface?.let {
+            createCaptureSession(it)
         }
     }
 
@@ -186,6 +184,13 @@ class Camera2Source(
         device = null
     }
 
+    override fun onSurfaceChanged(surface: Surface?) {
+        Log.e("TAG", "onSurfaceChanged:${surface}")
+        surface?.let {
+            createCaptureSession(it)
+        }
+    }
+
     private fun createCaptureSession(surface: Surface) {
         if (Thread.currentThread() != handler?.looper?.thread) {
             handler?.post {
@@ -193,30 +198,25 @@ class Camera2Source(
             }
             return
         }
+        Log.e("TAG", "createCaptureSession:${surface}:${device}")
         if (!surfaces.contains(surface)) {
             surfaces.add(surface)
         }
         val device = device ?: return
-        if (surfaces.size < 2) {
-            return
-        }
         for (request in requests) {
             for (surface in surfaces) {
                 request.removeTarget(surface)
             }
         }
         requests.clear()
-        requests.add(
-            device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-                listener?.onCreateCaptureRequest(this)
-                surfaces.forEach {
-                    addTarget(it)
-                }
+        requests.add(device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
+            listener?.onCreateCaptureRequest(this)
+            surfaces.forEach {
+                addTarget(it)
             }
-        )
+        })
         device.createCaptureSession(
-            surfaces,
-            object : CameraCaptureSession.StateCallback() {
+            surfaces, object : CameraCaptureSession.StateCallback() {
                 override fun onConfigured(session: CameraCaptureSession) {
                     this@Camera2Source.session = session
                 }
@@ -224,9 +224,9 @@ class Camera2Source(
                 override fun onConfigureFailed(session: CameraCaptureSession) {
                     this@Camera2Source.session = null
                 }
-            },
-            handler
+            }, handler
         )
+        Log.e("TAG", "camera2s")
     }
 
     private fun getCameraId(facing: Int): String? {

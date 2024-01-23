@@ -1,6 +1,5 @@
 package com.haishinkit.codec
 
-import android.content.res.AssetManager
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
@@ -124,15 +123,6 @@ class VideoCodec : Codec(MIME) {
      */
     var colorFormat = DEFAULT_COLOR_FORMAT
 
-    override var codec: MediaCodec?
-        get() = super.codec
-        set(value) {
-            if (value == null) {
-                pixelTransform.outputSurface = null
-            }
-            super.codec = value
-        }
-
     val pixelTransform: PixelTransform by lazy {
         PixelTransformFactory().create().apply {
             videoGravity = DEFAULT_VIDEO_GRAVITY
@@ -140,9 +130,14 @@ class VideoCodec : Codec(MIME) {
         }
     }
 
-    internal fun setAssetManager(assetManager: AssetManager?) {
-        pixelTransform.assetManager = assetManager
-    }
+    override var codec: MediaCodec?
+        get() = super.codec
+        set(value) {
+            if (value == null) {
+                pixelTransform.surface = null
+            }
+            super.codec = value
+        }
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createVideoFormat(MIME, width, height).apply {
@@ -172,7 +167,7 @@ class VideoCodec : Codec(MIME) {
         super.configure(codec)
         if (mode == Mode.ENCODE) {
             pixelTransform.imageExtent = Size(width, height)
-            pixelTransform.outputSurface = codec.createInputSurface()
+            pixelTransform.surface = codec.createInputSurface()
         }
     }
 

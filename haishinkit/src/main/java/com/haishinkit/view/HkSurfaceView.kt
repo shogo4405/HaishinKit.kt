@@ -4,11 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.util.Size
-import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
-import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.PixelTransformFactory
 import com.haishinkit.graphics.VideoGravity
@@ -39,66 +37,48 @@ constructor(
             pixelTransform.frameRate = value
         }
 
-    override var imageOrientation: ImageOrientation
-        get() = pixelTransform.imageOrientation
-        set(value) {
-            pixelTransform.imageOrientation = value
-        }
-
     override var videoEffect: VideoEffect
         get() = pixelTransform.videoEffect
         set(value) {
             pixelTransform.videoEffect = value
         }
 
-    override var isRotatesWithContent: Boolean
-        get() = pixelTransform.isRotatesWithContent
-        set(value) {
-            pixelTransform.isRotatesWithContent = value
-        }
-
-    override var deviceOrientation: Int
-        get() = pixelTransform.deviceOrientation
-        set(value) {
-            pixelTransform.deviceOrientation = value
-        }
-
-    private val pixelTransform: PixelTransform by lazy {
-        PixelTransformFactory().create()
-    }
+    private val pixelTransform: PixelTransform by lazy { PixelTransformFactory().create() }
 
     private var stream: NetStream? = null
         set(value) {
             field?.drawable = null
             field = value
             field?.drawable = this
+            pixelTransform.screen = value?.screen
         }
 
     init {
-        pixelTransform.assetManager = context.assets
+        holder.addCallback(
+            object : SurfaceHolder.Callback {
+                override fun surfaceCreated(holder: SurfaceHolder) {
+                    pixelTransform.imageExtent = Size(width, height)
+                    pixelTransform.surface = holder.surface
+                }
 
-        holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                pixelTransform.imageExtent = Size(width, height)
-                pixelTransform.outputSurface = holder.surface
-            }
+                override fun surfaceChanged(
+                    holder: SurfaceHolder,
+                    format: Int,
+                    width: Int,
+                    height: Int
+                ) {
+                    pixelTransform.imageExtent = Size(width, height)
+                    (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)
+                        ?.defaultDisplay
+                        ?.orientation
+                        ?.let { stream?.screen?.deviceOrientation = it }
+                }
 
-            override fun surfaceChanged(
-                holder: SurfaceHolder,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-                pixelTransform.imageExtent = Size(width, height)
-                (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.orientation?.let {
-                    stream?.deviceOrientation = it
+                override fun surfaceDestroyed(holder: SurfaceHolder) {
+                    pixelTransform.surface = null
                 }
             }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
-                pixelTransform.outputSurface = null
-            }
-        })
+        )
     }
 
     override fun attachStream(stream: NetStream?) {
@@ -107,19 +87,6 @@ constructor(
 
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
         pixelTransform.readPixels(lambda)
-    }
-
-    override fun createInputSurface(
-        width: Int,
-        height: Int,
-        format: Int,
-        lambda: ((surface: Surface) -> Unit)
-    ) {
-        pixelTransform.createInputSurface(width, height, format, lambda)
-    }
-
-    override fun dispose() {
-        pixelTransform.dispose()
     }
 
     companion object {

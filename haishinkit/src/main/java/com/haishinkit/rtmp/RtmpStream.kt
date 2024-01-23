@@ -129,7 +129,7 @@ class RtmpStream(internal var connection: RtmpConnection) :
 
     var info: Info = Info()
         private set
-    
+
     var listener: Listener? = null
 
     /**

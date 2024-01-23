@@ -30,10 +30,6 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             TAG,
             "VkPixelTransform::isSupported() = ${com.haishinkit.vulkan.VkPixelTransform.isSupported()}"
         )
-        context?.let {
-            Log.d(TAG, "setAssetManager")
-            renderer?.assetManager = it.assets
-        }
     }
 
     override fun onDestroy() {
@@ -55,7 +51,7 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 Log.d(TAG, "surfaceCreated")
                 surfaceHolderA = holder
-                renderer?.outputSurface = holder.surface
+                renderer?.surface = holder.surface
             }
 
             override fun surfaceChanged(
@@ -133,9 +129,11 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
                 "RED" -> {
                     button.text = "BLUE"
                 }
+
                 "BLUE" -> {
                     button.text = "NULL"
                 }
+
                 "NULL" -> {
                     button.text = "RED"
                 }
@@ -147,15 +145,17 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             when (button2.text) {
                 "LEFT" -> {
                     button2.text = "RIGHT"
-                    renderer?.outputSurface = surfaceViewB.holder.surface
+                    renderer?.surface = surfaceViewB.holder.surface
                 }
+
                 "RIGHT" -> {
                     button2.text = "NULL"
-                    renderer?.outputSurface = null
+                    renderer?.surface = null
                 }
+
                 "NULL" -> {
                     button2.text = "LEFT"
-                    renderer?.outputSurface = surfaceViewA.holder.surface
+                    renderer?.surface = surfaceViewA.holder.surface
                 }
             }
         }

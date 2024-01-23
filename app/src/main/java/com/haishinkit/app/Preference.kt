@@ -3,7 +3,7 @@ package com.haishinkit.app
 data class Preference(var rtmpURL: String, var streamName: String) {
     companion object {
         var shared = Preference(
-            "rtmp://test:test@192.168.1.3/live",
+            "rtmp://test:test@192.168.1.4/live",
             "live"
         )
 

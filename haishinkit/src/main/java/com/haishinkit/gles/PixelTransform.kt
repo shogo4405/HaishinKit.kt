@@ -1,79 +1,68 @@
 package com.haishinkit.gles
 
-import android.content.res.AssetManager
 import android.graphics.Bitmap
-import android.os.Handler
+import android.graphics.Matrix
+import android.opengl.GLES20
 import android.util.Log
 import android.util.Size
 import android.view.Choreographer
 import android.view.Surface
 import com.haishinkit.graphics.FpsController
-import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.PixelTransform
-import com.haishinkit.graphics.ResampleFilter
 import com.haishinkit.graphics.ScheduledFpsController
 import com.haishinkit.graphics.VideoGravity
+import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
+import com.haishinkit.lang.Running
+import com.haishinkit.screen.Screen
+import com.haishinkit.screen.Video
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.concurrent.atomic.AtomicBoolean
 
-internal class PixelTransform : PixelTransform, Choreographer.FrameCallback {
-    override var outputSurface: Surface?
-        get() = kernel.outputSurface
+internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCallback {
+    override val isRunning: AtomicBoolean = AtomicBoolean(false)
+    override var screen: Screen? = null
         set(value) {
+            field = value
             if (value == null) {
                 stopRunning()
+            } else {
+                startRunning()
             }
-            kernel.outputSurface = value
-            if (value != null && texture != null) {
+        }
+    override var surface: Surface? = null
+        set(value) {
+            field = value
+            if (value == null) {
+                stopRunning()
+            } else {
                 startRunning()
             }
         }
 
-    override var imageOrientation: ImageOrientation
-        get() = kernel.imageOrientation
-        set(value) {
-            kernel.imageOrientation = value
-        }
-
     override var videoGravity: VideoGravity
-        get() = kernel.videoGravity
+        get() {
+            return video.videoGravity
+        }
         set(value) {
-            kernel.videoGravity = value
+            video.videoGravity = value
         }
 
-    override var videoEffect: VideoEffect
-        get() = kernel.videoEffect
+    override var imageExtent = Size(0, 0)
         set(value) {
-            kernel.videoEffect = value
+            field = value
+            GLES20.glViewport(
+                0, 0, imageExtent.width, imageExtent.height
+            )
+            video.bounds.set(0, 0, imageExtent.width, imageExtent.height)
+            video.invalidateLayout()
         }
 
-    override var imageExtent: Size
-        get() = kernel.imageExtent
+    override var videoEffect: VideoEffect = DefaultVideoEffect.shared
         set(value) {
-            kernel.imageExtent = value
-        }
-
-    override var deviceOrientation: Int
-        get() = kernel.deviceOrientation
-        set(value) {
-            kernel.deviceOrientation = value
-        }
-
-    override var resampleFilter: ResampleFilter
-        get() = kernel.resampleFilter
-        set(value) {
-            kernel.resampleFilter = value
-        }
-
-    override var isRotatesWithContent: Boolean
-        get() = kernel.isRotatesWithContent
-        set(value) {
-            kernel.isRotatesWithContent = value
-        }
-
-    override var assetManager: AssetManager?
-        get() = kernel.assetManager
-        set(value) {
-            kernel.assetManager = value
+            field = value
+            program = shaderLoader.createTextureProgram(GLES20.GL_TEXTURE_2D, videoEffect)
         }
 
     override var frameRate: Int
@@ -82,99 +71,104 @@ internal class PixelTransform : PixelTransform, Choreographer.FrameCallback {
             fpsController.frameRate = value
         }
 
-    var handler: Handler? = null
-        set(value) {
-            field?.post { kernel.stopRunning() }
-            value?.post { kernel.startRunning() }
-            field = value
-        }
-
+    private val shaderLoader by lazy {
+        val shaderLoader = ShaderLoader()
+        shaderLoader.assetManager = screen?.assetManager
+        shaderLoader
+    }
+    private val context: Context by lazy { Context() }
     private var choreographer: Choreographer? = null
-    private val kernel: Kernel by lazy {
-        Kernel()
-    }
-    private val fpsController: FpsController by lazy {
-        ScheduledFpsController()
-    }
-    private var texture: Texture? = null
         set(value) {
-            field?.release()
+            field?.removeFrameCallback(this)
+            field = value
+            field?.postFrameCallback(this)
+        }
+    private var program: TextureProgram? = null
+        set(value) {
+            field?.dispose()
             field = value
         }
-    private var running = false
 
-    override fun createInputSurface(
-        width: Int,
-        height: Int,
-        format: Int,
-        lambda: ((surface: Surface) -> Unit)
-    ) {
-        if (texture != null && texture?.isValid(width, height) == true) {
-            texture?.surface?.let {
-                lambda(it)
-            }
-            return
+    private val video: Video by lazy { Video(target = GLES20.GL_TEXTURE_2D) }
+    private val fpsController: FpsController by lazy { ScheduledFpsController() }
+    private val screenRenderer: PixelTransformRenderer by lazy { PixelTransformRenderer() }
+
+    override fun startRunning() {
+        if (isRunning.get()) return
+        if (screen == null || surface == null) return
+        isRunning.set(true)
+        video.videoGravity = VideoGravity.RESIZE_ASPECT
+        fpsController.clear()
+        context.apply {
+            open((screen as? com.haishinkit.gles.screen.ThreadScreen)?.context)
+            makeCurrent(createWindowSurface(surface))
         }
-        texture = Texture.create(width, height).apply {
-            surface?.let {
-                lambda(it)
-            }
+        program = shaderLoader.createTextureProgram(GLES20.GL_TEXTURE_2D, videoEffect)
+        screen?.let {
+            video.videoSize = Size(it.bounds.width(), it.bounds.height())
         }
         choreographer = Choreographer.getInstance()
-        if (outputSurface != null) {
-            startRunning()
-        }
-        kernel.invalidateLayout()
+    }
+
+    override fun stopRunning() {
+        if (!isRunning.get()) return
+        program = null
+        choreographer = null
+        isRunning.set(false)
     }
 
     override fun doFrame(frameTimeNanos: Long) {
-        if (running) {
+        if (isRunning.get()) {
             choreographer?.postFrameCallback(this)
         }
-        texture?.updateTexImage()
+        val screen = screen ?: return
         var timestamp = frameTimeNanos
-        if (timestamp <= 0L) {
+        if (timestamp <= 0L && !fpsController.advanced(timestamp)) return
+        timestamp = fpsController.timestamp(timestamp)
+        if (surface == null) {
             return
         }
-        if (fpsController.advanced(timestamp)) {
-            timestamp = fpsController.timestamp(timestamp)
-            if (outputSurface == null) {
-                return
+        try {
+            GLES20.glClearColor(0f, 0f, 0f, 0f)
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+            if (video.videoSize.width != screen.bounds.width() || video.videoSize.height != screen.bounds.height()) {
+                video.videoSize = Size(screen.bounds.width(), screen.bounds.height())
             }
-            texture?.let {
-                try {
-                    kernel.render(it.id, it.extent, timestamp)
-                } catch (e: RuntimeException) {
-                    Log.e(TAG, "", e)
-                }
+            if (video.shouldInvalidateLayout) {
+                video.id = screen.id
+                video.layout(screenRenderer)
             }
+            program?.draw(video)
+            context.setPresentationTime(timestamp)
+            context.swapBuffers()
+        } catch (e: RuntimeException) {
+            Log.e(TAG, "", e)
         }
+
     }
 
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
-        lambda(kernel.readPixels())
-    }
-
-    override fun dispose() {
-        running = false
-        texture = null
-        kernel.stopRunning()
-    }
-
-    private fun startRunning() {
-        if (running) {
+        if (surface == null) {
+            lambda(null)
             return
         }
-        running = true
-        fpsController.clear()
-        choreographer?.postFrameCallback(this)
-    }
-
-    private fun stopRunning() {
-        if (!running) {
-            return
-        }
-        running = false
+        val bitmap =
+            Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
+        val byteBuffer =
+            ByteBuffer.allocateDirect(imageExtent.width * imageExtent.height * 4).apply {
+                order(ByteOrder.LITTLE_ENDIAN)
+            }
+        context.readPixels(imageExtent.width, imageExtent.height, byteBuffer)
+        bitmap.copyPixelsFromBuffer(byteBuffer)
+        lambda(
+            Bitmap.createBitmap(
+                bitmap, 0, 0, imageExtent.width, imageExtent.height, Matrix().apply {
+                    setRotate(
+                        180.0F
+                    )
+                }, false
+            )
+        )
     }
 
     companion object {

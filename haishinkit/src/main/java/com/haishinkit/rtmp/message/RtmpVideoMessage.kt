@@ -1,8 +1,8 @@
 package com.haishinkit.rtmp.message
 
-import android.graphics.ImageFormat
 import android.media.MediaCodec
 import android.util.Log
+import android.util.Size
 import androidx.core.util.Pools
 import com.haishinkit.flv.FlvAvcPacketType
 import com.haishinkit.flv.FlvFlameType
@@ -10,6 +10,7 @@ import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.iso.AvcConfigurationRecord
 import com.haishinkit.iso.AvcFormatUtils
 import com.haishinkit.iso.SequenceParameterSet
+import com.haishinkit.media.MediaCodecSource
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.util.toPositiveInt
@@ -91,13 +92,14 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                         val byteArray = it.firstOrNull() ?: return@let
                         val byteBuffer = ByteBuffer.wrap(byteArray)
                         val sequenceParameterSet = SequenceParameterSet.decode(byteBuffer)
-                        stream.drawable?.createInputSurface(
-                            sequenceParameterSet.videoWidth,
-                            sequenceParameterSet.videoHeight,
-                            ImageFormat.YUV_420_888
-                        ) { surface ->
-                            stream.videoCodec.surface = surface
-                        }
+                        stream.attachVideo(
+                            MediaCodecSource(
+                                Size(
+                                    sequenceParameterSet.videoWidth,
+                                    sequenceParameterSet.videoHeight
+                                )
+                            )
+                        )
                     }
 
                     if (record.apply(stream.videoCodec)) {
