@@ -9,6 +9,24 @@ open class ScreenObjectContainer : ScreenObject() {
 
     private val children = mutableListOf<ScreenObject>()
 
+    open fun bringChildToFront(child: ScreenObject) {
+        val index = children.indexOf(child)
+        if (0 < index) {
+            children.removeAt(index)
+            children.add(0, child)
+            invalidateLayout()
+        }
+    }
+
+    open fun sendChildToBack(child: ScreenObject) {
+        val index = children.indexOf(child)
+        if (0 < index) {
+            children.removeAt(index)
+            children.add(child)
+            invalidateLayout()
+        }
+    }
+
     /**
      * Adds the specified screen object as a child of the current screen object container.
      */

@@ -113,6 +113,10 @@ internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableL
             is Video -> {
                 SurfaceTexture(screenObject.id).apply {
                     surfaceTextures[screenObject.id] = this
+                    setDefaultBufferSize(
+                        screenObject.videoSize.width,
+                        screenObject.videoSize.height
+                    )
                     screenObject.surface = Surface(this)
                     setOnFrameAvailableListener(this@ScreenRenderer)
                 }

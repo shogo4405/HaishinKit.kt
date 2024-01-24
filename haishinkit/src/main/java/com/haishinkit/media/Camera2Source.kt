@@ -91,6 +91,7 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
 
     @SuppressLint("MissingPermission")
     fun open(position: Int? = null) {
+        stream?.screen?.removeChild(screen)
         if (position == null) {
             this.cameraId = DEFAULT_CAMERA_ID
         } else {
@@ -124,7 +125,6 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
         }
         if (isRunning.get()) return
         screen.listener = this
-        stream?.screen?.addChild(screen)
         isRunning.set(true)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -142,7 +142,6 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
             session = null
         }
         device = null
-        stream?.screen?.removeChild(screen)
         screen.listener = null
         isRunning.set(false)
         if (BuildConfig.DEBUG) {
@@ -158,6 +157,8 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
         screen.surface?.let {
             createCaptureSession(it)
         }
+        stream?.screen?.addChild(screen)
+        stream?.screen?.bringChildToFront(screen)
     }
 
     override fun onDisconnected(camera: CameraDevice) {

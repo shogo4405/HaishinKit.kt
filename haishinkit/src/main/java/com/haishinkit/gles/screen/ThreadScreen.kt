@@ -67,6 +67,18 @@ internal class ThreadScreen : Screen() {
         }
     }
 
+    override fun bringChildToFront(child: ScreenObject) {
+        handler.apply {
+            sendMessage(obtainMessage(MSG_BRING_CHILD_TO_FRONT, child))
+        }
+    }
+
+    override fun sendChildToBack(child: ScreenObject) {
+        handler.apply {
+            sendMessage(obtainMessage(MSG_SEND_CHILD_TO_BACK, child))
+        }
+    }
+
     override fun addChild(child: ScreenObject) {
         handler.apply {
             sendMessage(obtainMessage(MSG_ADD_CHILD, child))
@@ -128,6 +140,14 @@ internal class ThreadScreen : Screen() {
                     transform.removeChild(message.obj as ScreenObject)
                 }
 
+                MSG_BRING_CHILD_TO_FRONT -> {
+                    transform.bringChildToFront(message.obj as ScreenObject)
+                }
+
+                MSG_SEND_CHILD_TO_BACK -> {
+                    transform.bringChildToFront(message.obj as ScreenObject)
+                }
+
                 MSG_DISPOSE -> {
                     transform.dispose()
                 }
@@ -148,5 +168,7 @@ internal class ThreadScreen : Screen() {
         private const val MSG_ADD_CHILD = 5
         private const val MSG_REMOVE_CHILD = 6
         private const val MSG_DISPOSE = 7
+        private const val MSG_BRING_CHILD_TO_FRONT = 8
+        private const val MSG_SEND_CHILD_TO_BACK = 9
     }
 }
