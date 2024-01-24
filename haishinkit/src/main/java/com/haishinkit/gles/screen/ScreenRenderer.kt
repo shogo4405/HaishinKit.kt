@@ -5,7 +5,9 @@ import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.opengl.GLUtils
+import android.util.Log
 import android.view.Surface
+import com.haishinkit.BuildConfig
 import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.TextureProgram
 import com.haishinkit.gles.Utils
@@ -35,6 +37,7 @@ internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableL
         }
     override var deviceOrientation: Int = Surface.ROTATION_0
         set(value) {
+            if (field == value) return
             field = value
             invalidateLayout()
         }
@@ -94,8 +97,8 @@ internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableL
     override fun draw(screenObject: ScreenObject) {
         val program = programs[screenObject.target] ?: return
         GLES20.glViewport(
-            screenObject.bounds.top,
-            screenObject.bounds.left,
+            screenObject.x,
+            screenObject.y,
             screenObject.width,
             screenObject.height
         )
@@ -139,6 +142,13 @@ internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableL
         try {
             surfaceTexture?.updateTexImage()
         } catch (e: RuntimeException) {
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "", e)
+            }
         }
+    }
+
+    companion object {
+        private val TAG = ScreenRenderer::class.java.simpleName
     }
 }

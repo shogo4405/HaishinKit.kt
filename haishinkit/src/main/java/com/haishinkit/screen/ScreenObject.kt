@@ -30,6 +30,16 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
         this[15] = 1f
     }
 
+    val x: Int
+        get() {
+            return bounds.left
+        }
+
+    val y: Int
+        get() {
+            return bounds.top
+        }
+
     /**
      * The width of the object in pixels.
      */

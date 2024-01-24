@@ -24,29 +24,13 @@ import java.util.concurrent.atomic.AtomicBoolean
  * A video source that captures a camera by the Camera2 API.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class Camera2Source(
-    private val context: Context
-) : VideoSource, CameraDevice.StateCallback(), Video.OnSurfaceChangedListener {
-    /**
-     * The Listener interface is the primary method for handling events.
-     */
-    interface Listener {
-        /**
-         * Tells the receiver to error.
-         */
-        fun onError(camera: CameraDevice, error: Int)
-
-        /**
-         * Tells the receiver to create a capture request.
-         */
-        fun onCreateCaptureRequest(builder: CaptureRequest.Builder)
-    }
+class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(),
+    Video.OnSurfaceChangedListener {
 
     /**
      * Specifies the listener indicates the [Camera2Source.Listener] are currently being evaluated.
      */
     var listener: Listener? = null
-
     var device: CameraDevice? = null
         private set(value) {
             session = null
@@ -62,7 +46,6 @@ class Camera2Source(
             isRotatesWithContent = true
         }
     }
-
     private var cameraId: String = DEFAULT_CAMERA_ID
     private var manager: CameraManager =
         context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -136,7 +119,9 @@ class Camera2Source(
     }
 
     override fun startRunning() {
-        Log.d(TAG, "${this::startRunning.name}: $device")
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "${this::startRunning.name}: $device")
+        }
         if (isRunning.get()) return
         screen.listener = this
         stream?.screen?.addChild(screen)
@@ -185,7 +170,6 @@ class Camera2Source(
     }
 
     override fun onSurfaceChanged(surface: Surface?) {
-        Log.e("TAG", "onSurfaceChanged:${surface}")
         surface?.let {
             createCaptureSession(it)
         }
@@ -198,7 +182,6 @@ class Camera2Source(
             }
             return
         }
-        Log.e("TAG", "createCaptureSession:${surface}:${device}")
         if (!surfaces.contains(surface)) {
             surfaces.add(surface)
         }
@@ -226,7 +209,6 @@ class Camera2Source(
                 }
             }, handler
         )
-        Log.e("TAG", "camera2s")
     }
 
     private fun getCameraId(facing: Int): String? {
@@ -247,6 +229,21 @@ class Camera2Source(
         val scm = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         val cameraSizes = scm?.getOutputSizes(SurfaceTexture::class.java) ?: return Size(0, 0)
         return cameraSizes[0]
+    }
+
+    /**
+     * The Listener interface is the primary method for handling events.
+     */
+    interface Listener {
+        /**
+         * Tells the receiver to error.
+         */
+        fun onError(camera: CameraDevice, error: Int)
+
+        /**
+         * Tells the receiver to create a capture request.
+         */
+        fun onCreateCaptureRequest(builder: CaptureRequest.Builder)
     }
 
     companion object {

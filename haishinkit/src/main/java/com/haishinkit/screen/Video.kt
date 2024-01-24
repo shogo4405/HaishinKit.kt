@@ -14,9 +14,14 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
 
     var surface: Surface? = null
         set(value) {
+            if (field == value) return
             field = value
             listener?.onSurfaceChanged(value)
         }
+
+    /**
+     * Specifies the listener to be invoked when a surface changed.
+     */
     var listener: OnSurfaceChangedListener? = null
 
     /**
@@ -24,6 +29,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
      */
     var videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT_FILL
         set(value) {
+            if (field == value) return
             field = value
             invalidateLayout()
         }
@@ -33,6 +39,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
      */
     var imageOrientation: ImageOrientation = ImageOrientation.UP
         set(value) {
+            if (field == value) return
             field = value
             invalidateLayout()
         }
@@ -42,6 +49,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
      */
     var videoSize = Size(0, 0)
         set(value) {
+            if (field == value) return
             field = value
             invalidateLayout()
         }
@@ -51,6 +59,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
      */
     var isRotatesWithContent: Boolean = false
         set(value) {
+            if (field == value) return
             field = value
             invalidateLayout()
         }

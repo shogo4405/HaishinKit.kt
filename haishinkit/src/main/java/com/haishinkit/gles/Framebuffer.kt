@@ -14,6 +14,7 @@ internal class Framebuffer {
 
     var bounds: Rect = Rect(0, 0, 0, 0)
         set(value) {
+            if (field == value) return
             field = value
             try {
                 // framebuffers.

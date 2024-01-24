@@ -4,10 +4,10 @@ package com.haishinkit.screen
  *  A ScreenObjectContainer represents a collection of screen objects.
  */
 open class ScreenObjectContainer : ScreenObject() {
-    private val children = mutableListOf<ScreenObject>()
-
     val childCounts: Int
         get() = children.size
+
+    private val children = mutableListOf<ScreenObject>()
 
     /**
      * Adds the specified screen object as a child of the current screen object container.

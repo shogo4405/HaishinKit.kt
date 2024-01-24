@@ -53,13 +53,13 @@ internal class ThreadScreen : Screen() {
             }
         }
 
+    private val screen: com.haishinkit.gles.screen.Screen by lazy { com.haishinkit.gles.screen.Screen() }
+
     private val handler: Handler by lazy {
         val thread = HandlerThread(TAG)
         thread.start()
         Handler(screen, thread.looper)
     }
-
-    private val screen: com.haishinkit.gles.screen.Screen by lazy { com.haishinkit.gles.screen.Screen() }
 
     init {
         handler.apply {
