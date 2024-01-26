@@ -62,6 +62,7 @@ internal class ThreadScreen : Screen() {
     }
 
     init {
+        screen.parent = this
         handler.apply {
             sendMessage(obtainMessage(MSG_START_RUNNING))
         }
@@ -82,6 +83,30 @@ internal class ThreadScreen : Screen() {
     override fun addChild(child: ScreenObject) {
         handler.apply {
             sendMessage(obtainMessage(MSG_ADD_CHILD, child))
+        }
+    }
+
+    override fun bind(screenObject: ScreenObject) {
+        handler.apply {
+            sendMessage(obtainMessage(MSG_BIND, screenObject))
+        }
+    }
+
+    override fun unbind(screenObject: ScreenObject) {
+        handler.apply {
+            sendMessage(obtainMessage(MSG_UNBIND, screenObject))
+        }
+    }
+
+    override fun registerCallback(callback: Callback) {
+        handler.apply {
+            sendMessage(obtainMessage(MSG_REGISTER_CALLBACK, callback))
+        }
+    }
+
+    override fun unregisterCallback(callback: Callback) {
+        handler.apply {
+            sendMessage(obtainMessage(MSG_UNREGISTER_CALLBACK, callback))
         }
     }
 
@@ -148,6 +173,22 @@ internal class ThreadScreen : Screen() {
                     transform.bringChildToFront(message.obj as ScreenObject)
                 }
 
+                MSG_REGISTER_CALLBACK -> {
+                    transform.registerCallback(message.obj as Screen.Callback)
+                }
+
+                MSG_UNREGISTER_CALLBACK -> {
+                    transform.unregisterCallback(message.obj as Screen.Callback)
+                }
+
+                MSG_BIND -> {
+                    transform.bind(message.obj as ScreenObject)
+                }
+
+                MSG_UNBIND -> {
+                    transform.unbind(message.obj as ScreenObject)
+                }
+
                 MSG_DISPOSE -> {
                     transform.dispose()
                 }
@@ -170,5 +211,9 @@ internal class ThreadScreen : Screen() {
         private const val MSG_DISPOSE = 7
         private const val MSG_BRING_CHILD_TO_FRONT = 8
         private const val MSG_SEND_CHILD_TO_BACK = 9
+        private const val MSG_REGISTER_CALLBACK = 10
+        private const val MSG_UNREGISTER_CALLBACK = 11
+        private const val MSG_BIND = 12
+        private const val MSG_UNBIND = 13
     }
 }

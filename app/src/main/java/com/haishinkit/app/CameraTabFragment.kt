@@ -28,18 +28,29 @@ import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.screen.Screen
+import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Text
 import com.haishinkit.view.NetStreamDrawable
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Date
 
 class CameraTabFragment : Fragment(), IEventListener {
+    private class Callback(private val fragment: CameraTabFragment) : Screen.Callback() {
+        override fun onEnterFrame() {
+            fragment.text.textValue = Date().toString()
+        }
+    }
 
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
     private lateinit var cameraView: NetStreamDrawable
     private lateinit var cameraSource: Camera2Source
+    private val text: Text by lazy { Text() }
     lateinit var sample: Text
+
+    private val callback: Screen.Callback by lazy { Callback(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.let {
@@ -47,9 +58,10 @@ class CameraTabFragment : Fragment(), IEventListener {
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.CAMERA), 1)
             }
-            if (
-                ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) !=
-                PackageManager.PERMISSION_GRANTED
+            if (ContextCompat.checkSelfPermission(
+                    it,
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
             }
@@ -64,19 +76,19 @@ class CameraTabFragment : Fragment(), IEventListener {
         stream.screen.assetManager = requireContext().assets
         stream.screen.bounds = Rect(0, 0, 1024, 576)
 
-        val text = Text()
         text.textSize = 60f
         text.textValue = "Hello World!!"
+        text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_CENTER
+        text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
         stream.screen.addChild(text)
+        stream.screen.registerCallback(callback)
 
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
@@ -101,31 +113,24 @@ class CameraTabFragment : Fragment(), IEventListener {
                     outputStream.flush()
                 }
 
-                val fileUri: Uri? =
-                    try {
-                        FileProvider.getUriForFile(
-                            requireContext(),
-                            requireContext().packageName + ".fileprovider",
-                            file
-                        )
-                    } catch (e: IllegalArgumentException) {
-                        null
-                    }
+                val fileUri: Uri? = try {
+                    FileProvider.getUriForFile(
+                        requireContext(), requireContext().packageName + ".fileprovider", file
+                    )
+                } catch (e: IllegalArgumentException) {
+                    null
+                }
 
-                fileUri
-                    ?: run {
-                        return@readPixels
-                    }
+                fileUri ?: run {
+                    return@readPixels
+                }
 
                 val builder =
-                    this@CameraTabFragment.activity
-                        ?.let { it1 -> ShareCompat.IntentBuilder.from(it1) }
+                    this@CameraTabFragment.activity?.let { it1 -> ShareCompat.IntentBuilder.from(it1) }
                         ?.apply {
                             addStream(fileUri)
                             setType(requireContext().contentResolver.getType(fileUri))
-                        }
-                        ?.createChooserIntent()
-                        ?.apply {
+                        }?.createChooserIntent()?.apply {
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             resolveActivity(requireContext().packageManager)?.also {
                                 startActivity(this)
@@ -147,12 +152,11 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         val switchButton = v.findViewById<Button>(R.id.switch_button)
         switchButton.setOnClickListener { cameraSource.switchCamera() }
-        cameraView =
-            if (Preference.useSurfaceView) {
-                v.findViewById(R.id.surface_view)
-            } else {
-                v.findViewById(R.id.texture_view)
-            }
+        cameraView = if (Preference.useSurfaceView) {
+            v.findViewById(R.id.surface_view)
+        } else {
+            v.findViewById(R.id.texture_view)
+        }
         cameraView.attachStream(stream)
         return v
     }

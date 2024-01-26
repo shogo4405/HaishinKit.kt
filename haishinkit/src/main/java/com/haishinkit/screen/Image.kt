@@ -14,4 +14,14 @@ open class Image : ScreenObject() {
             field = value
             invalidateLayout()
         }
+
+    override val width: Int
+        get() {
+            return bitmap.width
+        }
+
+    override val height: Int
+        get() {
+            return bitmap.height
+        }
 }

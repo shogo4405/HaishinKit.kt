@@ -53,7 +53,6 @@ class Text : Image() {
                 android.graphics.Bitmap.Config.ARGB_8888
             )
         canvas = Canvas(bitmap)
-        bounds.set(bounds.left, bounds.top, bounds.left + bitmap.width, bounds.top + bitmap.height)
         canvas.drawText(textValue, -textBounds.left.toFloat(), -textBounds.top.toFloat(), paint)
         super.layout(renderer)
     }

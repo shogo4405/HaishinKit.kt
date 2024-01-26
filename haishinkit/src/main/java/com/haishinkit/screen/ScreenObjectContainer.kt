@@ -7,6 +7,17 @@ open class ScreenObjectContainer : ScreenObject() {
     val childCounts: Int
         get() = children.size
 
+    override var parent: ScreenObjectContainer? = null
+        set(value) {
+            children.forEach {
+                (root as? Screen)?.unbind(it)
+            }
+            field = value
+            children.forEach {
+                (root as? Screen)?.bind(it)
+            }
+        }
+
     private val children = mutableListOf<ScreenObject>()
 
     open fun bringChildToFront(child: ScreenObject) {
@@ -31,8 +42,8 @@ open class ScreenObjectContainer : ScreenObject() {
      * Adds the specified screen object as a child of the current screen object container.
      */
     open fun addChild(child: ScreenObject) {
-        if (child.parent != null) {
-            throw IllegalStateException()
+        if (child.parent != null || child == this) {
+            throw IllegalArgumentException()
         }
         children.add(child)
         child.parent = this

@@ -49,14 +49,12 @@ internal class Screen : com.haishinkit.screen.Screen(), Running, Choreographer.F
     private val screenRenderer: ScreenRenderer by lazy { ScreenRenderer() }
     private val framebuffer: Framebuffer by lazy { Framebuffer() }
 
-    override fun addChild(child: ScreenObject) {
-        super.addChild(child)
-        screenRenderer.bind(child)
+    override fun bind(screenObject: ScreenObject) {
+        screenRenderer.bind(screenObject)
     }
 
-    override fun removeChild(child: ScreenObject) {
-        super.removeChild(child)
-        screenRenderer.unbind(child)
+    override fun unbind(screenObject: ScreenObject) {
+        screenRenderer.unbind(screenObject)
     }
 
     override fun dispose() {
@@ -82,6 +80,9 @@ internal class Screen : com.haishinkit.screen.Screen(), Running, Choreographer.F
 
     override fun doFrame(frameTimeNanos: Long) {
         if (isRunning.get()) {
+            for (callback in callbacks) {
+                callback.onEnterFrame()
+            }
             choreographer?.postFrameCallback(this)
         }
 
