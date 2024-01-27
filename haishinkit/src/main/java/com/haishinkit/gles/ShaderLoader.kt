@@ -14,7 +14,7 @@ import java.util.Locale
 internal class ShaderLoader {
     var assetManager: AssetManager? = null
 
-    fun createTextureProgram(target: Int, videoEffect: VideoEffect): TextureProgram? {
+    fun createProgram(target: Int, videoEffect: VideoEffect): Program? {
         val vertexShader = loadShader(target, GLES20.GL_VERTEX_SHADER, videoEffect)
         if (vertexShader == 0) {
             return null
@@ -41,7 +41,7 @@ internal class ShaderLoader {
             GLES20.glDeleteProgram(program)
             program = 0
         }
-        return TextureProgram(
+        return Program(
             program,
             vertexShader,
             fragmentShader,

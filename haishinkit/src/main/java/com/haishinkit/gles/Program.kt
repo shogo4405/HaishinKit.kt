@@ -8,7 +8,7 @@ import java.lang.reflect.Method
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-internal class TextureProgram(
+internal class Program(
     private val id: Int = INVALID_VALUE,
     private val vertexShader: Int = INVALID_VALUE,
     private val fragmentShaper: Int = INVALID_VALUE,

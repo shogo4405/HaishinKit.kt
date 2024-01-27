@@ -62,7 +62,7 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
     override var videoEffect: VideoEffect = DefaultVideoEffect.shared
         set(value) {
             field = value
-            program = shaderLoader.createTextureProgram(GLES20.GL_TEXTURE_2D, videoEffect)
+            program = shaderLoader.createProgram(GLES20.GL_TEXTURE_2D, videoEffect)
         }
 
     override var frameRate: Int
@@ -83,7 +83,7 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
             field = value
             field?.postFrameCallback(this)
         }
-    private var program: TextureProgram? = null
+    private var program: Program? = null
         set(value) {
             field?.dispose()
             field = value
@@ -103,7 +103,7 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
             open((screen as? com.haishinkit.gles.screen.ThreadScreen)?.context)
             makeCurrent(createWindowSurface(surface))
         }
-        program = shaderLoader.createTextureProgram(GLES20.GL_TEXTURE_2D, videoEffect)
+        program = shaderLoader.createProgram(GLES20.GL_TEXTURE_2D, videoEffect)
         screen?.let {
             video.videoSize = Size(it.bounds.width(), it.bounds.height())
         }

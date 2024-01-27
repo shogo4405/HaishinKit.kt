@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.gles.ShaderLoader
-import com.haishinkit.gles.TextureProgram
+import com.haishinkit.gles.Program
 import com.haishinkit.gles.Utils
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.screen.ScreenObject
@@ -22,13 +22,13 @@ internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableL
         set(value) {
             field = value
             shaderLoader.assetManager = assetManager
-            shaderLoader.createTextureProgram(
+            shaderLoader.createProgram(
                 GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
                 DefaultVideoEffect.shared
             )?.let {
                 programs[GLES11Ext.GL_TEXTURE_EXTERNAL_OES] = it
             }
-            shaderLoader.createTextureProgram(
+            shaderLoader.createProgram(
                 GLES20.GL_TEXTURE_2D,
                 DefaultVideoEffect.shared
             )?.let {
@@ -43,7 +43,7 @@ internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableL
         }
     override var shouldInvalidateLayout: Boolean = true
 
-    private var programs = mutableMapOf<Int, TextureProgram>()
+    private var programs = mutableMapOf<Int, Program>()
     private var textureIds = intArrayOf(0)
     private var surfaceTextures = mutableMapOf<Int, SurfaceTexture>()
     private val shaderLoader by lazy {
