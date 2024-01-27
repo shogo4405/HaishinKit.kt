@@ -10,7 +10,7 @@ import android.opengl.GLES20
 import android.view.Surface
 import java.nio.ByteBuffer
 
-internal class Context {
+internal class GraphicsContext {
     var version: Int = 0
         private set
     private var config: EGLConfig? = null
@@ -18,7 +18,7 @@ internal class Context {
     private var display: EGLDisplay = EGL14.EGL_NO_DISPLAY
     private var surface: EGLSurface = EGL14.EGL_NO_SURFACE
 
-    fun open(shareContext: Context?) {
+    fun open(shareGraphicsContext: GraphicsContext?) {
         display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
 
         if (display === EGL14.EGL_NO_DISPLAY) {
@@ -35,7 +35,7 @@ internal class Context {
             val context = EGL14.eglCreateContext(
                 display,
                 config,
-                shareContext?.context ?: EGL14.EGL_NO_CONTEXT,
+                shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
                 intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE),
                 0
             )
@@ -54,7 +54,7 @@ internal class Context {
             context = EGL14.eglCreateContext(
                 display,
                 config,
-                shareContext?.context ?: EGL14.EGL_NO_CONTEXT,
+                shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
                 intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE),
                 0
             )

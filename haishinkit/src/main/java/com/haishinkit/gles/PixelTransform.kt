@@ -76,7 +76,7 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
         shaderLoader.assetManager = screen?.assetManager
         shaderLoader
     }
-    private val context: Context by lazy { Context() }
+    private val graphicsContext: GraphicsContext by lazy { GraphicsContext() }
     private var choreographer: Choreographer? = null
         set(value) {
             field?.removeFrameCallback(this)
@@ -99,8 +99,8 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
         isRunning.set(true)
         video.videoGravity = VideoGravity.RESIZE_ASPECT
         fpsController.clear()
-        context.apply {
-            open((screen as? com.haishinkit.gles.screen.ThreadScreen)?.context)
+        graphicsContext.apply {
+            open((screen as? com.haishinkit.gles.screen.ThreadScreen)?.graphicsContext)
             makeCurrent(createWindowSurface(surface))
         }
         program = shaderLoader.createProgram(GLES20.GL_TEXTURE_2D, videoEffect)
@@ -139,8 +139,8 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
                 video.layout(screenRenderer)
             }
             program?.draw(video)
-            context.setPresentationTime(timestamp)
-            context.swapBuffers()
+            graphicsContext.setPresentationTime(timestamp)
+            graphicsContext.swapBuffers()
         } catch (e: RuntimeException) {
             Log.e(TAG, "", e)
         }
@@ -158,7 +158,7 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
             ByteBuffer.allocateDirect(imageExtent.width * imageExtent.height * 4).apply {
                 order(ByteOrder.LITTLE_ENDIAN)
             }
-        context.readPixels(imageExtent.width, imageExtent.height, byteBuffer)
+        graphicsContext.readPixels(imageExtent.width, imageExtent.height, byteBuffer)
         bitmap.copyPixelsFromBuffer(byteBuffer)
         lambda(
             Bitmap.createBitmap(

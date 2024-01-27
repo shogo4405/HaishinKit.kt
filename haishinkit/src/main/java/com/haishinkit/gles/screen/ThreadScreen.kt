@@ -4,16 +4,16 @@ import android.content.res.AssetManager
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
-import com.haishinkit.gles.Context
+import com.haishinkit.gles.GraphicsContext
 import com.haishinkit.metrics.Rectangle
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
 import java.lang.ref.WeakReference
 
 internal class ThreadScreen : Screen() {
-    val context: Context
+    val graphicsContext: GraphicsContext
         get() {
-            return screen.context
+            return screen.graphicsContext
         }
 
     override var id: Int

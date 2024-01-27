@@ -4,7 +4,7 @@ import android.content.res.AssetManager
 import android.graphics.Color
 import android.opengl.GLES20
 import android.view.Choreographer
-import com.haishinkit.gles.Context
+import com.haishinkit.gles.GraphicsContext
 import com.haishinkit.gles.Framebuffer
 import com.haishinkit.gles.Utils
 import com.haishinkit.lang.Running
@@ -13,7 +13,7 @@ import com.haishinkit.screen.ScreenObject
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class Screen : com.haishinkit.screen.Screen(), Running, Choreographer.FrameCallback {
-    val context: Context by lazy { Context() }
+    val graphicsContext: GraphicsContext by lazy { GraphicsContext() }
     override var id: Int
         get() = framebuffer.textureId
         set(value) {
@@ -65,8 +65,8 @@ internal class Screen : com.haishinkit.screen.Screen(), Running, Choreographer.F
     override fun startRunning() {
         if (isRunning.get()) return
         isRunning.set(true)
-        context.open(null)
-        context.makeCurrent(null)
+        graphicsContext.open(null)
+        graphicsContext.makeCurrent(null)
         choreographer = Choreographer.getInstance()
     }
 
@@ -75,7 +75,7 @@ internal class Screen : com.haishinkit.screen.Screen(), Running, Choreographer.F
         isRunning.set(false)
         choreographer = null
         framebuffer.release()
-        context.close()
+        graphicsContext.close()
     }
 
     override fun doFrame(frameTimeNanos: Long) {
