@@ -1,11 +1,11 @@
 package com.haishinkit.gles.screen
 
 import android.content.res.AssetManager
-import android.graphics.Rect
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
 import com.haishinkit.gles.Context
+import com.haishinkit.metrics.Rectangle
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
 import java.lang.ref.WeakReference
@@ -21,8 +21,8 @@ internal class ThreadScreen : Screen() {
         set(value) {
         }
 
-    override var bounds: Rect
-        get() = screen.bounds
+    override var frame: Rectangle
+        get() = screen.frame
         set(value) {
             handler.apply {
                 sendMessage(obtainMessage(MSG_SET_BOUNDS, value))
@@ -134,7 +134,7 @@ internal class ThreadScreen : Screen() {
             val transform = transform.get() ?: return
             when (message.what) {
                 MSG_SET_BOUNDS -> {
-                    transform.bounds = message.obj as Rect
+                    transform.frame = message.obj as Rectangle
                 }
 
                 MSG_SET_ASSET_MANAGER -> {

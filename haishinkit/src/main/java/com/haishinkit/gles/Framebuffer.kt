@@ -1,18 +1,20 @@
 package com.haishinkit.gles
 
-import android.graphics.Rect
+import android.graphics.Point
 import android.opengl.GLES20
 import android.util.Log
+import android.util.Size
+import com.haishinkit.metrics.Rectangle
 
 internal class Framebuffer {
     val isEnabled: Boolean
         get() {
-            return bounds.width() != 0 && bounds.height() != 0
+            return bounds.size.width != 0 && bounds.size.height != 0
         }
     val textureId: Int
         get() = textureIds[0]
 
-    var bounds: Rect = Rect(0, 0, 0, 0)
+    var bounds: Rectangle = Rectangle(Point(0, 0), Size(0, 0))
         set(value) {
             if (field == value) return
             field = value
@@ -28,8 +30,8 @@ internal class Framebuffer {
                 GLES20.glRenderbufferStorage(
                     GLES20.GL_RENDERBUFFER,
                     GLES20.GL_DEPTH_COMPONENT16,
-                    bounds.width(),
-                    bounds.height()
+                    bounds.size.width,
+                    bounds.size.height
                 )
                 GLES20.glFramebufferRenderbuffer(
                     GLES20.GL_FRAMEBUFFER,
@@ -45,8 +47,8 @@ internal class Framebuffer {
                     GLES20.GL_TEXTURE_2D,
                     0,
                     GLES20.GL_RGBA,
-                    bounds.width(),
-                    bounds.height(),
+                    bounds.size.width,
+                    bounds.size.height,
                     0,
                     GLES20.GL_RGBA,
                     GLES20.GL_UNSIGNED_BYTE,

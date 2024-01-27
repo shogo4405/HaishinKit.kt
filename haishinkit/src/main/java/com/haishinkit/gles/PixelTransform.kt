@@ -55,7 +55,7 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
             GLES20.glViewport(
                 0, 0, imageExtent.width, imageExtent.height
             )
-            video.bounds.set(0, 0, imageExtent.width, imageExtent.height)
+            video.frame.set(0, 0, imageExtent.width, imageExtent.height)
             video.invalidateLayout()
         }
 
@@ -105,7 +105,7 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
         }
         program = shaderLoader.createProgram(GLES20.GL_TEXTURE_2D, videoEffect)
         screen?.let {
-            video.videoSize = Size(it.bounds.width(), it.bounds.height())
+            video.videoSize = it.frame.size
         }
         choreographer = Choreographer.getInstance()
     }
@@ -131,8 +131,8 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
         try {
             GLES20.glClearColor(0f, 0f, 0f, 0f)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-            if (video.videoSize.width != screen.bounds.width() || video.videoSize.height != screen.bounds.height()) {
-                video.videoSize = Size(screen.bounds.width(), screen.bounds.height())
+            if (video.videoSize.width != screen.frame.size.width || video.videoSize.height != screen.frame.size.height) {
+                video.videoSize = Size(screen.frame.size.width, screen.frame.size.height)
             }
             if (video.shouldInvalidateLayout) {
                 video.id = screen.id

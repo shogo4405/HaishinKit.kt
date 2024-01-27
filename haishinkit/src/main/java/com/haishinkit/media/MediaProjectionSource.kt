@@ -1,7 +1,7 @@
 package com.haishinkit.media
 
 import android.content.Context
-import android.graphics.Rect
+import android.graphics.Point
 import android.hardware.SensorManager
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
@@ -18,6 +18,7 @@ import android.view.WindowManager
 import androidx.annotation.ChecksSdkIntAtLeast
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
+import com.haishinkit.metrics.Rectangle
 import com.haishinkit.net.NetStream
 import com.haishinkit.screen.Video
 import com.haishinkit.util.swap
@@ -155,7 +156,7 @@ class MediaProjectionSource(
         rotation = windowManager.defaultDisplay.rotation
         screen.videoSize =
             Size((metrics.widthPixels * scale).toInt(), (metrics.heightPixels * scale).toInt())
-        stream?.screen?.bounds = Rect(0, 0, screen.videoSize.width, screen.videoSize.height)
+        stream?.screen?.frame = Rectangle(Point(0, 0), screen.videoSize)
         stream?.screen?.addChild(screen)
         isRunning.set(true)
     }

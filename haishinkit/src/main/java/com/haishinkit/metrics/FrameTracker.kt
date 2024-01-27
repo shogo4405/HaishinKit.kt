@@ -1,4 +1,4 @@
-package com.haishinkit.metric
+package com.haishinkit.metrics
 
 import android.util.Log
 import kotlin.math.pow

@@ -1,7 +1,8 @@
 package com.haishinkit.screen
 
-import android.graphics.Rect
+import android.graphics.Point
 import android.opengl.GLES20
+import com.haishinkit.metrics.Rectangle
 
 /**
  * The ScreenObject class is the abstract class for all objects that are rendered on the screen.
@@ -22,9 +23,9 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
         }
 
     /**
-     * Specifies the bounds.
+     * Specifies the frame.
      */
-    open var bounds = Rect(0, 0, 0, 0)
+    open var frame = Rectangle(Point(0, 0), Rectangle.MATCH_PARENT)
         set(value) {
             if (field == value) return
             field = value
@@ -61,7 +62,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
                 }
 
                 else -> {
-                    parentX + bounds.top
+                    parentX + frame.point.x
                 }
             }
         }
@@ -83,7 +84,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
                 }
 
                 else -> {
-                    parentY + bounds.left
+                    parentY + frame.point.x
                 }
             }
         }
@@ -93,10 +94,10 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      */
     open val width: Int
         get() {
-            if (bounds.width() == 0) {
-                return parent?.bounds?.width() ?: 0
+            if (frame.size.width == 0) {
+                return parent?.frame?.size?.width ?: 0
             }
-            return bounds.width()
+            return frame.size.width
         }
 
     /**
@@ -104,10 +105,10 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      */
     open val height: Int
         get() {
-            if (bounds.height() == 0) {
-                return parent?.bounds?.height() ?: 0
+            if (frame.size.height == 0) {
+                return parent?.frame?.size?.height ?: 0
             }
-            return bounds.height()
+            return frame.size.height
         }
 
     /**

@@ -11,7 +11,7 @@ import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.Codec
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.lang.Running
-import com.haishinkit.metric.FrameTracker
+import com.haishinkit.metrics.FrameTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

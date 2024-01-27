@@ -5,11 +5,12 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Rect
+import android.graphics.Point
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
+import com.haishinkit.metrics.Rectangle
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.screen.Screen
@@ -74,7 +76,7 @@ class CameraTabFragment : Fragment(), IEventListener {
         stream.attachVideo(cameraSource)
 
         stream.screen.assetManager = requireContext().assets
-        stream.screen.bounds = Rect(0, 0, 1024, 576)
+        stream.screen.frame = Rectangle(Point(0, 0), Size(1024, 576))
 
         text.textSize = 60f
         text.textValue = "Hello World!!"

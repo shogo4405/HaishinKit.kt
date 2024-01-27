@@ -2,13 +2,13 @@ package com.haishinkit.gles.screen
 
 import android.content.res.AssetManager
 import android.graphics.Color
-import android.graphics.Rect
 import android.opengl.GLES20
 import android.view.Choreographer
 import com.haishinkit.gles.Context
 import com.haishinkit.gles.Framebuffer
 import com.haishinkit.gles.Utils
 import com.haishinkit.lang.Running
+import com.haishinkit.metrics.Rectangle
 import com.haishinkit.screen.ScreenObject
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -19,10 +19,10 @@ internal class Screen : com.haishinkit.screen.Screen(), Running, Choreographer.F
         set(value) {
         }
 
-    override var bounds: Rect
-        get() = super.bounds
+    override var frame: Rectangle
+        get() = super.frame
         set(value) {
-            super.bounds = value
+            super.frame = value
             framebuffer.bounds = value
         }
 

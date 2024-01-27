@@ -8,8 +8,8 @@ import android.opengl.GLUtils
 import android.util.Log
 import android.view.Surface
 import com.haishinkit.BuildConfig
-import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.Program
+import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.Utils
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.screen.ScreenObject
