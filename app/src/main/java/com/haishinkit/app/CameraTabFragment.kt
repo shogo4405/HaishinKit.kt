@@ -50,8 +50,6 @@ class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var cameraView: NetStreamDrawable
     private lateinit var cameraSource: Camera2Source
     private val text: Text by lazy { Text() }
-    lateinit var sample: Text
-
     private val callback: Screen.Callback by lazy { Callback(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +78,7 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         text.textSize = 60f
         text.textValue = "Hello World!!"
+        text.layoutMargins.set(0, 0, 16, 0)
         text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_CENTER
         text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
         stream.screen.addChild(text)

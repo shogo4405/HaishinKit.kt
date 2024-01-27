@@ -2,7 +2,9 @@ package com.haishinkit.screen
 
 import android.graphics.Point
 import android.opengl.GLES20
+import com.haishinkit.metrics.EdgeInsets
 import com.haishinkit.metrics.Rectangle
+import kotlin.math.max
 
 /**
  * The ScreenObject class is the abstract class for all objects that are rendered on the screen.
@@ -32,6 +34,8 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
             invalidateLayout()
         }
 
+    val layoutMargins: EdgeInsets = EdgeInsets(0, 0, 0, 0)
+
     /**
      * The mvp matrix.
      */
@@ -58,11 +62,11 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
                 }
 
                 HORIZONTAL_ALIGNMENT_RIGHT -> {
-                    parentX + (parentWidth - width)
+                    parentX + (parentWidth - width) - layoutMargins.right
                 }
 
                 else -> {
-                    parentX + frame.point.x
+                    parentX + frame.point.x + layoutMargins.left
                 }
             }
         }
@@ -80,11 +84,11 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
                 }
 
                 VERTICAL_ALIGNMENT_BOTTOM -> {
-                    parentY + (parentHeight - height)
+                    parentY + (parentHeight - height) - layoutMargins.bottom
                 }
 
                 else -> {
-                    parentY + frame.point.x
+                    parentY + frame.point.y + layoutMargins.top
                 }
             }
         }
@@ -95,7 +99,10 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     open val width: Int
         get() {
             if (frame.size.width == 0) {
-                return parent?.frame?.size?.width ?: 0
+                return max(
+                    (parent?.frame?.size?.width ?: 0) - layoutMargins.left - layoutMargins.right,
+                    0
+                )
             }
             return frame.size.width
         }
@@ -106,7 +113,10 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     open val height: Int
         get() {
             if (frame.size.height == 0) {
-                return parent?.frame?.size?.height ?: 0
+                return max(
+                    (parent?.frame?.size?.height ?: 0) - layoutMargins.top - layoutMargins.bottom,
+                    0
+                )
             }
             return frame.size.height
         }
