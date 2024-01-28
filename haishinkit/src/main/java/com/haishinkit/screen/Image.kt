@@ -17,12 +17,18 @@ open class Image : ScreenObject() {
 
     override val width: Int
         get() {
-            return bitmap.width
+            if (frame.size.width == 0) {
+                return bitmap.width
+            }
+            return frame.size.width
         }
 
     override val height: Int
         get() {
-            return bitmap.height
+            if (frame.size.height == 0) {
+                return bitmap.height
+            }
+            return frame.size.height
         }
 
     init {

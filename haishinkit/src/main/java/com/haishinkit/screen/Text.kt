@@ -1,5 +1,6 @@
 package com.haishinkit.screen
 
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -43,11 +44,7 @@ class Text : Image() {
     override fun layout(renderer: ScreenRenderer) {
         paint.getTextBounds(textValue, 0, textValue.length, textBounds)
         bitmap =
-            android.graphics.Bitmap.createBitmap(
-                textBounds.width(),
-                textBounds.height(),
-                android.graphics.Bitmap.Config.ARGB_8888
-            )
+            Bitmap.createBitmap(textBounds.width(), textBounds.height(), Bitmap.Config.ARGB_8888)
         canvas = Canvas(bitmap)
         canvas.drawText(textValue, -textBounds.left.toFloat(), -textBounds.top.toFloat(), paint)
         super.layout(renderer)

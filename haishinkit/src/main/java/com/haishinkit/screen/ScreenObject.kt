@@ -34,6 +34,9 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
             invalidateLayout()
         }
 
+    /**
+     * Specifies the default spacing to laying out content in the screen object.
+     */
     val layoutMargins: EdgeInsets = EdgeInsets(0, 0, 0, 0)
 
     /**

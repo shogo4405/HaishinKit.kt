@@ -38,12 +38,18 @@ import com.haishinkit.screen.Text
 import com.haishinkit.util.Rectangle
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.Date
 
 class CameraTabFragment : Fragment(), IEventListener {
     private class Callback(private val fragment: CameraTabFragment) : Screen.Callback() {
+        private val dateFormat = SimpleDateFormat("HH:mm:ss")
         override fun onEnterFrame() {
-            fragment.text.textValue = Date().toString()
+            try {
+                fragment.text.textValue = dateFormat.format(Date())
+            } catch (e: RuntimeException) {
+                Log.e(TAG, "", e)
+            }
         }
     }
 
@@ -77,13 +83,15 @@ class CameraTabFragment : Fragment(), IEventListener {
         stream.screen.frame = Rectangle(Point(0, 0), Size(1024, 576))
 
         text.textSize = 60f
-        text.textValue = "Hello World!!"
-        text.layoutMargins.set(0, 0, 16, 0)
-        text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_CENTER
+        text.textValue = ""
+        text.layoutMargins.set(0, 0, 16, 16)
+        text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_RIGHT
         text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
 
         val image = Image()
         image.bitmap = BitmapFactory.decodeResource(resources, R.drawable.game_jikkyou)
+        image.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
+        image.frame.set(0, 0, 180, 180)
         stream.screen.addChild(image)
 
         stream.screen.addChild(text)
