@@ -18,9 +18,8 @@ import android.view.WindowManager
 import androidx.annotation.ChecksSdkIntAtLeast
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
-import com.haishinkit.metrics.Rectangle
-import com.haishinkit.net.NetStream
 import com.haishinkit.screen.Video
+import com.haishinkit.util.Rectangle
 import com.haishinkit.util.swap
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -64,7 +63,7 @@ class MediaProjectionSource(
 
     var isRotatesWithContent = true
 
-    override var stream: NetStream? = null
+    override var stream: Stream? = null
     override val isRunning = AtomicBoolean(false)
     override val screen: Video by lazy { Video() }
     private var virtualDisplay: VirtualDisplay? = null

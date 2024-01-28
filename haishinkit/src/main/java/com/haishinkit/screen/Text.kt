@@ -40,10 +40,6 @@ class Text : Image() {
     private var canvas = Canvas(bitmap)
     private var textBounds: Rect = Rect()
 
-    init {
-        matrix[5] = matrix[5] * -1
-    }
-
     override fun layout(renderer: ScreenRenderer) {
         paint.getTextBounds(textValue, 0, textValue.length, textBounds)
         bitmap =

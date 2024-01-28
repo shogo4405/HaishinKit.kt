@@ -1,11 +1,10 @@
-package com.haishinkit.view
+package com.haishinkit.media
 
 import android.graphics.Bitmap
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
-import com.haishinkit.net.NetStream
 
-interface NetStreamDrawable {
+interface StreamDrawable {
     /**
      * Specifies the videoGravity how the displays the visual content.
      */
@@ -24,7 +23,7 @@ interface NetStreamDrawable {
     /**
      * Attaches a video stream to the view.
      */
-    fun attachStream(stream: NetStream?)
+    fun attachStream(stream: Stream?)
 
     /**
      * Reads the pixels of a displayed image.

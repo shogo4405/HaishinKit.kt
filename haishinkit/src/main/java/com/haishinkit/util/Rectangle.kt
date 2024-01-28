@@ -1,4 +1,4 @@
-package com.haishinkit.metrics
+package com.haishinkit.util
 
 import android.graphics.Point
 import android.util.Size

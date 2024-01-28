@@ -16,7 +16,6 @@ import android.util.Size
 import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
-import com.haishinkit.net.NetStream
 import com.haishinkit.screen.Video
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -39,7 +38,7 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
         }
     var characteristics: CameraCharacteristics? = null
         private set
-    override var stream: NetStream? = null
+    override var stream: Stream? = null
     override val isRunning = AtomicBoolean(false)
     override val screen: Video by lazy {
         Video().apply {

@@ -10,7 +10,6 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.haishinkit.BuildConfig
-import com.haishinkit.net.NetStream
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -25,7 +24,7 @@ class AudioRecordSource(
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
 
-    override var stream: NetStream? = null
+    override var stream: Stream? = null
     override val isRunning = AtomicBoolean(false)
 
     var minBufferSize = -1

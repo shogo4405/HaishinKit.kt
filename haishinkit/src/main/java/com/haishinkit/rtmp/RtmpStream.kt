@@ -10,7 +10,7 @@ import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
 import com.haishinkit.flv.FlvAudioCodec
 import com.haishinkit.flv.FlvVideoCodec
-import com.haishinkit.net.NetStream
+import com.haishinkit.media.Stream
 import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpDataMessage
 import com.haishinkit.rtmp.message.RtmpMessage
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class RtmpStream(context: Context, internal var connection: RtmpConnection) :
-    NetStream(context),
+    Stream(context),
     IEventDispatcher {
     data class Info(
         var resourceName: String? = null

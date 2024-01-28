@@ -5,9 +5,9 @@ import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
 import com.haishinkit.gles.GraphicsContext
-import com.haishinkit.metrics.Rectangle
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
+import com.haishinkit.util.Rectangle
 import java.lang.ref.WeakReference
 
 internal class ThreadScreen(applicationContext: Context) : Screen(applicationContext) {

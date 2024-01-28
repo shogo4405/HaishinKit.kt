@@ -4,7 +4,7 @@ import android.graphics.Point
 import android.opengl.GLES20
 import android.util.Log
 import android.util.Size
-import com.haishinkit.metrics.Rectangle
+import com.haishinkit.util.Rectangle
 
 internal class Framebuffer {
     val isEnabled: Boolean

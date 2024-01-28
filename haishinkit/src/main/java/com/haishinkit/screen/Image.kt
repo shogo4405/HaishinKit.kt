@@ -24,4 +24,8 @@ open class Image : ScreenObject() {
         get() {
             return bitmap.height
         }
+
+    init {
+        matrix[5] = matrix[5] * -1
+    }
 }

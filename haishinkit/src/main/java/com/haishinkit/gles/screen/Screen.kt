@@ -8,8 +8,8 @@ import com.haishinkit.gles.Framebuffer
 import com.haishinkit.gles.GraphicsContext
 import com.haishinkit.gles.Utils
 import com.haishinkit.lang.Running
-import com.haishinkit.metrics.Rectangle
 import com.haishinkit.screen.ScreenObject
+import com.haishinkit.util.Rectangle
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class Screen(applicationContext: Context) :

@@ -3,14 +3,13 @@ package com.haishinkit.media
 import android.graphics.Point
 import android.util.Size
 import android.view.Surface
-import com.haishinkit.metrics.Rectangle
-import com.haishinkit.net.NetStream
 import com.haishinkit.screen.Video
+import com.haishinkit.util.Rectangle
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class MediaCodecSource(val size: Size) : VideoSource, Video.OnSurfaceChangedListener {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
-    override var stream: NetStream? = null
+    override var stream: Stream? = null
     override val screen: Video by lazy {
         Video().apply {
             isRotatesWithContent = false

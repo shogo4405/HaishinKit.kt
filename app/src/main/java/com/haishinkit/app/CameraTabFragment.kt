@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
@@ -27,13 +28,14 @@ import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
-import com.haishinkit.metrics.Rectangle
+import com.haishinkit.media.StreamDrawable
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
+import com.haishinkit.screen.Image
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Text
-import com.haishinkit.view.NetStreamDrawable
+import com.haishinkit.util.Rectangle
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
@@ -47,7 +49,7 @@ class CameraTabFragment : Fragment(), IEventListener {
 
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var cameraView: NetStreamDrawable
+    private lateinit var cameraView: StreamDrawable
     private lateinit var cameraSource: Camera2Source
     private val text: Text by lazy { Text() }
     private val callback: Screen.Callback by lazy { Callback(this) }
@@ -79,6 +81,11 @@ class CameraTabFragment : Fragment(), IEventListener {
         text.layoutMargins.set(0, 0, 16, 0)
         text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_CENTER
         text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
+
+        val image = Image()
+        image.bitmap = BitmapFactory.decodeResource(resources, R.drawable.game_jikkyou)
+        stream.screen.addChild(image)
+
         stream.screen.addChild(text)
         stream.screen.registerCallback(callback)
 

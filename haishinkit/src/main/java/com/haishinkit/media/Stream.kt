@@ -1,4 +1,4 @@
-package com.haishinkit.net
+package com.haishinkit.media
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -12,16 +12,13 @@ import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
-import com.haishinkit.media.AudioSource
-import com.haishinkit.media.VideoSource
 import com.haishinkit.screen.Screen
-import com.haishinkit.view.NetStreamDrawable
 
 /**
  * The NetStream class is the foundation of a RtmpStream.
  */
 @Suppress("UNUSED")
-abstract class NetStream(applicationContext: Context) {
+abstract class Stream(applicationContext: Context) {
     /**
      * The offscreen renderer for video output.
      */
@@ -58,7 +55,7 @@ abstract class NetStream(applicationContext: Context) {
     /**
      * Specifies the NetStreamDrawable object.
      */
-    var drawable: NetStreamDrawable? = null
+    var drawable: StreamDrawable? = null
 
     /**
      * The current audioSource object.
@@ -183,6 +180,6 @@ abstract class NetStream(applicationContext: Context) {
     }
 
     companion object {
-        private val TAG = NetStream::class.java.simpleName
+        private val TAG = Stream::class.java.simpleName
     }
 }

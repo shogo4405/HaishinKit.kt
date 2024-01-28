@@ -10,7 +10,8 @@ import android.view.WindowManager
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
-import com.haishinkit.net.NetStream
+import com.haishinkit.media.Stream
+import com.haishinkit.media.StreamDrawable
 
 /**
  * A view that displays a video content of a NetStream object which uses [SurfaceView].
@@ -22,7 +23,7 @@ constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
-) : SurfaceView(context, attrs, defStyleAttr, defStyleRes), NetStreamDrawable {
+) : SurfaceView(context, attrs, defStyleAttr, defStyleRes), StreamDrawable {
 
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity
@@ -44,7 +45,7 @@ constructor(
 
     private val pixelTransform: PixelTransform by lazy { PixelTransform.create(context) }
 
-    private var stream: NetStream? = null
+    private var stream: Stream? = null
         set(value) {
             field?.drawable = null
             field = value
@@ -80,7 +81,7 @@ constructor(
         )
     }
 
-    override fun attachStream(stream: NetStream?) {
+    override fun attachStream(stream: Stream?) {
         this.stream = stream
     }
 

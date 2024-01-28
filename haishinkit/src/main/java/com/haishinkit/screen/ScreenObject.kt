@@ -2,8 +2,8 @@ package com.haishinkit.screen
 
 import android.graphics.Point
 import android.opengl.GLES20
-import com.haishinkit.metrics.EdgeInsets
-import com.haishinkit.metrics.Rectangle
+import com.haishinkit.util.EdgeInsets
+import com.haishinkit.util.Rectangle
 import kotlin.math.max
 
 /**

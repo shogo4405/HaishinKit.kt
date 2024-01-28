@@ -1,14 +1,13 @@
 package com.haishinkit.media
 
 import com.haishinkit.lang.Running
-import com.haishinkit.net.NetStream
 import java.nio.ByteBuffer
 
 /**
  * An interface that captures a source.
  */
 interface Source : Running {
-    var stream: NetStream?
+    var stream: Stream?
     val currentPresentationTimestamp: Long
         get() = 0
 
