@@ -1,5 +1,6 @@
 package com.haishinkit.gles
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.opengl.GLES20
@@ -20,7 +21,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCallback {
+internal class PixelTransform(override val applicationContext: Context) : PixelTransform, Running,
+    Choreographer.FrameCallback {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var screen: Screen? = null
         set(value) {
@@ -71,11 +73,6 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
             fpsController.frameRate = value
         }
 
-    private val shaderLoader by lazy {
-        val shaderLoader = ShaderLoader()
-        shaderLoader.assetManager = screen?.assetManager
-        shaderLoader
-    }
     private val graphicsContext: GraphicsContext by lazy { GraphicsContext() }
     private var choreographer: Choreographer? = null
         set(value) {
@@ -89,6 +86,9 @@ internal class PixelTransform : PixelTransform, Running, Choreographer.FrameCall
             field = value
         }
 
+    private val shaderLoader by lazy {
+        ShaderLoader(applicationContext)
+    }
     private val video: Video by lazy { Video(target = GLES20.GL_TEXTURE_2D) }
     private val fpsController: FpsController by lazy { ScheduledFpsController() }
     private val screenRenderer: PixelTransformRenderer by lazy { PixelTransformRenderer() }

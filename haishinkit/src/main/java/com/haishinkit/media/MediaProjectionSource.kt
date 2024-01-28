@@ -147,7 +147,6 @@ class MediaProjectionSource(
         }
         screen.listener = this
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        stream?.screen?.assetManager = context.assets
         if (isRotatesWithContent) {
             orientationEventListener?.enable()
         }

@@ -1,6 +1,6 @@
 package com.haishinkit.gles
 
-import android.content.res.AssetManager
+import android.content.Context
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Log
@@ -11,9 +11,7 @@ import java.io.FileNotFoundException
 import java.lang.reflect.Method
 import java.util.Locale
 
-internal class ShaderLoader {
-    var assetManager: AssetManager? = null
-
+internal class ShaderLoader(private val applicationContext: Context) {
     fun createProgram(target: Int, videoEffect: VideoEffect): Program? {
         val vertexShader = loadShader(target, GLES20.GL_VERTEX_SHADER, videoEffect)
         if (vertexShader == 0) {
@@ -99,7 +97,7 @@ internal class ShaderLoader {
             ".frag"
         }
         try {
-            val inputStream = assetManager?.open(fileName) ?: return ""
+            val inputStream = applicationContext.assets?.open(fileName) ?: return ""
             val size = inputStream.available()
             val buffer = ByteArray(size)
             inputStream.read(buffer)

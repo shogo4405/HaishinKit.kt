@@ -1,5 +1,6 @@
 package com.haishinkit.vulkan
 
+import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.util.Log
@@ -12,7 +13,7 @@ import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.screen.Screen
 import java.nio.ByteBuffer
 
-class VkPixelTransform : PixelTransform {
+class VkPixelTransform(override val applicationContext: Context) : PixelTransform {
     companion object {
         init {
             System.loadLibrary("hkvulkan")

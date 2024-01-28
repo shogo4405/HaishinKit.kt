@@ -67,13 +67,11 @@ class CameraTabFragment : Fragment(), IEventListener {
             }
         }
         connection = RtmpConnection()
-        stream = RtmpStream(connection)
+        stream = RtmpStream(requireContext(), connection)
         stream.attachAudio(AudioRecordSource(requireContext()))
 
         cameraSource = Camera2Source(requireContext())
         stream.attachVideo(cameraSource)
-
-        stream.screen.assetManager = requireContext().assets
         stream.screen.frame = Rectangle(Point(0, 0), Size(1024, 576))
 
         text.textSize = 60f

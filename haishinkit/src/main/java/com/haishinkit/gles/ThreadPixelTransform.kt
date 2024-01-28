@@ -1,5 +1,6 @@
 package com.haishinkit.gles
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.HandlerThread
 import android.os.Looper
@@ -12,7 +13,8 @@ import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.screen.Screen
 import java.lang.ref.WeakReference
 
-internal class ThreadPixelTransform : PixelTransform {
+internal class ThreadPixelTransform(override val applicationContext: Context) :
+    PixelTransform {
     override var screen: Screen?
         get() = pixelTransform.screen
         set(value) {
@@ -63,7 +65,7 @@ internal class ThreadPixelTransform : PixelTransform {
     }
 
     private val pixelTransform: com.haishinkit.gles.PixelTransform by lazy {
-        PixelTransform()
+        PixelTransform(applicationContext)
     }
 
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {

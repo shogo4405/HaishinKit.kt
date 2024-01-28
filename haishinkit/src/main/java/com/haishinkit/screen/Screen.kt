@@ -1,15 +1,14 @@
 package com.haishinkit.screen
 
-import android.content.res.AssetManager
+import android.content.Context
 import android.graphics.Color
 import android.view.Surface
 
-abstract class Screen : ScreenObjectContainer() {
+abstract class Screen(val applicationContext: Context) : ScreenObjectContainer() {
     abstract class Callback {
         abstract fun onEnterFrame()
     }
 
-    open var assetManager: AssetManager? = null
     open var backgroundColor: Int = BACKGROUND_COLOR
     open var deviceOrientation: Int = Surface.ROTATION_0
     protected var callbacks = mutableListOf<Callback>()
@@ -39,8 +38,8 @@ abstract class Screen : ScreenObjectContainer() {
     companion object {
         const val BACKGROUND_COLOR = Color.BLACK
 
-        fun create(): Screen {
-            return com.haishinkit.gles.screen.ThreadScreen()
+        fun create(context: Context): Screen {
+            return com.haishinkit.gles.screen.ThreadScreen(context)
         }
     }
 }

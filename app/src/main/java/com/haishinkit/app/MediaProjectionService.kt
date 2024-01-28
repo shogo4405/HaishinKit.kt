@@ -110,7 +110,7 @@ class MediaProjectionService : Service(), IEventListener {
         messenger = Messenger(handler)
         connection = RtmpConnection()
         connection.addEventListener(Event.RTMP_STATUS, this)
-        stream = RtmpStream(connection)
+        stream = RtmpStream(applicationContext, connection)
     }
 
     override fun onDestroy() {

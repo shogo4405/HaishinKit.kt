@@ -1,6 +1,6 @@
 package com.haishinkit.gles.screen
 
-import android.content.res.AssetManager
+import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
@@ -17,24 +17,8 @@ import com.haishinkit.screen.ScreenRenderer
 import com.haishinkit.screen.Video
 import javax.microedition.khronos.opengles.GL10
 
-internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableListener {
-    var assetManager: AssetManager? = null
-        set(value) {
-            field = value
-            shaderLoader.assetManager = assetManager
-            shaderLoader.createProgram(
-                GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                DefaultVideoEffect.shared
-            )?.let {
-                programs[GLES11Ext.GL_TEXTURE_EXTERNAL_OES] = it
-            }
-            shaderLoader.createProgram(
-                GLES20.GL_TEXTURE_2D,
-                DefaultVideoEffect.shared
-            )?.let {
-                programs[GLES20.GL_TEXTURE_2D] = it
-            }
-        }
+internal class ScreenRenderer(applicationContext: Context) : ScreenRenderer,
+    SurfaceTexture.OnFrameAvailableListener {
     override var deviceOrientation: Int = Surface.ROTATION_0
         set(value) {
             if (field == value) return
@@ -47,9 +31,22 @@ internal class ScreenRenderer : ScreenRenderer, SurfaceTexture.OnFrameAvailableL
     private var textureIds = intArrayOf(0)
     private var surfaceTextures = mutableMapOf<Int, SurfaceTexture>()
     private val shaderLoader by lazy {
-        val shaderLoader = ShaderLoader()
-        shaderLoader.assetManager = assetManager
-        shaderLoader
+        ShaderLoader(applicationContext)
+    }
+
+    init {
+        shaderLoader.createProgram(
+            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+            DefaultVideoEffect.shared
+        )?.let {
+            programs[GLES11Ext.GL_TEXTURE_EXTERNAL_OES] = it
+        }
+        shaderLoader.createProgram(
+            GLES20.GL_TEXTURE_2D,
+            DefaultVideoEffect.shared
+        )?.let {
+            programs[GLES20.GL_TEXTURE_2D] = it
+        }
     }
 
     override fun layout(screenObject: ScreenObject) {

@@ -25,8 +25,7 @@ class PlaybackTabFragment : Fragment(), IEventListener {
         super.onCreate(savedInstanceState)
 
         connection = RtmpConnection()
-        stream = RtmpStream(connection)
-        stream.screen.assetManager = requireContext().assets
+        stream = RtmpStream(requireContext(), connection)
 
         connection.addEventListener(Event.RTMP_STATUS, this)
     }

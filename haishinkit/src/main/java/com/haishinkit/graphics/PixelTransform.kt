@@ -1,5 +1,6 @@
 package com.haishinkit.graphics
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Size
 import android.view.Surface
@@ -12,6 +13,8 @@ import kotlin.reflect.KClass
  * The PixelTransform interface provides some graphics operations.
  */
 interface PixelTransform {
+    val applicationContext: Context
+
     /**
      * Specifies the off screen object.
      */
@@ -50,15 +53,15 @@ interface PixelTransform {
     companion object {
         private var pixelTransforms: MutableList<KClass<*>> = mutableListOf()
 
-        fun create(): PixelTransform {
+        fun create(applicationContext: Context): PixelTransform {
             if (pixelTransforms.isEmpty()) {
-                return ThreadPixelTransform()
+                return ThreadPixelTransform(applicationContext)
             }
             return try {
                 val pixelTransformClass = pixelTransforms.first()
                 pixelTransformClass.java.newInstance() as PixelTransform
             } catch (e: Exception) {
-                return ThreadPixelTransform()
+                return ThreadPixelTransform(applicationContext)
             }
         }
 

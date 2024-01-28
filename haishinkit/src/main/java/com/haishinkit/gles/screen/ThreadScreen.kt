@@ -1,6 +1,6 @@
 package com.haishinkit.gles.screen
 
-import android.content.res.AssetManager
+import android.content.Context
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
@@ -10,7 +10,7 @@ import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
 import java.lang.ref.WeakReference
 
-internal class ThreadScreen : Screen() {
+internal class ThreadScreen(applicationContext: Context) : Screen(applicationContext) {
     val graphicsContext: GraphicsContext
         get() {
             return screen.graphicsContext
@@ -26,14 +26,6 @@ internal class ThreadScreen : Screen() {
         set(value) {
             handler.apply {
                 sendMessage(obtainMessage(MSG_SET_BOUNDS, value))
-            }
-        }
-
-    override var assetManager: AssetManager?
-        get() = screen.assetManager
-        set(value) {
-            handler.apply {
-                sendMessage(obtainMessage(MSG_SET_ASSET_MANAGER, value))
             }
         }
 
@@ -53,7 +45,11 @@ internal class ThreadScreen : Screen() {
             }
         }
 
-    private val screen: com.haishinkit.gles.screen.Screen by lazy { com.haishinkit.gles.screen.Screen() }
+    private val screen: com.haishinkit.gles.screen.Screen by lazy {
+        com.haishinkit.gles.screen.Screen(
+            applicationContext
+        )
+    }
 
     private val handler: Handler by lazy {
         val thread = HandlerThread(TAG)
@@ -137,14 +133,6 @@ internal class ThreadScreen : Screen() {
                     transform.frame = message.obj as Rectangle
                 }
 
-                MSG_SET_ASSET_MANAGER -> {
-                    if (message.obj == null) {
-                        transform.assetManager = null
-                    } else {
-                        transform.assetManager = message.obj as AssetManager
-                    }
-                }
-
                 MSG_SET_BACKGROUND_COLOR -> {
                     transform.backgroundColor = message.obj as Int
                 }
@@ -202,7 +190,6 @@ internal class ThreadScreen : Screen() {
         private val TAG = ThreadScreen::class.java.simpleName
 
         private const val MSG_SET_BOUNDS = 0
-        private const val MSG_SET_ASSET_MANAGER = 1
         private const val MSG_SET_BACKGROUND_COLOR = 2
         private const val MSG_SET_DEVICE_ORIENTATION = 3
         private const val MSG_START_RUNNING = 4

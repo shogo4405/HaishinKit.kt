@@ -1,5 +1,6 @@
 package com.haishinkit.codec
 
+import android.content.Context
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
@@ -11,7 +12,7 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.util.FeatureUtil
 import kotlin.properties.Delegates
 
-class VideoCodec : Codec(MIME) {
+class VideoCodec(applicationContext: Context) : Codec(MIME) {
     @Suppress("unused")
     data class Setting(private val codec: VideoCodec? = null) : Codec.Setting(codec) {
         /**
@@ -123,7 +124,7 @@ class VideoCodec : Codec(MIME) {
     var colorFormat = DEFAULT_COLOR_FORMAT
 
     val pixelTransform: PixelTransform by lazy {
-        PixelTransform.create().apply {
+        PixelTransform.create(applicationContext).apply {
             videoGravity = DEFAULT_VIDEO_GRAVITY
             frameRate = DEFAULT_FRAME_RATE
         }

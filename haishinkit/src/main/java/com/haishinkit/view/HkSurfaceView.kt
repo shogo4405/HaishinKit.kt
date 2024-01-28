@@ -42,7 +42,7 @@ constructor(
             pixelTransform.videoEffect = value
         }
 
-    private val pixelTransform: PixelTransform by lazy { PixelTransform.create() }
+    private val pixelTransform: PixelTransform by lazy { PixelTransform.create(context) }
 
     private var stream: NetStream? = null
         set(value) {

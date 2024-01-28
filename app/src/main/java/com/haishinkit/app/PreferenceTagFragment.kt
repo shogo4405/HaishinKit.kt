@@ -20,8 +20,9 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
     private lateinit var holderB: SurfaceHolder
     private lateinit var surfaceHolderA: SurfaceHolder
     private lateinit var surfaceHolderB: SurfaceHolder
-    private var renderer: com.haishinkit.vulkan.VkPixelTransform? =
-        com.haishinkit.vulkan.VkPixelTransform()
+    private val renderer: com.haishinkit.vulkan.VkPixelTransform? by lazy {
+        com.haishinkit.vulkan.VkPixelTransform(requireContext())
+    }
     private val choreographer = Choreographer.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +36,6 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
     override fun onDestroy() {
         Log.i("Hello", "onDes")
         super.onDestroy()
-        renderer = null
     }
 
     @SuppressLint("SetTextI18n")

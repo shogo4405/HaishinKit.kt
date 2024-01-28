@@ -1,5 +1,6 @@
 package com.haishinkit.net
 
+import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
@@ -20,12 +21,12 @@ import com.haishinkit.view.NetStreamDrawable
  * The NetStream class is the foundation of a RtmpStream.
  */
 @Suppress("UNUSED")
-abstract class NetStream {
+abstract class NetStream(applicationContext: Context) {
     /**
      * The offscreen renderer for video output.
      */
     val screen: Screen by lazy {
-        val screen = Screen.create()
+        val screen = Screen.create(applicationContext)
         videoCodec.pixelTransform.screen = screen
         screen
     }
@@ -83,8 +84,8 @@ abstract class NetStream {
             field?.startRunning()
         }
 
-    internal val audioCodec = AudioCodec()
-    internal val videoCodec = VideoCodec()
+    internal val audioCodec by lazy { AudioCodec() }
+    internal val videoCodec by lazy { VideoCodec(applicationContext) }
 
     /**
      * Attaches an audio stream to a NetStream.

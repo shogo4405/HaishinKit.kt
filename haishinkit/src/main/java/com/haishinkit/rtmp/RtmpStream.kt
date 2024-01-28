@@ -1,5 +1,6 @@
 package com.haishinkit.rtmp
 
+import android.content.Context
 import android.util.Log
 import com.haishinkit.codec.Codec
 import com.haishinkit.event.Event
@@ -20,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger
  * An object that provides the interface to control a one-way channel over a RtmpConnection.
  */
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
-class RtmpStream(internal var connection: RtmpConnection) :
-    NetStream(),
+class RtmpStream(context: Context, internal var connection: RtmpConnection) :
+    NetStream(context),
     IEventDispatcher {
     data class Info(
         var resourceName: String? = null
