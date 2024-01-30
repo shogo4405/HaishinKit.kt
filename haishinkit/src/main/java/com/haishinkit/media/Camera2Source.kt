@@ -3,6 +3,7 @@ package com.haishinkit.media
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.hardware.SensorManager
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
@@ -13,7 +14,9 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import android.util.Size
+import android.view.OrientationEventListener
 import android.view.Surface
+import android.view.WindowManager
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.screen.Video
@@ -23,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * A video source that captures a camera by the Camera2 API.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(),
+class Camera2Source(private val context: Context) : VideoSource, CameraDevice.StateCallback(),
     Video.OnSurfaceChangedListener {
 
     /**
@@ -88,6 +91,19 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
             }
         }
 
+    private val orientationEventListener: OrientationEventListener? by lazy {
+        object : OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
+            override fun onOrientationChanged(orientation: Int) {
+                val windowManager =
+                    context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                windowManager
+                    .defaultDisplay
+                    ?.orientation
+                    ?.let { screen.deviceOrientation = it }
+            }
+        }
+    }
+
     @SuppressLint("MissingPermission")
     fun open(position: Int? = null) {
         stream?.screen?.removeChild(screen)
@@ -124,6 +140,9 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
         }
         if (isRunning.get()) return
         screen.listener = this
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        screen.deviceOrientation = windowManager.defaultDisplay.rotation
+        orientationEventListener?.enable()
         isRunning.set(true)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, this::startRunning.name)
@@ -132,6 +151,7 @@ class Camera2Source(context: Context) : VideoSource, CameraDevice.StateCallback(
 
     override fun stopRunning() {
         if (!isRunning.get()) return
+        orientationEventListener?.disable()
         session?.let {
             try {
                 it.stopRepeating()

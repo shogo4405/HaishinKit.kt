@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Point
@@ -80,7 +81,7 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         cameraSource = Camera2Source(requireContext())
         stream.attachVideo(cameraSource)
-        stream.screen.frame = Rectangle(Point(0, 0), Size(1024, 576))
+        stream.screen.frame = Rectangle(Point(0, 0), Size(576, 1024))
 
         text.textSize = 60f
         text.textValue = ""
@@ -178,6 +179,25 @@ class CameraTabFragment : Fragment(), IEventListener {
     override fun onResume() {
         super.onResume()
         cameraSource.open(CameraCharacteristics.LENS_FACING_BACK)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        when (newConfig.orientation) {
+            Configuration.ORIENTATION_PORTRAIT -> {
+                stream.screen.frame = Rectangle(Point(0, 0), Size(576, 1024))
+            }
+
+            Configuration.ORIENTATION_LANDSCAPE -> {
+                stream.screen.frame = Rectangle(Point(0, 0), Size(1024, 576))
+            }
+
+            Configuration.ORIENTATION_SQUARE -> {
+            }
+
+            Configuration.ORIENTATION_UNDEFINED -> {
+            }
+        }
     }
 
     override fun onPause() {

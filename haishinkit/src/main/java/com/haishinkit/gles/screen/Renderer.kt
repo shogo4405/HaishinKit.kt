@@ -13,20 +13,12 @@ import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.Utils
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.screen.ScreenObject
-import com.haishinkit.screen.ScreenRenderer
+import com.haishinkit.screen.Renderer
 import com.haishinkit.screen.Video
 import javax.microedition.khronos.opengles.GL10
 
-internal class ScreenRenderer(applicationContext: Context) : ScreenRenderer,
+internal class Renderer(applicationContext: Context) : Renderer,
     SurfaceTexture.OnFrameAvailableListener {
-    override var deviceOrientation: Int = Surface.ROTATION_0
-        set(value) {
-            if (field == value) return
-            field = value
-            invalidateLayout()
-        }
-    override var shouldInvalidateLayout: Boolean = true
-
     private var programs = mutableMapOf<Int, Program>()
     private var textureIds = intArrayOf(0)
     private var surfaceTextures = mutableMapOf<Int, SurfaceTexture>()
@@ -115,7 +107,7 @@ internal class ScreenRenderer(applicationContext: Context) : ScreenRenderer,
                         screenObject.videoSize.height
                     )
                     screenObject.surface = Surface(this)
-                    setOnFrameAvailableListener(this@ScreenRenderer)
+                    setOnFrameAvailableListener(this@Renderer)
                 }
             }
         }
@@ -135,10 +127,6 @@ internal class ScreenRenderer(applicationContext: Context) : ScreenRenderer,
         screenObject.id = 0
     }
 
-    override fun invalidateLayout() {
-        shouldInvalidateLayout = true
-    }
-
     override fun onFrameAvailable(surfaceTexture: SurfaceTexture?) {
         try {
             surfaceTexture?.updateTexImage()
@@ -150,6 +138,6 @@ internal class ScreenRenderer(applicationContext: Context) : ScreenRenderer,
     }
 
     companion object {
-        private val TAG = ScreenRenderer::class.java.simpleName
+        private val TAG = Renderer::class.java.simpleName
     }
 }

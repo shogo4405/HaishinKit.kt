@@ -64,7 +64,14 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
             invalidateLayout()
         }
 
-    override fun layout(renderer: ScreenRenderer) {
+    var deviceOrientation: Int = Surface.ROTATION_0
+        set(value) {
+            if (field == value) return
+            field = value
+            invalidateLayout()
+        }
+
+    override fun layout(renderer: Renderer) {
         super.layout(renderer)
 
         var degrees = when (imageOrientation) {
@@ -79,7 +86,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
         }
 
         if (isRotatesWithContent) {
-            degrees += when (renderer.deviceOrientation) {
+            degrees += when (deviceOrientation) {
                 0 -> 0
                 1 -> 270
                 2 -> 180

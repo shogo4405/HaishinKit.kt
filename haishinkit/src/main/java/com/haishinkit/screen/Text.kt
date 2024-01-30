@@ -41,7 +41,7 @@ class Text : Image() {
     private var canvas = Canvas(bitmap)
     private var textBounds: Rect = Rect()
 
-    override fun layout(renderer: ScreenRenderer) {
+    override fun layout(renderer: Renderer) {
         paint.getTextBounds(textValue, 0, textValue.length, textBounds)
         bitmap =
             Bitmap.createBitmap(textBounds.width(), textBounds.height(), Bitmap.Config.ARGB_8888)

@@ -15,6 +15,8 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.lang.Running
+import com.haishinkit.screen.NullRenderer
+import com.haishinkit.screen.Renderer
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.Video
 import java.nio.ByteBuffer
@@ -90,8 +92,8 @@ internal class PixelTransform(override val applicationContext: Context) : PixelT
         ShaderLoader(applicationContext)
     }
     private val video: Video by lazy { Video(target = GLES20.GL_TEXTURE_2D) }
+    private val renderer: Renderer by lazy { NullRenderer.SHARED }
     private val fpsController: FpsController by lazy { ScheduledFpsController() }
-    private val screenRenderer: PixelTransformRenderer by lazy { PixelTransformRenderer() }
 
     override fun startRunning() {
         if (isRunning.get()) return
@@ -136,7 +138,7 @@ internal class PixelTransform(override val applicationContext: Context) : PixelT
             }
             if (video.shouldInvalidateLayout) {
                 video.id = screen.id
-                video.layout(screenRenderer)
+                video.layout(renderer)
             }
             program?.draw(video)
             graphicsContext.setPresentationTime(timestamp)

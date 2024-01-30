@@ -2,7 +2,6 @@ package com.haishinkit.screen
 
 import android.content.Context
 import android.graphics.Color
-import android.view.Surface
 
 abstract class Screen(val applicationContext: Context) : ScreenObjectContainer() {
     abstract class Callback {
@@ -10,7 +9,6 @@ abstract class Screen(val applicationContext: Context) : ScreenObjectContainer()
     }
 
     open var backgroundColor: Int = BACKGROUND_COLOR
-    open var deviceOrientation: Int = Surface.ROTATION_0
     protected var callbacks = mutableListOf<Callback>()
 
     abstract fun bind(screenObject: ScreenObject)

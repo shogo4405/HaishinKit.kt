@@ -60,15 +60,16 @@ open class ScreenObjectContainer : ScreenObject() {
         child.parent = null
     }
 
-    override fun layout(renderer: ScreenRenderer) {
+    override fun layout(renderer: Renderer) {
         children.forEach {
-            if (it.shouldInvalidateLayout || renderer.shouldInvalidateLayout) {
+            if (it.shouldInvalidateLayout || shouldInvalidateLayout) {
                 it.layout(renderer)
             }
         }
     }
 
-    override fun draw(renderer: ScreenRenderer) {
+    override fun draw(renderer: Renderer) {
+        if (!isVisible) return
         children.forEach {
             if (it.isVisible) {
                 it.draw(renderer)

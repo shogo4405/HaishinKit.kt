@@ -152,7 +152,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     /**
      * Layouts the screen object.
      */
-    open fun layout(renderer: ScreenRenderer) {
+    open fun layout(renderer: Renderer) {
         renderer.layout(this)
         shouldInvalidateLayout = false
     }
@@ -160,7 +160,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     /**
      * Draws the screen object.
      */
-    open fun draw(renderer: ScreenRenderer) {
+    open fun draw(renderer: Renderer) {
         renderer.draw(this)
     }
 

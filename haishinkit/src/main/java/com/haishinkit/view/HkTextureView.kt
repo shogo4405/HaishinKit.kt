@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView
-import android.view.WindowManager
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
@@ -75,10 +74,6 @@ constructor(
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
         pixelTransform.imageExtent = Size(width, height)
-        (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)
-            ?.defaultDisplay
-            ?.orientation
-            ?.let { stream?.screen?.deviceOrientation = it }
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -86,8 +81,8 @@ constructor(
         return false
     }
 
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
-
+    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
+    }
 
     companion object {
         private val TAG = HkTextureView::class.java.simpleName

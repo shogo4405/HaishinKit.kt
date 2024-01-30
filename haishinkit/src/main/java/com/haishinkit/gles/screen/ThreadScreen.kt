@@ -37,14 +37,6 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
             }
         }
 
-    override var deviceOrientation: Int
-        get() = screen.deviceOrientation
-        set(value) {
-            handler.apply {
-                sendMessage(obtainMessage(MSG_SET_DEVICE_ORIENTATION, value))
-            }
-        }
-
     private val screen: com.haishinkit.gles.screen.Screen by lazy {
         com.haishinkit.gles.screen.Screen(
             applicationContext
@@ -137,10 +129,6 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
                     transform.backgroundColor = message.obj as Int
                 }
 
-                MSG_SET_DEVICE_ORIENTATION -> {
-                    transform.deviceOrientation = message.obj as Int
-                }
-
                 MSG_START_RUNNING -> {
                     transform.startRunning()
                 }
@@ -158,7 +146,7 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
                 }
 
                 MSG_SEND_CHILD_TO_BACK -> {
-                    transform.bringChildToFront(message.obj as ScreenObject)
+                    transform.sendChildToBack(message.obj as ScreenObject)
                 }
 
                 MSG_REGISTER_CALLBACK -> {
@@ -190,17 +178,16 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
         private val TAG = ThreadScreen::class.java.simpleName
 
         private const val MSG_SET_BOUNDS = 0
-        private const val MSG_SET_BACKGROUND_COLOR = 2
-        private const val MSG_SET_DEVICE_ORIENTATION = 3
-        private const val MSG_START_RUNNING = 4
-        private const val MSG_ADD_CHILD = 5
-        private const val MSG_REMOVE_CHILD = 6
-        private const val MSG_DISPOSE = 7
-        private const val MSG_BRING_CHILD_TO_FRONT = 8
-        private const val MSG_SEND_CHILD_TO_BACK = 9
-        private const val MSG_REGISTER_CALLBACK = 10
-        private const val MSG_UNREGISTER_CALLBACK = 11
-        private const val MSG_BIND = 12
-        private const val MSG_UNBIND = 13
+        private const val MSG_SET_BACKGROUND_COLOR = 1
+        private const val MSG_START_RUNNING = 2
+        private const val MSG_ADD_CHILD = 3
+        private const val MSG_REMOVE_CHILD = 4
+        private const val MSG_DISPOSE = 5
+        private const val MSG_BRING_CHILD_TO_FRONT = 6
+        private const val MSG_SEND_CHILD_TO_BACK = 7
+        private const val MSG_REGISTER_CALLBACK = 8
+        private const val MSG_UNREGISTER_CALLBACK = 9
+        private const val MSG_BIND = 10
+        private const val MSG_UNBIND = 11
     }
 }

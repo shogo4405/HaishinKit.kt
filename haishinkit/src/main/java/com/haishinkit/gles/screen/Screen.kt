@@ -28,29 +28,23 @@ internal class Screen(applicationContext: Context) :
             framebuffer.bounds = value
         }
 
-    override var deviceOrientation: Int
-        get() = screenRenderer.deviceOrientation
-        set(value) {
-            screenRenderer.deviceOrientation = value
-        }
-
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
 
+    private val renderer: Renderer by lazy { Renderer(applicationContext) }
+    private val framebuffer: Framebuffer by lazy { Framebuffer() }
     private var choreographer: Choreographer? = null
         set(value) {
             field?.removeFrameCallback(this)
             field = value
             field?.postFrameCallback(this)
         }
-    private val screenRenderer: ScreenRenderer by lazy { ScreenRenderer(applicationContext) }
-    private val framebuffer: Framebuffer by lazy { Framebuffer() }
 
     override fun bind(screenObject: ScreenObject) {
-        screenRenderer.bind(screenObject)
+        renderer.bind(screenObject)
     }
 
     override fun unbind(screenObject: ScreenObject) {
-        screenRenderer.unbind(screenObject)
+        renderer.unbind(screenObject)
     }
 
     override fun dispose() {
@@ -84,9 +78,7 @@ internal class Screen(applicationContext: Context) :
 
         if (!framebuffer.isEnabled) return
 
-        layout(screenRenderer)
-        screenRenderer.shouldInvalidateLayout = false
-
+        layout(renderer)
         framebuffer.render {
             GLES20.glClearColor(
                 (Color.red(backgroundColor) / 255).toFloat(),
@@ -97,7 +89,7 @@ internal class Screen(applicationContext: Context) :
             GLES20.glEnable(GLES20.GL_BLEND)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-            draw(screenRenderer)
+            draw(renderer)
             GLES20.glDisable(GLES20.GL_BLEND)
         }
 

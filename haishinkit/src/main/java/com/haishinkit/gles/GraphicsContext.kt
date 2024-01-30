@@ -7,6 +7,7 @@ import android.opengl.EGLDisplay
 import android.opengl.EGLExt
 import android.opengl.EGLSurface
 import android.opengl.GLES20
+import android.util.Log
 import android.view.Surface
 import java.nio.ByteBuffer
 
@@ -68,6 +69,9 @@ internal class GraphicsContext {
             Utils.checkGlError("eglMakeCurrent")
             this.surface = EGL14.EGL_NO_SURFACE
         } else {
+            if (this.surface != EGL14.EGL_NO_SURFACE) {
+                EGL14.eglDestroySurface(display, this.surface)
+            }
             EGL14.eglMakeCurrent(display, surface, surface, context)
             Utils.checkGlError("eglMakeCurrent")
             this.surface = surface
@@ -99,6 +103,16 @@ internal class GraphicsContext {
 
     fun close() {
         release()
+    }
+
+    protected fun finalize() {
+        try {
+            if (display != EGL14.EGL_NO_DISPLAY) {
+                release();
+            }
+        } catch (e: RuntimeException) {
+            Log.e(TAG, "", e)
+        }
     }
 
     private fun release() {
@@ -145,6 +159,7 @@ internal class GraphicsContext {
     }
 
     companion object {
+        private val TAG = GraphicsContext::class.java.toString()
         private const val EGL_RECORDABLE_ANDROID: Int = 0x3142
         private val SURFACE_ATTRIBUTES = intArrayOf(EGL14.EGL_NONE)
         private val CONFIG_ATTRIBUTES_WITH_CONTEXT = intArrayOf(
