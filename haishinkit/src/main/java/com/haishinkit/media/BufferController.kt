@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger
 internal class BufferController<T>(suffix: String) : Object() {
     interface Listener {
         fun <T> onBufferFull(controller: BufferController<T>)
+
         fun <T> onBufferEmpty(controller: BufferController<T>)
     }
 
@@ -20,7 +21,10 @@ internal class BufferController<T>(suffix: String) : Object() {
     private var timestamp = AtomicInteger(0)
     private val tracker = Tracker(suffix)
 
-    fun enqueue(message: T, timestamp: Int) {
+    fun enqueue(
+        message: T,
+        timestamp: Int,
+    ) {
         messages.add(message)
         this.timestamp.addAndGet(timestamp)
         start()
@@ -66,7 +70,10 @@ internal class BufferController<T>(suffix: String) : Object() {
         private var rotated = DEFAULT_TIMESTAMP
         private var timestamps = ArrayList<Int>()
 
-        fun doFrame(timestamp: Int, frameTimeNanos: Long) {
+        fun doFrame(
+            timestamp: Int,
+            frameTimeNanos: Long,
+        ) {
             if (rotated == DEFAULT_TIMESTAMP) {
                 rotated = frameTimeNanos
             }

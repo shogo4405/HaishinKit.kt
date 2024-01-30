@@ -112,19 +112,25 @@ internal class ScheduledFpsController : FpsController {
         private const val DEFAULT_POSITION = 0
         private const val DEFAULT_SPEED = 0
 
-        private val UPDATE_PATTERNS = arrayOf(
-            "4", // 15 fps
-            "32", // 24 fps
-            "32322", // 25 fps
-            "2", // 30 fps
-            "2111", // 48 fps
-            "1", // 60 fps
-            "15" // erratic, useful for examination with systrace
-        )
+        private val UPDATE_PATTERNS =
+            arrayOf(
+                "4", // 15 fps
+                "32", // 24 fps
+                "32322", // 25 fps
+                "2", // 30 fps
+                "2111", // 48 fps
+                "1", // 60 fps
+                "15", // erratic, useful for examination with systrace
+            )
         private const val ONE_MILLISECOND_NS: Long = 1000000
-        private val FRAME_AHEAD = intArrayOf( // sync with scheduledSwapAheadNames
-            0, 1, 2, 3
-        )
+        private val FRAME_AHEAD =
+            intArrayOf(
+                // sync with scheduledSwapAheadNames
+                0,
+                1,
+                2,
+                3,
+            )
         private val TAG = ScheduledFpsController::class.java.simpleName
     }
 }

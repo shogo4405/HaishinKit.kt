@@ -22,7 +22,9 @@ import com.haishinkit.rtmp.message.RtmpVideoMessage
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferController.Listener,
+internal class RtmpMuxer(private val stream: RtmpStream) :
+    Running,
+    BufferController.Listener,
     Codec.Listener {
     override var isRunning = AtomicBoolean(false)
 
@@ -149,7 +151,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         mediaLink.clear()
     }
 
-    override fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int) {
+    override fun onInputBufferAvailable(
+        mime: String,
+        codec: MediaCodec,
+        index: Int,
+    ) {
         when (mime) {
             Codec.MIME_VIDEO_RAW -> {
                 try {
@@ -157,20 +163,25 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     videoBufferController.stop(!hasFirstFlame)
                     val message = videoBufferController.take()
                     videoBufferController.consume(message.timestamp)
-                    val success = message.data?.let {
-                        it.position(4)
-                        if (it.remaining() <= inputBuffer.remaining()) {
-                            inputBuffer.put(it)
-                            true
-                        } else {
-                            Log.w(TAG, "BufferOverrun will drop a RTMPVideoMessage")
-                            false
-                        }
-                    } ?: false
+                    val success =
+                        message.data?.let {
+                            it.position(4)
+                            if (it.remaining() <= inputBuffer.remaining()) {
+                                inputBuffer.put(it)
+                                true
+                            } else {
+                                Log.w(TAG, "BufferOverrun will drop a RTMPVideoMessage")
+                                false
+                            }
+                        } ?: false
                     videoTimestamp += message.timestamp * 1000
                     if (success) {
                         codec.queueInputBuffer(
-                            index, 0, message.length - 5, videoTimestamp, message.toFlags()
+                            index,
+                            0,
+                            message.length - 5,
+                            videoTimestamp,
+                            message.toFlags(),
                         )
                     }
                     message.release()
@@ -191,7 +202,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     }
                     audioTimestamp += message.timestamp * 1000
                     codec.queueInputBuffer(
-                        index, 0, message.length - 2, audioTimestamp, message.toFlags()
+                        index,
+                        0,
+                        message.length - 2,
+                        audioTimestamp,
+                        message.toFlags(),
                     )
                     message.release()
                 } catch (e: InterruptedException) {
@@ -202,36 +217,43 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
             else -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
-                    val muted = if (mime.contains("audio")) {
-                        stream.audioCodec.muted
-                    } else if (mime.contains("video")) {
-                        stream.videoCodec.muted
-                    } else {
-                        false
-                    }
-                    (if (mime.contains("audio")) {
-                        stream.audioSource
-                    } else if (mime.contains("video")) {
-                        stream.videoSource
-                    } else {
-                        null
-                    })?.let { source ->
-                        if (!source.isRunning.get()) return@let
-                        val result = source.read(inputBuffer)
-                        if (0 <= result) {
-                            if (muted) {
-                                if (noSignalBuffer.capacity() < result) {
-                                    noSignalBuffer = ByteBuffer.allocateDirect(result)
-                                }
-                                noSignalBuffer.clear()
-                                inputBuffer.clear()
-                                inputBuffer.put(noSignalBuffer)
-                            }
-                            codec.queueInputBuffer(
-                                index, 0, result, source.currentPresentationTimestamp, 0
-                            )
+                    val muted =
+                        if (mime.contains("audio")) {
+                            stream.audioCodec.muted
+                        } else if (mime.contains("video")) {
+                            stream.videoCodec.muted
+                        } else {
+                            false
                         }
-                    }
+                    (
+                        if (mime.contains("audio")) {
+                            stream.audioSource
+                        } else if (mime.contains("video")) {
+                            stream.videoSource
+                        } else {
+                            null
+                        }
+                        )?.let { source ->
+                            if (!source.isRunning.get()) return@let
+                            val result = source.read(inputBuffer)
+                            if (0 <= result) {
+                                if (muted) {
+                                    if (noSignalBuffer.capacity() < result) {
+                                        noSignalBuffer = ByteBuffer.allocateDirect(result)
+                                    }
+                                    noSignalBuffer.clear()
+                                    inputBuffer.clear()
+                                    inputBuffer.put(noSignalBuffer)
+                                }
+                                codec.queueInputBuffer(
+                                    index,
+                                    0,
+                                    result,
+                                    source.currentPresentationTimestamp,
+                                    0,
+                                )
+                            }
+                        }
                 } catch (e: IllegalStateException) {
                     Log.w(TAG, e)
                 }
@@ -239,11 +261,16 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
         }
     }
 
-    override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
+    override fun onFormatChanged(
+        mime: String,
+        mediaFormat: MediaFormat,
+    ) {
         when (mime) {
             Codec.MIME_VIDEO_RAW -> {
                 stream.dispatchEventWith(
-                    Event.RTMP_STATUS, false, RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data("")
+                    Event.RTMP_STATUS,
+                    false,
+                    RtmpStream.Code.VIDEO_DIMENSION_CHANGE.data(""),
                 )
             }
 
@@ -253,10 +280,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                 video.packetType = FlvAvcPacketType.SEQ
                 video.frame = FlvFlameType.KEY
                 video.codec = FlvVideoCodec.AVC
-                video.data = config.allocate().apply {
-                    config.encode(this)
-                    flip()
-                }
+                video.data =
+                    config.allocate().apply {
+                        config.encode(this)
+                        flip()
+                    }
                 video.chunkStreamID = RtmpChunk.VIDEO
                 video.streamID = stream.id
                 video.timestamp = 0
@@ -283,7 +311,10 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
     }
 
     override fun onSampleOutput(
-        mime: String, index: Int, info: MediaCodec.BufferInfo, buffer: ByteBuffer
+        mime: String,
+        index: Int,
+        info: MediaCodec.BufferInfo,
+        buffer: ByteBuffer,
     ): Boolean {
         when (mime) {
             Codec.MIME_VIDEO_RAW -> {
@@ -296,7 +327,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) : Running, BufferContro
                     index,
                     null,
                     info.presentationTimeUs,
-                    (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
+                    (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0,
                 )
                 return false
             }

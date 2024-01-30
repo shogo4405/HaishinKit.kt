@@ -7,8 +7,16 @@ interface IEventDispatcher {
     /**
      * Registers the event listeners on the event target.
      */
-    fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean)
-    fun addEventListener(type: String, listener: IEventListener) {
+    fun addEventListener(
+        type: String,
+        listener: IEventListener,
+        useCapture: Boolean,
+    )
+
+    fun addEventListener(
+        type: String,
+        listener: IEventListener,
+    ) {
         addEventListener(type, listener, false)
     }
 
@@ -16,8 +24,17 @@ interface IEventDispatcher {
      * Dispatches the events into the implementations event model.
      */
     fun dispatchEvent(event: Event)
-    fun dispatchEventWith(type: String, bubbles: Boolean, data: Any?)
-    fun dispatchEventWith(type: String, bubbles: Boolean) {
+
+    fun dispatchEventWith(
+        type: String,
+        bubbles: Boolean,
+        data: Any?,
+    )
+
+    fun dispatchEventWith(
+        type: String,
+        bubbles: Boolean,
+    ) {
         dispatchEventWith(type, bubbles, null)
     }
 
@@ -31,8 +48,16 @@ interface IEventDispatcher {
     /**
      * Unregister the event listeners on the event target.
      */
-    fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean)
-    fun removeEventListener(type: String, listener: IEventListener) {
+    fun removeEventListener(
+        type: String,
+        listener: IEventListener,
+        useCapture: Boolean,
+    )
+
+    fun removeEventListener(
+        type: String,
+        listener: IEventListener,
+    ) {
         removeEventListener(type, listener, false)
     }
 }

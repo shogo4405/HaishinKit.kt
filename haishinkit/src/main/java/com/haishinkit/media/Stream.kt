@@ -126,11 +126,12 @@ abstract class Stream(applicationContext: Context) {
     internal fun createAudioTrack(mediaFormat: MediaFormat): AudioTrack {
         val sampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
         val channelCount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
-        val channelMask = if (channelCount == 2) {
-            AudioFormat.CHANNEL_OUT_STEREO
-        } else {
-            AudioFormat.CHANNEL_OUT_MONO
-        }
+        val channelMask =
+            if (channelCount == 2) {
+                AudioFormat.CHANNEL_OUT_STEREO
+            } else {
+                AudioFormat.CHANNEL_OUT_MONO
+            }
         val bufferSize =
             AudioTrack.getMinBufferSize(sampleRate, channelCount, AudioFormat.ENCODING_PCM_16BIT)
         Log.d(TAG, "sampleRate=$sampleRate, channelCount=$channelCount, bufferSize=$bufferSize")
@@ -141,14 +142,14 @@ abstract class Stream(applicationContext: Context) {
                         AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_MEDIA)
                             .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-                            .build()
+                            .build(),
                     )
                     .setAudioFormat(
                         AudioFormat.Builder()
                             .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
                             .setSampleRate(sampleRate)
                             .setChannelMask(channelMask)
-                            .build()
+                            .build(),
                     )
                     .setBufferSizeInBytes(bufferSize)
                     .setTransferMode(AudioTrack.MODE_STREAM)
@@ -164,7 +165,7 @@ abstract class Stream(applicationContext: Context) {
                     channelMask,
                     AudioFormat.ENCODING_PCM_16BIT,
                     bufferSize,
-                    AudioTrack.MODE_STREAM
+                    AudioTrack.MODE_STREAM,
                 )
             }
         } catch (e: Exception) {
@@ -174,7 +175,7 @@ abstract class Stream(applicationContext: Context) {
                 channelMask,
                 AudioFormat.ENCODING_PCM_16BIT,
                 bufferSize,
-                AudioTrack.MODE_STREAM
+                AudioTrack.MODE_STREAM,
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.haishinkit.iso
 
-import android.util.Log
 import junit.framework.TestCase
 import java.nio.ByteBuffer
 

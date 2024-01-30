@@ -14,7 +14,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
         AckSent,
         HandshakeDone,
         Closing,
-        Closed
+        Closed,
     }
 
     var bandWidth = 0
@@ -42,7 +42,11 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
             connection.onSocketReadyStateChange(this, value)
         }
 
-    fun connect(dstName: String, dstPort: Int, isSecure: Boolean) {
+    fun connect(
+        dstName: String,
+        dstPort: Int,
+        isSecure: Boolean,
+    ) {
         socket?.listener = null
         socket = NetSocketImpl()
         socket?.listener = this
@@ -61,11 +65,12 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
         if (!isConnected) return
         var data: Any? = null
         if (disconnected) {
-            data = if (readyState == ReadyState.HandshakeDone) {
-                RtmpConnection.Code.CONNECT_CLOSED.data("")
-            } else {
-                RtmpConnection.Code.CONNECT_FAILED.data("")
-            }
+            data =
+                if (readyState == ReadyState.HandshakeDone) {
+                    RtmpConnection.Code.CONNECT_CLOSED.data("")
+                } else {
+                    RtmpConnection.Code.CONNECT_FAILED.data("")
+                }
         }
         readyState = ReadyState.Closing
         socket?.close(disconnected)

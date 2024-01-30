@@ -7,9 +7,13 @@ internal enum class RtmpChunk(val rawValue: Byte) {
     ZERO(0x00),
     ONE(0x01),
     TWO(0x02),
-    THREE(0x03);
+    THREE(0x03),
+    ;
 
-    fun encode(socket: RtmpSocket, message: RtmpMessage) {
+    fun encode(
+        socket: RtmpSocket,
+        message: RtmpMessage,
+    ) {
         val payload = message.payload
         payload.clear()
         message.encode(payload)
@@ -65,7 +69,11 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         socket.doOutput(buffer)
     }
 
-    fun decode(chunkStreamID: Short, connection: RtmpConnection, buffer: ByteBuffer): RtmpMessage {
+    fun decode(
+        chunkStreamID: Short,
+        connection: RtmpConnection,
+        buffer: ByteBuffer,
+    ): RtmpMessage {
         var timestamp = 0
         var length = 0
         var type: Byte = 0
@@ -148,7 +156,10 @@ internal enum class RtmpChunk(val rawValue: Byte) {
         }
     }
 
-    private fun putHeader(buffer: ByteBuffer, streamID: Short) {
+    private fun putHeader(
+        buffer: ByteBuffer,
+        streamID: Short,
+    ) {
         if (streamID <= 63) {
             buffer.put((rawValue.toInt() shl 6 or streamID.toInt()).toByte())
             return

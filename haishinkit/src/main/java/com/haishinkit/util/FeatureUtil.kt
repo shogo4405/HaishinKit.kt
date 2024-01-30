@@ -9,11 +9,12 @@ import java.util.concurrent.ConcurrentHashMap
 object FeatureUtil {
     const val FEATURE_BITRATE_CHANGE = "bitrate_change"
 
-    private var flags = ConcurrentHashMap(
-        mutableMapOf(
-            FEATURE_BITRATE_CHANGE to true,
+    private var flags =
+        ConcurrentHashMap(
+            mutableMapOf(
+                FEATURE_BITRATE_CHANGE to true,
+            ),
         )
-    )
 
     /**
      * Whether or not a flag is enabled.
@@ -25,7 +26,10 @@ object FeatureUtil {
     /**
      * Setter for a feature flag.
      */
-    fun setEnabled(feature: String, isEnabled: Boolean) {
+    fun setEnabled(
+        feature: String,
+        isEnabled: Boolean,
+    ) {
         flags[feature] = isEnabled
     }
 

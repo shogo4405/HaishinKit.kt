@@ -7,6 +7,8 @@ internal interface FpsController {
     var frameRate: Int
 
     fun advanced(frameTime: Long): Boolean
+
     fun timestamp(frameTime: Long): Long
+
     fun clear()
 }

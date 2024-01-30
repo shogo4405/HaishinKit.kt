@@ -25,14 +25,14 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     Stream(context),
     IEventDispatcher {
     data class Info(
-        var resourceName: String? = null
+        var resourceName: String? = null,
     )
 
     enum class HowToPublish(val rawValue: String) {
         RECORD("record"),
         APPEND("append"),
         APPEND_WITH_GAP("appendWithGap"),
-        LIVE("live")
+        LIVE("live"),
     }
 
     @Suppress("unused")
@@ -75,7 +75,8 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         STEP_NOTIFY("NetStream.Step.Notify", "status"),
         UNPAUSE_NOTIFY("NetStream.Unpause.Notify", "status"),
         UNPUBLISH_SUCCESS("NetStream.Unpublish.Success", "status"),
-        VIDEO_DIMENSION_CHANGE("NetStream.Video.DimensionChange", "status");
+        VIDEO_DIMENSION_CHANGE("NetStream.Video.DimensionChange", "status"),
+        ;
 
         fun data(description: String): Map<String, Any> {
             val data = HashMap<String, Any>()
@@ -89,7 +90,10 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     }
 
     interface Listener {
-        fun onStatics(stream: RtmpStream, connection: RtmpConnection)
+        fun onStatics(
+            stream: RtmpStream,
+            connection: RtmpConnection,
+        )
     }
 
     internal inner class EventListener(private val stream: RtmpStream) : IEventListener {
@@ -125,7 +129,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         PLAYING(0x03),
         PUBLISH(0x04),
         PUBLISHING(0x05),
-        CLOSED(0x06)
+        CLOSED(0x06),
     }
 
     var info: Info = Info()
@@ -251,7 +255,10 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     /**
      * Sends streaming audio, video and data messages from a client to server.
      */
-    fun publish(name: String?, howToPublish: HowToPublish = HowToPublish.LIVE) {
+    fun publish(
+        name: String?,
+        howToPublish: HowToPublish = HowToPublish.LIVE,
+    ) {
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
         message.commandName = if (name != null) "publish" else "closeStream"
@@ -328,7 +335,10 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     /**
      * Sends a message on a published stream.
      */
-    fun send(handlerName: String, vararg arguments: Any) {
+    fun send(
+        handlerName: String,
+        vararg arguments: Any,
+    ) {
         if (readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED) {
             return
         }
@@ -361,7 +371,11 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         super.dispose()
     }
 
-    override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
+    override fun addEventListener(
+        type: String,
+        listener: IEventListener,
+        useCapture: Boolean,
+    ) {
         dispatcher.addEventListener(type, listener, useCapture)
     }
 
@@ -369,15 +383,26 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         dispatcher.dispatchEvent(event)
     }
 
-    override fun dispatchEventWith(type: String, bubbles: Boolean, data: Any?) {
+    override fun dispatchEventWith(
+        type: String,
+        bubbles: Boolean,
+        data: Any?,
+    ) {
         dispatcher.dispatchEventWith(type, bubbles, data)
     }
 
-    override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
+    override fun removeEventListener(
+        type: String,
+        listener: IEventListener,
+        useCapture: Boolean,
+    ) {
         dispatcher.removeEventListener(type, listener, useCapture)
     }
 
-    internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
+    internal fun doOutput(
+        chunk: RtmpChunk,
+        message: RtmpMessage,
+    ) {
         chunk.encode(connection.socket, message)
         if (recorder.isRunning.get()) {
             recorder.write(message)

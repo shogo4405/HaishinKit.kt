@@ -26,9 +26,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  * A video source that captures a camera by the Camera2 API.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class Camera2Source(private val context: Context) : VideoSource, CameraDevice.StateCallback(),
+class Camera2Source(private val context: Context) :
+    VideoSource,
+    CameraDevice.StateCallback(),
     Video.OnSurfaceChangedListener {
-
     /**
      * Specifies the listener indicates the [Camera2Source.Listener] are currently being evaluated.
      */
@@ -126,11 +127,12 @@ class Camera2Source(private val context: Context) : VideoSource, CameraDevice.St
      */
     fun switchCamera() {
         val facing = getFacing()
-        val expect = if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
-            CameraCharacteristics.LENS_FACING_BACK
-        } else {
-            CameraCharacteristics.LENS_FACING_FRONT
-        }
+        val expect =
+            if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                CameraCharacteristics.LENS_FACING_BACK
+            } else {
+                CameraCharacteristics.LENS_FACING_FRONT
+            }
         open(expect)
     }
 
@@ -184,7 +186,10 @@ class Camera2Source(private val context: Context) : VideoSource, CameraDevice.St
         device = null
     }
 
-    override fun onError(camera: CameraDevice, error: Int) {
+    override fun onError(
+        camera: CameraDevice,
+        error: Int,
+    ) {
         listener?.onError(camera, error)
         device = null
     }
@@ -212,14 +217,17 @@ class Camera2Source(private val context: Context) : VideoSource, CameraDevice.St
             }
         }
         requests.clear()
-        requests.add(device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-            listener?.onCreateCaptureRequest(this)
-            surfaces.forEach {
-                addTarget(it)
-            }
-        })
+        requests.add(
+            device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
+                listener?.onCreateCaptureRequest(this)
+                surfaces.forEach {
+                    addTarget(it)
+                }
+            },
+        )
         device.createCaptureSession(
-            surfaces, object : CameraCaptureSession.StateCallback() {
+            surfaces,
+            object : CameraCaptureSession.StateCallback() {
                 override fun onConfigured(session: CameraCaptureSession) {
                     this@Camera2Source.session = session
                 }
@@ -227,7 +235,8 @@ class Camera2Source(private val context: Context) : VideoSource, CameraDevice.St
                 override fun onConfigureFailed(session: CameraCaptureSession) {
                     this@Camera2Source.session = null
                 }
-            }, handler
+            },
+            handler,
         )
     }
 
@@ -258,7 +267,10 @@ class Camera2Source(private val context: Context) : VideoSource, CameraDevice.St
         /**
          * Tells the receiver to error.
          */
-        fun onError(camera: CameraDevice, error: Int)
+        fun onError(
+            camera: CameraDevice,
+            error: Int,
+        )
 
         /**
          * Tells the receiver to create a capture request.

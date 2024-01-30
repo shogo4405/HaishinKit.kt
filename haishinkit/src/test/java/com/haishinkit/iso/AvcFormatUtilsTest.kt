@@ -6,9 +6,10 @@ import java.nio.ByteOrder
 
 class AvcFormatUtilsTest : TestCase() {
     fun testToByteStream() {
-        val byteBuffer = ByteBuffer.wrap(SAMPLE_DATA_0).apply {
-            order(ByteOrder.BIG_ENDIAN)
-        }
+        val byteBuffer =
+            ByteBuffer.wrap(SAMPLE_DATA_0).apply {
+                order(ByteOrder.BIG_ENDIAN)
+            }
         byteBuffer.rewind()
         AvcFormatUtils.toByteStream(byteBuffer, 4)
     }

@@ -16,7 +16,7 @@ data class AvcConfigurationRecord(
     val lengthSizeMinusOneWithReserved: Byte = 0,
     val numOfSequenceParameterSetsWithReserved: Byte = 0,
     val sequenceParameterSets: List<ByteArray>? = null,
-    val pictureParameterSets: List<ByteArray>? = null
+    val pictureParameterSets: List<ByteArray>? = null,
 ) {
     val naluLength: Byte
         get() = ((lengthSizeMinusOneWithReserved.toInt() shr 6) + 1).toByte()
@@ -183,7 +183,7 @@ data class AvcConfigurationRecord(
                 lengthSizeMinusOneWithReserved = lengthSizeMinusOneWithReserved,
                 numOfSequenceParameterSetsWithReserved = numOfSequenceParameterSetsWithReserved,
                 sequenceParameterSets = sequenceParameterSets,
-                pictureParameterSets = pictureParameterSets
+                pictureParameterSets = pictureParameterSets,
             )
         }
 
@@ -202,14 +202,16 @@ data class AvcConfigurationRecord(
                 avcLevelIndication = spsBuffer[7],
                 lengthSizeMinusOneWithReserved = 0xFF.toByte(),
                 numOfSequenceParameterSetsWithReserved = 0xE1.toByte(),
-                sequenceParameterSets = ArrayList<ByteArray>(1).apply {
+                sequenceParameterSets =
+                ArrayList<ByteArray>(1).apply {
                     val length = spsBuffer.remaining()
                     add(spsBuffer.array().slice(4 until length).toByteArray())
                 },
-                pictureParameterSets = ArrayList<ByteArray>(1).apply {
+                pictureParameterSets =
+                ArrayList<ByteArray>(1).apply {
                     val length = ppsBuffer.remaining()
                     add(ppsBuffer.array().slice(4 until length).toByteArray())
-                }
+                },
             )
         }
     }

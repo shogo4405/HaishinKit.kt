@@ -106,17 +106,37 @@ class VkPixelTransform(override val applicationContext: Context) : PixelTransfor
     }
 
     private external fun nativeIsSupported(): Boolean
+
     private external fun nativeSetImageOrientation(imageOrientation: Int)
+
     private external fun nativeSetSurface(surface: Surface?)
+
     private external fun nativeSetDeviceOrientation(surfaceRotation: Int)
+
     private external fun nativeSetResampleFilter(resampleFilter: Int)
+
     private external fun nativeSetVideoGravity(videoGravity: Int)
-    private external fun nativeSetImageExtent(width: Int, height: Int)
+
+    private external fun nativeSetImageExtent(
+        width: Int,
+        height: Int,
+    )
+
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
-    private external fun nativeCreateInputSurface(width: Int, height: Int, format: Int): Surface?
+
+    private external fun nativeCreateInputSurface(
+        width: Int,
+        height: Int,
+        format: Int,
+    ): Surface?
+
     private external fun nativeSetRotatesWithContent(expectedOrientationSynchronize: Boolean)
+
     private external fun nativeSetFrameRate(frameRate: Int)
+
     private external fun nativeSetVideoEffect(videoEffect: VideoEffect)
+
     private external fun nativeReadPixels(buffer: ByteBuffer)
+
     private external fun nativeDispose()
 }

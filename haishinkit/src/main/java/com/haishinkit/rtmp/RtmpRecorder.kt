@@ -21,7 +21,10 @@ internal class RtmpRecorder(override val isRunning: AtomicBoolean = AtomicBoolea
     private var job = Job()
     private var writer = FlvWriter()
 
-    fun open(setting: RecordSetting, fileName: String) {
+    fun open(
+        setting: RecordSetting,
+        fileName: String,
+    ) {
         launch(coroutineContext) {
             writer.open(setting, fileName)
         }

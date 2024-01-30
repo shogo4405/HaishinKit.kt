@@ -16,7 +16,7 @@ data class FlvAudioTag(
     var codec: Byte = FlvAudioCodec.UNKNOWN,
     var soundRate: Byte = FlvSoundRate.kHz5_5,
     var soundSize: Byte = FlvSoundSize.SOUND_8BIT,
-    var soundType: Byte = FlvSoundType.MONO
+    var soundType: Byte = FlvSoundType.MONO,
 ) : FlvTag {
     override fun toByteArray(): ByteArray {
         return byteArrayOf()

@@ -9,7 +9,10 @@ object AvcFormatUtils {
     private const val ONE: Byte = 1
     private val TAG = AvcFormatUtils::class.java.simpleName
 
-    fun toNALFile(input: ByteBuffer, output: ByteBuffer) {
+    fun toNALFile(
+        input: ByteBuffer,
+        output: ByteBuffer,
+    ) {
         var length = 0
         var position = -1
         val offset = output.position()
@@ -17,7 +20,7 @@ object AvcFormatUtils {
         output.put(input)
         for (i in offset until remaining) {
             if (output.get(i) == ZERO && output.get(i + 1) == ZERO && output.get(i + 2) == ZERO && output.get(
-                    i + 3
+                    i + 3,
                 ) == ONE
             ) {
                 if (0 <= position) {
@@ -32,7 +35,10 @@ object AvcFormatUtils {
         output.putInt(position, length)
     }
 
-    fun toByteStream(buffer: ByteBuffer, offset: Int) {
+    fun toByteStream(
+        buffer: ByteBuffer,
+        offset: Int,
+    ) {
         val position = buffer.position()
         if (0 < offset) {
             buffer.position(position + offset)

@@ -13,7 +13,8 @@ import com.haishinkit.util.Rectangle
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class Screen(applicationContext: Context) :
-    com.haishinkit.screen.Screen(applicationContext), Running,
+    com.haishinkit.screen.Screen(applicationContext),
+    Running,
     Choreographer.FrameCallback {
     val graphicsContext: GraphicsContext by lazy { GraphicsContext() }
     override var id: Int
@@ -84,7 +85,7 @@ internal class Screen(applicationContext: Context) :
                 (Color.red(backgroundColor) / 255).toFloat(),
                 (Color.green(backgroundColor) / 255).toFloat(),
                 (Color.blue(backgroundColor) / 255).toFloat(),
-                0f
+                0f,
             )
             GLES20.glEnable(GLES20.GL_BLEND)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)

@@ -35,8 +35,9 @@ class SequenceParameterSetTest : TestCase() {
                 frameCropLeftOffset = null,
                 frameCropRightOffset = null,
                 frameCropTopOffset = null,
-                frameCropBottomOffset = null
-            ), result
+                frameCropBottomOffset = null,
+            ),
+            result,
         )
     }
 

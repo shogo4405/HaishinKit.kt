@@ -28,12 +28,11 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
     Running,
     CoroutineScope,
     Choreographer.FrameCallback {
-
     data class Buffer(
         val index: Int,
         val payload: ByteBuffer? = null,
         val timestamp: Long = 0L,
-        val sync: Boolean = false
+        val sync: Boolean = false,
     )
 
     /**
@@ -98,14 +97,15 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
 
     internal var audioTrack: AudioTrack? = null
         set(value) {
-            syncMode = if (value == null) {
-                field?.stop()
-                field?.flush()
-                field?.release()
-                SYNC_MODE_CLOCK
-            } else {
-                SYNC_MODE_AUDIO
-            }
+            syncMode =
+                if (value == null) {
+                    field?.stop()
+                    field?.flush()
+                    field?.release()
+                    SYNC_MODE_CLOCK
+                } else {
+                    SYNC_MODE_AUDIO
+                }
             field = value
         }
 
@@ -154,7 +154,12 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
     /**
      * Queues the audio data asynchronously for playback.
      */
-    fun queueAudio(index: Int, payload: ByteBuffer?, timestamp: Long, sync: Boolean) {
+    fun queueAudio(
+        index: Int,
+        payload: ByteBuffer?,
+        timestamp: Long,
+        sync: Boolean,
+    ) {
         audioBuffers.add(Buffer(index, payload, timestamp, sync))
         if (!hasVideo) {
             val track = audioTrack ?: return
@@ -170,7 +175,12 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
     /**
      * Queues the video data asynchronously for playback.
      */
-    fun queueVideo(index: Int, payload: ByteBuffer?, timestamp: Long, sync: Boolean) {
+    fun queueVideo(
+        index: Int,
+        payload: ByteBuffer?,
+        timestamp: Long,
+        sync: Boolean,
+    ) {
         if (videoTimestampZero == -1L) {
             videoTimestampZero = timestamp
         }
@@ -191,9 +201,10 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         }
         audio.mode = Codec.Mode.DECODE
         keepAlive = true
-        audioPlaybackJob = launch(coroutineContext) {
-            doAudio()
-        }
+        audioPlaybackJob =
+            launch(coroutineContext) {
+                doAudio()
+            }
         isRunning.set(true)
     }
 
@@ -287,7 +298,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
                         audioTrack?.write(
                             payload,
                             payload.remaining(),
-                            AudioTrack.WRITE_NON_BLOCKING
+                            AudioTrack.WRITE_NON_BLOCKING,
                         )
                     } else {
                         break

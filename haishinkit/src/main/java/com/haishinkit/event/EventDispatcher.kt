@@ -8,7 +8,11 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
     private val pool = Pools.SynchronizedPool<Event>(MAX_POOL_SIZE)
     private val listeners = ConcurrentHashMap<String, MutableList<IEventListener>>()
 
-    override fun addEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
+    override fun addEventListener(
+        type: String,
+        listener: IEventListener,
+        useCapture: Boolean,
+    ) {
         val key = "$type/$useCapture"
         listeners.putIfAbsent(key, Collections.synchronizedList(mutableListOf<IEventListener>()))
         listeners[key]?.add(listener)
@@ -52,7 +56,11 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
         event.propagationStopped = false
     }
 
-    override fun dispatchEventWith(type: String, bubbles: Boolean, data: Any?) {
+    override fun dispatchEventWith(
+        type: String,
+        bubbles: Boolean,
+        data: Any?,
+    ) {
         val event = pool.acquire() ?: Event(type, bubbles, data)
         event.type = type
         event.isBubbles = bubbles
@@ -61,7 +69,11 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
         pool.release(event)
     }
 
-    override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
+    override fun removeEventListener(
+        type: String,
+        listener: IEventListener,
+        useCapture: Boolean,
+    ) {
         val key = "$type/$useCapture"
         if (!listeners.containsKey(key)) {
             return

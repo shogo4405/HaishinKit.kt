@@ -15,7 +15,7 @@ data class FlvVideoTag(
     var frameType: Byte = FlvFlameType.COMMAND,
     var codec: Byte = FlvVideoCodec.UNKNOWN,
     var avcPacketType: Byte = FlvAvcPacketType.EOS,
-    var compositionTime: Int = 0
+    var compositionTime: Int = 0,
 ) : FlvTag {
     override fun toByteArray(): ByteArray {
         return byteArrayOf()

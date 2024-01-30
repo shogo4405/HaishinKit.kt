@@ -7,7 +7,7 @@ import com.haishinkit.graphics.glsl.Uniform
  * An object that provides a resampling filter by lanczos algorithm.
  */
 class LanczosVideoEffect(
-    override val name: String = "lanczos"
+    override val name: String = "lanczos",
 ) : VideoEffect {
     @Uniform(binding = 0, shaderStage = ShaderStage.VERTEX)
     var texelWidth = 1f

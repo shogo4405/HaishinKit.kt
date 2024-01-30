@@ -33,13 +33,14 @@ internal class GraphicsContext {
 
         config = chooseConfig(3)
         if (config != null) {
-            val context = EGL14.eglCreateContext(
-                display,
-                config,
-                shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
-                intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE),
-                0
-            )
+            val context =
+                EGL14.eglCreateContext(
+                    display,
+                    config,
+                    shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
+                    intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE),
+                    0,
+                )
             if (EGL14.eglGetError() == EGL14.EGL_SUCCESS) {
                 this.context = context
                 this.version = 3
@@ -52,13 +53,14 @@ internal class GraphicsContext {
             if (config == null) {
                 throw RuntimeException("unable to find a suitable EGLConfig")
             }
-            context = EGL14.eglCreateContext(
-                display,
-                config,
-                shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
-                intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE),
-                0
-            )
+            context =
+                EGL14.eglCreateContext(
+                    display,
+                    config,
+                    shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
+                    intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE),
+                    0,
+                )
             this.version = 2
         }
     }
@@ -91,11 +93,19 @@ internal class GraphicsContext {
             return null
         }
         return EGL14.eglCreateWindowSurface(
-            display, config, surface, SURFACE_ATTRIBUTES, 0
+            display,
+            config,
+            surface,
+            SURFACE_ATTRIBUTES,
+            0,
         )
     }
 
-    fun readPixels(width: Int, height: Int, buffer: ByteBuffer) {
+    fun readPixels(
+        width: Int,
+        height: Int,
+        buffer: ByteBuffer,
+    ) {
         buffer.clear()
         GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer)
         buffer.rewind()
@@ -108,7 +118,7 @@ internal class GraphicsContext {
     protected fun finalize() {
         try {
             if (display != EGL14.EGL_NO_DISPLAY) {
-                release();
+                release()
             }
         } catch (e: RuntimeException) {
             Log.e(TAG, "", e)
@@ -125,7 +135,7 @@ internal class GraphicsContext {
                 display,
                 EGL14.EGL_NO_SURFACE,
                 EGL14.EGL_NO_SURFACE,
-                EGL14.EGL_NO_CONTEXT
+                EGL14.EGL_NO_CONTEXT,
             )
             EGL14.eglDestroyContext(display, context)
             EGL14.eglReleaseThread()
@@ -149,7 +159,14 @@ internal class GraphicsContext {
         val configs: Array<EGLConfig?> = arrayOfNulls(1)
         val numConfigs = IntArray(1)
         if (!EGL14.eglChooseConfig(
-                display, attributes, 0, configs, 0, configs.size, numConfigs, 0
+                display,
+                attributes,
+                0,
+                configs,
+                0,
+                configs.size,
+                numConfigs,
+                0,
             )
         ) {
             return null
@@ -162,20 +179,21 @@ internal class GraphicsContext {
         private val TAG = GraphicsContext::class.java.toString()
         private const val EGL_RECORDABLE_ANDROID: Int = 0x3142
         private val SURFACE_ATTRIBUTES = intArrayOf(EGL14.EGL_NONE)
-        private val CONFIG_ATTRIBUTES_WITH_CONTEXT = intArrayOf(
-            EGL14.EGL_RED_SIZE,
-            8,
-            EGL14.EGL_GREEN_SIZE,
-            8,
-            EGL14.EGL_BLUE_SIZE,
-            8,
-            EGL14.EGL_ALPHA_SIZE,
-            8,
-            EGL14.EGL_RENDERABLE_TYPE,
-            EGL14.EGL_OPENGL_ES2_BIT,
-            EGL_RECORDABLE_ANDROID,
-            1,
-            EGL14.EGL_NONE
-        )
+        private val CONFIG_ATTRIBUTES_WITH_CONTEXT =
+            intArrayOf(
+                EGL14.EGL_RED_SIZE,
+                8,
+                EGL14.EGL_GREEN_SIZE,
+                8,
+                EGL14.EGL_BLUE_SIZE,
+                8,
+                EGL14.EGL_ALPHA_SIZE,
+                8,
+                EGL14.EGL_RENDERABLE_TYPE,
+                EGL14.EGL_OPENGL_ES2_BIT,
+                EGL_RECORDABLE_ANDROID,
+                1,
+                EGL14.EGL_NONE,
+            )
     }
 }

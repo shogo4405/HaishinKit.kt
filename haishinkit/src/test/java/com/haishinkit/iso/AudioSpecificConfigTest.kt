@@ -5,11 +5,12 @@ import java.nio.ByteBuffer
 
 class AudioSpecificConfigTest : TestCase() {
     fun testEncodeAndDecode() {
-        val config = AudioSpecificConfig(
-            type = AudioSpecificConfig.AudioObjectType.AAC_MAIN,
-            frequency = AudioSpecificConfig.SamplingFrequency.HZ44100,
-            channel = AudioSpecificConfig.ChannelConfiguration.FRONT_CENTER_AND_FRONT_LEFT_AND_FRONT_RIGHT
-        )
+        val config =
+            AudioSpecificConfig(
+                type = AudioSpecificConfig.AudioObjectType.AAC_MAIN,
+                frequency = AudioSpecificConfig.SamplingFrequency.HZ44100,
+                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_CENTER_AND_FRONT_LEFT_AND_FRONT_RIGHT,
+            )
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
         buffer.flip()
@@ -18,11 +19,12 @@ class AudioSpecificConfigTest : TestCase() {
     }
 
     fun testEncodeAndDecode2() {
-        val config = AudioSpecificConfig(
-            type = AudioSpecificConfig.AudioObjectType.AAC_LC,
-            frequency = AudioSpecificConfig.SamplingFrequency.HZ48000,
-            channel = AudioSpecificConfig.ChannelConfiguration.FRONT_OF_CENTER
-        )
+        val config =
+            AudioSpecificConfig(
+                type = AudioSpecificConfig.AudioObjectType.AAC_LC,
+                frequency = AudioSpecificConfig.SamplingFrequency.HZ48000,
+                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_OF_CENTER,
+            )
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
         buffer.flip()
@@ -31,11 +33,12 @@ class AudioSpecificConfigTest : TestCase() {
     }
 
     fun testEncodeAndDecode3() {
-        val config = AudioSpecificConfig(
-            type = AudioSpecificConfig.AudioObjectType.AAC_LC,
-            frequency = AudioSpecificConfig.SamplingFrequency.HZ48000,
-            channel = AudioSpecificConfig.ChannelConfiguration.FRONT_LEFT_AND_FRONT_RIGHT
-        )
+        val config =
+            AudioSpecificConfig(
+                type = AudioSpecificConfig.AudioObjectType.AAC_LC,
+                frequency = AudioSpecificConfig.SamplingFrequency.HZ48000,
+                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_LEFT_AND_FRONT_RIGHT,
+            )
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
         buffer.flip()

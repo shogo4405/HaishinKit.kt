@@ -2,7 +2,6 @@ package com.haishinkit.screen
 
 import android.graphics.Bitmap
 
-
 /**
  * An Image is a texture mapped onto it.
  */

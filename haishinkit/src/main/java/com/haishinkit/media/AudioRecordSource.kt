@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class AudioRecordSource(
-    private val context: Context
+    private val context: Context,
 ) : AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
@@ -39,32 +39,34 @@ class AudioRecordSource(
         get() {
             if (ActivityCompat.checkSelfPermission(
                     context,
-                    Manifest.permission.RECORD_AUDIO
+                    Manifest.permission.RECORD_AUDIO,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 return null
             }
             if (field == null) {
                 if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                    field = AudioRecord.Builder()
-                        .setAudioSource(audioSource)
-                        .setAudioFormat(
-                            AudioFormat.Builder()
-                                .setEncoding(encoding)
-                                .setSampleRate(sampleRate)
-                                .setChannelMask(channel)
-                                .build()
-                        )
-                        .setBufferSizeInBytes(minBufferSize)
-                        .build()
+                    field =
+                        AudioRecord.Builder()
+                            .setAudioSource(audioSource)
+                            .setAudioFormat(
+                                AudioFormat.Builder()
+                                    .setEncoding(encoding)
+                                    .setSampleRate(sampleRate)
+                                    .setChannelMask(channel)
+                                    .build(),
+                            )
+                            .setBufferSizeInBytes(minBufferSize)
+                            .build()
                 } else {
-                    field = AudioRecord(
-                        audioSource,
-                        sampleRate,
-                        channel,
-                        encoding,
-                        minBufferSize
-                    )
+                    field =
+                        AudioRecord(
+                            audioSource,
+                            sampleRate,
+                            channel,
+                            encoding,
+                            minBufferSize,
+                        )
                 }
             }
             return field
@@ -104,13 +106,14 @@ class AudioRecordSource(
                 currentPresentationTimestamp += timestamp(result / 2)
             }
         } else {
-            val error = when (result) {
-                AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
-                AudioRecord.ERROR_BAD_VALUE -> "ERROR_BAD_VALUE"
-                AudioRecord.ERROR_DEAD_OBJECT -> "ERROR_DEAD_OBJECT"
-                AudioRecord.ERROR -> "ERROR"
-                else -> "ERROR($result)"
-            }
+            val error =
+                when (result) {
+                    AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
+                    AudioRecord.ERROR_BAD_VALUE -> "ERROR_BAD_VALUE"
+                    AudioRecord.ERROR_DEAD_OBJECT -> "ERROR_DEAD_OBJECT"
+                    AudioRecord.ERROR -> "ERROR"
+                    else -> "ERROR($result)"
+                }
             Log.w(TAG, error)
         }
         return result

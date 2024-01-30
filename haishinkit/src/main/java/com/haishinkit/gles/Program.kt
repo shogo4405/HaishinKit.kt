@@ -16,7 +16,7 @@ internal class Program(
     private val texCoordHandle: Int = INVALID_VALUE,
     private val textureHandle: Int = INVALID_VALUE,
     private val mvpMatrixHandle: Int = INVALID_VALUE,
-    private val handlers: Map<Int, Method>
+    private val handlers: Map<Int, Method>,
 ) {
     private var texCoordBuffer = Utils.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private val vertexBuffer = Utils.createFloatBuffer(VERTECES)
@@ -60,14 +60,24 @@ internal class Program(
         GLES20.glEnableVertexAttribArray(texCoordHandle)
         Utils.checkGlError("glEnableVertexAttribArray")
         GLES20.glVertexAttribPointer(
-            texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer
+            texCoordHandle,
+            2,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            texCoordBuffer,
         )
         Utils.checkGlError("glVertexAttribPointer")
 
         GLES20.glEnableVertexAttribArray(positionHandle)
         Utils.checkGlError("glEnableVertexAttribArray")
         GLES20.glVertexAttribPointer(
-            positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer
+            positionHandle,
+            3,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            vertexBuffer,
         )
         Utils.checkGlError("glVertexAttribPointer")
 
@@ -107,18 +117,24 @@ internal class Program(
     companion object {
         private const val INVALID_VALUE = 0
 
-        private val VERTECES = floatArrayOf(
-            -1.0f, 1.0f, 0.0f, // top-left
-            -1.0f, -1.0f, 0.0f, // bottom-left
-            1.0f, 1.0f, 0.0f, // bottom-right
-            1.0f, -1.0f, 0.0f // top-right
-        )
+        private val VERTECES =
+            floatArrayOf(
+                -1.0f, 1.0f, 0.0f, // top-left
+                -1.0f, -1.0f, 0.0f, // bottom-left
+                1.0f, 1.0f, 0.0f, // bottom-right
+                1.0f, -1.0f, 0.0f, // top-right
+            )
 
-        private val TEX_COORDS_ROTATION_0 = floatArrayOf(
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f
-        )
+        private val TEX_COORDS_ROTATION_0 =
+            floatArrayOf(
+                0.0f,
+                0.0f,
+                0.0f,
+                1.0f,
+                1.0f,
+                0.0f,
+                1.0f,
+                1.0f,
+            )
     }
 }

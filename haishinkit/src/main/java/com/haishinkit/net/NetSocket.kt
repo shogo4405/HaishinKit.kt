@@ -12,8 +12,11 @@ interface NetSocket {
      */
     interface Listener {
         fun onInput(buffer: ByteBuffer)
+
         fun onTimeout()
+
         fun onConnect()
+
         fun onClose(disconnected: Boolean)
     }
 
@@ -45,7 +48,11 @@ interface NetSocket {
     /**
      * Creates a two-way connection to an application server.
      */
-    fun connect(dstName: String, dstPort: Int, isSecure: Boolean)
+    fun connect(
+        dstName: String,
+        dstPort: Int,
+        isSecure: Boolean,
+    )
 
     /**
      * Do output a butter to an application server.

@@ -96,9 +96,9 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                             MediaCodecSource(
                                 Size(
                                     sequenceParameterSet.videoWidth,
-                                    sequenceParameterSet.videoHeight
-                                )
-                            )
+                                    sequenceParameterSet.videoHeight,
+                                ),
+                            ),
                         )
                     }
 

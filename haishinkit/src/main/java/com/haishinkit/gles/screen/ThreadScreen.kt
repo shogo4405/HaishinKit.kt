@@ -39,7 +39,7 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
 
     private val screen: com.haishinkit.gles.screen.Screen by lazy {
         com.haishinkit.gles.screen.Screen(
-            applicationContext
+            applicationContext,
         )
     }
 

@@ -39,7 +39,8 @@ class RtmpConnection : EventDispatcher(null) {
         CONNECT_INVALID_APP("NetConnection.Connect.InvalidApp", "error"),
         CONNECT_NETWORK_CHANGE("NetConnection.Connect.NetworkChange", "status"),
         CONNECT_REJECTED("NetConnection.Connect.Rejected", "status"),
-        CONNECT_SUCCESS("NetConnection.Connect.Success", "status");
+        CONNECT_SUCCESS("NetConnection.Connect.Success", "status"),
+        ;
 
         fun data(description: String): Map<String, Any> {
             val data = HashMap<String, Any>()
@@ -65,7 +66,7 @@ class RtmpConnection : EventDispatcher(null) {
         G711U(0x0100),
         AAC(0x0200),
         SPEEX(0x0800),
-        ALL(0x0FFF);
+        ALL(0x0FFF),
     }
 
     @Suppress("unused")
@@ -78,11 +79,11 @@ class RtmpConnection : EventDispatcher(null) {
         VP6_ALPHA(0x0020),
         HOMEBREWV(0x0040),
         H264(0x0080),
-        ALL(0x00FF);
+        ALL(0x00FF),
     }
 
     enum class VideoFunction(val rawValue: Short) {
-        CLIENT_SEEK(1);
+        CLIENT_SEEK(1),
     }
 
     private inner class EventListener(private val connection: RtmpConnection) : IEventListener {
@@ -93,9 +94,10 @@ class RtmpConnection : EventDispatcher(null) {
             }
             when (data["code"].toString()) {
                 Code.CONNECT_SUCCESS.rawValue -> {
-                    timerTask = Timer().schedule(0, 1000) {
-                        for (stream in streams) stream.value.on()
-                    }
+                    timerTask =
+                        Timer().schedule(0, 1000) {
+                            for (stream in streams) stream.value.on()
+                        }
                     val message = messageFactory.createRtmpSetChunkSizeMessage()
                     message.size = DEFAULT_CHUNK_SIZE_S
                     message.chunkStreamID = RtmpChunk.CONTROL
@@ -193,7 +195,11 @@ class RtmpConnection : EventDispatcher(null) {
     /**
      * Calls a command or method on RTMP Server.
      */
-    fun call(commandName: String, responder: Responder?, vararg arguments: Any) {
+    fun call(
+        commandName: String,
+        responder: Responder?,
+        vararg arguments: Any,
+    ) {
         if (!isConnected) {
             return
         }
@@ -216,7 +222,10 @@ class RtmpConnection : EventDispatcher(null) {
     /**
      * Creates a two-way connection to an application on RTMP Server.
      */
-    fun connect(command: String, vararg arguments: Any?) {
+    fun connect(
+        command: String,
+        vararg arguments: Any?,
+    ) {
         uri = URI.create(command)
         val uri = this.uri ?: return
         if (isConnected || !SUPPORTED_PROTOCOLS.containsKey(uri.scheme)) {
@@ -229,7 +238,7 @@ class RtmpConnection : EventDispatcher(null) {
         socket.connect(
             uri.host,
             if (port == -1) SUPPORTED_PROTOCOLS[uri.scheme] ?: DEFAULT_PORT else port,
-            isSecure
+            isSecure,
         )
     }
 
@@ -259,7 +268,10 @@ class RtmpConnection : EventDispatcher(null) {
         streams.clear()
     }
 
-    internal fun doOutput(chunk: RtmpChunk, message: RtmpMessage) {
+    internal fun doOutput(
+        chunk: RtmpChunk,
+        message: RtmpMessage,
+    ) {
         chunk.encode(socket, message)
         message.release()
     }
@@ -351,11 +363,14 @@ class RtmpConnection : EventDispatcher(null) {
                 override fun onStatus(arguments: List<Any?>) {
                     Log.w("$TAG#onStatus", arguments.toString())
                 }
-            }
+            },
         )
     }
 
-    internal fun onSocketReadyStateChange(socket: RtmpSocket, readyState: RtmpSocket.ReadyState) {
+    internal fun onSocketReadyStateChange(
+        socket: RtmpSocket,
+        readyState: RtmpSocket.ReadyState,
+    ) {
         if (VERBOSE) {
             Log.d(TAG, readyState.toString())
         }

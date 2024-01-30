@@ -30,7 +30,7 @@ data class SequenceParameterSet(
     val frameCropLeftOffset: UByte?,
     val frameCropRightOffset: UByte?,
     val frameCropTopOffset: UByte?,
-    val frameCropBottomOffset: UByte?
+    val frameCropBottomOffset: UByte?,
 ) {
     val videoWidth: Int
         get() {
@@ -43,15 +43,22 @@ data class SequenceParameterSet(
         get() {
             val frameCropTopOffset = frameCropTopOffset ?: 0u
             val frameCropBottomOffset = frameCropBottomOffset ?: 0u
-            return ((2u - if (frameMbsOnlyFlag) {
-                1u
-            } else {
-                0u
-            }) * (picHeightInMapUnitsMinus1 + 1u) * 16u - (if (frameMbsOnlyFlag) {
-                2u
-            } else {
-                4u
-            }) * (frameCropTopOffset + frameCropBottomOffset)).toInt()
+            return (
+                (
+                    2u -
+                        if (frameMbsOnlyFlag) {
+                            1u
+                        } else {
+                            0u
+                        }
+                    ) * (picHeightInMapUnitsMinus1 + 1u) * 16u - (
+                    if (frameMbsOnlyFlag) {
+                        2u
+                    } else {
+                        4u
+                    }
+                    ) * (frameCropTopOffset + frameCropBottomOffset)
+                ).toInt()
         }
 
     companion object {
@@ -94,7 +101,6 @@ data class SequenceParameterSet(
                 }
 
                 1 -> {
-
                 }
             }
 
@@ -149,7 +155,7 @@ data class SequenceParameterSet(
                 frameCropLeftOffset = frameCropLeftOffset?.toUByte(),
                 frameCropRightOffset = frameCropRightOffset?.toUByte(),
                 frameCropTopOffset = frameCropTopOffset?.toUByte(),
-                frameCropBottomOffset = frameCropBottomOffset?.toUByte()
+                frameCropBottomOffset = frameCropBottomOffset?.toUByte(),
             )
         }
     }

@@ -32,19 +32,21 @@ class MediaProjectionSource(
     private var mediaProjection: MediaProjection,
     private val metrics: DisplayMetrics,
 ) : VideoSource, Video.OnSurfaceChangedListener {
-
     private class Callback : MediaProjection.Callback() {
         override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
             super.onCapturedContentVisibilityChanged(isVisible)
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Callback#onCapturedContentVisibilityChanged:${isVisible}")
+                Log.d(TAG, "Callback#onCapturedContentVisibilityChanged:$isVisible")
             }
         }
 
-        override fun onCapturedContentResize(width: Int, height: Int) {
+        override fun onCapturedContentResize(
+            width: Int,
+            height: Int,
+        ) {
             super.onCapturedContentResize(width, height)
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Callback#onCapturedContentResize:${width}:${height}")
+                Log.d(TAG, "Callback#onCapturedContentResize:$width:$height")
             }
         }
 
@@ -91,13 +93,14 @@ class MediaProjectionSource(
                 return
             }
             field = value
-            screen.imageOrientation = when (value) {
-                0 -> ImageOrientation.UP
-                1 -> ImageOrientation.LEFT
-                2 -> ImageOrientation.DOWN
-                3 -> ImageOrientation.RIGHT
-                else -> ImageOrientation.UP
-            }
+            screen.imageOrientation =
+                when (value) {
+                    0 -> ImageOrientation.UP
+                    1 -> ImageOrientation.LEFT
+                    2 -> ImageOrientation.DOWN
+                    3 -> ImageOrientation.RIGHT
+                    else -> ImageOrientation.UP
+                }
         }
 
     private val orientationEventListener: OrientationEventListener? by lazy {
@@ -109,12 +112,12 @@ class MediaProjectionSource(
                     val windowManager =
                         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                     rotation = windowManager.defaultDisplay.rotation
-                    screen.videoSize = if (screen.videoSize.width < screen.videoSize.height) {
-                        screen.videoSize.swap(rotation == 1 || rotation == 3)
-                    } else {
-                        screen.videoSize.swap(rotation == 0 || rotation == 4)
-                    }
-
+                    screen.videoSize =
+                        if (screen.videoSize.width < screen.videoSize.height) {
+                            screen.videoSize.swap(rotation == 1 || rotation == 3)
+                        } else {
+                            screen.videoSize.swap(rotation == 0 || rotation == 4)
+                        }
                 }
             }
         }
@@ -128,7 +131,10 @@ class MediaProjectionSource(
     /**
      * Register a listener to receive notifications about when the MediaProjection changes state.
      */
-    fun registerCallback(callback: MediaProjection.Callback, handler: Handler?) {
+    fun registerCallback(
+        callback: MediaProjection.Callback,
+        handler: Handler?,
+    ) {
         mediaProjection.registerCallback(callback, handler)
     }
 
@@ -181,16 +187,17 @@ class MediaProjectionSource(
             flags += VIRTUAL_DISPLAY_FLAG_ROTATES_WITH_CONTENT
         }
         handler?.post {
-            virtualDisplay = mediaProjection.createVirtualDisplay(
-                DEFAULT_DISPLAY_NAME,
-                metrics.widthPixels,
-                metrics.heightPixels,
-                metrics.densityDpi,
-                flags,
-                surface,
-                null,
-                handler
-            )
+            virtualDisplay =
+                mediaProjection.createVirtualDisplay(
+                    DEFAULT_DISPLAY_NAME,
+                    metrics.widthPixels,
+                    metrics.heightPixels,
+                    metrics.densityDpi,
+                    flags,
+                    surface,
+                    null,
+                    handler,
+                )
         }
     }
 

@@ -23,7 +23,9 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class PixelTransform(override val applicationContext: Context) : PixelTransform, Running,
+internal class PixelTransform(override val applicationContext: Context) :
+    PixelTransform,
+    Running,
     Choreographer.FrameCallback {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     override var screen: Screen? = null
@@ -57,7 +59,10 @@ internal class PixelTransform(override val applicationContext: Context) : PixelT
         set(value) {
             field = value
             GLES20.glViewport(
-                0, 0, imageExtent.width, imageExtent.height
+                0,
+                0,
+                imageExtent.width,
+                imageExtent.height,
             )
             video.frame.set(0, 0, imageExtent.width, imageExtent.height)
             video.invalidateLayout()
@@ -146,7 +151,6 @@ internal class PixelTransform(override val applicationContext: Context) : PixelT
         } catch (e: RuntimeException) {
             Log.e(TAG, "", e)
         }
-
     }
 
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
@@ -164,12 +168,18 @@ internal class PixelTransform(override val applicationContext: Context) : PixelT
         bitmap.copyPixelsFromBuffer(byteBuffer)
         lambda(
             Bitmap.createBitmap(
-                bitmap, 0, 0, imageExtent.width, imageExtent.height, Matrix().apply {
+                bitmap,
+                0,
+                0,
+                imageExtent.width,
+                imageExtent.height,
+                Matrix().apply {
                     setRotate(
-                        180.0F
+                        180.0F,
                     )
-                }, false
-            )
+                },
+                false,
+            ),
         )
     }
 

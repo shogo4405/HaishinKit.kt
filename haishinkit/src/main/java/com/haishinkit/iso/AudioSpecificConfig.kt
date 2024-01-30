@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
 data class AudioSpecificConfig(
     val type: AudioObjectType = AudioObjectType.UNKNOWN,
     val frequency: SamplingFrequency = SamplingFrequency.HZ44100,
-    val channel: ChannelConfiguration = ChannelConfiguration.FRONT_OF_CENTER
+    val channel: ChannelConfiguration = ChannelConfiguration.FRONT_OF_CENTER,
 ) {
     enum class AudioObjectType(val rawValue: Byte) {
         UNKNOWN(0x00),
@@ -27,7 +27,7 @@ data class AudioSpecificConfig(
         AAC_SCALABLE(0x06),
         TWINQVQ(0x07),
         CELP(0x08),
-        HXVC(0x09);
+        HXVC(0x09),
     }
 
     enum class SamplingFrequency(val rawValue: Byte, val int: Int) {
@@ -43,7 +43,7 @@ data class AudioSpecificConfig(
         HZ12000(0x09, 12000),
         HZ11025(0x0A, 11025),
         HZ8000(0x0B, 8000),
-        HZ7350(0x0C, 7350);
+        HZ7350(0x0C, 7350),
     }
 
     enum class ChannelConfiguration(val rawValue: Byte) {
@@ -55,14 +55,14 @@ data class AudioSpecificConfig(
         FRONT_CENTER_AND_FRONT_LEFT_AND_FRONT_RIGHT_AND_BACK_LEFT_AND_BACK_RIGHT(0x05),
         FRONT_CENTER_AND_FRONT_LEFT_AND_FRONT_RIGHT_AND_BACK_LEFT_AND_BACK_RIGHT_LFE(0x06),
         FRONT_CENTER_AND_FRONT_LEFT_AND_FRONT_RIGHT_AND_SIDE_LEFT_AND_RIGHT_AND_BACK_RIGHT_LFE(0x07),
-        UNKNOWN(Byte.MAX_VALUE);
+        UNKNOWN(Byte.MAX_VALUE),
     }
 
     fun encode(buffer: ByteBuffer): AudioSpecificConfig {
         val frequency = this.frequency.rawValue.toPositiveInt()
         buffer.put(((type.rawValue.toInt() shl 3) or (frequency shr 1)).toByte())
         buffer.put(
-            ((frequency shl 7).toByte().toInt() or (channel.rawValue.toInt() shl 3)).toByte()
+            ((frequency shl 7).toByte().toInt() or (channel.rawValue.toInt() shl 3)).toByte(),
         )
         return this
     }
@@ -98,10 +98,12 @@ data class AudioSpecificConfig(
             val second = buffer.get().toPositiveInt()
             return AudioSpecificConfig(
                 type = AudioObjectType.values().first { n -> n.rawValue.toInt() == first shr 3 },
-                frequency = SamplingFrequency.values()
+                frequency =
+                SamplingFrequency.values()
                     .first { n -> n.rawValue.toInt() == (first and 7 shl 1 or (second and 0xFF shr 7)) },
-                channel = ChannelConfiguration.values()
-                    .first { n -> n.rawValue.toInt() == second and 120 shr 3 }
+                channel =
+                ChannelConfiguration.values()
+                    .first { n -> n.rawValue.toInt() == second and 120 shr 3 },
             )
         }
     }

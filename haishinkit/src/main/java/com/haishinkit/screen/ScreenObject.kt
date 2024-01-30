@@ -42,12 +42,13 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     /**
      * The mvp matrix.
      */
-    val matrix = FloatArray(16).apply {
-        this[0] = 1f
-        this[5] = 1f
-        this[10] = 1f
-        this[15] = 1f
-    }
+    val matrix =
+        FloatArray(16).apply {
+            this[0] = 1f
+            this[5] = 1f
+            this[10] = 1f
+            this[15] = 1f
+        }
 
     var horizontalAlignment: Int = HORIZONTAL_ALIGNMENT_LEFT
     var verticalAlignment: Int = VERTICAL_ALIGNMENT_TOP
@@ -104,7 +105,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
             if (frame.size.width == 0) {
                 return max(
                     (parent?.frame?.size?.width ?: 0) - layoutMargins.left - layoutMargins.right,
-                    0
+                    0,
                 )
             }
             return frame.size.width
@@ -118,7 +119,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
             if (frame.size.height == 0) {
                 return max(
                     (parent?.frame?.size?.height ?: 0) - layoutMargins.top - layoutMargins.bottom,
-                    0
+                    0,
                 )
             }
             return frame.size.height

@@ -18,7 +18,10 @@ class FlvWriter : Closeable {
     private var audioTimestamp = 0
     private var videoTimestamp = 0
 
-    fun open(setting: RecordSetting, fileName: String) {
+    fun open(
+        setting: RecordSetting,
+        fileName: String,
+    ) {
         val directory = setting.directory ?: return
         previousTagSize = 0
         audioTimestamp = 0
@@ -54,19 +57,20 @@ class FlvWriter : Closeable {
         }
         try {
             val length = message.length
-            val timestamp = when (true) {
-                (message is RtmpAudioMessage) -> {
-                    audioTimestamp
-                }
+            val timestamp =
+                when (true) {
+                    (message is RtmpAudioMessage) -> {
+                        audioTimestamp
+                    }
 
-                (message is RtmpVideoMessage) -> {
-                    videoTimestamp
-                }
+                    (message is RtmpVideoMessage) -> {
+                        videoTimestamp
+                    }
 
-                else -> {
-                    0
+                    else -> {
+                        0
+                    }
                 }
-            }
             fileOutputStream.write(previousTagSize shr 24)
             fileOutputStream.write(previousTagSize shr 16)
             fileOutputStream.write(previousTagSize shr 8)

@@ -27,7 +27,7 @@ class FrameTracker {
                         TAG,
                         "$type stats: frames=$count, average=${average(timestamps)}, sd=${
                             sd(timestamps)
-                        }"
+                        }",
                     )
                 }
                 timestamps.clear()
@@ -54,8 +54,8 @@ class FrameTracker {
             return sqrt(
                 timestamps.fold(
                     0.0,
-                    { accumulator, next -> accumulator + (next - mean).pow(2.0) }
-                ) / timestamps.size
+                    { accumulator, next -> accumulator + (next - mean).pow(2.0) },
+                ) / timestamps.size,
             )
         }
     }
@@ -63,7 +63,10 @@ class FrameTracker {
     private var audio = Frame("audio")
     private var video = Frame("video")
 
-    fun track(type: Int, timestamp: Long) {
+    fun track(
+        type: Int,
+        timestamp: Long,
+    ) {
         when (type) {
             TYPE_AUDIO -> {
                 audio.doFrame(timestamp)

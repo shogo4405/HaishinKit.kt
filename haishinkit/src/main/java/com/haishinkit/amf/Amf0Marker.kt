@@ -18,5 +18,5 @@ internal enum class Amf0Marker(val rawValue: Byte) {
     RECORDSET(0x0e),
     XMLDOCUMENT(0x0f),
     TYPEDOBJECT(0x10),
-    AVMPLUSH(0x11);
+    AVMPLUSH(0x11),
 }

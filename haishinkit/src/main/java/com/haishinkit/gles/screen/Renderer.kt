@@ -12,12 +12,13 @@ import com.haishinkit.gles.Program
 import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.Utils
 import com.haishinkit.graphics.effect.DefaultVideoEffect
-import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Renderer
+import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Video
 import javax.microedition.khronos.opengles.GL10
 
-internal class Renderer(applicationContext: Context) : Renderer,
+internal class Renderer(applicationContext: Context) :
+    Renderer,
     SurfaceTexture.OnFrameAvailableListener {
     private var programs = mutableMapOf<Int, Program>()
     private var textureIds = intArrayOf(0)
@@ -29,13 +30,13 @@ internal class Renderer(applicationContext: Context) : Renderer,
     init {
         shaderLoader.createProgram(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-            DefaultVideoEffect.shared
+            DefaultVideoEffect.shared,
         )?.let {
             programs[GLES11Ext.GL_TEXTURE_EXTERNAL_OES] = it
         }
         shaderLoader.createProgram(
             GLES20.GL_TEXTURE_2D,
-            DefaultVideoEffect.shared
+            DefaultVideoEffect.shared,
         )?.let {
             programs[GLES20.GL_TEXTURE_2D] = it
         }
@@ -45,19 +46,28 @@ internal class Renderer(applicationContext: Context) : Renderer,
         when (screenObject) {
             is Video -> {
                 surfaceTextures[screenObject.id]?.setDefaultBufferSize(
-                    screenObject.videoSize.width, screenObject.videoSize.height
+                    screenObject.videoSize.width,
+                    screenObject.videoSize.height,
                 )
                 GLES20.glTexParameteri(
-                    screenObject.target, GL10.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST
+                    screenObject.target,
+                    GL10.GL_TEXTURE_MIN_FILTER,
+                    GLES20.GL_NEAREST,
                 )
                 GLES20.glTexParameteri(
-                    screenObject.target, GL10.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR
+                    screenObject.target,
+                    GL10.GL_TEXTURE_MAG_FILTER,
+                    GLES20.GL_LINEAR,
                 )
                 GLES20.glTexParameteri(
-                    screenObject.target, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE
+                    screenObject.target,
+                    GL10.GL_TEXTURE_WRAP_S,
+                    GL10.GL_CLAMP_TO_EDGE,
                 )
                 GLES20.glTexParameteri(
-                    screenObject.target, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE
+                    screenObject.target,
+                    GL10.GL_TEXTURE_WRAP_T,
+                    GL10.GL_CLAMP_TO_EDGE,
                 )
             }
 
@@ -68,16 +78,24 @@ internal class Renderer(applicationContext: Context) : Renderer,
                 Utils.checkGlError("glPixelStorei")
                 GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, screenObject.bitmap, 0)
                 GLES20.glTexParameteri(
-                    screenObject.target, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST
+                    screenObject.target,
+                    GLES20.GL_TEXTURE_MIN_FILTER,
+                    GLES20.GL_NEAREST,
                 )
                 GLES20.glTexParameteri(
-                    screenObject.target, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR
+                    screenObject.target,
+                    GLES20.GL_TEXTURE_MAG_FILTER,
+                    GLES20.GL_LINEAR,
                 )
                 GLES20.glTexParameteri(
-                    screenObject.target, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE
+                    screenObject.target,
+                    GLES20.GL_TEXTURE_WRAP_S,
+                    GLES20.GL_CLAMP_TO_EDGE,
                 )
                 GLES20.glTexParameteri(
-                    screenObject.target, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE
+                    screenObject.target,
+                    GLES20.GL_TEXTURE_WRAP_T,
+                    GLES20.GL_CLAMP_TO_EDGE,
                 )
             }
         }
@@ -89,7 +107,7 @@ internal class Renderer(applicationContext: Context) : Renderer,
             screenObject.x,
             screenObject.y,
             screenObject.width,
-            screenObject.height
+            screenObject.height,
         )
         program.bind(DefaultVideoEffect.shared)
         program.draw(screenObject)
@@ -104,7 +122,7 @@ internal class Renderer(applicationContext: Context) : Renderer,
                     surfaceTextures[screenObject.id] = this
                     setDefaultBufferSize(
                         screenObject.videoSize.width,
-                        screenObject.videoSize.height
+                        screenObject.videoSize.height,
                     )
                     screenObject.surface = Surface(this)
                     setOnFrameAvailableListener(this@Renderer)

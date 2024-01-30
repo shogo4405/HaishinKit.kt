@@ -65,26 +65,31 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
     private fun createAuthQuery(uri: URI): String {
         val query = uri.query ?: ""
         val user = uri.userInfo.split(":")[0]
-        return "$uri" + if (query.isEmpty()) {
-            "?"
-        } else {
-            "&"
-        } + "authmod=adobe&user=$user"
+        return "$uri" +
+            if (query.isEmpty()) {
+                "?"
+            } else {
+                "&"
+            } + "authmod=adobe&user=$user"
     }
 
-    private fun createAuthCommand(uri: URI, description: String): String {
+    private fun createAuthCommand(
+        uri: URI,
+        description: String,
+    ): String {
         if (!description.contains("?")) return uri.toString()
         if (uri.rawUserInfo == null) return uri.toString()
         val command = createAuthQuery(uri)
         val query = description.split("?")[1]
         val descriptionUri = Uri.parse("https://localhost?$query")
-        val info = Info(
-            user = uri.userInfo.split(":")[0],
-            password = uri.userInfo.split(":")[1],
-            salt = descriptionUri.getQueryParameter("salt") ?: "",
-            challenge = descriptionUri.getQueryParameter("challenge"),
-            opaque = descriptionUri.getQueryParameter("opaque")
-        )
+        val info =
+            Info(
+                user = uri.userInfo.split(":")[0],
+                password = uri.userInfo.split(":")[1],
+                salt = descriptionUri.getQueryParameter("salt") ?: "",
+                challenge = descriptionUri.getQueryParameter("challenge"),
+                opaque = descriptionUri.getQueryParameter("opaque"),
+            )
         return "$command$info"
     }
 

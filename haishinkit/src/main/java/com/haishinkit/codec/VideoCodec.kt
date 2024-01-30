@@ -77,9 +77,10 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
         set(value) {
             field = value
             if (FeatureUtil.isEnabled(FeatureUtil.FEATURE_BITRATE_CHANGE) && isRunning.get()) {
-                val bundle = Bundle().apply {
-                    putInt(MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
-                }
+                val bundle =
+                    Bundle().apply {
+                        putInt(MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, value)
+                    }
                 codec?.setParameters(bundle)
             }
         }

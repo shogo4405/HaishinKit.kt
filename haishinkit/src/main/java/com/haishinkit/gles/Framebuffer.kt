@@ -31,13 +31,13 @@ internal class Framebuffer {
                     GLES20.GL_RENDERBUFFER,
                     GLES20.GL_DEPTH_COMPONENT16,
                     bounds.size.width,
-                    bounds.size.height
+                    bounds.size.height,
                 )
                 GLES20.glFramebufferRenderbuffer(
                     GLES20.GL_FRAMEBUFFER,
                     GLES20.GL_DEPTH_ATTACHMENT,
                     GLES20.GL_RENDERBUFFER,
-                    renderBufferIds[0]
+                    renderBufferIds[0],
                 )
 
                 // textures.
@@ -52,17 +52,17 @@ internal class Framebuffer {
                     0,
                     GLES20.GL_RGBA,
                     GLES20.GL_UNSIGNED_BYTE,
-                    null
+                    null,
                 )
                 GLES20.glTexParameteri(
                     GLES20.GL_TEXTURE_2D,
                     GLES20.GL_TEXTURE_MAG_FILTER,
-                    GLES20.GL_NEAREST
+                    GLES20.GL_NEAREST,
                 )
                 GLES20.glTexParameteri(
                     GLES20.GL_TEXTURE_2D,
                     GLES20.GL_TEXTURE_MIN_FILTER,
-                    GLES20.GL_NEAREST
+                    GLES20.GL_NEAREST,
                 )
 
                 GLES20.glFramebufferTexture2D(
@@ -70,7 +70,7 @@ internal class Framebuffer {
                     GLES20.GL_COLOR_ATTACHMENT0,
                     GLES20.GL_TEXTURE_2D,
                     textureIds[0],
-                    0
+                    0,
                 )
 
                 val status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER)

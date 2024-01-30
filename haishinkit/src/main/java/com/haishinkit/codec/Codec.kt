@@ -18,7 +18,8 @@ import kotlin.properties.Delegates
 @Suppress("unused")
 abstract class Codec(private val mime: String) : Running {
     enum class Mode {
-        ENCODE, DECODE
+        ENCODE,
+        DECODE,
     }
 
     @Suppress("unused")
@@ -39,10 +40,22 @@ abstract class Codec(private val mime: String) : Running {
     }
 
     interface Listener {
-        fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int)
-        fun onFormatChanged(mime: String, mediaFormat: MediaFormat)
+        fun onInputBufferAvailable(
+            mime: String,
+            codec: MediaCodec,
+            index: Int,
+        )
+
+        fun onFormatChanged(
+            mime: String,
+            mediaFormat: MediaFormat,
+        )
+
         fun onSampleOutput(
-            mime: String, index: Int, info: MediaCodec.BufferInfo, buffer: ByteBuffer
+            mime: String,
+            index: Int,
+            info: MediaCodec.BufferInfo,
+            buffer: ByteBuffer,
         ): Boolean
     }
 
@@ -51,7 +64,10 @@ abstract class Codec(private val mime: String) : Running {
         var codec: Codec? = null
         var mime: String = ""
 
-        override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
+        override fun onInputBufferAvailable(
+            codec: MediaCodec,
+            index: Int,
+        ) {
             try {
                 listener?.onInputBufferAvailable(mime, codec, index)
             } catch (e: IllegalStateException) {
@@ -62,7 +78,9 @@ abstract class Codec(private val mime: String) : Running {
         }
 
         override fun onOutputBufferAvailable(
-            codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo
+            codec: MediaCodec,
+            index: Int,
+            info: MediaCodec.BufferInfo,
         ) {
             try {
                 val buffer = codec.getOutputBuffer(index) ?: return
@@ -76,13 +94,19 @@ abstract class Codec(private val mime: String) : Running {
             }
         }
 
-        override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
+        override fun onError(
+            codec: MediaCodec,
+            e: MediaCodec.CodecException,
+        ) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, e.toString())
             }
         }
 
-        override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
+        override fun onOutputFormatChanged(
+            codec: MediaCodec,
+            format: MediaFormat,
+        ) {
             this.codec?.outputFormat = format
         }
     }
@@ -107,11 +131,12 @@ abstract class Codec(private val mime: String) : Running {
     open var codec: MediaCodec? = null
         get() {
             if (field == null) {
-                field = if (mode == Mode.ENCODE) {
-                    MediaCodec.createEncoderByType(mime)
-                } else {
-                    MediaCodec.createDecoderByType(mime)
-                }
+                field =
+                    if (mode == Mode.ENCODE) {
+                        MediaCodec.createEncoderByType(mime)
+                    } else {
+                        MediaCodec.createDecoderByType(mime)
+                    }
             }
             return field
         }
@@ -245,11 +270,14 @@ abstract class Codec(private val mime: String) : Running {
             option.apply(format)
         }
         codec.configure(
-            format, surface, null, if (mode == Mode.ENCODE) {
+            format,
+            surface,
+            null,
+            if (mode == Mode.ENCODE) {
                 MediaCodec.CONFIGURE_FLAG_ENCODE
             } else {
                 0
-            }
+            },
         )
         codec.outputFormat.getString("mime")?.let { mime ->
             callback.mime = mime

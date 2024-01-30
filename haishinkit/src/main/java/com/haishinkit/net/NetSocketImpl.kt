@@ -48,7 +48,11 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
     @Volatile
     private var keepAlive = false
 
-    override fun connect(dstName: String, dstPort: Int, isSecure: Boolean) {
+    override fun connect(
+        dstName: String,
+        dstPort: Int,
+        isSecure: Boolean,
+    ) {
         if (socket?.isConnected == true) {
             return
         }
@@ -151,7 +155,11 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         }
     }
 
-    private fun doConnection(dstName: String, dstPort: Int, isSecure: Boolean) {
+    private fun doConnection(
+        dstName: String,
+        dstPort: Int,
+        isSecure: Boolean,
+    ) {
         try {
             outputQueue.clear()
             val socket = createSocket(dstName, dstPort, isSecure)
@@ -182,7 +190,11 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
         }
     }
 
-    private fun createSocket(dstName: String, dstPort: Int, isSecure: Boolean): Socket {
+    private fun createSocket(
+        dstName: String,
+        dstPort: Int,
+        isSecure: Boolean,
+    ): Socket {
         if (isSecure) {
             val socket = SSLSocketFactory.getDefault().createSocket(dstName, dstPort) as SSLSocket
             socket.startHandshake()

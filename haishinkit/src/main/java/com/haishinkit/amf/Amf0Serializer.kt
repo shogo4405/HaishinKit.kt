@@ -5,7 +5,6 @@ import java.nio.ByteBuffer
 import java.util.Date
 
 internal class Amf0Serializer(private val buffer: ByteBuffer) {
-
     fun putBoolean(value: Boolean): Amf0Serializer {
         buffer.put(Amf0Marker.BOOL.rawValue)
         buffer.put((if (value) 1 else 0).toByte())
@@ -111,7 +110,10 @@ internal class Amf0Serializer(private val buffer: ByteBuffer) {
         return buffer.toString()
     }
 
-    private fun putString(value: String, asShort: Boolean): Amf0Serializer {
+    private fun putString(
+        value: String,
+        asShort: Boolean,
+    ): Amf0Serializer {
         val length = value.length
         if (asShort) {
             buffer.putShort(length.toShort())
