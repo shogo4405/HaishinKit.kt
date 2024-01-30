@@ -13,9 +13,10 @@ com.haishinkit.graphics.glsl
 com.haishinkit.iso
 com.haishinkit.lang
 com.haishinkit.media
-com.haishinkit.metric
+com.haishinkit.metrics
 com.haishinkit.net
 com.haishinkit.rtmp
+com.haishinkit.screen
 com.haishinkit.util
 com.haishinkit.view
 module:vulkan

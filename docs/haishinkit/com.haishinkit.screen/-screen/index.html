@@ -1,0 +1,592 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Screen</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            HaishinKit.kt
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":haishinkit:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="haishinkit::com.haishinkit.screen/Screen///PointingToDeclaration//524763335">
+  <div class="breadcrumbs"><a href="../../index.html">haishinkit</a><span class="delimiter">/</span><a href="../index.html">com.haishinkit.screen</a><span class="delimiter">/</span><span class="current">Screen</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Screen</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">Screen</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>applicationContext<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span> : <a href="../-screen-object-container/index.html">ScreenObjectContainer</a></div><p class="paragraph">An object that manages offscreen rendering a foundation.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="440608875%2FConstructors%2F524763335" anchor-label="Screen" id="440608875%2FConstructors%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-screen.html"><span><span>Screen</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="440608875%2FConstructors%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">applicationContext<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1291341000%2FClasslikes%2F524763335" anchor-label="Callback" id="-1291341000%2FClasslikes%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-callback/index.html"><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1291341000%2FClasslikes%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-callback/index.html">Callback</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="415865%2FClasslikes%2F524763335" anchor-label="Companion" id="415865%2FClasslikes%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="415865%2FClasslikes%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1379476855%2FProperties%2F524763335" anchor-label="applicationContext" id="-1379476855%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="application-context.html"><span>application</span><wbr><span><span>Context</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1379476855%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="application-context.html">applicationContext</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="23547453%2FProperties%2F524763335" anchor-label="backgroundColor" id="23547453%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="background-color.html"><span>background</span><wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="23547453%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="background-color.html">backgroundColor</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Specifies the screen's background color.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-352016892%2FProperties%2F524763335" anchor-label="childCounts" id="-352016892%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/child-counts.html"><span>child</span><wbr><span><span>Counts</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-352016892%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object-container/child-counts.html">childCounts</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The total of child counts.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1108243162%2FProperties%2F524763335" anchor-label="frame" id="-1108243162%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/frame.html"><span><span>frame</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1108243162%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="../-screen-object/frame.html">frame</a><span class="token operator">: </span><a href="../../com.haishinkit.util/-rectangle/index.html">Rectangle</a></div><div class="brief "><p class="paragraph">Specifies the frame.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-770861824%2FProperties%2F524763335" anchor-label="height" id="-770861824%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/height.html"><span><span>height</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-770861824%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object/height.html">height</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The height of the object in pixels.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2138780108%2FProperties%2F524763335" anchor-label="horizontalAlignment" id="-2138780108%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/horizontal-alignment.html"><span>horizontal</span><wbr><span><span>Alignment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2138780108%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="../-screen-object/horizontal-alignment.html">horizontalAlignment</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1546619020%2FProperties%2F524763335" anchor-label="id" id="1546619020%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/id.html"><span><span>id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1546619020%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="../-screen-object/id.html">id</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-28728309%2FProperties%2F524763335" anchor-label="isVisible" id="-28728309%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/is-visible.html"><span>is</span><wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-28728309%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="../-screen-object/is-visible.html">isVisible</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Specifies the visibility of the object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1025700440%2FProperties%2F524763335" anchor-label="layoutMargins" id="1025700440%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/layout-margins.html"><span>layout</span><wbr><span><span>Margins</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1025700440%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object/layout-margins.html">layoutMargins</a><span class="token operator">: </span><a href="../../com.haishinkit.util/-edge-insets/index.html">EdgeInsets</a></div><div class="brief "><p class="paragraph">Specifies the default spacing to laying out content in the screen object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1744351322%2FProperties%2F524763335" anchor-label="matrix" id="-1744351322%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/matrix.html"><span><span>matrix</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1744351322%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object/matrix.html">matrix</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html">FloatArray</a></div><div class="brief "><p class="paragraph">The mvp matrix.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="305434156%2FProperties%2F524763335" anchor-label="parent" id="305434156%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/parent.html"><span><span>parent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="305434156%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="../-screen-object-container/parent.html">parent</a><span class="token operator">: </span><a href="../-screen-object-container/index.html">ScreenObjectContainer</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The screen object container that contains this screen object</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-41763025%2FProperties%2F524763335" anchor-label="shouldInvalidateLayout" id="-41763025%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/should-invalidate-layout.html"><span>should</span><wbr><span>Invalidate</span><wbr><span><span>Layout</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-41763025%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="../-screen-object/should-invalidate-layout.html">shouldInvalidateLayout</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1843388458%2FProperties%2F524763335" anchor-label="target" id="-1843388458%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/target.html"><span><span>target</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1843388458%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object/target.html">target</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-630666618%2FProperties%2F524763335" anchor-label="verticalAlignment" id="-630666618%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/vertical-alignment.html"><span>vertical</span><wbr><span><span>Alignment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-630666618%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="../-screen-object/vertical-alignment.html">verticalAlignment</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1093636371%2FProperties%2F524763335" anchor-label="width" id="-1093636371%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/width.html"><span><span>width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1093636371%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object/width.html">width</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The width of the object in pixels.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1737084037%2FProperties%2F524763335" anchor-label="x" id="-1737084037%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/x.html"><span><span>x</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1737084037%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object/x.html">x</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The x coordinate.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1706064230%2FProperties%2F524763335" anchor-label="y" id="-1706064230%2FProperties%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/y.html"><span><span>y</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1706064230%2FProperties%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-screen-object/y.html">y</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The y coordinate.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="961357603%2FFunctions%2F524763335" anchor-label="addChild" id="961357603%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/add-child.html"><span>add</span><wbr><span><span>Child</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="961357603%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-screen-object-container/add-child.html"><span class="token function">addChild</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">child<span class="token operator">: </span><a href="../-screen-object/index.html">ScreenObject</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Adds the specified screen object as a child of the current screen object container.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-142196749%2FFunctions%2F524763335" anchor-label="bind" id="-142196749%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="bind.html"><span><span>bind</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-142196749%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="bind.html"><span class="token function">bind</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screenObject<span class="token operator">: </span><a href="../-screen-object/index.html">ScreenObject</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Binds the gpu texture.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1314304632%2FFunctions%2F524763335" anchor-label="bringChildToFront" id="-1314304632%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/bring-child-to-front.html"><span>bring</span><wbr><span>Child</span><wbr><span>To</span><wbr><span><span>Front</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1314304632%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-screen-object-container/bring-child-to-front.html"><span class="token function">bringChildToFront</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">child<span class="token operator">: </span><a href="../-screen-object/index.html">ScreenObject</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Change the z order of the child so it's on top of all other children.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="997493189%2FFunctions%2F524763335" anchor-label="dispose" id="997493189%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/dispose.html"><span><span>dispose</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="997493189%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-screen-object-container/dispose.html"><span class="token function">dispose</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disposes all resources of the screen object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1810450750%2FFunctions%2F524763335" anchor-label="draw" id="-1810450750%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/draw.html"><span><span>draw</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1810450750%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-screen-object-container/draw.html"><span class="token function">draw</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">renderer<span class="token operator">: </span><a href="../-renderer/index.html">Renderer</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Draws the screen object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2022973218%2FFunctions%2F524763335" anchor-label="invalidateLayout" id="2022973218%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object/invalidate-layout.html"><span>invalidate</span><wbr><span><span>Layout</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2022973218%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-screen-object/invalidate-layout.html"><span class="token function">invalidateLayout</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Invalidates the current layout and triggers a layout update.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-730068004%2FFunctions%2F524763335" anchor-label="layout" id="-730068004%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/layout.html"><span><span>layout</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-730068004%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-screen-object-container/layout.html"><span class="token function">layout</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">renderer<span class="token operator">: </span><a href="../-renderer/index.html">Renderer</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Layouts the screen object.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2062352136%2FFunctions%2F524763335" anchor-label="readPixels" id="2062352136%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-pixels.html"><span>read</span><wbr><span><span>Pixels</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2062352136%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="read-pixels.html"><span class="token function">readPixels</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lambda<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span>bitmap<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Bitmap.html">Bitmap</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Reads the pixels of a displayed image.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="373960040%2FFunctions%2F524763335" anchor-label="registerCallback" id="373960040%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="register-callback.html"><span>register</span><wbr><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="373960040%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="register-callback.html"><span class="token function">registerCallback</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callback<span class="token operator">: </span><a href="-callback/index.html">Screen.Callback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers a listener to receive notifications about when the Screen.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1303112268%2FFunctions%2F524763335" anchor-label="removeChild" id="-1303112268%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/remove-child.html"><span>remove</span><wbr><span><span>Child</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1303112268%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-screen-object-container/remove-child.html"><span class="token function">removeChild</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">child<span class="token operator">: </span><a href="../-screen-object/index.html">ScreenObject</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Removes the specified screen object as a child of the current screen object container.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="7929046%2FFunctions%2F524763335" anchor-label="sendChildToBack" id="7929046%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-screen-object-container/send-child-to-back.html"><span>send</span><wbr><span>Child</span><wbr><span>To</span><wbr><span><span>Back</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="7929046%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-screen-object-container/send-child-to-back.html"><span class="token function">sendChildToBack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">child<span class="token operator">: </span><a href="../-screen-object/index.html">ScreenObject</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Change the z order of the child so it's on bottom of all other children.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="697254778%2FFunctions%2F524763335" anchor-label="unbind" id="697254778%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="unbind.html"><span><span>unbind</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="697254778%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="unbind.html"><span class="token function">unbind</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">screenObject<span class="token operator">: </span><a href="../-screen-object/index.html">ScreenObject</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unbinds the gpu texture.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="447138561%2FFunctions%2F524763335" anchor-label="unregisterCallback" id="447138561%2FFunctions%2F524763335" data-filterable-set=":haishinkit:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":haishinkit:dokkaHtmlPartial/release" data-filterable-set=":haishinkit:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="unregister-callback.html"><span>unregister</span><wbr><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="447138561%2FFunctions%2F524763335"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":haishinkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="unregister-callback.html"><span class="token function">unregisterCallback</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callback<span class="token operator">: </span><a href="-callback/index.html">Screen.Callback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unregisters a screen listener.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

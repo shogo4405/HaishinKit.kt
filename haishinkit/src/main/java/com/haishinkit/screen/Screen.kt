@@ -4,11 +4,17 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 
+/**
+ * An object that manages offscreen rendering a foundation.
+ */
 abstract class Screen(val applicationContext: Context) : ScreenObjectContainer() {
     abstract class Callback {
         abstract fun onEnterFrame()
     }
 
+    /**
+     * Specifies the screen's background color.
+     */
     open var backgroundColor: Int = BACKGROUND_COLOR
     protected var callbacks = mutableListOf<Callback>()
 
@@ -17,8 +23,14 @@ abstract class Screen(val applicationContext: Context) : ScreenObjectContainer()
      */
     abstract fun readPixels(lambda: ((bitmap: Bitmap?) -> Unit))
 
+    /**
+     * Binds the gpu texture.
+     */
     abstract fun bind(screenObject: ScreenObject)
 
+    /***
+     * Unbinds the gpu texture.
+     */
     abstract fun unbind(screenObject: ScreenObject)
 
     /**
@@ -31,7 +43,7 @@ abstract class Screen(val applicationContext: Context) : ScreenObjectContainer()
     }
 
     /**
-     * Unregisters a Screen listener.
+     * Unregisters a screen listener.
      */
     open fun unregisterCallback(callback: Callback) {
         if (callbacks.contains(callback)) {

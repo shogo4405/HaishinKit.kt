@@ -4,6 +4,9 @@ package com.haishinkit.screen
  *  A ScreenObjectContainer represents a collection of screen objects.
  */
 open class ScreenObjectContainer : ScreenObject() {
+    /**
+     * The total of child counts.
+     */
     val childCounts: Int
         get() = children.size
 
@@ -20,6 +23,9 @@ open class ScreenObjectContainer : ScreenObject() {
 
     private val children = mutableListOf<ScreenObject>()
 
+    /**
+     * Change the z order of the child so it's on top of all other children.
+     */
     open fun bringChildToFront(child: ScreenObject) {
         val index = children.indexOf(child)
         if (0 < index) {
@@ -29,6 +35,9 @@ open class ScreenObjectContainer : ScreenObject() {
         }
     }
 
+    /**
+     * Change the z order of the child so it's on bottom of all other children.
+     */
     open fun sendChildToBack(child: ScreenObject) {
         val index = children.indexOf(child)
         if (0 < index) {
@@ -77,6 +86,9 @@ open class ScreenObjectContainer : ScreenObject() {
         }
     }
 
+    /**
+     * Disposes all resources of the screen object.
+     */
     open fun dispose() {
         for (i in children.size - 1 downTo 0) {
             removeChild(children[i])

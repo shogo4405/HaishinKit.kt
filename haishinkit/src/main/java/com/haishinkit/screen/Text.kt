@@ -7,6 +7,9 @@ import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Rect
 
+/**
+ * An object that manages offscreen rendering a text source.
+ */
 @Suppress("MemberVisibilityCanBePrivate")
 class Text : Image() {
     var textValue: String = ""

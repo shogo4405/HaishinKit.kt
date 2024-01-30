@@ -9,8 +9,14 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.util.aspectRatio
 import com.haishinkit.util.swap
 
+/**
+ * An object that manages offscreen rendering a video source.
+ */
 @Suppress("MemberVisibilityCanBePrivate")
 class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(target) {
+    /**
+     * Specifies the surface that is an input source.
+     */
     var surface: Surface? = null
         set(value) {
             if (field == value) return
@@ -63,6 +69,9 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
             invalidateLayout()
         }
 
+    /**
+     * Specifies the deviceOrientation that describe the physical orientation of the device.
+     */
     var deviceOrientation: Int = Surface.ROTATION_0
         set(value) {
             if (field == value) return

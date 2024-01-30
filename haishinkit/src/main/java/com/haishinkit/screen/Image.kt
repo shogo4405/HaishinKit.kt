@@ -3,7 +3,7 @@ package com.haishinkit.screen
 import android.graphics.Bitmap
 
 /**
- * An Image is a texture mapped onto it.
+ * An object that manages offscreen rendering an image source.
  */
 open class Image : ScreenObject() {
     var bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
