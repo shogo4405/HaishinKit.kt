@@ -1,7 +1,6 @@
 package com.haishinkit.gles
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
@@ -68,12 +67,6 @@ internal class ThreadPixelTransform(override val applicationContext: Context) :
         PixelTransform(applicationContext)
     }
 
-    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
-        handler.apply {
-            sendMessage(obtainMessage(MSG_READ_PIXELS, lambda))
-        }
-    }
-
     private class Handler(frame: com.haishinkit.gles.PixelTransform, looper: Looper) :
         android.os.Handler(looper) {
         private val weakTransform =
@@ -114,10 +107,6 @@ internal class ThreadPixelTransform(override val applicationContext: Context) :
                     transform.frameRate = message.obj as Int
                 }
 
-                MSG_READ_PIXELS -> {
-                    transform.readPixels(message.obj as ((bitmap: Bitmap?) -> Unit))
-                }
-
                 else -> throw RuntimeException("Unhandled msg what=$message.what")
             }
         }
@@ -136,7 +125,6 @@ internal class ThreadPixelTransform(override val applicationContext: Context) :
         private const val MSG_SET_IMAGE_EXTENT = 3
         private const val MSG_SET_VIDEO_EFFECT = 4
         private const val MSG_SET_FRAME_RATE = 5
-        private const val MSG_READ_PIXELS = 6
 
         private val TAG = ThreadPixelTransform::class.java.simpleName
     }

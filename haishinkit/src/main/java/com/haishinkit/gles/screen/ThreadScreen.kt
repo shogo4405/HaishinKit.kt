@@ -1,6 +1,7 @@
 package com.haishinkit.gles.screen
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
@@ -104,6 +105,12 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
         }
     }
 
+    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
+        handler.apply {
+            sendMessage(obtainMessage(MSG_READ_PIXELS, lambda))
+        }
+    }
+
     override fun dispose() {
         handler.apply {
             sendMessage(obtainMessage(MSG_DISPOSE))
@@ -165,6 +172,10 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
                     transform.unbind(message.obj as ScreenObject)
                 }
 
+                MSG_READ_PIXELS -> {
+                    transform.readPixels(message.obj as (bitmap: Bitmap?) -> Unit)
+                }
+
                 MSG_DISPOSE -> {
                     transform.dispose()
                 }
@@ -188,6 +199,7 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
         private const val MSG_REGISTER_CALLBACK = 8
         private const val MSG_UNREGISTER_CALLBACK = 9
         private const val MSG_BIND = 10
-        private const val MSG_UNBIND = 11
+        private const val MSG_READ_PIXELS = 11
+        private const val MSG_UNBIND = 12
     }
 }

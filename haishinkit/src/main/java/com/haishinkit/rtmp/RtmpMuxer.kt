@@ -233,27 +233,27 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                         } else {
                             null
                         }
-                        )?.let { source ->
-                            if (!source.isRunning.get()) return@let
-                            val result = source.read(inputBuffer)
-                            if (0 <= result) {
-                                if (muted) {
-                                    if (noSignalBuffer.capacity() < result) {
-                                        noSignalBuffer = ByteBuffer.allocateDirect(result)
-                                    }
-                                    noSignalBuffer.clear()
-                                    inputBuffer.clear()
-                                    inputBuffer.put(noSignalBuffer)
+                    )?.let { source ->
+                        if (!source.isRunning.get()) return@let
+                        val result = source.read(inputBuffer)
+                        if (0 <= result) {
+                            if (muted) {
+                                if (noSignalBuffer.capacity() < result) {
+                                    noSignalBuffer = ByteBuffer.allocateDirect(result)
                                 }
-                                codec.queueInputBuffer(
-                                    index,
-                                    0,
-                                    result,
-                                    source.currentPresentationTimestamp,
-                                    0,
-                                )
+                                noSignalBuffer.clear()
+                                inputBuffer.clear()
+                                inputBuffer.put(noSignalBuffer)
                             }
+                            codec.queueInputBuffer(
+                                index,
+                                0,
+                                result,
+                                source.currentPresentationTimestamp,
+                                0,
+                            )
                         }
+                    }
                 } catch (e: IllegalStateException) {
                     Log.w(TAG, e)
                 }

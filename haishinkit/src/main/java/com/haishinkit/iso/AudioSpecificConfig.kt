@@ -99,11 +99,11 @@ data class AudioSpecificConfig(
             return AudioSpecificConfig(
                 type = AudioObjectType.values().first { n -> n.rawValue.toInt() == first shr 3 },
                 frequency =
-                SamplingFrequency.values()
-                    .first { n -> n.rawValue.toInt() == (first and 7 shl 1 or (second and 0xFF shr 7)) },
+                    SamplingFrequency.values()
+                        .first { n -> n.rawValue.toInt() == (first and 7 shl 1 or (second and 0xFF shr 7)) },
                 channel =
-                ChannelConfiguration.values()
-                    .first { n -> n.rawValue.toInt() == second and 120 shr 3 },
+                    ChannelConfiguration.values()
+                        .first { n -> n.rawValue.toInt() == second and 120 shr 3 },
             )
         }
     }

@@ -1,7 +1,6 @@
 package com.haishinkit.view
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.util.AttributeSet
 import android.util.Size
@@ -17,82 +16,78 @@ import com.haishinkit.media.StreamDrawable
  * A view that displays a video content of a NetStream object which uses [TextureView].
  */
 class HkTextureView
-@JvmOverloads
-constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
-) :
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = 0,
+    ) :
     TextureView(context, attrs, defStyleAttr, defStyleRes),
-    StreamDrawable,
-    TextureView.SurfaceTextureListener {
-    override var videoGravity: VideoGravity
-        get() = pixelTransform.videoGravity
-        set(value) {
-            pixelTransform.videoGravity = value
+        StreamDrawable,
+        TextureView.SurfaceTextureListener {
+        override var videoGravity: VideoGravity
+            get() = pixelTransform.videoGravity
+            set(value) {
+                pixelTransform.videoGravity = value
+            }
+
+        override var frameRate: Int
+            get() = pixelTransform.frameRate
+            set(value) {
+                pixelTransform.frameRate = value
+            }
+
+        override var videoEffect: VideoEffect
+            get() = pixelTransform.videoEffect
+            set(value) {
+                pixelTransform.videoEffect = value
+            }
+
+        private val pixelTransform: PixelTransform by lazy { PixelTransform.create(context) }
+
+        private var stream: Stream? = null
+            set(value) {
+                field?.drawable = null
+                field = value
+                field?.drawable = this
+                pixelTransform.screen = value?.screen
+            }
+
+        init {
+            surfaceTextureListener = this
         }
 
-    override var frameRate: Int
-        get() = pixelTransform.frameRate
-        set(value) {
-            pixelTransform.frameRate = value
+        override fun attachStream(stream: Stream?) {
+            this.stream = stream
         }
 
-    override var videoEffect: VideoEffect
-        get() = pixelTransform.videoEffect
-        set(value) {
-            pixelTransform.videoEffect = value
+        override fun onSurfaceTextureAvailable(
+            surface: SurfaceTexture,
+            width: Int,
+            height: Int,
+        ) {
+            pixelTransform.imageExtent = Size(width, height)
+            pixelTransform.surface = Surface(surface)
         }
 
-    private val pixelTransform: PixelTransform by lazy { PixelTransform.create(context) }
-
-    private var stream: Stream? = null
-        set(value) {
-            field?.drawable = null
-            field = value
-            field?.drawable = this
-            pixelTransform.screen = value?.screen
+        override fun onSurfaceTextureSizeChanged(
+            surface: SurfaceTexture,
+            width: Int,
+            height: Int,
+        ) {
+            pixelTransform.imageExtent = Size(width, height)
         }
 
-    init {
-        surfaceTextureListener = this
-    }
+        override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+            pixelTransform.surface = null
+            return false
+        }
 
-    override fun attachStream(stream: Stream?) {
-        this.stream = stream
-    }
+        override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
+        }
 
-    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
-        pixelTransform.readPixels(lambda)
+        companion object {
+            private val TAG = HkTextureView::class.java.simpleName
+        }
     }
-
-    override fun onSurfaceTextureAvailable(
-        surface: SurfaceTexture,
-        width: Int,
-        height: Int,
-    ) {
-        pixelTransform.imageExtent = Size(width, height)
-        pixelTransform.surface = Surface(surface)
-    }
-
-    override fun onSurfaceTextureSizeChanged(
-        surface: SurfaceTexture,
-        width: Int,
-        height: Int,
-    ) {
-        pixelTransform.imageExtent = Size(width, height)
-    }
-
-    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-        pixelTransform.surface = null
-        return false
-    }
-
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-    }
-
-    companion object {
-        private val TAG = HkTextureView::class.java.simpleName
-    }
-}

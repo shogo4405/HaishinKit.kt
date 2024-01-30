@@ -2,7 +2,6 @@ package com.haishinkit.vulkan
 
 import android.content.Context
 import android.content.res.AssetManager
-import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
 import android.view.Surface
@@ -95,15 +94,6 @@ class VkPixelTransform(override val applicationContext: Context) : PixelTransfor
     private var memory: Long = 0
 
     external fun inspectDevices(): String
-
-    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
-        val bitmap =
-            Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
-        val byteBuffer = ByteBuffer.allocateDirect(imageExtent.width * imageExtent.height * 4)
-        nativeReadPixels(byteBuffer)
-        bitmap.copyPixelsFromBuffer(byteBuffer)
-        lambda(bitmap)
-    }
 
     private external fun nativeIsSupported(): Boolean
 

@@ -51,14 +51,14 @@ data class SequenceParameterSet(
                         } else {
                             0u
                         }
-                    ) * (picHeightInMapUnitsMinus1 + 1u) * 16u - (
+                ) * (picHeightInMapUnitsMinus1 + 1u) * 16u - (
                     if (frameMbsOnlyFlag) {
                         2u
                     } else {
                         4u
                     }
-                    ) * (frameCropTopOffset + frameCropBottomOffset)
-                ).toInt()
+                ) * (frameCropTopOffset + frameCropBottomOffset)
+            ).toInt()
         }
 
     companion object {

@@ -1,8 +1,6 @@
 package com.haishinkit.gles
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.opengl.GLES20
 import android.util.Log
 import android.util.Size
@@ -19,8 +17,6 @@ import com.haishinkit.screen.NullRenderer
 import com.haishinkit.screen.Renderer
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.Video
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class PixelTransform(override val applicationContext: Context) :
@@ -151,36 +147,6 @@ internal class PixelTransform(override val applicationContext: Context) :
         } catch (e: RuntimeException) {
             Log.e(TAG, "", e)
         }
-    }
-
-    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
-        if (surface == null) {
-            lambda(null)
-            return
-        }
-        val bitmap =
-            Bitmap.createBitmap(imageExtent.width, imageExtent.height, Bitmap.Config.ARGB_8888)
-        val byteBuffer =
-            ByteBuffer.allocateDirect(imageExtent.width * imageExtent.height * 4).apply {
-                order(ByteOrder.LITTLE_ENDIAN)
-            }
-        graphicsContext.readPixels(imageExtent.width, imageExtent.height, byteBuffer)
-        bitmap.copyPixelsFromBuffer(byteBuffer)
-        lambda(
-            Bitmap.createBitmap(
-                bitmap,
-                0,
-                0,
-                imageExtent.width,
-                imageExtent.height,
-                Matrix().apply {
-                    setRotate(
-                        180.0F,
-                    )
-                },
-                false,
-            ),
-        )
     }
 
     companion object {

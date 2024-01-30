@@ -1,7 +1,6 @@
 package com.haishinkit.view
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.util.Size
 import android.view.SurfaceHolder
@@ -16,74 +15,70 @@ import com.haishinkit.media.StreamDrawable
  * A view that displays a video content of a NetStream object which uses [SurfaceView].
  */
 class HkSurfaceView
-@JvmOverloads
-constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
-) : SurfaceView(context, attrs, defStyleAttr, defStyleRes), StreamDrawable {
-    override var videoGravity: VideoGravity
-        get() = pixelTransform.videoGravity
-        set(value) {
-            pixelTransform.videoGravity = value
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = 0,
+    ) : SurfaceView(context, attrs, defStyleAttr, defStyleRes), StreamDrawable {
+        override var videoGravity: VideoGravity
+            get() = pixelTransform.videoGravity
+            set(value) {
+                pixelTransform.videoGravity = value
+            }
+
+        override var frameRate: Int
+            get() = pixelTransform.frameRate
+            set(value) {
+                pixelTransform.frameRate = value
+            }
+
+        override var videoEffect: VideoEffect
+            get() = pixelTransform.videoEffect
+            set(value) {
+                pixelTransform.videoEffect = value
+            }
+
+        private val pixelTransform: PixelTransform by lazy { PixelTransform.create(context) }
+
+        private var stream: Stream? = null
+            set(value) {
+                field?.drawable = null
+                field = value
+                field?.drawable = this
+                pixelTransform.screen = value?.screen
+            }
+
+        init {
+            holder.addCallback(
+                object : SurfaceHolder.Callback {
+                    override fun surfaceCreated(holder: SurfaceHolder) {
+                        pixelTransform.imageExtent = Size(width, height)
+                        pixelTransform.surface = holder.surface
+                    }
+
+                    override fun surfaceChanged(
+                        holder: SurfaceHolder,
+                        format: Int,
+                        width: Int,
+                        height: Int,
+                    ) {
+                        pixelTransform.imageExtent = Size(width, height)
+                    }
+
+                    override fun surfaceDestroyed(holder: SurfaceHolder) {
+                        pixelTransform.surface = null
+                    }
+                },
+            )
         }
 
-    override var frameRate: Int
-        get() = pixelTransform.frameRate
-        set(value) {
-            pixelTransform.frameRate = value
+        override fun attachStream(stream: Stream?) {
+            this.stream = stream
         }
 
-    override var videoEffect: VideoEffect
-        get() = pixelTransform.videoEffect
-        set(value) {
-            pixelTransform.videoEffect = value
+        companion object {
+            private var TAG = HkSurfaceView::class.java.simpleName
         }
-
-    private val pixelTransform: PixelTransform by lazy { PixelTransform.create(context) }
-
-    private var stream: Stream? = null
-        set(value) {
-            field?.drawable = null
-            field = value
-            field?.drawable = this
-            pixelTransform.screen = value?.screen
-        }
-
-    init {
-        holder.addCallback(
-            object : SurfaceHolder.Callback {
-                override fun surfaceCreated(holder: SurfaceHolder) {
-                    pixelTransform.imageExtent = Size(width, height)
-                    pixelTransform.surface = holder.surface
-                }
-
-                override fun surfaceChanged(
-                    holder: SurfaceHolder,
-                    format: Int,
-                    width: Int,
-                    height: Int,
-                ) {
-                    pixelTransform.imageExtent = Size(width, height)
-                }
-
-                override fun surfaceDestroyed(holder: SurfaceHolder) {
-                    pixelTransform.surface = null
-                }
-            },
-        )
     }
-
-    override fun attachStream(stream: Stream?) {
-        this.stream = stream
-    }
-
-    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
-        pixelTransform.readPixels(lambda)
-    }
-
-    companion object {
-        private var TAG = HkSurfaceView::class.java.simpleName
-    }
-}

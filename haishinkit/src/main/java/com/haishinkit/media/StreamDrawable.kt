@@ -1,6 +1,5 @@
 package com.haishinkit.media
 
-import android.graphics.Bitmap
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 
@@ -24,9 +23,4 @@ interface StreamDrawable {
      * Attaches a video stream to the view.
      */
     fun attachStream(stream: Stream?)
-
-    /**
-     * Reads the pixels of a displayed image.
-     */
-    fun readPixels(lambda: ((bitmap: Bitmap?) -> Unit))
 }

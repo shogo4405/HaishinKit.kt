@@ -119,7 +119,7 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         val save = v.findViewById<Button>(R.id.save_button)
         save.setOnClickListener {
-            cameraView.readPixels {
+            stream.screen.readPixels {
                 val bitmap = it ?: return@readPixels
 
                 val file = File(requireContext().externalCacheDir, "share_temp.jpeg")

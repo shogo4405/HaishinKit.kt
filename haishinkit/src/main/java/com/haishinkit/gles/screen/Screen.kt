@@ -1,6 +1,7 @@
 package com.haishinkit.gles.screen
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.opengl.GLES20
 import android.view.Choreographer
@@ -10,6 +11,8 @@ import com.haishinkit.gles.Utils
 import com.haishinkit.lang.Running
 import com.haishinkit.screen.ScreenObject
 import com.haishinkit.util.Rectangle
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class Screen(applicationContext: Context) :
@@ -46,6 +49,30 @@ internal class Screen(applicationContext: Context) :
 
     override fun unbind(screenObject: ScreenObject) {
         renderer.unbind(screenObject)
+    }
+
+    override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
+        val bitmap =
+            Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val byteBuffer =
+            ByteBuffer.allocateDirect(width * height * 4).apply {
+                order(ByteOrder.LITTLE_ENDIAN)
+            }
+        framebuffer.render {
+            graphicsContext.readPixels(width, height, byteBuffer)
+        }
+        bitmap.copyPixelsFromBuffer(byteBuffer)
+        lambda(
+            Bitmap.createBitmap(
+                bitmap,
+                0,
+                0,
+                width,
+                height,
+                null,
+                false,
+            ),
+        )
     }
 
     override fun dispose() {

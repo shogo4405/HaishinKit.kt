@@ -1,7 +1,6 @@
 package com.haishinkit.graphics
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.gles.ThreadPixelTransform
@@ -44,11 +43,6 @@ interface PixelTransform {
      * Specifies the frameRate for an output source in frames/sec.
      */
     var frameRate: Int
-
-    /**
-     * Reads the pixels of a displayed image.
-     */
-    fun readPixels(lambda: ((bitmap: Bitmap?) -> Unit))
 
     companion object {
         private var pixelTransforms: MutableList<KClass<*>> = mutableListOf()

@@ -1,6 +1,7 @@
 package com.haishinkit.screen
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
 
 abstract class Screen(val applicationContext: Context) : ScreenObjectContainer() {
@@ -10,6 +11,11 @@ abstract class Screen(val applicationContext: Context) : ScreenObjectContainer()
 
     open var backgroundColor: Int = BACKGROUND_COLOR
     protected var callbacks = mutableListOf<Callback>()
+
+    /**
+     * Reads the pixels of a displayed image.
+     */
+    abstract fun readPixels(lambda: ((bitmap: Bitmap?) -> Unit))
 
     abstract fun bind(screenObject: ScreenObject)
 
