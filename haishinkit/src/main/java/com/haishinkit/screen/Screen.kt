@@ -15,7 +15,7 @@ abstract class Screen(val applicationContext: Context) : ScreenObjectContainer()
     /**
      * Specifies the screen's background color.
      */
-    open var backgroundColor: Int = BACKGROUND_COLOR
+    open var backgroundColor: Int = Color.BLACK
     protected var callbacks = mutableListOf<Callback>()
 
     /**
@@ -52,8 +52,6 @@ abstract class Screen(val applicationContext: Context) : ScreenObjectContainer()
     }
 
     companion object {
-        const val BACKGROUND_COLOR = Color.BLACK
-
         fun create(context: Context): Screen {
             return com.haishinkit.gles.screen.ThreadScreen(context)
         }

@@ -29,6 +29,7 @@ import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
+import com.haishinkit.media.Stream
 import com.haishinkit.media.StreamDrawable
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
@@ -81,7 +82,10 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         cameraSource = Camera2Source(requireContext())
         stream.attachVideo(cameraSource)
-        stream.screen.frame = Rectangle(Point(0, 0), Size(576, 1024))
+        stream.screen.frame = Rectangle(
+            Point(0, 0),
+            Size(Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH)
+        )
 
         text.textSize = 60f
         text.textValue = ""
@@ -185,11 +189,17 @@ class CameraTabFragment : Fragment(), IEventListener {
         super.onConfigurationChanged(newConfig)
         when (newConfig.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
-                stream.screen.frame = Rectangle(Point(0, 0), Size(576, 1024))
+                stream.screen.frame = Rectangle(
+                    Point(0, 0),
+                    Size(Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH)
+                )
             }
 
             Configuration.ORIENTATION_LANDSCAPE -> {
-                stream.screen.frame = Rectangle(Point(0, 0), Size(1024, 576))
+                stream.screen.frame = Rectangle(
+                    Point(0, 0),
+                    Size(Stream.DEFAULT_SCREEN_WIDTH, Stream.DEFAULT_SCREEN_HEIGHT)
+                )
             }
 
             Configuration.ORIENTATION_SQUARE -> {

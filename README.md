@@ -67,6 +67,31 @@ stream.videoSettings.bitrate = 160 * 1000 // The bitRate of video output.
 stream.videoSettings.IFrameInterval = 2 // The key-frmae interval
 ```
 
+### Offscreen Rendering.
+Through off-screen rendering capabilities, it is possible to display any text or bitmap on a video during broadcasting or viewing. This allows for various applications such as watermarking and time display.
+
+<p align="center">
+  <img width="732" alt="" src="https://github.com/shogo4405/HaishinKit.kt/assets/810189/f2e189eb-d98a-41b4-9b4c-0b7d70637675">
+</p>
+
+```
+stream.attachVideo(cameraSource)
+
+val text = Text()
+text.textSize = 60f
+text.textValue = "23:44:56"
+text.layoutMargins.set(0, 0, 16, 16)
+text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_RIGHT
+text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
+stream.screen.addChild(text)
+
+val image = Image()
+image.bitmap = BitmapFactory.decodeResource(resources, R.drawable.game_jikkyou)
+image.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
+image.frame.set(0, 0, 180, 180)
+stream.screen.addChild(image)
+```
+
 ## 🌏 Architecture Overview
 ### Publishing Feature
 <p align="center">
