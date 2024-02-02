@@ -1,7 +1,6 @@
 package com.haishinkit.app
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.Service
 import android.content.ComponentName
@@ -33,7 +32,6 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     private var messenger: Messenger? = null
     private val startMediaProjection =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            activity?.windowManager?.defaultDisplay?.getMetrics(MediaProjectionService.metrics)
             if (result.resultCode == RESULT_OK) {
                 MediaProjectionService.data = result.data
                 Intent(activity, MediaProjectionService::class.java).also { intent ->

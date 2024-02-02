@@ -12,9 +12,9 @@ import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.VideoGravity
+import com.haishinkit.media.StreamDrawable
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
-import com.haishinkit.media.StreamDrawable
 
 class PlaybackTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection

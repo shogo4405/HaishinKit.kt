@@ -27,15 +27,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.navigation_home -> {
                 fragment = CameraTabFragment.newInstance()
             }
+
             R.id.navigation_mediaprojection -> {
                 fragment = MediaProjectionTabFragment.newInstance()
             }
+
             R.id.navigation_playback -> {
                 fragment = PlaybackTabFragment.newInstance()
             }
+
             R.id.navigation_dashboard -> {
                 fragment = PreferenceTagFragment.newInstance()
             }
+
             else -> {
             }
         }

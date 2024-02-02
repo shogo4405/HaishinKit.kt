@@ -13,7 +13,6 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Message
 import android.os.Messenger
-import android.util.DisplayMetrics
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -92,8 +91,7 @@ class MediaProjectionService : Service(), IEventListener {
         data?.let {
             val source = MediaProjectionSource(
                 this,
-                mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it),
-                metrics
+                mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it)
             )
             stream.attachVideo(source)
             stream.videoSetting.width = source.screen.videoSize.width shr 2
@@ -134,7 +132,6 @@ class MediaProjectionService : Service(), IEventListener {
         const val CHANNEL_DESC = ""
         const val NOTIFY_TITLE = "Recording."
 
-        var metrics = DisplayMetrics()
         var data: Intent? = null
         var listener: RtmpStream.Listener? = null
 
