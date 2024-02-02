@@ -124,28 +124,29 @@ internal class PixelTransform(override val applicationContext: Context) :
         if (isRunning.get()) {
             choreographer?.postFrameCallback(this)
         }
-        val screen = screen ?: return
-        var timestamp = frameTimeNanos
-        if (timestamp <= 0L && !fpsController.advanced(timestamp)) return
-        timestamp = fpsController.timestamp(timestamp)
-        if (surface == null) {
+        if (frameTimeNanos <= 0L || surface == null) {
             return
         }
-        try {
-            GLES20.glClearColor(0f, 0f, 0f, 0f)
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-            if (video.videoSize.width != screen.frame.size.width || video.videoSize.height != screen.frame.size.height) {
-                video.videoSize = Size(screen.frame.size.width, screen.frame.size.height)
+        val screen = screen ?: return
+        var timestamp = frameTimeNanos
+        if (fpsController.advanced(timestamp)) {
+            timestamp = fpsController.timestamp(timestamp)
+            try {
+                GLES20.glClearColor(0f, 0f, 0f, 0f)
+                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+                if (video.videoSize.width != screen.frame.size.width || video.videoSize.height != screen.frame.size.height) {
+                    video.videoSize = Size(screen.frame.size.width, screen.frame.size.height)
+                }
+                if (video.shouldInvalidateLayout) {
+                    video.id = screen.id
+                    video.layout(renderer)
+                }
+                program?.draw(video)
+                graphicsContext.setPresentationTime(timestamp)
+                graphicsContext.swapBuffers()
+            } catch (e: RuntimeException) {
+                Log.e(TAG, "", e)
             }
-            if (video.shouldInvalidateLayout) {
-                video.id = screen.id
-                video.layout(renderer)
-            }
-            program?.draw(video)
-            graphicsContext.setPresentationTime(timestamp)
-            graphicsContext.swapBuffers()
-        } catch (e: RuntimeException) {
-            Log.e(TAG, "", e)
         }
     }
 
