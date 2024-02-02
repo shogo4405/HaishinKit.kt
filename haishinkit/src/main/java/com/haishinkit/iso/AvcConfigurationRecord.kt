@@ -203,15 +203,15 @@ data class AvcConfigurationRecord(
                 lengthSizeMinusOneWithReserved = 0xFF.toByte(),
                 numOfSequenceParameterSetsWithReserved = 0xE1.toByte(),
                 sequenceParameterSets =
-                    ArrayList<ByteArray>(1).apply {
-                        val length = spsBuffer.remaining()
-                        add(spsBuffer.array().slice(4 until length).toByteArray())
-                    },
+                ArrayList<ByteArray>(1).apply {
+                    val length = spsBuffer.remaining()
+                    add(spsBuffer.array().slice(4 until length).toByteArray())
+                },
                 pictureParameterSets =
-                    ArrayList<ByteArray>(1).apply {
-                        val length = ppsBuffer.remaining()
-                        add(ppsBuffer.array().slice(4 until length).toByteArray())
-                    },
+                ArrayList<ByteArray>(1).apply {
+                    val length = ppsBuffer.remaining()
+                    add(ppsBuffer.array().slice(4 until length).toByteArray())
+                },
             )
         }
     }
