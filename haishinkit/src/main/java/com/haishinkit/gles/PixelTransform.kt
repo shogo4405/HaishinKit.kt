@@ -53,21 +53,23 @@ internal class PixelTransform(override val applicationContext: Context) :
 
     override var imageExtent = Size(0, 0)
         set(value) {
+            if (field == value) return
             field = value
             GLES20.glViewport(
                 0,
                 0,
-                imageExtent.width,
-                imageExtent.height,
+                value.width,
+                value.height,
             )
-            video.frame.set(0, 0, imageExtent.width, imageExtent.height)
+            video.frame.set(0, 0, value.width, value.height)
             video.invalidateLayout()
         }
 
     override var videoEffect: VideoEffect = DefaultVideoEffect.shared
         set(value) {
+            if (field == value) return
             field = value
-            program = shaderLoader.createProgram(GLES20.GL_TEXTURE_2D, videoEffect)
+            program = shaderLoader.getProgram(GLES20.GL_TEXTURE_2D, value)
         }
 
     override var frameRate: Int
@@ -84,11 +86,6 @@ internal class PixelTransform(override val applicationContext: Context) :
             field?.postFrameCallback(this)
         }
     private var program: Program? = null
-        set(value) {
-            field?.dispose()
-            field = value
-        }
-
     private val shaderLoader by lazy {
         ShaderLoader(applicationContext)
     }
@@ -106,7 +103,7 @@ internal class PixelTransform(override val applicationContext: Context) :
             open((screen as? com.haishinkit.gles.screen.ThreadScreen)?.graphicsContext)
             makeCurrent(createWindowSurface(surface))
         }
-        program = shaderLoader.createProgram(GLES20.GL_TEXTURE_2D, videoEffect)
+        program = shaderLoader.getProgram(GLES20.GL_TEXTURE_2D, videoEffect)
         screen?.let {
             video.videoSize = it.frame.size
         }
@@ -141,6 +138,8 @@ internal class PixelTransform(override val applicationContext: Context) :
                     video.id = screen.id
                     video.layout(renderer)
                 }
+                program?.use()
+                program?.bind(videoEffect)
                 program?.draw(video)
                 graphicsContext.setPresentationTime(timestamp)
                 graphicsContext.swapBuffers()

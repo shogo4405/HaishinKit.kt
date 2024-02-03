@@ -12,7 +12,39 @@ import java.lang.reflect.Method
 import java.util.Locale
 
 internal class ShaderLoader(private val applicationContext: Context) {
-    fun createProgram(
+    private var texture2dPrograms = mutableMapOf<VideoEffect, Program>()
+    private var textureOesPrograms = mutableMapOf<VideoEffect, Program>()
+
+    fun getProgram(target: Int, videoEffect: VideoEffect): Program? {
+        return if (target == GLES11Ext.GL_TEXTURE_EXTERNAL_OES) {
+            if (!textureOesPrograms.containsKey(videoEffect)) {
+                createProgram(target, videoEffect)?.let {
+                    textureOesPrograms[videoEffect] = it
+                }
+            }
+            textureOesPrograms[videoEffect]
+        } else {
+            if (!texture2dPrograms.containsKey(videoEffect)) {
+                createProgram(target, videoEffect)?.let {
+                    texture2dPrograms[videoEffect] = it
+                }
+            }
+            texture2dPrograms[videoEffect]
+        }
+    }
+
+    fun release() {
+        texture2dPrograms.forEach {
+            it.value.dispose()
+        }
+        texture2dPrograms.clear()
+        textureOesPrograms.forEach {
+            it.value.dispose()
+        }
+        textureOesPrograms.clear()
+    }
+
+    private fun createProgram(
         target: Int,
         videoEffect: VideoEffect,
     ): Program? {

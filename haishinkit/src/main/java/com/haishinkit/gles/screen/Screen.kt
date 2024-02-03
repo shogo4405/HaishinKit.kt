@@ -93,6 +93,7 @@ internal class Screen(applicationContext: Context) :
         isRunning.set(false)
         choreographer = null
         framebuffer.release()
+        renderer.release()
         graphicsContext.close()
     }
 

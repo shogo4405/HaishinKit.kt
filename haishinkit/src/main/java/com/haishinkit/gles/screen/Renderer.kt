@@ -2,13 +2,11 @@ package com.haishinkit.gles.screen
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.opengl.GLUtils
 import android.util.Log
 import android.view.Surface
 import com.haishinkit.BuildConfig
-import com.haishinkit.gles.Program
 import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.Utils
 import com.haishinkit.graphics.effect.DefaultVideoEffect
@@ -17,29 +15,12 @@ import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Video
 import javax.microedition.khronos.opengles.GL10
 
-internal class Renderer(applicationContext: Context) :
-    Renderer,
+internal class Renderer(applicationContext: Context) : Renderer,
     SurfaceTexture.OnFrameAvailableListener {
-    private var programs = mutableMapOf<Int, Program>()
     private var textureIds = intArrayOf(0)
     private var surfaceTextures = mutableMapOf<Int, SurfaceTexture>()
     private val shaderLoader by lazy {
         ShaderLoader(applicationContext)
-    }
-
-    init {
-        shaderLoader.createProgram(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-            DefaultVideoEffect.shared,
-        )?.let {
-            programs[GLES11Ext.GL_TEXTURE_EXTERNAL_OES] = it
-        }
-        shaderLoader.createProgram(
-            GLES20.GL_TEXTURE_2D,
-            DefaultVideoEffect.shared,
-        )?.let {
-            programs[GLES20.GL_TEXTURE_2D] = it
-        }
     }
 
     override fun layout(screenObject: ScreenObject) {
@@ -102,13 +83,15 @@ internal class Renderer(applicationContext: Context) :
     }
 
     override fun draw(screenObject: ScreenObject) {
-        val program = programs[screenObject.target] ?: return
+        val program =
+            shaderLoader.getProgram(screenObject.target, screenObject.videoEffect) ?: return
         GLES20.glViewport(
             screenObject.x,
             screenObject.y,
             screenObject.width,
             screenObject.height,
         )
+        program.use()
         program.bind(DefaultVideoEffect.shared)
         program.draw(screenObject)
     }
@@ -153,6 +136,10 @@ internal class Renderer(applicationContext: Context) :
                 Log.e(TAG, "", e)
             }
         }
+    }
+
+    fun release() {
+        shaderLoader.release()
     }
 
     companion object {

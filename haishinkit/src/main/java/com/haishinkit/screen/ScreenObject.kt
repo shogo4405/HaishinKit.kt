@@ -2,6 +2,8 @@ package com.haishinkit.screen
 
 import android.graphics.Point
 import android.opengl.GLES20
+import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.util.EdgeInsets
 import com.haishinkit.util.Rectangle
 import kotlin.math.max
@@ -50,8 +52,20 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
             this[15] = 1f
         }
 
+    /**
+     * Specifies the alignment position along the horizontal axis.
+     */
     var horizontalAlignment: Int = HORIZONTAL_ALIGNMENT_LEFT
+
+    /**
+     * Specifies the alignment position along the vertical axis.
+     */
     var verticalAlignment: Int = VERTICAL_ALIGNMENT_TOP
+
+    /**
+     * Specifies the video effect such as a monochrome, a sepia.
+     */
+    var videoEffect: VideoEffect = DefaultVideoEffect.shared
 
     /**
      * The x coordinate.

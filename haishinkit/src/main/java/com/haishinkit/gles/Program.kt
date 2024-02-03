@@ -21,6 +21,11 @@ internal class Program(
     private var texCoordBuffer = Utils.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private val vertexBuffer = Utils.createFloatBuffer(VERTECES)
 
+    fun use() {
+        GLES20.glUseProgram(id)
+        Utils.checkGlError("glUseProgram")
+    }
+
     fun bind(visualEffect: VideoEffect) {
         for (handler in handlers) {
             val value = handler.value.invoke(visualEffect)
@@ -46,17 +51,13 @@ internal class Program(
                 }
 
                 else -> {
-                    Log.e("Texture2DProgram", "value type not supported")
+                    Log.e(TAG, "value type not supported")
                 }
             }
         }
     }
 
     fun draw(screenObject: ScreenObject) {
-        GLES20.glUseProgram(id)
-
-        Utils.checkGlError("glUseProgram")
-
         GLES20.glEnableVertexAttribArray(texCoordHandle)
         Utils.checkGlError("glEnableVertexAttribArray")
         GLES20.glVertexAttribPointer(
@@ -116,6 +117,7 @@ internal class Program(
 
     companion object {
         private const val INVALID_VALUE = 0
+        private val TAG = Program::class.java.simpleName
 
         private val VERTECES =
             floatArrayOf(
