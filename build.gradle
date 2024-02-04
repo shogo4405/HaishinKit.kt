@@ -65,6 +65,7 @@ ktlint {
 }
 
 tasks.dokkaHtmlMultiModule.configure {
-    outputDirectory.set(file("docs"))
+  outputDirectory.set(file("docs"))
+  includes.from("README.md")
 }
 
