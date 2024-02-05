@@ -22,6 +22,8 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.airbnb.lottie.ImageAssetDelegate
+import com.airbnb.lottie.LottieImageAsset
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
@@ -34,6 +36,7 @@ import com.haishinkit.media.StreamDrawable
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.screen.Image
+import com.haishinkit.screen.LottieScreen
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Text
@@ -43,12 +46,13 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class CameraTabFragment : Fragment(), IEventListener {
+class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
     private class Callback(private val fragment: CameraTabFragment) : Screen.Callback() {
         private val dateFormat = SimpleDateFormat("HH:mm:ss")
         override fun onEnterFrame() {
             try {
                 fragment.text.textValue = dateFormat.format(Date())
+                // Log.e("TAG", fragment.lottie.isAnimating.toString())
             } catch (e: RuntimeException) {
                 Log.e(TAG, "", e)
             }
@@ -60,6 +64,7 @@ class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var cameraView: StreamDrawable
     private lateinit var cameraSource: Camera2Source
     private val text: Text by lazy { Text() }
+    private val lottie: LottieScreen by lazy { LottieScreen(requireContext()) }
     private val callback: Screen.Callback by lazy { Callback(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +106,12 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         stream.screen.addChild(text)
         stream.screen.registerCallback(callback)
+
+        lottie.setAnimation(R.raw.a1707142754988)
+        lottie.frame.set(0, 0, 200, 200)
+        lottie.setImageAssetDelegate(this)
+        lottie.playAnimation()
+        stream.screen.addChild(lottie)
 
         connection.addEventListener(Event.RTMP_STATUS, this)
     }
@@ -227,6 +238,11 @@ class CameraTabFragment : Fragment(), IEventListener {
         if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
             stream.publish(Preference.shared.streamName)
         }
+    }
+
+    override fun fetchBitmap(asset: LottieImageAsset?): Bitmap? {
+        Log.e("TAG", asset.toString())
+        return null
     }
 
     companion object {

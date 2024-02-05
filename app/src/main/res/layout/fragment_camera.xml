@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    tools:context=".CameraTabFragment"
-    >
+    tools:context=".CameraTabFragment">
 
     <com.haishinkit.view.HkSurfaceView
         android:id="@+id/surface_view"
@@ -20,24 +19,25 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
         <Button
             android:id="@+id/switch_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Switch"
-            android:layout_margin="16px"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:layout_margin="16px"
+            android:text="Switch" />
+
         <Button
             android:id="@+id/filter_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Normal"
-            android:layout_margin="16px"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true" />
+            android:layout_margin="16px"
+            android:text="Normal" />
 
         <Button
             android:id="@+id/save_button"
