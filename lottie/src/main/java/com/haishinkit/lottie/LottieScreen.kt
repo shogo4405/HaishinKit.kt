@@ -1,4 +1,4 @@
-package com.haishinkit.screen
+package com.haishinkit.lottie
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -11,10 +11,12 @@ import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.LottieListener
 import com.airbnb.lottie.LottieTask
+import com.haishinkit.screen.Image
+import com.haishinkit.screen.Renderer
 import java.lang.ref.WeakReference
 
 /**
- * An object that manages offscreen rendering an lottie source.
+ * An object that manages offscreen rendering a lottie source.
  */
 @Suppress("MemberVisibilityCanBePrivate", "UNUSED")
 class LottieScreen(val context: Context) : Image() {

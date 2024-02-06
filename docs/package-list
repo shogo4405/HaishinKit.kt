@@ -19,5 +19,7 @@ com.haishinkit.rtmp
 com.haishinkit.screen
 com.haishinkit.util
 com.haishinkit.view
+module:lottie
+com.haishinkit.lottie
 module:vulkan
 com.haishinkit.vulkan

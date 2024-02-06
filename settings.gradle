@@ -1,4 +1,4 @@
 include ':app' 
 include ':haishinkit'
-include ':vulkan'
 include ':lottie'
+include ':vulkan'

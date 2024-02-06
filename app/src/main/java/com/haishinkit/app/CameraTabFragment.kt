@@ -36,7 +36,7 @@ import com.haishinkit.media.StreamDrawable
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.screen.Image
-import com.haishinkit.screen.LottieScreen
+import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Text
