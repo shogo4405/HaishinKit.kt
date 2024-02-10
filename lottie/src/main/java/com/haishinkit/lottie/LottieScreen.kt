@@ -1,10 +1,14 @@
 package com.haishinkit.lottie
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Typeface
 import androidx.annotation.RawRes
+import com.airbnb.lottie.AsyncUpdates
 import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
@@ -13,7 +17,12 @@ import com.airbnb.lottie.LottieListener
 import com.airbnb.lottie.LottieTask
 import com.haishinkit.screen.Image
 import com.haishinkit.screen.Renderer
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.lang.ref.WeakReference
+import java.util.zip.ZipInputStream
+import kotlin.math.min
+
 
 /**
  * An object that manages offscreen rendering a lottie source.
@@ -25,6 +34,60 @@ class LottieScreen(val context: Context) : Image() {
      */
     val isAnimating: Boolean
         get() = lottieDrawable.isAnimating
+
+    /**
+     * Wrapper for LottieDrawable#enableMergePaths.
+     */
+    var enableMergePaths: Boolean
+        get() = lottieDrawable.enableMergePathsForKitKatAndAbove()
+        set(value) {
+            lottieDrawable.enableMergePathsForKitKatAndAbove(value)
+        }
+
+    /**
+     * Wrapper for LottieDrawable#asyncUpdates.
+     */
+    var asyncUpdates: AsyncUpdates
+        get() = lottieDrawable.asyncUpdates
+        set(value) {
+            lottieDrawable.asyncUpdates = value
+        }
+
+    /**
+     * Wrapper for LottieDrawable#isApplyingOpacityToLayersEnabled.
+     */
+    var isApplyingOpacityToLayersEnabled: Boolean
+        get() = lottieDrawable.isApplyingOpacityToLayersEnabled
+        set(value) {
+            lottieDrawable.isApplyingOpacityToLayersEnabled = value
+        }
+
+    /**
+     * Wrapper for LottieDrawable#maintainOriginalImageBounds.
+     */
+    var maintainOriginalImageBounds: Boolean
+        get() = lottieDrawable.maintainOriginalImageBounds
+        set(value) {
+            lottieDrawable.maintainOriginalImageBounds = value
+        }
+
+    /**
+     * Wrapper for LottieDrawable#clipToCompositionBounds.
+     */
+    var clipToCompositionBounds: Boolean
+        get() = lottieDrawable.clipToCompositionBounds
+        set(value) {
+            lottieDrawable.clipToCompositionBounds = value
+        }
+
+    /**
+     * Wrapper for LottieDrawable#clipTextToBoundingBox.
+     */
+    var clipTextToBoundingBox: Boolean
+        get() = lottieDrawable.clipTextToBoundingBox
+        set(value) {
+            lottieDrawable.clipToCompositionBounds = value
+        }
 
     /**
      * Wrapper for LottieDrawable#repeatCount.
@@ -53,7 +116,13 @@ class LottieScreen(val context: Context) : Image() {
             lottieDrawable.speed = value
         }
 
-    private var canvas = Canvas(bitmap)
+    override var shouldInvalidateLayout: Boolean
+        get() = lottieDrawable.isAnimating
+        set(value) {
+            // no op
+        }
+
+    private var canvas: Canvas? = null
     private var cacheComposition = true
     private var animationName: String? = null
 
@@ -83,6 +152,7 @@ class LottieScreen(val context: Context) : Image() {
             this
         )
     }
+    private val lottieToBitmapMatrix = Matrix()
 
     /**
      * Setter for animation from a file in the raw directory.
@@ -91,6 +161,33 @@ class LottieScreen(val context: Context) : Image() {
         animationResId = rawRes
         animationName = null
         compositionTask = fromRawRes(rawRes)
+    }
+
+    fun setAnimation(assetName: String) {
+        animationName = assetName
+        animationResId = 0
+        compositionTask = fromAssets(assetName)
+    }
+
+    fun setAnimationFromUrl(url: String?, cacheKey: String? = null) {
+        val task = if (cacheComposition) LottieCompositionFactory.fromUrl(
+            context, url
+        ) else LottieCompositionFactory.fromUrl(
+            context, url, cacheKey
+        )
+        compositionTask = task
+    }
+
+    fun setAnimation(stream: InputStream?, cacheKey: String? = null) {
+        compositionTask = LottieCompositionFactory.fromJsonInputStream(stream, cacheKey)
+    }
+
+    fun setAnimation(stream: ZipInputStream?, cacheKey: String? = null) {
+        compositionTask = LottieCompositionFactory.fromZipStream(stream, cacheKey)
+    }
+
+    fun setAnimationFromJson(jsonString: String, cacheKey: String? = null) {
+        setAnimation(ByteArrayInputStream(jsonString.toByteArray()), cacheKey)
     }
 
     /**
@@ -122,23 +219,36 @@ class LottieScreen(val context: Context) : Image() {
         lottieDrawable.setImageAssetDelegate(assetDelegate)
     }
 
+    fun setSafeMode(safeMode: Boolean) {
+        lottieDrawable.setSafeMode(safeMode)
+    }
+
+    fun setFontMap(fontMap: Map<String, Typeface>) {
+        lottieDrawable.setFontMap(fontMap)
+    }
+
+    @SuppressLint("RestrictedApi")
     override fun layout(renderer: Renderer) {
         val composition = composition ?: return
-        if (bitmap.width != composition.bounds.width() && bitmap.height != composition.bounds.height()) {
-            bitmap =
-                Bitmap.createBitmap(
-                    composition.bounds.width(),
-                    composition.bounds.height(),
-                    Bitmap.Config.ARGB_8888
-                )
-            canvas = Canvas(bitmap)
+        if (bitmap?.width != width || bitmap?.height != height) {
+            bitmap = Bitmap.createBitmap(
+                width, height, Bitmap.Config.ARGB_8888
+            ).apply {
+                canvas = Canvas(this)
+            }
         }
-        bitmap.eraseColor(Color.TRANSPARENT)
-        lottieDrawable.draw(canvas)
+        bitmap?.eraseColor(Color.TRANSPARENT)
+        val minScale = min(
+            width.toFloat() / composition.bounds.width().toFloat(),
+            height.toFloat() / composition.bounds.height().toFloat()
+        )
+        lottieToBitmapMatrix.reset()
+        lottieToBitmapMatrix.preScale(
+            minScale, minScale
+        )
+        lottieDrawable.bounds.set(0, 0, composition.bounds.width(), composition.bounds.height())
+        lottieDrawable.draw(canvas, lottieToBitmapMatrix)
         super.layout(renderer)
-        if (lottieDrawable.isAnimating) {
-            invalidateLayout()
-        }
     }
 
     private fun fromRawRes(@RawRes rawRes: Int): LottieTask<LottieComposition>? {
@@ -149,8 +259,15 @@ class LottieScreen(val context: Context) : Image() {
         )
     }
 
-    private class WeakSuccessListener(target: LottieScreen) :
-        LottieListener<LottieComposition?> {
+    private fun fromAssets(assetName: String): LottieTask<LottieComposition>? {
+        return if (cacheComposition) LottieCompositionFactory.fromAsset(
+            context, assetName
+        ) else LottieCompositionFactory.fromAsset(
+            context, assetName, null
+        )
+    }
+
+    private class WeakSuccessListener(target: LottieScreen) : LottieListener<LottieComposition?> {
         private val targetReference = WeakReference(target)
 
         override fun onResult(result: LottieComposition?) {
@@ -169,12 +286,11 @@ class LottieScreen(val context: Context) : Image() {
         }
     }
 
-    companion object {
+    private companion object {
         private val TAG = LottieScreen::class.java.simpleName
 
-        private val DEFAULT_FAILURE_LISTENER =
-            LottieListener<Throwable> { throwable: Throwable? ->
-                throw IllegalStateException("Unable to parse composition", throwable)
-            }
+        private val DEFAULT_FAILURE_LISTENER = LottieListener<Throwable> { throwable: Throwable? ->
+            throw IllegalStateException("Unable to parse composition", throwable)
+        }
     }
 }

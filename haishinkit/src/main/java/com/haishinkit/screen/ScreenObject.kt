@@ -1,11 +1,9 @@
 package com.haishinkit.screen
 
-import android.graphics.Point
+import android.graphics.Rect
 import android.opengl.GLES20
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
-import com.haishinkit.util.EdgeInsets
-import com.haishinkit.util.Rectangle
 import kotlin.math.max
 
 /**
@@ -29,7 +27,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     /**
      * Specifies the frame.
      */
-    open var frame = Rectangle(Point(0, 0), Rectangle.MATCH_PARENT)
+    open var frame = Rect(0, 0, 0, 0)
         set(value) {
             if (field == value) return
             field = value
@@ -84,7 +82,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
                 }
 
                 else -> {
-                    parentX + frame.point.x + layoutMargins.left
+                    parentX + frame.left + layoutMargins.left
                 }
             }
         }
@@ -106,7 +104,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
                 }
 
                 else -> {
-                    parentY + frame.point.y + layoutMargins.top
+                    parentY + frame.top + layoutMargins.top
                 }
             }
         }
@@ -116,13 +114,13 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      */
     open val width: Int
         get() {
-            if (frame.size.width == 0) {
+            if (frame.width() == 0) {
                 return max(
-                    (parent?.frame?.size?.width ?: 0) - layoutMargins.left - layoutMargins.right,
+                    (parent?.frame?.width() ?: 0) - layoutMargins.left - layoutMargins.right,
                     0,
                 )
             }
-            return frame.size.width
+            return frame.width()
         }
 
     /**
@@ -130,13 +128,13 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      */
     open val height: Int
         get() {
-            if (frame.size.height == 0) {
+            if (frame.height() == 0) {
                 return max(
-                    (parent?.frame?.size?.height ?: 0) - layoutMargins.top - layoutMargins.bottom,
+                    (parent?.frame?.height() ?: 0) - layoutMargins.top - layoutMargins.bottom,
                     0,
                 )
             }
-            return frame.size.height
+            return frame.height()
         }
 
     /**
@@ -144,8 +142,8 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      */
     var isVisible = true
 
-    var shouldInvalidateLayout = false
-        private set
+    open var shouldInvalidateLayout = false
+        protected set
 
     internal val root: ScreenObject?
         get() {
@@ -161,7 +159,6 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      */
     fun invalidateLayout() {
         shouldInvalidateLayout = true
-        parent?.invalidateLayout()
     }
 
     /**

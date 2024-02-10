@@ -41,15 +41,23 @@ class Text : Image() {
         }
     }
 
-    private var canvas = Canvas(bitmap)
-    private var textBounds: Rect = Rect()
+    private var canvas: Canvas? = null
+    private var textBounds = Rect()
 
     override fun layout(renderer: Renderer) {
         paint.getTextBounds(textValue, 0, textValue.length, textBounds)
-        bitmap =
-            Bitmap.createBitmap(textBounds.width(), textBounds.height(), Bitmap.Config.ARGB_8888)
-        canvas = Canvas(bitmap)
-        canvas.drawText(textValue, -textBounds.left.toFloat(), -textBounds.top.toFloat(), paint)
+        if (bitmap?.width != textBounds.width() || bitmap?.height != textBounds.height()) {
+            bitmap =
+                Bitmap.createBitmap(
+                    textBounds.width(),
+                    textBounds.height(),
+                    Bitmap.Config.ARGB_8888
+                ).apply {
+                    canvas = Canvas(this)
+                }
+        }
+        bitmap?.eraseColor(Color.TRANSPARENT)
+        canvas?.drawText(textValue, -textBounds.left.toFloat(), -textBounds.top.toFloat(), paint)
         super.layout(renderer)
     }
 }

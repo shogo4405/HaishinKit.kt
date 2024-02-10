@@ -9,13 +9,14 @@ import android.view.Surface
 import com.haishinkit.BuildConfig
 import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.Utils
-import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.screen.Image
 import com.haishinkit.screen.Renderer
 import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Video
 import javax.microedition.khronos.opengles.GL10
 
-internal class Renderer(applicationContext: Context) : Renderer,
+internal class Renderer(applicationContext: Context) :
+    Renderer,
     SurfaceTexture.OnFrameAvailableListener {
     private var textureIds = intArrayOf(0)
     private var surfaceTextures = mutableMapOf<Int, SurfaceTexture>()
@@ -52,12 +53,13 @@ internal class Renderer(applicationContext: Context) : Renderer,
                 )
             }
 
-            is com.haishinkit.screen.Image -> {
+            is Image -> {
+                val bitmap = screenObject.bitmap ?: return
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, screenObject.id)
                 Utils.checkGlError("glBindTexture")
                 GLES20.glPixelStorei(GLES20.GL_UNPACK_ALIGNMENT, 1)
                 Utils.checkGlError("glPixelStorei")
-                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, screenObject.bitmap, 0)
+                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GLES20.GL_TEXTURE_MIN_FILTER,
@@ -92,7 +94,7 @@ internal class Renderer(applicationContext: Context) : Renderer,
             screenObject.height,
         )
         program.use()
-        program.bind(DefaultVideoEffect.shared)
+        program.bind(screenObject.videoEffect)
         program.draw(screenObject)
     }
 

@@ -1,5 +1,8 @@
-package com.haishinkit.util
+package com.haishinkit.screen
 
+/**
+ * The inset distances for screens.
+ */
 data class EdgeInsets(var top: Int, var left: Int, var bottom: Int, var right: Int) {
     fun set(
         top: Int,

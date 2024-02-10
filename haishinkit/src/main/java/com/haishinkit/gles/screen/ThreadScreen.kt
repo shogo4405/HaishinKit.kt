@@ -2,13 +2,13 @@ package com.haishinkit.gles.screen
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Message
 import com.haishinkit.gles.GraphicsContext
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
-import com.haishinkit.util.Rectangle
 import java.lang.ref.WeakReference
 
 internal class ThreadScreen(applicationContext: Context) : Screen(applicationContext) {
@@ -22,7 +22,7 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
         set(value) {
         }
 
-    override var frame: Rectangle
+    override var frame: Rect
         get() = screen.frame
         set(value) {
             handler.apply {
@@ -129,7 +129,7 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
             val transform = transform.get() ?: return
             when (message.what) {
                 MSG_SET_BOUNDS -> {
-                    transform.frame = message.obj as Rectangle
+                    transform.frame = message.obj as Rect
                 }
 
                 MSG_SET_BACKGROUND_COLOR -> {

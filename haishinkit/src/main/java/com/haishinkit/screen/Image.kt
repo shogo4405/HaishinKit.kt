@@ -6,28 +6,28 @@ import android.graphics.Bitmap
  * An object that manages offscreen rendering an image source.
  */
 open class Image : ScreenObject() {
-    var bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+    var bitmap: Bitmap? = null
         set(value) {
             if (field == value) return
-            field.recycle()
+            field?.recycle()
             field = value
             invalidateLayout()
         }
 
     override val width: Int
         get() {
-            if (frame.size.width == 0) {
-                return bitmap.width
+            if (frame.width() == 0) {
+                return bitmap?.width ?: 0
             }
-            return frame.size.width
+            return frame.width()
         }
 
     override val height: Int
         get() {
-            if (frame.size.height == 0) {
-                return bitmap.height
+            if (frame.height() == 0) {
+                return bitmap?.height ?: 0
             }
-            return frame.size.height
+            return frame.height()
         }
 
     init {

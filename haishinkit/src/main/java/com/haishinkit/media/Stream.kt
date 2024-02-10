@@ -1,7 +1,7 @@
 package com.haishinkit.media
 
 import android.content.Context
-import android.graphics.Point
+import android.graphics.Rect
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
@@ -9,13 +9,11 @@ import android.media.AudioTrack
 import android.media.MediaFormat
 import android.os.Build
 import android.util.Log
-import android.util.Size
 import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.screen.Screen
-import com.haishinkit.util.Rectangle
 
 /**
  * The NetStream class is the foundation of a RtmpStream.
@@ -28,7 +26,7 @@ abstract class Stream(applicationContext: Context) {
     val screen: Screen by lazy {
         val screen =
             Screen.create(applicationContext).apply {
-                frame = Rectangle(Point(0, 0), Size(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT))
+                frame = Rect(0, 0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT)
             }
         videoCodec.pixelTransform.screen = screen
         screen

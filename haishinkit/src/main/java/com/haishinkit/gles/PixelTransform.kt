@@ -105,7 +105,7 @@ internal class PixelTransform(override val applicationContext: Context) :
         }
         program = shaderLoader.getProgram(GLES20.GL_TEXTURE_2D, videoEffect)
         screen?.let {
-            video.videoSize = it.frame.size
+            video.videoSize = Size(it.width, it.height)
         }
         choreographer = Choreographer.getInstance()
     }
@@ -131,8 +131,8 @@ internal class PixelTransform(override val applicationContext: Context) :
             try {
                 GLES20.glClearColor(0f, 0f, 0f, 0f)
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-                if (video.videoSize.width != screen.frame.size.width || video.videoSize.height != screen.frame.size.height) {
-                    video.videoSize = Size(screen.frame.size.width, screen.frame.size.height)
+                if (video.videoSize.width != screen.frame.width() || video.videoSize.height != screen.frame.height()) {
+                    video.videoSize = Size(screen.frame.width(), screen.frame.height())
                 }
                 if (video.shouldInvalidateLayout) {
                     video.id = screen.id

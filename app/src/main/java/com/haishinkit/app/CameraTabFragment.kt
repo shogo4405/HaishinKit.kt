@@ -7,12 +7,11 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Point
+import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +28,7 @@ import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.graphics.effect.MonochromeVideoEffect
+import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.media.Stream
@@ -36,11 +36,9 @@ import com.haishinkit.media.StreamDrawable
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.screen.Image
-import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.screen.Screen
 import com.haishinkit.screen.ScreenObject
 import com.haishinkit.screen.Text
-import com.haishinkit.util.Rectangle
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -87,9 +85,9 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
 
         cameraSource = Camera2Source(requireContext())
         stream.attachVideo(cameraSource)
-        stream.screen.frame = Rectangle(
-            Point(0, 0),
-            Size(Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH)
+        stream.screen.frame = Rect(
+            0, 0,
+            Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH
         )
 
         text.textSize = 60f
@@ -107,7 +105,7 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
         stream.screen.addChild(text)
         stream.screen.registerCallback(callback)
 
-        lottie.setAnimation(R.raw.a1707142754988)
+        lottie.setAnimation(R.raw.a1707149669115)
         lottie.frame.set(0, 0, 200, 200)
         lottie.setImageAssetDelegate(this)
         lottie.playAnimation()
@@ -200,16 +198,16 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
         super.onConfigurationChanged(newConfig)
         when (newConfig.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
-                stream.screen.frame = Rectangle(
-                    Point(0, 0),
-                    Size(Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH)
+                stream.screen.frame = Rect(
+                    0, 0,
+                    Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH
                 )
             }
 
             Configuration.ORIENTATION_LANDSCAPE -> {
-                stream.screen.frame = Rectangle(
-                    Point(0, 0),
-                    Size(Stream.DEFAULT_SCREEN_WIDTH, Stream.DEFAULT_SCREEN_HEIGHT)
+                stream.screen.frame = Rect(
+                    0, 0,
+                    Stream.DEFAULT_SCREEN_WIDTH, Stream.DEFAULT_SCREEN_HEIGHT
                 )
             }
 

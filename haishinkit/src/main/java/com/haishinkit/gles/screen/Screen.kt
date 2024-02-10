@@ -3,6 +3,7 @@ package com.haishinkit.gles.screen
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
 import android.opengl.GLES20
 import android.view.Choreographer
 import com.haishinkit.gles.Framebuffer
@@ -10,7 +11,6 @@ import com.haishinkit.gles.GraphicsContext
 import com.haishinkit.gles.Utils
 import com.haishinkit.lang.Running
 import com.haishinkit.screen.ScreenObject
-import com.haishinkit.util.Rectangle
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicBoolean
@@ -25,7 +25,7 @@ internal class Screen(applicationContext: Context) :
         set(value) {
         }
 
-    override var frame: Rectangle
+    override var frame: Rect
         get() = super.frame
         set(value) {
             super.frame = value

@@ -1,10 +1,9 @@
 package com.haishinkit.media
 
-import android.graphics.Point
+import android.graphics.Rect
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.screen.Video
-import com.haishinkit.util.Rectangle
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class MediaCodecSource(val size: Size) : VideoSource, Video.OnSurfaceChangedListener {
@@ -19,7 +18,7 @@ internal class MediaCodecSource(val size: Size) : VideoSource, Video.OnSurfaceCh
     override fun startRunning() {
         if (isRunning.get()) return
         isRunning.set(true)
-        stream?.screen?.frame = Rectangle(Point(0, 0), size)
+        stream?.screen?.frame = Rect(0, 0, size.width, size.height)
         screen.videoSize = size
         screen.listener = this
         stream?.screen?.addChild(screen)

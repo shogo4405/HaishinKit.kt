@@ -187,7 +187,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
         fun onSurfaceChanged(surface: Surface?)
     }
 
-    companion object {
+    private companion object {
         private val TAG = Video::class.java.simpleName
     }
 }

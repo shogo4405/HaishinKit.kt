@@ -56,6 +56,7 @@ open class ScreenObjectContainer : ScreenObject() {
         }
         children.add(child)
         child.parent = this
+        invalidateLayout()
     }
 
     /**
@@ -67,6 +68,7 @@ open class ScreenObjectContainer : ScreenObject() {
         }
         children.remove(child)
         child.parent = null
+        invalidateLayout()
     }
 
     override fun layout(renderer: Renderer) {
@@ -75,6 +77,7 @@ open class ScreenObjectContainer : ScreenObject() {
                 it.layout(renderer)
             }
         }
+        shouldInvalidateLayout = false
     }
 
     override fun draw(renderer: Renderer) {

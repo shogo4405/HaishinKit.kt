@@ -2,6 +2,7 @@ package com.haishinkit.media
 
 import android.content.Context
 import android.graphics.Point
+import android.graphics.Rect
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
@@ -17,7 +18,6 @@ import androidx.core.content.getSystemService
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.screen.Video
-import com.haishinkit.util.Rectangle
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -25,7 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class MediaProjectionSource(
-    private val context: Context, private var mediaProjection: MediaProjection
+    private val context: Context,
+    private var mediaProjection: MediaProjection,
 ) : VideoSource, Video.OnSurfaceChangedListener {
     private class Callback(val source: MediaProjectionSource) : MediaProjection.Callback() {
         override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
@@ -41,11 +42,12 @@ class MediaProjectionSource(
         ) {
             super.onCapturedContentResize(width, height)
             if (source.isRotatesWithContent) {
-                source.screen.imageOrientation = if (width < height) {
-                    ImageOrientation.UP
-                } else {
-                    ImageOrientation.LEFT
-                }
+                source.screen.imageOrientation =
+                    if (width < height) {
+                        ImageOrientation.UP
+                    } else {
+                        ImageOrientation.LEFT
+                    }
             }
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Callback#onCapturedContentResize:$width:$height")
@@ -113,7 +115,7 @@ class MediaProjectionSource(
         // Android 14 must register an callback.
         mediaProjection.registerCallback(callback, null)
         screen.videoSize = displaySize
-        stream?.screen?.frame = Rectangle(Point(0, 0), screen.videoSize)
+        stream?.screen?.frame = Rect(0, 0, screen.videoSize.width, screen.videoSize.height)
         stream?.screen?.addChild(screen)
         isRunning.set(true)
     }
@@ -133,16 +135,17 @@ class MediaProjectionSource(
 
     override fun onSurfaceChanged(surface: Surface?) {
         handler?.post {
-            virtualDisplay = mediaProjection.createVirtualDisplay(
-                DEFAULT_DISPLAY_NAME,
-                displaySize.width,
-                displaySize.height,
-                context.resources.configuration.densityDpi,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                surface,
-                null,
-                handler,
-            )
+            virtualDisplay =
+                mediaProjection.createVirtualDisplay(
+                    DEFAULT_DISPLAY_NAME,
+                    displaySize.width,
+                    displaySize.height,
+                    context.resources.configuration.densityDpi,
+                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    surface,
+                    null,
+                    handler,
+                )
         }
     }
 
@@ -157,7 +160,7 @@ class MediaProjectionSource(
                     context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 Size(
                     windowManager.currentWindowMetrics.bounds.width(),
-                    windowManager.currentWindowMetrics.bounds.height()
+                    windowManager.currentWindowMetrics.bounds.height(),
                 )
             } else {
                 val point = Point()

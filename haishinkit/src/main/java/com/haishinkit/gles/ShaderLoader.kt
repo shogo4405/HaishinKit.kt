@@ -15,7 +15,10 @@ internal class ShaderLoader(private val applicationContext: Context) {
     private var texture2dPrograms = mutableMapOf<VideoEffect, Program>()
     private var textureOesPrograms = mutableMapOf<VideoEffect, Program>()
 
-    fun getProgram(target: Int, videoEffect: VideoEffect): Program? {
+    fun getProgram(
+        target: Int,
+        videoEffect: VideoEffect,
+    ): Program? {
         return if (target == GLES11Ext.GL_TEXTURE_EXTERNAL_OES) {
             if (!textureOesPrograms.containsKey(videoEffect)) {
                 createProgram(target, videoEffect)?.let {

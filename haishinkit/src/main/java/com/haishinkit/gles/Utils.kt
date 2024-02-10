@@ -1,7 +1,7 @@
 package com.haishinkit.gles
 
 import android.opengl.GLES20
-import android.util.Log
+import com.haishinkit.BuildConfig
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -10,11 +10,11 @@ internal object Utils {
     private val TAG = Utils::class.java.toString()
 
     fun checkGlError(op: String) {
-        val error = GLES20.glGetError()
-        if (error != GLES20.GL_NO_ERROR) {
-            val msg = op + ": glError 0x" + Integer.toHexString(error)
-            Log.e(TAG, msg)
-            throw RuntimeException(msg)
+        if (BuildConfig.DEBUG) {
+            val error = GLES20.glGetError()
+            if (error != GLES20.GL_NO_ERROR) {
+                throw RuntimeException(op + ": glError 0x" + Integer.toHexString(error))
+            }
         }
     }
 

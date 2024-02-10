@@ -28,10 +28,9 @@ internal class Program(
 
     fun bind(visualEffect: VideoEffect) {
         for (handler in handlers) {
-            val value = handler.value.invoke(visualEffect)
-            when (true) {
-                (value is Int) -> GLES20.glUniform1i(handler.key, value)
-                (value is IntBuffer) -> {
+            when (val value = handler.value.invoke(visualEffect)) {
+                is Int -> GLES20.glUniform1i(handler.key, value)
+                is IntBuffer -> {
                     when (value.remaining()) {
                         1 -> GLES20.glUniform1iv(handler.key, 1, value)
                         2 -> GLES20.glUniform2iv(handler.key, 1, value)
@@ -40,8 +39,8 @@ internal class Program(
                     }
                 }
 
-                (value is Float) -> GLES20.glUniform1f(handler.key, value)
-                (value is FloatBuffer) -> {
+                is Float -> GLES20.glUniform1f(handler.key, value)
+                is FloatBuffer -> {
                     when (value.remaining()) {
                         1 -> GLES20.glUniform1fv(handler.key, 1, value)
                         2 -> GLES20.glUniform2fv(handler.key, 1, value)
