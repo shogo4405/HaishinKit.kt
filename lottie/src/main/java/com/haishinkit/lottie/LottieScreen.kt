@@ -23,7 +23,6 @@ import java.lang.ref.WeakReference
 import java.util.zip.ZipInputStream
 import kotlin.math.min
 
-
 /**
  * An object that manages offscreen rendering a lottie source.
  */

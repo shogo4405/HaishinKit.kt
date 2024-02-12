@@ -1,0 +1,51 @@
+plugins {
+    id "org.jlleitschuh.gradle.ktlint" version "12.1.0"
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'com.haishinkit.lottie'
+    compileSdk 34
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 34
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    // For Kotlin projects
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+    publishing {
+        singleVariant("release")
+    }
+}
+
+dependencies {
+    compileOnly project(":haishinkit")
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    implementation 'com.airbnb.android:lottie:6.3.0'
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation 'androidx.core:core-ktx:1.12.0'
+    testImplementation 'junit:junit:4.13.2'
+}
