@@ -246,7 +246,7 @@
       <h3 class=""> Gradle dependency</h3>
       <p class="paragraph"><strong>JitPack</strong></p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">allprojects {<br>  repositories {<br>    maven { url 'https://jitpack.io' }<br>  }<br>}<br><br>dependencies {<br>  implementation 'com.github.shogo4405.HaishinKit~kt:haishinkit:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:vulkan:x.x.x'<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">allprojects {<br>  repositories {<br>    maven { url 'https://jitpack.io' }<br>  }<br>}<br><br>dependencies {<br>  implementation 'com.github.shogo4405.HaishinKit~kt:haishinkit:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:lottie:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:vulkan:x.x.x'<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
@@ -259,6 +259,7 @@
             <th>Android</th>
             <th>Requirements</th>
             <th>Status</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
@@ -268,6 +269,15 @@
             <td>5</td>
             <td>Require</td>
             <td>Stable</td>
+            <td>It's the base module for HaishinKit.</td>
+          </tr>
+          <tr>
+            <td>lottie</td>
+            <td>21+</td>
+            <td>5</td>
+            <td>Optional</td>
+            <td>Beta</td>
+            <td>It's a module for embedding Lottie animations into live streaming video.</td>
           </tr>
           <tr>
             <td>vulkan</td>
@@ -275,6 +285,7 @@
             <td>8</td>
             <td>Optional</td>
             <td>Technical preview</td>
+            <td>It's support for the Vulkan graphics engine.</td>
           </tr>
         </tbody>
       </table>
