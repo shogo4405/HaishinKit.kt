@@ -44,7 +44,7 @@ Project name    |Notes       |License
 
 ### View rendering
 |-|HkSurfaceView|HkTextureView|
-|:-|:-:|:-:|
+|:---:|:---:|:---:|
 |Engine|SurfaceView|TextureView|
 |Playback|beta|beta|
 |Publish|✅ Stable|✅ Stable|
