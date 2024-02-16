@@ -88,10 +88,10 @@ internal class Renderer(applicationContext: Context) :
         val program =
             shaderLoader.getProgram(screenObject.target, screenObject.videoEffect) ?: return
         GLES20.glViewport(
-            screenObject.x,
-            screenObject.y,
-            screenObject.width,
-            screenObject.height,
+            screenObject.bounds.left,
+            screenObject.bounds.top,
+            screenObject.bounds.width(),
+            screenObject.bounds.height(),
         )
         program.use()
         program.bind(screenObject.videoEffect)

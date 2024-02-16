@@ -228,18 +228,19 @@ class LottieScreen(val context: Context) : Image() {
 
     @SuppressLint("RestrictedApi")
     override fun layout(renderer: Renderer) {
+        super.layout(renderer)
         val composition = composition ?: return
-        if (bitmap?.width != width || bitmap?.height != height) {
+        if (bitmap?.width != bounds.width() || bitmap?.height != bounds.height()) {
             bitmap = Bitmap.createBitmap(
-                width, height, Bitmap.Config.ARGB_8888
+                bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888
             ).apply {
                 canvas = Canvas(this)
             }
         }
         bitmap?.eraseColor(Color.TRANSPARENT)
         val minScale = min(
-            width.toFloat() / composition.bounds.width().toFloat(),
-            height.toFloat() / composition.bounds.height().toFloat()
+            bounds.width().toFloat() / composition.bounds.width().toFloat(),
+            bounds.height().toFloat() / composition.bounds.height().toFloat()
         )
         lottieToBitmapMatrix.reset()
         lottieToBitmapMatrix.preScale(
@@ -247,7 +248,6 @@ class LottieScreen(val context: Context) : Image() {
         )
         lottieDrawable.bounds.set(0, 0, composition.bounds.width(), composition.bounds.height())
         lottieDrawable.draw(canvas, lottieToBitmapMatrix)
-        super.layout(renderer)
     }
 
     private fun fromRawRes(@RawRes rawRes: Int): LottieTask<LottieComposition>? {

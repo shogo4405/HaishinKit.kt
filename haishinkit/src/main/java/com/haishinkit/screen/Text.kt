@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Rect
+import kotlin.math.max
 
 /**
  * An object that manages offscreen rendering a text source.
@@ -46,11 +47,12 @@ class Text : Image() {
 
     override fun layout(renderer: Renderer) {
         paint.getTextBounds(textValue, 0, textValue.length, textBounds)
+        frame.set(textBounds)
         if (bitmap?.width != textBounds.width() || bitmap?.height != textBounds.height()) {
             bitmap =
                 Bitmap.createBitmap(
-                    textBounds.width(),
-                    textBounds.height(),
+                    max(textBounds.width(), 1),
+                    max(textBounds.height(), 1),
                     Bitmap.Config.ARGB_8888
                 ).apply {
                     canvas = Canvas(this)

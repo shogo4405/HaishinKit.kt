@@ -105,7 +105,7 @@ internal class PixelTransform(override val applicationContext: Context) :
         }
         program = shaderLoader.getProgram(GLES20.GL_TEXTURE_2D, videoEffect)
         screen?.let {
-            video.videoSize = Size(it.width, it.height)
+            video.videoSize = Size(it.bounds.width(), it.bounds.height())
         }
         choreographer = Choreographer.getInstance()
     }

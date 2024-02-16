@@ -53,13 +53,13 @@ internal class Screen(applicationContext: Context) :
 
     override fun readPixels(lambda: (bitmap: Bitmap?) -> Unit) {
         val bitmap =
-            Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            Bitmap.createBitmap(frame.width(), frame.height(), Bitmap.Config.ARGB_8888)
         val byteBuffer =
-            ByteBuffer.allocateDirect(width * height * 4).apply {
+            ByteBuffer.allocateDirect(frame.width() * frame.height() * 4).apply {
                 order(ByteOrder.LITTLE_ENDIAN)
             }
         framebuffer.render {
-            graphicsContext.readPixels(width, height, byteBuffer)
+            graphicsContext.readPixels(frame.width(), frame.height(), byteBuffer)
         }
         bitmap.copyPixelsFromBuffer(byteBuffer)
         lambda(
@@ -67,8 +67,8 @@ internal class Screen(applicationContext: Context) :
                 bitmap,
                 0,
                 0,
-                width,
-                height,
+                frame.width(),
+                frame.height(),
                 null,
                 false,
             ),

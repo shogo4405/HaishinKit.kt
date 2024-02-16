@@ -25,7 +25,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
         }
 
     /**
-     * Specifies the frame.
+     * Specifies the frame rectangle.
      */
     open var frame = Rect(0, 0, 0, 0)
         set(value) {
@@ -35,6 +35,11 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
         }
 
     /**
+     * The bounds rectangle.
+     */
+    val bounds = Rect(0, 0, 0, 0)
+
+    /**
      * Specifies the default spacing to laying out content in the screen object.
      */
     val layoutMargins: EdgeInsets = EdgeInsets(0, 0, 0, 0)
@@ -42,13 +47,12 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     /**
      * The mvp matrix.
      */
-    val matrix =
-        FloatArray(16).apply {
-            this[0] = 1f
-            this[5] = 1f
-            this[10] = 1f
-            this[15] = 1f
-        }
+    val matrix = FloatArray(16).apply {
+        this[0] = 1f
+        this[5] = 1f
+        this[10] = 1f
+        this[15] = 1f
+    }
 
     /**
      * Specifies the alignment position along the horizontal axis.
@@ -64,78 +68,6 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      * Specifies the video effect such as a monochrome, a sepia.
      */
     var videoEffect: VideoEffect = DefaultVideoEffect.shared
-
-    /**
-     * The x coordinate.
-     */
-    val x: Int
-        get() {
-            val parentX = parent?.x ?: 0
-            val parentWidth = parent?.width ?: 0
-            return when (horizontalAlignment) {
-                HORIZONTAL_ALIGNMENT_CENTER -> {
-                    parentX + (parentWidth - width) / 2
-                }
-
-                HORIZONTAL_ALIGNMENT_RIGHT -> {
-                    parentX + (parentWidth - width) - layoutMargins.right
-                }
-
-                else -> {
-                    parentX + frame.left + layoutMargins.left
-                }
-            }
-        }
-
-    /**
-     * The y coordinate.
-     */
-    val y: Int
-        get() {
-            val parentY = parent?.y ?: 0
-            val parentHeight = parent?.height ?: 0
-            return when (verticalAlignment) {
-                VERTICAL_ALIGNMENT_MIDDLE -> {
-                    parentY + (parentHeight - height) / 2
-                }
-
-                VERTICAL_ALIGNMENT_BOTTOM -> {
-                    parentY + (parentHeight - height) - layoutMargins.bottom
-                }
-
-                else -> {
-                    parentY + frame.top + layoutMargins.top
-                }
-            }
-        }
-
-    /**
-     * The width of the object in pixels.
-     */
-    open val width: Int
-        get() {
-            if (frame.width() == 0) {
-                return max(
-                    (parent?.frame?.width() ?: 0) - layoutMargins.left - layoutMargins.right,
-                    0,
-                )
-            }
-            return frame.width()
-        }
-
-    /**
-     * The height of the object in pixels.
-     */
-    open val height: Int
-        get() {
-            if (frame.height() == 0) {
-                return max(
-                    (parent?.frame?.height() ?: 0) - layoutMargins.top - layoutMargins.bottom,
-                    0,
-                )
-            }
-            return frame.height()
-        }
 
     /**
      * Specifies the visibility of the object.
@@ -165,6 +97,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      * Layouts the screen object.
      */
     open fun layout(renderer: Renderer) {
+        getBounds(bounds)
         renderer.layout(this)
         shouldInvalidateLayout = false
     }
@@ -174,6 +107,58 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
      */
     open fun draw(renderer: Renderer) {
         renderer.draw(this)
+    }
+
+    private fun getBounds(rect: Rect) {
+        if (parent == null) {
+            rect.set(0, 0, frame.width(), frame.height())
+        } else {
+            val width = if (frame.width() == 0) {
+                max(
+                    (parent?.frame?.width() ?: 0) - layoutMargins.left - layoutMargins.right, 0
+                )
+            } else {
+                frame.width()
+            }
+            val height = if (frame.height() == 0) {
+                max(
+                    (parent?.frame?.height() ?: 0) - layoutMargins.top - layoutMargins.bottom, 0
+                )
+            } else {
+                frame.height()
+            }
+            val parentX = parent?.frame?.left ?: 0
+            val parentWidth = parent?.frame?.width() ?: 0
+            val x = when (horizontalAlignment) {
+                HORIZONTAL_ALIGNMENT_CENTER -> {
+                    parentX + (parentWidth - width) / 2
+                }
+
+                HORIZONTAL_ALIGNMENT_RIGHT -> {
+                    parentX + (parentWidth - width) - layoutMargins.right
+                }
+
+                else -> {
+                    parentX + frame.left + layoutMargins.left
+                }
+            }
+            val parentY = parent?.frame?.top ?: 0
+            val parentHeight = parent?.frame?.height() ?: 0
+            val y = when (verticalAlignment) {
+                VERTICAL_ALIGNMENT_MIDDLE -> {
+                    parentY + (parentHeight - height) / 2
+                }
+
+                VERTICAL_ALIGNMENT_BOTTOM -> {
+                    parentY + (parentHeight - height) - layoutMargins.bottom
+                }
+
+                else -> {
+                    parentY + frame.top + layoutMargins.top
+                }
+            }
+            rect.set(x, y, x + width, y + height)
+        }
     }
 
     companion object {

@@ -14,22 +14,6 @@ open class Image : ScreenObject() {
             invalidateLayout()
         }
 
-    override val width: Int
-        get() {
-            if (frame.width() == 0) {
-                return bitmap?.width ?: 0
-            }
-            return frame.width()
-        }
-
-    override val height: Int
-        get() {
-            if (frame.height() == 0) {
-                return bitmap?.height ?: 0
-            }
-            return frame.height()
-        }
-
     init {
         matrix[5] = matrix[5] * -1
     }

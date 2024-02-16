@@ -126,7 +126,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
             VideoGravity.RESIZE_ASPECT -> {
                 var x: Float
                 var y: Float
-                val iRatio = width.toFloat() / height.toFloat()
+                val iRatio = bounds.width().toFloat() / bounds.height().toFloat()
                 val fRatio = newVideoSize.aspectRatio
                 if (iRatio < fRatio) {
                     x = 1f
@@ -155,10 +155,10 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
             VideoGravity.RESIZE_ASPECT_FILL -> {
                 var x: Float
                 var y: Float
-                val iRatio = width.toFloat() / height.toFloat()
+                val iRatio = bounds.width().toFloat() / bounds.height().toFloat()
                 val fRatio = newVideoSize.aspectRatio
                 if (iRatio < fRatio) {
-                    x = height.toFloat() / width.toFloat() * fRatio
+                    x = bounds.height().toFloat() / bounds.width().toFloat() * fRatio
                     y = 1f
                     if (swapped) {
                         y = x
@@ -166,7 +166,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
                     }
                 } else {
                     x = 1f
-                    y = width.toFloat() / height.toFloat() / fRatio
+                    y = bounds.width().toFloat() / bounds.height().toFloat() / fRatio
                     if (swapped) {
                         x = y
                         y = 1f
