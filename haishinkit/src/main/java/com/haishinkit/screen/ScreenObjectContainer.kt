@@ -72,6 +72,7 @@ open class ScreenObjectContainer : ScreenObject() {
     }
 
     override fun layout(renderer: Renderer) {
+        getBounds(bounds)
         children.forEach {
             if (it.shouldInvalidateLayout || shouldInvalidateLayout) {
                 it.layout(renderer)

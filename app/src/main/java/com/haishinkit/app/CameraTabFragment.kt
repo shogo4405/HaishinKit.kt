@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,8 +22,6 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import com.airbnb.lottie.ImageAssetDelegate
-import com.airbnb.lottie.LottieImageAsset
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
@@ -31,6 +30,7 @@ import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
+import com.haishinkit.media.MultiCamera2Source
 import com.haishinkit.media.Stream
 import com.haishinkit.media.StreamDrawable
 import com.haishinkit.rtmp.RtmpConnection
@@ -44,13 +44,12 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
+class CameraTabFragment : Fragment(), IEventListener {
     private class Callback(private val fragment: CameraTabFragment) : Screen.Callback() {
         private val dateFormat = SimpleDateFormat("HH:mm:ss")
         override fun onEnterFrame() {
             try {
                 fragment.text.textValue = dateFormat.format(Date())
-                // Log.e("TAG", fragment.lottie.isAnimating.toString())
             } catch (e: RuntimeException) {
                 Log.e(TAG, "", e)
             }
@@ -60,7 +59,8 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
     private lateinit var cameraView: StreamDrawable
-    private lateinit var cameraSource: Camera2Source
+    private var multiCamera: MultiCamera2Source? = null
+    private var cameraSource: Camera2Source? = null
     private val text: Text by lazy { Text() }
     private val lottie: LottieScreen by lazy { LottieScreen(requireContext()) }
     private val callback: Screen.Callback by lazy { Callback(this) }
@@ -83,8 +83,14 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
         stream = RtmpStream(requireContext(), connection)
         stream.attachAudio(AudioRecordSource(requireContext()))
 
-        cameraSource = Camera2Source(requireContext())
-        stream.attachVideo(cameraSource)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            multiCamera = MultiCamera2Source(requireContext())
+            stream.attachVideo(multiCamera)
+        } else {
+            cameraSource = Camera2Source(requireContext())
+            stream.attachVideo(cameraSource)
+        }
+
         stream.screen.frame = Rect(
             0, 0,
             Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH
@@ -107,7 +113,7 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
 
         lottie.setAnimation(R.raw.a1707149669115)
         lottie.frame.set(0, 0, 200, 200)
-        lottie.setImageAssetDelegate(this)
+        lottie.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_RIGHT
         lottie.playAnimation()
         stream.screen.addChild(lottie)
 
@@ -179,7 +185,7 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
         }
 
         val switchButton = v.findViewById<Button>(R.id.switch_button)
-        switchButton.setOnClickListener { cameraSource.switchCamera() }
+        switchButton.setOnClickListener { cameraSource?.switchCamera() }
         cameraView = if (Preference.useSurfaceView) {
             v.findViewById(R.id.surface_view)
         } else {
@@ -191,7 +197,15 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
 
     override fun onResume() {
         super.onResume()
-        cameraSource.open(CameraCharacteristics.LENS_FACING_BACK)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            multiCamera?.open(0, CameraCharacteristics.LENS_FACING_BACK)
+            multiCamera?.open(1, CameraCharacteristics.LENS_FACING_FRONT)
+            multiCamera?.getVideoByChannel(1)?.apply {
+                frame = Rect(10, 10, 180, 180)
+            }
+        } else {
+            cameraSource?.open(CameraCharacteristics.LENS_FACING_BACK)
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -220,7 +234,11 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
     }
 
     override fun onPause() {
-        cameraSource.close()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            multiCamera?.close()
+        } else {
+            cameraSource?.close()
+        }
         super.onPause()
     }
 
@@ -236,11 +254,6 @@ class CameraTabFragment : Fragment(), IEventListener, ImageAssetDelegate {
         if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
             stream.publish(Preference.shared.streamName)
         }
-    }
-
-    override fun fetchBitmap(asset: LottieImageAsset?): Bitmap? {
-        Log.e("TAG", asset.toString())
-        return null
     }
 
     companion object {

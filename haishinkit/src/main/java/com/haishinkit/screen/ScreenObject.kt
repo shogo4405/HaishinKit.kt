@@ -109,26 +109,26 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
         renderer.draw(this)
     }
 
-    private fun getBounds(rect: Rect) {
+    protected fun getBounds(rect: Rect) {
         if (parent == null) {
             rect.set(0, 0, frame.width(), frame.height())
         } else {
             val width = if (frame.width() == 0) {
                 max(
-                    (parent?.frame?.width() ?: 0) - layoutMargins.left - layoutMargins.right, 0
+                    (parent?.bounds?.width() ?: 0) - layoutMargins.left - layoutMargins.right, 0
                 )
             } else {
                 frame.width()
             }
             val height = if (frame.height() == 0) {
                 max(
-                    (parent?.frame?.height() ?: 0) - layoutMargins.top - layoutMargins.bottom, 0
+                    (parent?.bounds?.height() ?: 0) - layoutMargins.top - layoutMargins.bottom, 0
                 )
             } else {
                 frame.height()
             }
             val parentX = parent?.frame?.left ?: 0
-            val parentWidth = parent?.frame?.width() ?: 0
+            val parentWidth = parent?.bounds?.width() ?: 0
             val x = when (horizontalAlignment) {
                 HORIZONTAL_ALIGNMENT_CENTER -> {
                     parentX + (parentWidth - width) / 2
@@ -143,7 +143,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
                 }
             }
             val parentY = parent?.frame?.top ?: 0
-            val parentHeight = parent?.frame?.height() ?: 0
+            val parentHeight = parent?.bounds?.height() ?: 0
             val y = when (verticalAlignment) {
                 VERTICAL_ALIGNMENT_MIDDLE -> {
                     parentY + (parentHeight - height) / 2
