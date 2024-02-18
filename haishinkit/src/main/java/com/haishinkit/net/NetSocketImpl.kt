@@ -27,7 +27,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
     private var inputBuffer = ByteBuffer.allocate(DEFAULT_WINDOW_SIZE_C)
-    private var socket: java.net.Socket? = null
+    private var socket: Socket? = null
     private var inputStream: InputStream? = null
         set(value) {
             if (value == null) {

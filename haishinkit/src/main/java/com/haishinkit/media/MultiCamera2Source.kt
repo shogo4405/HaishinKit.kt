@@ -19,20 +19,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 @RequiresApi(Build.VERSION_CODES.P)
 @Suppress("MemberVisibilityCanBePrivate")
 class MultiCamera2Source(val context: Context) : VideoSource {
-    val container: ScreenObjectContainer by lazy {
-        ScreenObjectContainer()
-    }
     override var stream: Stream? = null
-        set(value) {
-            field?.screen?.removeChild(container)
-            field = value
-            field?.screen?.addChild(container)
-        }
     override val isRunning = AtomicBoolean(false)
-    override val screen: Video by lazy {
-        Video().apply {
-            isRotatesWithContent = true
-        }
+    override val screen: ScreenObjectContainer by lazy {
+        ScreenObjectContainer()
     }
     private val manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private val orientationEventListener: OrientationEventListener? by lazy {
@@ -51,7 +41,7 @@ class MultiCamera2Source(val context: Context) : VideoSource {
             }
         }
     }
-    private val outputs = mutableMapOf<Int, MultiCamera2Output>()
+    private val outputs = mutableMapOf<Int, Camera2Output>()
 
     @SuppressLint("MissingPermission")
     fun open(channel: Int, position: Int? = null) {
@@ -60,7 +50,7 @@ class MultiCamera2Source(val context: Context) : VideoSource {
         } else {
             getCameraId(position) ?: DEFAULT_CAMERA_ID
         }
-        val output = MultiCamera2Output(this, cameraId)
+        val output = Camera2Output(context, this, cameraId)
         outputs[channel] = output
         output.open()
     }

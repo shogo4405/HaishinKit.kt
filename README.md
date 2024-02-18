@@ -154,7 +154,7 @@ ActivityCompat.requestPermissions(this,arrayOf(
 Real Time Messaging Protocol (RTMP).
 
 ```kt
-class CameraTabFragment: Fragment(), IEventListener {
+class CameraTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
     private lateinit var cameraView: HkGLSurfaceView
@@ -167,7 +167,11 @@ class CameraTabFragment: Fragment(), IEventListener {
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.CAMERA), 1)
             }
-            if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    it,
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
             }
         }
@@ -182,7 +186,11 @@ class CameraTabFragment: Fragment(), IEventListener {
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val v = inflater.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {

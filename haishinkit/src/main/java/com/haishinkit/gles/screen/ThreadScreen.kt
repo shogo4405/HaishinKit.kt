@@ -69,7 +69,8 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
         }
     }
 
-    override fun addChild(child: ScreenObject) {
+    override fun addChild(child: ScreenObject?) {
+        val child = child ?: return
         handler.apply {
             sendMessage(obtainMessage(MSG_ADD_CHILD, child))
         }
@@ -99,7 +100,8 @@ internal class ThreadScreen(applicationContext: Context) : Screen(applicationCon
         }
     }
 
-    override fun removeChild(child: ScreenObject) {
+    override fun removeChild(child: ScreenObject?) {
+        val child = child ?: return
         handler.apply {
             sendMessage(obtainMessage(MSG_REMOVE_CHILD, child))
         }

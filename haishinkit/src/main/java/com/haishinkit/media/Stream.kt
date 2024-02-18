@@ -57,7 +57,7 @@ abstract class Stream(applicationContext: Context) {
         }
 
     /**
-     * Specifies the NetStreamDrawable object.
+     * Specifies the StreamDrawable object.
      */
     var drawable: StreamDrawable? = null
 
@@ -79,9 +79,11 @@ abstract class Stream(applicationContext: Context) {
     var videoSource: VideoSource? = null
         internal set(value) {
             field?.stopRunning()
+            screen.removeChild(field?.screen)
             field?.stream = null
             field = value
             field?.stream = this
+            screen.addChild(field?.screen)
             field?.startRunning()
         }
 

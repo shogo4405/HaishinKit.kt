@@ -17,6 +17,7 @@ import android.view.WindowManager
 import androidx.core.content.getSystemService
 import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
+import com.haishinkit.screen.ScreenObjectContainer
 import com.haishinkit.screen.Video
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -42,7 +43,7 @@ class MediaProjectionSource(
         ) {
             super.onCapturedContentResize(width, height)
             if (source.isRotatesWithContent) {
-                source.screen.imageOrientation =
+                source.video.imageOrientation =
                     if (width < height) {
                         ImageOrientation.UP
                     } else {
@@ -64,7 +65,14 @@ class MediaProjectionSource(
 
     override var stream: Stream? = null
     override val isRunning = AtomicBoolean(false)
-    override val screen: Video by lazy { Video() }
+    override val screen: ScreenObjectContainer by lazy {
+        ScreenObjectContainer().apply {
+            addChild(video)
+        }
+    }
+    val video: Video by lazy {
+        Video()
+    }
     private var virtualDisplay: VirtualDisplay? = null
         set(value) {
             field?.release()
@@ -111,12 +119,11 @@ class MediaProjectionSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
-        screen.listener = this
+        video.listener = this
         // Android 14 must register an callback.
         mediaProjection.registerCallback(callback, null)
-        screen.videoSize = displaySize
-        stream?.screen?.frame = Rect(0, 0, screen.videoSize.width, screen.videoSize.height)
-        stream?.screen?.addChild(screen)
+        video.videoSize = displaySize
+        stream?.screen?.frame = Rect(0, 0, video.videoSize.width, video.videoSize.height)
         isRunning.set(true)
     }
 
@@ -125,8 +132,7 @@ class MediaProjectionSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        stream?.screen?.removeChild(screen)
-        screen.listener = null
+        video.listener = null
         mediaProjection.unregisterCallback(callback)
         mediaProjection.stop()
         virtualDisplay = null

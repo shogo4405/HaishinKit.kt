@@ -203,9 +203,8 @@ class CameraTabFragment : Fragment(), IEventListener {
             multiCamera?.getVideoByChannel(1)?.apply {
                 frame = Rect(10, 10, 180, 180)
             }
-        } else {
-            cameraSource?.open(CameraCharacteristics.LENS_FACING_BACK)
         }
+        cameraSource?.open(CameraCharacteristics.LENS_FACING_BACK)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -236,9 +235,8 @@ class CameraTabFragment : Fragment(), IEventListener {
     override fun onPause() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             multiCamera?.close()
-        } else {
-            cameraSource?.close()
         }
+        cameraSource?.close()
         super.onPause()
     }
 

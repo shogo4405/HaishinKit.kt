@@ -50,7 +50,8 @@ open class ScreenObjectContainer : ScreenObject() {
     /**
      * Adds the specified screen object as a child of the current screen object container.
      */
-    open fun addChild(child: ScreenObject) {
+    open fun addChild(child: ScreenObject?) {
+        val child = child ?: return
         if (child.parent != null || child == this) {
             throw IllegalArgumentException()
         }
@@ -62,7 +63,8 @@ open class ScreenObjectContainer : ScreenObject() {
     /**
      * Removes the specified screen object as a child of the current screen object container.
      */
-    open fun removeChild(child: ScreenObject) {
+    open fun removeChild(child: ScreenObject?) {
+        val child = child ?: return
         if (child.parent != this) {
             return
         }
