@@ -113,16 +113,18 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
         if (parent == null) {
             rect.set(0, 0, frame.width(), frame.height())
         } else {
-            val width = if (frame.width() == 0) {
+            val width = if (frame.width() <= 0) {
                 max(
-                    (parent?.bounds?.width() ?: 0) - layoutMargins.left - layoutMargins.right, 0
+                    (parent?.bounds?.width()
+                        ?: 0) - layoutMargins.left - layoutMargins.right + frame.width(), 0
                 )
             } else {
                 frame.width()
             }
-            val height = if (frame.height() == 0) {
+            val height = if (frame.height() <= 0) {
                 max(
-                    (parent?.bounds?.height() ?: 0) - layoutMargins.top - layoutMargins.bottom, 0
+                    (parent?.bounds?.height()
+                        ?: 0) - layoutMargins.top - layoutMargins.bottom + frame.height(), 0
                 )
             } else {
                 frame.height()
