@@ -12,14 +12,14 @@ import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.VideoGravity
-import com.haishinkit.media.StreamDrawable
+import com.haishinkit.media.StreamView
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 
 class PlaybackTabFragment : Fragment(), IEventListener {
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var playbackView: StreamDrawable
+    private lateinit var playbackView: StreamView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

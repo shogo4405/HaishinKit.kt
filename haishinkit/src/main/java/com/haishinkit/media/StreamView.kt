@@ -3,7 +3,7 @@ package com.haishinkit.media
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 
-interface StreamDrawable {
+interface StreamView {
     /**
      * Specifies the videoGravity how the displays the visual content.
      */

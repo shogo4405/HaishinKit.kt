@@ -128,7 +128,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             Codec.Mode.ENCODE -> {
                 stream.audioSource?.stopRunning()
                 stream.audioCodec.stopRunning()
-                if (stream.drawable == null) {
+                if (stream.view == null) {
                     stream.videoSource?.stopRunning()
                 }
                 stream.videoCodec.stopRunning()

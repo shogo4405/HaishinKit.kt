@@ -10,7 +10,7 @@ import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.media.Stream
-import com.haishinkit.media.StreamDrawable
+import com.haishinkit.media.StreamView
 
 /**
  * A view that displays a video content of a NetStream object which uses [TextureView].
@@ -24,7 +24,7 @@ constructor(
     defStyleRes: Int = 0,
 ) :
     TextureView(context, attrs, defStyleAttr, defStyleRes),
-    StreamDrawable,
+    StreamView,
     TextureView.SurfaceTextureListener {
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity
@@ -48,9 +48,9 @@ constructor(
 
     private var stream: Stream? = null
         set(value) {
-            field?.drawable = null
+            field?.view = null
             field = value
-            field?.drawable = this
+            field?.view = this
             pixelTransform.screen = value?.screen
         }
 

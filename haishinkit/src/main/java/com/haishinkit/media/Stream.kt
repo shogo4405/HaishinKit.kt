@@ -52,14 +52,14 @@ abstract class Stream(applicationContext: Context) {
     var videoEffect: VideoEffect? = null
         set(value) {
             videoCodec.pixelTransform.videoEffect = value ?: DefaultVideoEffect.shared
-            drawable?.videoEffect = value ?: DefaultVideoEffect.shared
+            view?.videoEffect = value ?: DefaultVideoEffect.shared
             field = value
         }
 
     /**
-     * Specifies the StreamDrawable object.
+     * Specifies the StreamView object.
      */
-    var drawable: StreamDrawable? = null
+    var view: StreamView? = null
 
     /**
      * The current audioSource object.
@@ -125,7 +125,7 @@ abstract class Stream(applicationContext: Context) {
         audioSource = null
         videoCodec.dispose()
         videoSource = null
-        drawable = null
+        view = null
         screen.dispose()
     }
 

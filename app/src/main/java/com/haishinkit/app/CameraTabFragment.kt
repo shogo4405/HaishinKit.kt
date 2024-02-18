@@ -32,7 +32,7 @@ import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.media.MultiCamera2Source
 import com.haishinkit.media.Stream
-import com.haishinkit.media.StreamDrawable
+import com.haishinkit.media.StreamView
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 import com.haishinkit.screen.Image
@@ -58,7 +58,7 @@ class CameraTabFragment : Fragment(), IEventListener {
 
     private lateinit var connection: RtmpConnection
     private lateinit var stream: RtmpStream
-    private lateinit var cameraView: StreamDrawable
+    private lateinit var cameraView: StreamView
     private var multiCamera: MultiCamera2Source? = null
     private var cameraSource: Camera2Source? = null
     private val text: Text by lazy { Text() }
