@@ -278,8 +278,7 @@ class Camera2Source(private val context: Context) :
         fun onCreateCaptureRequest(builder: CaptureRequest.Builder)
     }
 
-    companion object {
-        private const val IMAGE_FORMAT = 0x00000022 // AIMAGE_FORMAT_PRIVATE
+    private companion object {
         private const val DEFAULT_CAMERA_ID = "0"
         private val TAG = Camera2Source::class.java.simpleName
     }
