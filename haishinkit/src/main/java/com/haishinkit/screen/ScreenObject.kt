@@ -89,7 +89,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     /**
      * Invalidates the current layout and triggers a layout update.
      */
-    fun invalidateLayout() {
+    open fun invalidateLayout() {
         shouldInvalidateLayout = true
     }
 

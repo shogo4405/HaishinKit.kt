@@ -43,6 +43,9 @@ class MultiCamera2Source(val context: Context) : VideoSource {
     }
     private val outputs = mutableMapOf<Int, Camera2Output>()
 
+    /**
+     * Opens the camera with camera2 api.
+     */
     @SuppressLint("MissingPermission")
     fun open(channel: Int, position: Int? = null) {
         val cameraId = if (position == null) {
@@ -56,7 +59,7 @@ class MultiCamera2Source(val context: Context) : VideoSource {
     }
 
     /**
-     * Closes the camera2 captures.
+     * Closes the camera.
      */
     fun close() {
         outputs.values.forEach { it.close() }

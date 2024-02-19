@@ -1,7 +1,6 @@
 package com.haishinkit.media
 
 import android.content.Context
-import android.graphics.Rect
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
@@ -25,9 +24,7 @@ abstract class Stream(applicationContext: Context) {
      */
     val screen: Screen by lazy {
         val screen =
-            Screen.create(applicationContext).apply {
-                frame = Rect(0, 0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT)
-            }
+            Screen.create(applicationContext)
         videoCodec.pixelTransform.screen = screen
         screen
     }
@@ -186,10 +183,7 @@ abstract class Stream(applicationContext: Context) {
         }
     }
 
-    companion object {
+    private companion object {
         private val TAG = Stream::class.java.simpleName
-
-        const val DEFAULT_SCREEN_WIDTH = 1280
-        const val DEFAULT_SCREEN_HEIGHT = 720
     }
 }

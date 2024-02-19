@@ -2,7 +2,7 @@ package com.haishinkit.util
 
 import android.util.Size
 
-internal fun Size.swap(swapped: Boolean): Size {
+fun Size.swap(swapped: Boolean): Size {
     return if (swapped) {
         Size(height, width)
     } else {
@@ -10,5 +10,5 @@ internal fun Size.swap(swapped: Boolean): Size {
     }
 }
 
-internal val Size.aspectRatio: Float
+val Size.aspectRatio: Float
     get() = width.toFloat() / height.toFloat()

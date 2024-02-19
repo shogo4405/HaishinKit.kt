@@ -18,6 +18,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class Camera2Source(private val context: Context) : VideoSource {
+    /**
+     * The video screen object.
+     */
     val video: Video?
         get() = output?.video
     override var stream: Stream? = null
@@ -41,6 +44,9 @@ class Camera2Source(private val context: Context) : VideoSource {
         }
     }
 
+    /**
+     * Opens the camera with camera2 api.
+     */
     @SuppressLint("MissingPermission")
     fun open(position: Int? = null) {
         val cameraId = if (position == null) {
@@ -54,6 +60,9 @@ class Camera2Source(private val context: Context) : VideoSource {
         output?.open()
     }
 
+    /**
+     * Closes the camera.
+     */
     fun close() {
         output?.close()
     }

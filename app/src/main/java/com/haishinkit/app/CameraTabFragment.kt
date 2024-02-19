@@ -31,7 +31,6 @@ import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.media.MultiCamera2Source
-import com.haishinkit.media.Stream
 import com.haishinkit.media.StreamView
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
@@ -93,7 +92,7 @@ class CameraTabFragment : Fragment(), IEventListener {
 
         stream.screen.frame = Rect(
             0, 0,
-            Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH
+            Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH
         )
 
         text.textSize = 60f
@@ -201,7 +200,7 @@ class CameraTabFragment : Fragment(), IEventListener {
             multiCamera?.open(0, CameraCharacteristics.LENS_FACING_BACK)
             multiCamera?.open(1, CameraCharacteristics.LENS_FACING_FRONT)
             multiCamera?.getVideoByChannel(1)?.apply {
-                frame = Rect(10, 10, 180, 180)
+                frame = Rect(20, 20, 90 + 20, 160 + 20)
             }
         }
         cameraSource?.open(CameraCharacteristics.LENS_FACING_BACK)
@@ -213,14 +212,14 @@ class CameraTabFragment : Fragment(), IEventListener {
             Configuration.ORIENTATION_PORTRAIT -> {
                 stream.screen.frame = Rect(
                     0, 0,
-                    Stream.DEFAULT_SCREEN_HEIGHT, Stream.DEFAULT_SCREEN_WIDTH
+                    Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH
                 )
             }
 
             Configuration.ORIENTATION_LANDSCAPE -> {
                 stream.screen.frame = Rect(
                     0, 0,
-                    Stream.DEFAULT_SCREEN_WIDTH, Stream.DEFAULT_SCREEN_HEIGHT
+                    Screen.DEFAULT_WIDTH, Screen.DEFAULT_HEIGHT
                 )
             }
 

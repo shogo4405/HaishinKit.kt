@@ -3,6 +3,7 @@ package com.haishinkit.screen
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
 
 /**
  * An object that manages offscreen rendering a foundation.
@@ -52,8 +53,12 @@ abstract class Screen(val applicationContext: Context) : ScreenObjectContainer()
     }
 
     companion object {
+        const val DEFAULT_WIDTH = 1280
+        const val DEFAULT_HEIGHT = 720
         fun create(context: Context): Screen {
-            return com.haishinkit.gles.screen.ThreadScreen(context)
+            return com.haishinkit.gles.screen.ThreadScreen(context).apply {
+                frame = Rect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT)
+            }
         }
     }
 }

@@ -183,6 +183,11 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
         }
     }
 
+    override fun invalidateLayout() {
+        super.invalidateLayout()
+        parent?.invalidateLayout()
+    }
+
     interface OnSurfaceChangedListener {
         fun onSurfaceChanged(surface: Surface?)
     }
