@@ -87,7 +87,7 @@ constructor(
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
     }
 
-    companion object {
+    private companion object {
         private val TAG = HkTextureView::class.java.simpleName
     }
 }

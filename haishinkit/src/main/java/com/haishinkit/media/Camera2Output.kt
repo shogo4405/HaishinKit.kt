@@ -12,6 +12,7 @@ import android.hardware.camera2.params.SessionConfiguration
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import com.haishinkit.graphics.ImageOrientation
@@ -77,7 +78,17 @@ internal class Camera2Output(
 
     override fun onOpened(camera: CameraDevice) {
         device = camera
-        video.videoSize = getCameraSize()
+        source.stream?.screen?.frame?.let {
+            if (it.height() <= it.width()) {
+                getCameraSize(it.width(), it.height())?.let { size ->
+                    video.videoSize = size
+                }
+            } else {
+                getCameraSize(it.height(), it.width())?.let { size ->
+                    video.videoSize = size
+                }
+            }
+        }
         video.imageOrientation = imageOrientation
         source.screen.addChild(video)
     }
@@ -88,10 +99,15 @@ internal class Camera2Output(
     override fun onError(camera: CameraDevice, error: Int) {
     }
 
-    private fun getCameraSize(): Size {
+    private fun getCameraSize(width: Int?, height: Int?): Size? {
         val scm = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-        val cameraSizes = scm?.getOutputSizes(SurfaceTexture::class.java) ?: return Size(0, 0)
-        return cameraSizes[0]
+        val sizes = scm?.getOutputSizes(SurfaceTexture::class.java)
+        if (width == null || height == null) {
+            return sizes?.get(0)
+        }
+        return sizes?.filter { size ->
+            (width <= size.width) && (height <= size.height)
+        }?.sortedBy { size -> size.width * size.height }?.get(0) ?: sizes?.get(0)
     }
 
     private fun createCaptureSession(surface: Surface) {
@@ -109,7 +125,11 @@ internal class Camera2Output(
                     executor,
                     object : CameraCaptureSession.StateCallback() {
                         override fun onConfigured(session: CameraCaptureSession) {
-                            session.setRepeatingRequest(request, null, null)
+                            try {
+                                session.setRepeatingRequest(request, null, null)
+                            } catch (e: RuntimeException) {
+                                Log.e(TAG, "", e)
+                            }
                         }
 
                         override fun onConfigureFailed(captureSession: CameraCaptureSession) {
@@ -125,7 +145,11 @@ internal class Camera2Output(
                 surfaces,
                 object : CameraCaptureSession.StateCallback() {
                     override fun onConfigured(session: CameraCaptureSession) {
-                        session.setRepeatingRequest(request, null, null)
+                        try {
+                            session.setRepeatingRequest(request, null, null)
+                        } catch (e: RuntimeException) {
+                            Log.e(TAG, "", e)
+                        }
                     }
 
                     override fun onConfigureFailed(session: CameraCaptureSession) {

@@ -78,7 +78,7 @@ constructor(
         this.stream = stream
     }
 
-    companion object {
+    private companion object {
         private var TAG = HkSurfaceView::class.java.simpleName
     }
 }

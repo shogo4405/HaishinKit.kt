@@ -55,8 +55,8 @@ open class ScreenObjectContainer : ScreenObject() {
         if (child.parent != null || child == this) {
             throw IllegalArgumentException()
         }
-        children.add(child)
         child.parent = this
+        children.add(child)
         invalidateLayout()
     }
 
