@@ -5,15 +5,12 @@ module:haishinkit
 com.haishinkit.amf.data
 com.haishinkit.codec
 com.haishinkit.event
-com.haishinkit.flv
-com.haishinkit.flv.tag
 com.haishinkit.graphics
 com.haishinkit.graphics.effect
 com.haishinkit.graphics.glsl
 com.haishinkit.iso
 com.haishinkit.lang
 com.haishinkit.media
-com.haishinkit.metrics
 com.haishinkit.net
 com.haishinkit.rtmp
 com.haishinkit.screen

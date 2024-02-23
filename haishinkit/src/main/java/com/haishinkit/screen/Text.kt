@@ -13,21 +13,30 @@ import kotlin.math.max
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class Text : Image() {
-    var textValue: String = ""
+    /**
+     * Specifies the text value.
+     */
+    var value: String = ""
         set(value) {
             if (field == value) return
             field = value
             invalidateLayout()
         }
 
-    var textColor: Int = Color.WHITE
+    /**
+     * Specifies the text color.
+     */
+    var color: Int = Color.WHITE
         set(value) {
             if (field == value) return
             field = value
             invalidateLayout()
         }
 
-    var textSize: Float = 15f
+    /**
+     * Specifies the text size.
+     */
+    var size: Float = 15f
         set(value) {
             if (field == value) return
             field = value
@@ -36,8 +45,8 @@ class Text : Image() {
 
     private val paint by lazy {
         Paint(ANTI_ALIAS_FLAG).apply {
-            textSize = this@Text.textSize
-            color = this@Text.textColor
+            textSize = this@Text.size
+            color = this@Text.color
             textAlign = Paint.Align.LEFT
         }
     }
@@ -46,7 +55,7 @@ class Text : Image() {
     private var textBounds = Rect()
 
     override fun layout(renderer: Renderer) {
-        paint.getTextBounds(textValue, 0, textValue.length, textBounds)
+        paint.getTextBounds(value, 0, value.length, textBounds)
         frame.set(textBounds)
         if (bitmap?.width != textBounds.width() || bitmap?.height != textBounds.height()) {
             bitmap =
@@ -59,7 +68,7 @@ class Text : Image() {
                 }
         }
         bitmap?.eraseColor(Color.TRANSPARENT)
-        canvas?.drawText(textValue, -textBounds.left.toFloat(), -textBounds.top.toFloat(), paint)
+        canvas?.drawText(value, -textBounds.left.toFloat(), -textBounds.top.toFloat(), paint)
         super.layout(renderer)
     }
 }

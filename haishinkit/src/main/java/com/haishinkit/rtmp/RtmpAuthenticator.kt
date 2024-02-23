@@ -5,7 +5,7 @@ import android.util.Base64
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
-import com.haishinkit.util.MD5Util
+import com.haishinkit.util.Md5Util
 import java.net.URI
 
 internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListener {
@@ -18,7 +18,7 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
     ) {
         override fun toString(): String {
             var result = ""
-            var response = MD5Util.base64("$user$salt$password", Base64.NO_WRAP)
+            var response = Md5Util.base64("$user$salt$password", Base64.NO_WRAP)
             if (opaque == null) {
                 challenge?.let {
                     response += it
@@ -28,7 +28,7 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
                 response += "$opaque"
             }
             val clientChallenge = String.format("%08x", (0 until Int.MAX_VALUE).random())
-            response = MD5Util.base64("$response$clientChallenge", Base64.NO_WRAP)
+            response = Md5Util.base64("$response$clientChallenge", Base64.NO_WRAP)
             result += "&challenge=$clientChallenge&response=$response"
             return result
         }

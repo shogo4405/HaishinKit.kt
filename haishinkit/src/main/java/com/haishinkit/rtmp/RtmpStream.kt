@@ -233,7 +233,6 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     internal var messageFactory = RtmpMessageFactory(4)
     internal var videoTimestamp = DEFAULT_TIMESTAMP
     internal var audioTimestamp = DEFAULT_TIMESTAMP
-    private var recorder = RtmpRecorder()
     private val dispatcher: EventDispatcher by lazy {
         EventDispatcher(this)
     }
@@ -404,11 +403,6 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         message: RtmpMessage,
     ) {
         chunk.encode(connection.socket, message)
-        if (recorder.isRunning.get()) {
-            recorder.write(message)
-        } else {
-            message.release()
-        }
     }
 
     internal fun on() {

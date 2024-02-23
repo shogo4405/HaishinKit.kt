@@ -24,7 +24,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * The MediaLink class can be used to synchronously play audio and video streams.
  */
-class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
+internal class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
     Running,
     CoroutineScope,
     Choreographer.FrameCallback {
@@ -247,7 +247,7 @@ class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
                 return
             }
             duration =
-                (track.playbackHeadPosition.toLong() * 1000 / track.sampleRate) * 1000L + audioTimestampZero
+                (track.playbackHeadPosition.toLong() * 1000 * 1000 / track.sampleRate) + audioTimestampZero
         } else {
             videoTimestamp.nanoTime = frameTimeNanos
             duration = videoTimestamp.duration

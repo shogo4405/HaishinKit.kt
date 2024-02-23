@@ -13,7 +13,7 @@ import com.haishinkit.media.Stream
 import com.haishinkit.media.StreamView
 
 /**
- * A view that displays a video content of a NetStream object which uses [TextureView].
+ * A view that displays a video content of a [Stream] object which uses [TextureView].
  */
 class HkTextureView
 @JvmOverloads

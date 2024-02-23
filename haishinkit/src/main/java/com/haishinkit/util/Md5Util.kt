@@ -4,7 +4,7 @@ import android.util.Base64
 import java.security.MessageDigest
 import kotlin.text.Charsets.UTF_8
 
-internal object MD5Util {
+internal object Md5Util {
     fun base64(
         str: String,
         flags: Int,

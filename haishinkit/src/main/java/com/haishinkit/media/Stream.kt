@@ -1,13 +1,6 @@
 package com.haishinkit.media
 
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.AudioFormat
-import android.media.AudioManager
-import android.media.AudioTrack
-import android.media.MediaFormat
-import android.os.Build
-import android.util.Log
 import com.haishinkit.codec.AudioCodec
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.graphics.effect.DefaultVideoEffect
@@ -15,7 +8,7 @@ import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.screen.Screen
 
 /**
- * The NetStream class is the foundation of a RtmpStream.
+ * The Stream class is the foundation of a RtmpStream.
  */
 @Suppress("UNUSED")
 abstract class Stream(applicationContext: Context) {
@@ -59,7 +52,7 @@ abstract class Stream(applicationContext: Context) {
     var view: StreamView? = null
 
     /**
-     * The current audioSource object.
+     * The current audio source object.
      */
     var audioSource: AudioSource? = null
         internal set(value) {
@@ -71,7 +64,7 @@ abstract class Stream(applicationContext: Context) {
         }
 
     /**
-     * The current videoSource object.
+     * The current video source object.
      */
     var videoSource: VideoSource? = null
         internal set(value) {
@@ -88,7 +81,7 @@ abstract class Stream(applicationContext: Context) {
     internal val videoCodec by lazy { VideoCodec(applicationContext) }
 
     /**
-     * Attaches an audio stream to a NetStream.
+     * Attaches an audio stream to a Stream.
      */
     fun attachAudio(audio: AudioSource?) {
         if (audio == null) {
@@ -99,7 +92,7 @@ abstract class Stream(applicationContext: Context) {
     }
 
     /**
-     * Attaches a video stream to a NetStream.
+     * Attaches a video stream to a Stream.
      */
     fun attachVideo(video: VideoSource?) {
         if (video == null) {
@@ -124,63 +117,6 @@ abstract class Stream(applicationContext: Context) {
         videoSource = null
         view = null
         screen.dispose()
-    }
-
-    internal fun createAudioTrack(mediaFormat: MediaFormat): AudioTrack {
-        val sampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
-        val channelCount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
-        val channelMask =
-            if (channelCount == 2) {
-                AudioFormat.CHANNEL_OUT_STEREO
-            } else {
-                AudioFormat.CHANNEL_OUT_MONO
-            }
-        val bufferSize =
-            AudioTrack.getMinBufferSize(sampleRate, channelCount, AudioFormat.ENCODING_PCM_16BIT)
-        Log.d(TAG, "sampleRate=$sampleRate, channelCount=$channelCount, bufferSize=$bufferSize")
-        try {
-            return if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                AudioTrack.Builder()
-                    .setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-                            .build(),
-                    )
-                    .setAudioFormat(
-                        AudioFormat.Builder()
-                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                            .setSampleRate(sampleRate)
-                            .setChannelMask(channelMask)
-                            .build(),
-                    )
-                    .setBufferSizeInBytes(bufferSize)
-                    .setTransferMode(AudioTrack.MODE_STREAM)
-                    .apply {
-                        if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
-                            setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
-                        }
-                    }.build()
-            } else {
-                return AudioTrack(
-                    AudioManager.STREAM_MUSIC,
-                    sampleRate,
-                    channelMask,
-                    AudioFormat.ENCODING_PCM_16BIT,
-                    bufferSize,
-                    AudioTrack.MODE_STREAM,
-                )
-            }
-        } catch (e: Exception) {
-            return AudioTrack(
-                AudioManager.STREAM_MUSIC,
-                sampleRate,
-                channelMask,
-                AudioFormat.ENCODING_PCM_16BIT,
-                bufferSize,
-                AudioTrack.MODE_STREAM,
-            )
-        }
     }
 
     private companion object {

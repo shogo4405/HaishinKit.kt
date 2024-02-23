@@ -19,6 +19,7 @@ import com.haishinkit.media.MediaLink
 import com.haishinkit.metrics.FrameTracker
 import com.haishinkit.rtmp.message.RtmpAudioMessage
 import com.haishinkit.rtmp.message.RtmpVideoMessage
+import com.haishinkit.util.MediaFormatUtil
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -47,14 +48,13 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             mediaLink.hasVideo = value
         }
 
-    var bufferTime = BufferController.DEFAULT_BUFFER_TIME
+    private var bufferTime = BufferController.DEFAULT_BUFFER_TIME
         set(value) {
             audioBufferController.bufferTime = bufferTime
             videoBufferController.bufferTime = bufferTime
             field = value
         }
 
-    private var hasFirstFlame = false
     private var audioTimestamp = 0L
     private var videoTimestamp = 0L
     private var frameTracker: FrameTracker? = null
@@ -64,6 +64,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             }
             return field
         }
+    private val keyframes = mutableMapOf<Int, Boolean>()
     private val mediaLink: MediaLink by lazy {
         MediaLink(stream.audioCodec, stream.videoCodec)
     }
@@ -96,16 +97,13 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
-        hasFirstFlame = false
         when (mode) {
             Codec.Mode.ENCODE -> {
                 stream.audioSource?.let {
-                    it.startRunning()
                     stream.audioCodec.listener = this
                     stream.audioCodec.startRunning()
                 }
                 stream.videoSource?.let {
-                    it.startRunning()
                     stream.videoCodec.listener = this
                     stream.videoCodec.startRunning()
                 }
@@ -126,11 +124,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         }
         when (mode) {
             Codec.Mode.ENCODE -> {
-                stream.audioSource?.stopRunning()
                 stream.audioCodec.stopRunning()
-                if (stream.view == null) {
-                    stream.videoSource?.stopRunning()
-                }
                 stream.videoCodec.stopRunning()
             }
 
@@ -160,7 +154,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             Codec.MIME_VIDEO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
-                    videoBufferController.stop(!hasFirstFlame)
                     val message = videoBufferController.take()
                     videoBufferController.consume(message.timestamp)
                     val success =
@@ -176,6 +169,8 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                         } ?: false
                     videoTimestamp += message.timestamp * 1000
                     if (success) {
+                        // There are some devices where info.flags always become 0, so this is a workaround.
+                        keyframes[index] = message.frame == FlvFlameType.KEY
                         codec.queueInputBuffer(
                             index,
                             0,
@@ -293,7 +288,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             }
 
             Codec.MIME_AUDIO_RAW -> {
-                mediaLink.audioTrack = stream.createAudioTrack(mediaFormat)
+                mediaLink.audioTrack = MediaFormatUtil.createAudioTrack(mediaFormat)
             }
 
             Codec.MIME_AUDIO_MP4A -> {
@@ -318,16 +313,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     ): Boolean {
         when (mime) {
             Codec.MIME_VIDEO_RAW -> {
-                if (!hasFirstFlame) {
-                    hasFirstFlame = (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0
-                    stream.videoCodec.codec?.releaseOutputBuffer(index, hasFirstFlame)
-                    return false
-                }
                 mediaLink.queueVideo(
                     index,
                     null,
                     info.presentationTimeUs,
-                    (info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0,
+                    keyframes[index] ?: false,
                 )
                 return false
             }

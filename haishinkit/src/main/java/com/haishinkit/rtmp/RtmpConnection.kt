@@ -9,7 +9,7 @@ import com.haishinkit.net.Responder
 import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpMessage
 import com.haishinkit.rtmp.message.RtmpMessageFactory
-import com.haishinkit.util.URIUtil
+import com.haishinkit.util.UriUtil
 import java.net.URI
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
@@ -141,7 +141,7 @@ class RtmpConnection : EventDispatcher(null) {
     /**
      * The object encoding for this RTMPConnection instance.
      */
-    var objectEncoding = DEFAULT_OBJECT_ENCODING
+    internal val objectEncoding = RtmpObjectEncoding.AMF0
 
     /**
      * This instance connected to server(true) or not(false).
@@ -398,7 +398,7 @@ class RtmpConnection : EventDispatcher(null) {
         commandObject["app"] = app
         commandObject["flashVer"] = flashVer
         commandObject["swfUrl"] = swfUrl
-        commandObject["tcUrl"] = URIUtil.withoutUserInfo(uri)
+        commandObject["tcUrl"] = UriUtil.withoutUserInfo(uri)
         commandObject["fpad"] = false
         commandObject["capabilities"] = DEFAULT_CAPABILITIES
         commandObject["audioCodecs"] = SupportSound.AAC.rawValue
@@ -422,8 +422,6 @@ class RtmpConnection : EventDispatcher(null) {
         const val DEFAULT_PORT = 1935
         const val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
         val SUPPORTED_PROTOCOLS = mapOf("rtmp" to 1935, "rtmps" to 443)
-        val DEFAULT_OBJECT_ENCODING = RtmpObjectEncoding.AMF0
-
         private val TAG = RtmpConnection::class.java.simpleName
         private const val DEFAULT_CHUNK_SIZE_S = 1024 * 8
         private const val DEFAULT_CAPABILITIES = 239

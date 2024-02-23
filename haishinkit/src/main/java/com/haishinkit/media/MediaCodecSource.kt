@@ -26,12 +26,13 @@ internal class MediaCodecSource(val size: Size) : VideoSource, Video.OnSurfaceCh
         stream?.screen?.frame = Rect(0, 0, size.width, size.height)
         video.videoSize = size
         video.listener = this
-        stream?.screen?.addChild(screen)
+        screen.addChild(video)
     }
 
     override fun stopRunning() {
         if (!isRunning.get()) return
         video.listener = null
+        screen.removeChild(video)
         isRunning.set(false)
     }
 

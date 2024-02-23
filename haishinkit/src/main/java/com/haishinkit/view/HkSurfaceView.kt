@@ -12,7 +12,7 @@ import com.haishinkit.media.Stream
 import com.haishinkit.media.StreamView
 
 /**
- * A view that displays a video content of a NetStream object which uses [SurfaceView].
+ * A view that displays a video content of a [Stream] object which uses [SurfaceView].
  */
 class HkSurfaceView
 @JvmOverloads

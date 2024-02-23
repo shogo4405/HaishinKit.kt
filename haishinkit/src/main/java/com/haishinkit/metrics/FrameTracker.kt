@@ -4,7 +4,7 @@ import android.util.Log
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class FrameTracker {
+internal class FrameTracker {
     private class Frame(val type: String) {
         private var count = 0
         private var rotated = DEFAULT_TIMESTAMP
