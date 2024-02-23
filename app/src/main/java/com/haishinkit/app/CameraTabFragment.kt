@@ -48,7 +48,7 @@ class CameraTabFragment : Fragment(), IEventListener {
         private val dateFormat = SimpleDateFormat("HH:mm:ss")
         override fun onEnterFrame() {
             try {
-                fragment.text.textValue = dateFormat.format(Date())
+                fragment.text.value = dateFormat.format(Date())
             } catch (e: RuntimeException) {
                 Log.e(TAG, "", e)
             }
@@ -95,8 +95,8 @@ class CameraTabFragment : Fragment(), IEventListener {
             Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH
         )
 
-        text.textSize = 60f
-        text.textValue = ""
+        text.size = 60f
+        text.value = ""
         text.layoutMargins.set(0, 0, 16, 16)
         text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_RIGHT
         text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM

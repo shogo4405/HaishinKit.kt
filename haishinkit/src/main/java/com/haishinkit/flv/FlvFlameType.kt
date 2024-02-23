@@ -1,7 +1,7 @@
 package com.haishinkit.flv
 
 @Suppress("unused")
-object FlvFlameType {
+internal object FlvFlameType {
     const val KEY: Byte = 0x01
     const val INTER: Byte = 0x02
     const val DISPOSABLE: Byte = 0x03
