@@ -12,7 +12,7 @@ import java.nio.ByteBuffer
  * @see http://wiki.multimedia.cx/index.php?title=MPEG-4_Audio.Audio_Specific_Config
  * @see http://wiki.multimedia.cx/?title=Understanding_AAC
  */
-data class AudioSpecificConfig(
+internal data class AudioSpecificConfig(
     val type: AudioObjectType = AudioObjectType.UNKNOWN,
     val frequency: SamplingFrequency = SamplingFrequency.HZ44100,
     val channel: ChannelConfiguration = ChannelConfiguration.FRONT_OF_CENTER,

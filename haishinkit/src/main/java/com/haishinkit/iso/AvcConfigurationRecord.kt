@@ -8,7 +8,7 @@ import com.haishinkit.codec.VideoCodec
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
-data class AvcConfigurationRecord(
+internal data class AvcConfigurationRecord(
     val configurationVersion: Byte = 0x01,
     val avcProfileIndication: Byte = 0,
     val profileCompatibility: Byte = 0,

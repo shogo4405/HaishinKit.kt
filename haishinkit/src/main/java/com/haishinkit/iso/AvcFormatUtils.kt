@@ -2,7 +2,7 @@ package com.haishinkit.iso
 
 import java.nio.ByteBuffer
 
-object AvcFormatUtils {
+internal object AvcFormatUtils {
     val START_CODE = byteArrayOf(0, 0, 0, 1)
 
     private const val ZERO: Byte = 0

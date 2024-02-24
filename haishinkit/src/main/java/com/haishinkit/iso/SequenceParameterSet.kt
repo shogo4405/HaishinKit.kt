@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
  * @see
  *  https://www.cardinalpeak.com/blog/the-h-264-sequence-parameter-set
  */
-data class SequenceParameterSet(
+internal data class SequenceParameterSet(
     val profileIdc: UByte,
     val levelIdc: UByte,
     val seqParameterSetId: UByte,
