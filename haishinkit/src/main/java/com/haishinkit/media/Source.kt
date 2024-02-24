@@ -10,8 +10,4 @@ interface Source : Running {
     var stream: Stream?
     val currentPresentationTimestamp: Long
         get() = 0
-
-    fun read(byteBuffer: ByteBuffer): Int {
-        return -1
-    }
 }

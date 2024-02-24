@@ -210,45 +210,31 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             }
 
             else -> {
+                if (!mime.contains("audio")) return
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
-                    val muted =
-                        if (mime.contains("audio")) {
-                            stream.audioCodec.muted
-                        } else if (mime.contains("video")) {
-                            stream.videoCodec.muted
-                        } else {
-                            false
-                        }
-                    (
-                        if (mime.contains("audio")) {
-                            stream.audioSource
-                        } else if (mime.contains("video")) {
-                            stream.videoSource
-                        } else {
-                            null
-                        }
-                        )?.let { source ->
-                            if (!source.isRunning.get()) return@let
-                            val result = source.read(inputBuffer)
-                            if (0 <= result) {
-                                if (muted) {
-                                    if (noSignalBuffer.capacity() < result) {
-                                        noSignalBuffer = ByteBuffer.allocateDirect(result)
-                                    }
-                                    noSignalBuffer.clear()
-                                    inputBuffer.clear()
-                                    inputBuffer.put(noSignalBuffer)
+                    val muted = stream.audioCodec.muted
+                    stream.audioSource?.let { source ->
+                        if (!source.isRunning.get()) return@let
+                        val result = source.read(inputBuffer)
+                        if (0 <= result) {
+                            if (muted) {
+                                if (noSignalBuffer.capacity() < result) {
+                                    noSignalBuffer = ByteBuffer.allocateDirect(result)
                                 }
-                                codec.queueInputBuffer(
-                                    index,
-                                    0,
-                                    result,
-                                    source.currentPresentationTimestamp,
-                                    0,
-                                )
+                                noSignalBuffer.clear()
+                                inputBuffer.clear()
+                                inputBuffer.put(noSignalBuffer)
                             }
+                            codec.queueInputBuffer(
+                                index,
+                                0,
+                                result,
+                                source.currentPresentationTimestamp,
+                                0,
+                            )
                         }
+                    }
                 } catch (e: IllegalStateException) {
                     Log.w(TAG, e)
                 }
