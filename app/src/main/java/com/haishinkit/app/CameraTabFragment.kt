@@ -9,9 +9,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics
+import android.media.MediaMuxer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +32,7 @@ import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
+import com.haishinkit.media.MediaRecorder
 import com.haishinkit.media.MultiCamera2Source
 import com.haishinkit.media.StreamView
 import com.haishinkit.rtmp.RtmpConnection
@@ -61,6 +64,7 @@ class CameraTabFragment : Fragment(), IEventListener {
     private var multiCamera: MultiCamera2Source? = null
     private var cameraSource: Camera2Source? = null
     private val text: Text by lazy { Text() }
+    private val recorder: MediaRecorder by lazy { MediaRecorder(requireContext()) }
     private val lottie: LottieScreen by lazy { LottieScreen(requireContext()) }
     private val callback: Screen.Callback by lazy { Callback(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -184,7 +188,18 @@ class CameraTabFragment : Fragment(), IEventListener {
         }
 
         val switchButton = v.findViewById<Button>(R.id.switch_button)
-        switchButton.setOnClickListener { cameraSource?.switchCamera() }
+        switchButton.setOnClickListener {
+            cameraSource?.switchCamera()
+            if (recorder.isRecording) {
+                recorder.stopRecording()
+            } else {
+                recorder.attachStream(stream)
+                recorder.startRecording(
+                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "output.mp4").toString(),
+                    MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
+                )
+            }
+        }
         cameraView = if (Preference.useSurfaceView) {
             v.findViewById(R.id.surface_view)
         } else {

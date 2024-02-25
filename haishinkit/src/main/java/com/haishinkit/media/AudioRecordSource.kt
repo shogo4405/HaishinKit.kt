@@ -1,6 +1,7 @@
 package com.haishinkit.media
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioFormat
@@ -45,29 +46,7 @@ class AudioRecordSource(
                 return null
             }
             if (field == null) {
-                if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                    field =
-                        AudioRecord.Builder()
-                            .setAudioSource(audioSource)
-                            .setAudioFormat(
-                                AudioFormat.Builder()
-                                    .setEncoding(encoding)
-                                    .setSampleRate(sampleRate)
-                                    .setChannelMask(channel)
-                                    .build(),
-                            )
-                            .setBufferSizeInBytes(minBufferSize)
-                            .build()
-                } else {
-                    field =
-                        AudioRecord(
-                            audioSource,
-                            sampleRate,
-                            channel,
-                            encoding,
-                            minBufferSize,
-                        )
-                }
+                field = createAudioRecord(audioSource, sampleRate, channel, encoding, minBufferSize)
             }
             return field
         }
@@ -106,15 +85,9 @@ class AudioRecordSource(
                 currentPresentationTimestamp += timestamp(result / 2)
             }
         } else {
-            val error =
-                when (result) {
-                    AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
-                    AudioRecord.ERROR_BAD_VALUE -> "ERROR_BAD_VALUE"
-                    AudioRecord.ERROR_DEAD_OBJECT -> "ERROR_DEAD_OBJECT"
-                    AudioRecord.ERROR -> "ERROR"
-                    else -> "ERROR($result)"
-                }
-            Log.w(TAG, error)
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, error(result))
+            }
         }
         return result
     }
@@ -129,6 +102,56 @@ class AudioRecordSource(
         const val DEFAULT_SAMPLE_RATE = 44100
         const val DEFAULT_AUDIO_SOURCE = MediaRecorder.AudioSource.CAMCORDER
         const val DEFAULT_SAMPLE_COUNT = 1024
+
+        @SuppressLint("MissingPermission")
+        private fun createAudioRecord(
+            audioSource: Int,
+            sampleRate: Int,
+            channel: Int,
+            encoding: Int,
+            minBufferSize: Int,
+        ): AudioRecord {
+            if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+                return try {
+                    AudioRecord.Builder()
+                        .setAudioSource(audioSource)
+                        .setAudioFormat(
+                            AudioFormat.Builder()
+                                .setEncoding(encoding)
+                                .setSampleRate(sampleRate)
+                                .setChannelMask(channel)
+                                .build(),
+                        ).setBufferSizeInBytes(minBufferSize)
+                        .build()
+                } catch (e: Exception) {
+                    AudioRecord(
+                        audioSource,
+                        sampleRate,
+                        channel,
+                        encoding,
+                        minBufferSize,
+                    )
+                }
+            } else {
+                return AudioRecord(
+                    audioSource,
+                    sampleRate,
+                    channel,
+                    encoding,
+                    minBufferSize,
+                )
+            }
+        }
+
+        private fun error(result: Int): String {
+            return when (result) {
+                AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
+                AudioRecord.ERROR_BAD_VALUE -> "ERROR_BAD_VALUE"
+                AudioRecord.ERROR_DEAD_OBJECT -> "ERROR_DEAD_OBJECT"
+                AudioRecord.ERROR -> "ERROR"
+                else -> "ERROR($result)"
+            }
+        }
 
         private const val DEFAULT_TIMESTAMP = 0L
         private val TAG = AudioRecordSource::class.java.simpleName

@@ -1,7 +1,6 @@
 package com.haishinkit.media
 
 import com.haishinkit.lang.Running
-import java.nio.ByteBuffer
 
 /**
  * An interface that captures a source.
