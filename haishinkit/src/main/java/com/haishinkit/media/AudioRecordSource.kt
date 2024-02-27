@@ -11,8 +11,13 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.haishinkit.BuildConfig
+import com.haishinkit.codec.AudioCodec
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.CoroutineContext
 
 /**
  * An audio source that captures a microphone by the AudioRecord api.
@@ -20,13 +25,15 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Suppress("MemberVisibilityCanBePrivate")
 class AudioRecordSource(
     private val context: Context,
-) : AudioSource {
+) : CoroutineScope, AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
 
     override var stream: Stream? = null
     override val isRunning = AtomicBoolean(false)
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO
 
     var minBufferSize = -1
         get() {
@@ -50,20 +57,22 @@ class AudioRecordSource(
             }
             return field
         }
-
-    override var currentPresentationTimestamp = DEFAULT_TIMESTAMP
         private set
 
+    private var codecs = mutableListOf<AudioCodec>()
     private var encoding = DEFAULT_ENCODING
     private var sampleCount = DEFAULT_SAMPLE_COUNT
+    private var byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(sampleCount * 2)
+
+    @Volatile
+    private var keepAlive = false
 
     override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
-        currentPresentationTimestamp = DEFAULT_TIMESTAMP
-        audioRecord?.startRecording()
+        doAudio()
         isRunning.set(true)
     }
 
@@ -72,28 +81,37 @@ class AudioRecordSource(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "stopRunning()")
         }
-        audioRecord?.stop()
+        keepAlive = false
         isRunning.set(false)
     }
 
-    override fun read(byteBuffer: ByteBuffer): Int {
-        val result = audioRecord?.read(byteBuffer, sampleCount * 2) ?: -1
-        if (0 <= result) {
-            if (currentPresentationTimestamp == DEFAULT_TIMESTAMP) {
-                currentPresentationTimestamp = System.nanoTime()
-            } else {
-                currentPresentationTimestamp += timestamp(result / 2)
-            }
-        } else {
-            if (BuildConfig.DEBUG) {
-                Log.w(TAG, error(result))
-            }
-        }
-        return result
+    override fun registerAudioCodec(codec: AudioCodec) {
+        codecs.add(codec)
     }
 
-    private fun timestamp(sampleCount: Int): Long {
-        return (1000000.0F * (sampleCount.toFloat() / sampleRate.toFloat())).toLong()
+    override fun unregisterAudioCodec(codec: AudioCodec) {
+        codecs.remove(codec)
+    }
+
+    private fun doAudio() = launch {
+        keepAlive = true
+        audioRecord?.startRecording()
+        while (keepAlive) {
+            byteBuffer.rewind()
+            val result = audioRecord?.read(byteBuffer, sampleCount * 2) ?: -1
+            if (0 <= result) {
+                codecs.forEach {
+                    it.append(byteBuffer)
+                }
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Log.w(TAG, error(result))
+                }
+            }
+        }
+        audioRecord?.stop()
+        audioRecord?.release()
+        audioRecord = null
     }
 
     companion object {
@@ -153,7 +171,6 @@ class AudioRecordSource(
             }
         }
 
-        private const val DEFAULT_TIMESTAMP = 0L
         private val TAG = AudioRecordSource::class.java.simpleName
     }
 }

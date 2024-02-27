@@ -1,15 +1,11 @@
 package com.haishinkit.media
 
-import java.nio.ByteBuffer
+import com.haishinkit.codec.AudioCodec
 
 /**
  * An interface that captures an audio source.
  */
 interface AudioSource : Source {
-    /**
-     * Reads an audio buffer from this instance.
-     */
-    fun read(byteBuffer: ByteBuffer): Int {
-        return -1
-    }
+    fun registerAudioCodec(codec: AudioCodec)
+    fun unregisterAudioCodec(codec: AudioCodec)
 }

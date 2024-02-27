@@ -100,6 +100,7 @@ class MediaRecorder(applicationContext: Context) {
 
     private fun startRunning() {
         isRecording = true
+        stream?.audioSource?.registerAudioCodec(audioCodec)
         audioCodec.listener = muxer
         audioCodec.startRunning()
         videoCodec.listener = muxer

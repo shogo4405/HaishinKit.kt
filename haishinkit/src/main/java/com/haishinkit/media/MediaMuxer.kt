@@ -3,6 +3,7 @@ package com.haishinkit.media
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.media.MediaMuxer
+import android.util.Log
 import com.haishinkit.codec.Codec
 import com.haishinkit.lang.Running
 import java.lang.ref.WeakReference
@@ -11,13 +12,16 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 internal class MediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) : Running,
     Codec.Listener {
-    private var stream = WeakReference(stream)
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
+    private var stream = WeakReference(stream)
+    private val isReady: Boolean
+        get() = (stream.get()?.audioSource != null && -1 < audioTrackIndex) && (stream.get()?.videoSource != null && -1 < videoTrackIndex)
     private var audioTrackIndex: Int = -1
     private var videoTrackIndex: Int = -1
 
     override fun startRunning() {
-        if (!isRunning.get()) return
+        if (isRunning.get()) return
+        if (!isReady) return
         muxer?.start()
         isRunning.set(true)
     }
@@ -30,20 +34,10 @@ internal class MediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) : Run
     }
 
     override fun onInputBufferAvailable(mime: String, codec: MediaCodec, index: Int) {
-        if (mime.contains("audio")) {
-            val inputBuffer = codec.getInputBuffer(index) ?: return
-            val result = stream.get()?.audioSource?.read(inputBuffer) ?: 0
-            codec.queueInputBuffer(
-                index,
-                0,
-                result,
-                0,
-                0
-            )
-        }
     }
 
     override fun onFormatChanged(mime: String, mediaFormat: MediaFormat) {
+        Log.w("TAG", mime.toString())
         if (mime.contains("audio")) {
             audioTrackIndex = muxer?.addTrack(mediaFormat) ?: -1
             startRunning()

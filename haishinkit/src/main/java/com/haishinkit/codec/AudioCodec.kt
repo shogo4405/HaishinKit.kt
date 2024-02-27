@@ -1,10 +1,14 @@
 package com.haishinkit.codec
 
+import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
+import android.util.Log
+import java.nio.ByteBuffer
 import kotlin.properties.Delegates
 
 class AudioCodec : Codec(MIME) {
+
     @Suppress("unused")
     data class Setting(private var codec: AudioCodec? = null) : Codec.Setting(codec) {
         /**
@@ -48,6 +52,27 @@ class AudioCodec : Codec(MIME) {
     var channelCount = DEFAULT_CHANNEL_COUNT
     var bitRate = DEFAULT_BIT_RATE
     var aacProfile = DEFAULT_AAC_PROFILE
+    private var buffer = AudioCodecBuffer()
+
+    fun append(byteBuffer: ByteBuffer) {
+        buffer.append(byteBuffer)
+    }
+
+    override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
+        if (mode == Mode.ENCODE) {
+            try {
+                val inputBuffer = codec.getInputBuffer(index) ?: return
+                val result = buffer.render(inputBuffer)
+                codec.queueInputBuffer(
+                    index, 0, result, buffer.presentationTimestamp, 0
+                )
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, e)
+            }
+        } else {
+            super.onInputBufferAvailable(codec, index)
+        }
+    }
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createAudioFormat(MIME, sampleRate, channelCount).apply {
@@ -68,5 +93,7 @@ class AudioCodec : Codec(MIME) {
         const val DEFAULT_BIT_RATE: Int = 64000
         const val DEFAULT_AAC_PROFILE = MediaCodecInfo.CodecProfileLevel.AACObjectLC
         const val DEFAULT_KEY_MAX_INPUT_SIZE = 1024 * 2
+
+        private val TAG = AudioCodec::class.java.simpleName
     }
 }

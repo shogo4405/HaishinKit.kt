@@ -16,10 +16,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
 @Suppress("unused")
-abstract class Codec(private val mime: String) : Running {
+abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Running {
     enum class Mode {
-        ENCODE,
-        DECODE,
+        ENCODE, DECODE,
     }
 
     @Suppress("unused")
@@ -59,57 +58,6 @@ abstract class Codec(private val mime: String) : Running {
         ): Boolean
     }
 
-    class Callback : MediaCodec.Callback() {
-        var listener: Listener? = null
-        var codec: Codec? = null
-        var mime: String = ""
-
-        override fun onInputBufferAvailable(
-            codec: MediaCodec,
-            index: Int,
-        ) {
-            try {
-                listener?.onInputBufferAvailable(mime, codec, index)
-            } catch (e: IllegalStateException) {
-                if (BuildConfig.DEBUG) {
-                    Log.w(TAG, e)
-                }
-            }
-        }
-
-        override fun onOutputBufferAvailable(
-            codec: MediaCodec,
-            index: Int,
-            info: MediaCodec.BufferInfo,
-        ) {
-            try {
-                val buffer = codec.getOutputBuffer(index) ?: return
-                if (listener?.onSampleOutput(mime, index, info, buffer) == true) {
-                    codec.releaseOutputBuffer(index, false)
-                }
-            } catch (e: IllegalStateException) {
-                if (BuildConfig.DEBUG) {
-                    Log.w(TAG, e)
-                }
-            }
-        }
-
-        override fun onError(
-            codec: MediaCodec,
-            e: MediaCodec.CodecException,
-        ) {
-            if (BuildConfig.DEBUG) {
-                Log.w(TAG, e.toString())
-            }
-        }
-
-        override fun onOutputFormatChanged(
-            codec: MediaCodec,
-            format: MediaFormat,
-        ) {
-            this.codec?.outputFormat = format
-        }
-    }
 
     /**
      * Specifies the muted indicates whether the media muted.
@@ -120,10 +68,6 @@ abstract class Codec(private val mime: String) : Running {
      * The listener of which callback method.
      */
     var listener: Listener? = null
-        set(value) {
-            field = value
-            callback.listener = value
-        }
 
     /**
      * The android.media.MediaCodec instance.
@@ -131,16 +75,16 @@ abstract class Codec(private val mime: String) : Running {
     open var codec: MediaCodec? = null
         get() {
             if (field == null) {
-                field =
-                    if (mode == Mode.ENCODE) {
-                        MediaCodec.createEncoderByType(mime)
-                    } else {
-                        MediaCodec.createDecoderByType(mime)
-                    }
+                field = if (mode == Mode.ENCODE) {
+                    MediaCodec.createEncoderByType(inputMime)
+                } else {
+                    MediaCodec.createDecoderByType(inputMime)
+                }
             }
             return field
         }
         set(value) {
+            field?.setCallback(null)
             field?.stop()
             field?.release()
             field = value
@@ -178,10 +122,8 @@ abstract class Codec(private val mime: String) : Running {
                 }
             }
         }
-
     override val isRunning = AtomicBoolean(false)
-
-    var outputFormat: MediaFormat? = null
+    private var outputFormat: MediaFormat? = null
         private set(value) {
             if (field != value && value != null) {
                 Log.i(TAG, value.toString())
@@ -192,13 +134,6 @@ abstract class Codec(private val mime: String) : Running {
             }
             field = value
         }
-
-    private var callback: Callback = Callback()
-        set(value) {
-            field = value
-            callback.codec = this
-        }
-
     private var backgroundHandler: Handler? = null
         get() {
             if (field == null) {
@@ -212,12 +147,13 @@ abstract class Codec(private val mime: String) : Running {
             field?.looper?.quitSafely()
             field = value
         }
+    private var outputMime: String = ""
 
     @Synchronized
     final override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "startRunning($mime)")
+            Log.d(TAG, "startRunning($inputMime)")
         }
         try {
             val codec = codec ?: return
@@ -238,32 +174,29 @@ abstract class Codec(private val mime: String) : Running {
     final override fun stopRunning() {
         if (!isRunning.get()) return
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "stopRunning($mime)")
+            Log.d(TAG, "stopRunning($inputMime)")
         }
         try {
-            codec = null
-            backgroundHandler = null
-            outputFormat = null
-            isRunning.set(false)
+            dispose()
         } catch (e: MediaCodec.CodecException) {
             Log.w(TAG, "", e)
         } catch (e: IllegalStateException) {
             Log.w(TAG, "", e)
         }
+        isRunning.set(false)
     }
 
     fun dispose() {
         codec = null
+        backgroundHandler = null
         outputFormat = null
     }
 
     open fun configure(codec: MediaCodec) {
-        callback.codec = this
-        callback.listener = listener
         if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-            codec.setCallback(callback, backgroundHandler)
+            codec.setCallback(this, backgroundHandler)
         } else {
-            codec.setCallback(callback)
+            codec.setCallback(this)
         }
         val format = createOutputFormat()
         for (option in options) {
@@ -280,8 +213,54 @@ abstract class Codec(private val mime: String) : Running {
             },
         )
         codec.outputFormat.getString("mime")?.let { mime ->
-            callback.mime = mime
+            outputMime = mime
         }
+    }
+
+    override fun onInputBufferAvailable(
+        codec: MediaCodec,
+        index: Int,
+    ) {
+        try {
+            listener?.onInputBufferAvailable(inputMime, codec, index)
+        } catch (e: IllegalStateException) {
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, e)
+            }
+        }
+    }
+
+    override fun onOutputBufferAvailable(
+        codec: MediaCodec,
+        index: Int,
+        info: MediaCodec.BufferInfo,
+    ) {
+        try {
+            val buffer = codec.getOutputBuffer(index) ?: return
+            if (listener?.onSampleOutput(outputMime, index, info, buffer) == true) {
+                codec.releaseOutputBuffer(index, false)
+            }
+        } catch (e: IllegalStateException) {
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, e)
+            }
+        }
+    }
+
+    override fun onError(
+        codec: MediaCodec,
+        e: MediaCodec.CodecException,
+    ) {
+        if (BuildConfig.DEBUG) {
+            Log.w(TAG, e.toString())
+        }
+    }
+
+    override fun onOutputFormatChanged(
+        codec: MediaCodec,
+        format: MediaFormat,
+    ) {
+        outputFormat = format
     }
 
     internal fun release(buffers: Deque<MediaLink.Buffer>) {
@@ -312,6 +291,6 @@ abstract class Codec(private val mime: String) : Running {
         const val MIME_AUDIO_G711U = "audio/g711-mlaw"
         const val MIME_AUDIO_RAW = "audio/raw"
         const val DEFAULT_MUTED = false
-        private val TAG = MediaCodec::class.java.simpleName
+        private val TAG = Codec::class.java.simpleName
     }
 }

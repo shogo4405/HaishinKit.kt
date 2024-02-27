@@ -7,6 +7,4 @@ import com.haishinkit.lang.Running
  */
 interface Source : Running {
     var stream: Stream?
-    val currentPresentationTimestamp: Long
-        get() = 0
 }

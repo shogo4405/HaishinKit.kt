@@ -68,7 +68,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     private val mediaLink: MediaLink by lazy {
         MediaLink(stream.audioCodec, stream.videoCodec)
     }
-    private var noSignalBuffer = ByteBuffer.allocateDirect(0)
     private val audioBufferController: BufferController<RtmpAudioMessage> by lazy {
         val controller = BufferController<RtmpAudioMessage>("audio")
         controller.bufferTime = bufferTime
@@ -100,6 +99,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         when (mode) {
             Codec.Mode.ENCODE -> {
                 stream.audioSource?.let {
+                    it.registerAudioCodec(stream.audioCodec)
                     stream.audioCodec.listener = this
                     stream.audioCodec.startRunning()
                 }
@@ -126,6 +126,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             Codec.Mode.ENCODE -> {
                 stream.audioCodec.stopRunning()
                 stream.videoCodec.stopRunning()
+                stream.audioSource?.unregisterAudioCodec(stream.audioCodec)
             }
 
             Codec.Mode.DECODE -> {
@@ -210,34 +211,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             }
 
             else -> {
-                if (!mime.contains("audio")) return
-                try {
-                    val inputBuffer = codec.getInputBuffer(index) ?: return
-                    val muted = stream.audioCodec.muted
-                    stream.audioSource?.let { source ->
-                        if (!source.isRunning.get()) return@let
-                        val result = source.read(inputBuffer)
-                        if (0 <= result) {
-                            if (muted) {
-                                if (noSignalBuffer.capacity() < result) {
-                                    noSignalBuffer = ByteBuffer.allocateDirect(result)
-                                }
-                                noSignalBuffer.clear()
-                                inputBuffer.clear()
-                                inputBuffer.put(noSignalBuffer)
-                            }
-                            codec.queueInputBuffer(
-                                index,
-                                0,
-                                result,
-                                source.currentPresentationTimestamp,
-                                0,
-                            )
-                        }
-                    }
-                } catch (e: IllegalStateException) {
-                    Log.w(TAG, e)
-                }
             }
         }
     }
