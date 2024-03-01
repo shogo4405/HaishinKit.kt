@@ -32,6 +32,9 @@ import java.io.FileDescriptor
  */
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class MediaRecorder(applicationContext: Context) {
+    /**
+     * The isRecording value indicates whether the audio recorder is recording.
+     */
     var isRecording = false
         private set
 
@@ -65,7 +68,10 @@ class MediaRecorder(applicationContext: Context) {
     /**
      * Starts recording.
      */
-    fun startRecording(path: String, format: Int) {
+    fun startRecording(
+        path: String,
+        format: Int,
+    ) {
         if (muxer != null || stream == null) {
             throw IllegalStateException()
         }
@@ -78,7 +84,10 @@ class MediaRecorder(applicationContext: Context) {
      * Starts recording.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun startRecording(fd: FileDescriptor, format: Int) {
+    fun startRecording(
+        fd: FileDescriptor,
+        format: Int,
+    ) {
         if (muxer != null || stream == null) {
             throw IllegalStateException()
         }
@@ -108,6 +117,7 @@ class MediaRecorder(applicationContext: Context) {
     }
 
     private fun stopRunning() {
+        stream?.audioSource?.unregisterAudioCodec(audioCodec)
         audioCodec.stopRunning()
         audioCodec.listener = null
         videoCodec.stopRunning()

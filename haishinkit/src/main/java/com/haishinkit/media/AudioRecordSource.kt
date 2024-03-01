@@ -29,7 +29,7 @@ class AudioRecordSource(
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
     var sampleRate = DEFAULT_SAMPLE_RATE
-
+    override var isMuted = false
     override var stream: Stream? = null
     override val isRunning = AtomicBoolean(false)
     override val coroutineContext: CoroutineContext
@@ -62,6 +62,7 @@ class AudioRecordSource(
     private var codecs = mutableListOf<AudioCodec>()
     private var encoding = DEFAULT_ENCODING
     private var sampleCount = DEFAULT_SAMPLE_COUNT
+    private var noSignalBuffer = ByteBuffer.allocateDirect(0)
     private var byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(sampleCount * 2)
 
     @Volatile
@@ -86,19 +87,34 @@ class AudioRecordSource(
     }
 
     override fun registerAudioCodec(codec: AudioCodec) {
+        if (codecs.contains(codec)) return
+        codec.sampleRate = sampleRate
         codecs.add(codec)
     }
 
     override fun unregisterAudioCodec(codec: AudioCodec) {
+        if (!codecs.contains(codec)) return
         codecs.remove(codec)
     }
 
     private fun doAudio() = launch {
         keepAlive = true
-        audioRecord?.startRecording()
+        try {
+            audioRecord?.startRecording()
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, e)
+        }
         while (keepAlive) {
             byteBuffer.rewind()
             val result = audioRecord?.read(byteBuffer, sampleCount * 2) ?: -1
+            if (isMuted) {
+                if (noSignalBuffer.capacity() < result) {
+                    noSignalBuffer = ByteBuffer.allocateDirect(result)
+                }
+                noSignalBuffer.clear()
+                byteBuffer.clear()
+                byteBuffer.put(noSignalBuffer)
+            }
             if (0 <= result) {
                 codecs.forEach {
                     it.append(byteBuffer)
@@ -109,8 +125,12 @@ class AudioRecordSource(
                 }
             }
         }
-        audioRecord?.stop()
-        audioRecord?.release()
+        try {
+            audioRecord?.stop()
+            audioRecord?.release()
+        } catch (e: java.lang.IllegalStateException) {
+            Log.w(TAG, e)
+        }
         audioRecord = null
     }
 
@@ -131,16 +151,10 @@ class AudioRecordSource(
         ): AudioRecord {
             if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
                 return try {
-                    AudioRecord.Builder()
-                        .setAudioSource(audioSource)
-                        .setAudioFormat(
-                            AudioFormat.Builder()
-                                .setEncoding(encoding)
-                                .setSampleRate(sampleRate)
-                                .setChannelMask(channel)
-                                .build(),
-                        ).setBufferSizeInBytes(minBufferSize)
-                        .build()
+                    AudioRecord.Builder().setAudioSource(audioSource).setAudioFormat(
+                        AudioFormat.Builder().setEncoding(encoding).setSampleRate(sampleRate)
+                            .setChannelMask(channel).build(),
+                    ).setBufferSizeInBytes(minBufferSize).build()
                 } catch (e: Exception) {
                     AudioRecord(
                         audioSource,

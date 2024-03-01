@@ -12,6 +12,9 @@ import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.util.FeatureUtil
 import kotlin.properties.Delegates
 
+/**
+ * The VideoCodec class provides methods for encode or decode for video.
+ */
 class VideoCodec(applicationContext: Context) : Codec(MIME) {
     @Suppress("unused")
     data class Setting(private val codec: VideoCodec? = null) : Codec.Setting(codec) {
@@ -120,16 +123,19 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
     var level = DEFAULT_LEVEL
 
     /**
-     * Specifies the color format for a surface.
+     * The pixel transform instance.
      */
-    var colorFormat = DEFAULT_COLOR_FORMAT
-
     val pixelTransform: PixelTransform by lazy {
         PixelTransform.create(applicationContext).apply {
             videoGravity = DEFAULT_VIDEO_GRAVITY
             frameRate = DEFAULT_FRAME_RATE
         }
     }
+
+    /**
+     * Specifies the color format for a surface.
+     */
+    private var colorFormat = DEFAULT_COLOR_FORMAT
 
     override var codec: MediaCodec?
         get() = super.codec

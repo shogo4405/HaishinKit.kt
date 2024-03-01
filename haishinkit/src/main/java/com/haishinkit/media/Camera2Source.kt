@@ -49,11 +49,12 @@ class Camera2Source(private val context: Context) : VideoSource {
      */
     @SuppressLint("MissingPermission")
     fun open(position: Int? = null) {
-        val cameraId = if (position == null) {
-            DEFAULT_CAMERA_ID
-        } else {
-            getCameraId(position) ?: DEFAULT_CAMERA_ID
-        }
+        val cameraId =
+            if (position == null) {
+                DEFAULT_CAMERA_ID
+            } else {
+                getCameraId(position) ?: DEFAULT_CAMERA_ID
+            }
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         output = Camera2Output(context, this, cameraId)
         output?.video?.deviceOrientation = windowManager.defaultDisplay.rotation
@@ -72,11 +73,12 @@ class Camera2Source(private val context: Context) : VideoSource {
      */
     fun switchCamera() {
         val facing = output?.facing
-        val expect = if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
-            CameraCharacteristics.LENS_FACING_BACK
-        } else {
-            CameraCharacteristics.LENS_FACING_FRONT
-        }
+        val expect =
+            if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                CameraCharacteristics.LENS_FACING_BACK
+            } else {
+                CameraCharacteristics.LENS_FACING_FRONT
+            }
         open(expect)
     }
 

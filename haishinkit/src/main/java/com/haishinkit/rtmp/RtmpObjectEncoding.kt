@@ -11,5 +11,5 @@ internal enum class RtmpObjectEncoding(
         0,
         RtmpMessage.TYPE_AMF0_DATA,
         RtmpMessage.TYPE_AMF0_COMMAND,
-    )
+    ),
 }

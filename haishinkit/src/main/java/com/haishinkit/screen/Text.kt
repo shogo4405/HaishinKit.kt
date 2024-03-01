@@ -62,7 +62,7 @@ class Text : Image() {
                 Bitmap.createBitmap(
                     max(textBounds.width(), 1),
                     max(textBounds.height(), 1),
-                    Bitmap.Config.ARGB_8888
+                    Bitmap.Config.ARGB_8888,
                 ).apply {
                     canvas = Canvas(this)
                 }

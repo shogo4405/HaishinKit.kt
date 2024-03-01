@@ -36,6 +36,11 @@ internal class AudioCodecBuffer {
         return byteBuffer.capacity()
     }
 
+    fun clear() {
+        buffers.clear()
+        presentationTimestamp = DEFAULT_PRESENTATION_TIMESTAMP
+    }
+
     private fun timestamp(sampleCount: Int): Long {
         return (1000000.0F * (sampleCount.toFloat() / sampleRate.toFloat())).toLong()
     }

@@ -96,10 +96,16 @@ internal class Camera2Output(
     override fun onDisconnected(camera: CameraDevice) {
     }
 
-    override fun onError(camera: CameraDevice, error: Int) {
+    override fun onError(
+        camera: CameraDevice,
+        error: Int,
+    ) {
     }
 
-    private fun getCameraSize(width: Int?, height: Int?): Size? {
+    private fun getCameraSize(
+        width: Int?,
+        height: Int?,
+    ): Size? {
         val scm = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         val sizes = scm?.getOutputSizes(SurfaceTexture::class.java)
         if (width == null || height == null) {
@@ -112,15 +118,18 @@ internal class Camera2Output(
 
     private fun createCaptureSession(surface: Surface) {
         val device = device ?: return
-        val request = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-            addTarget(surface)
-        }.build()
+        val request =
+            device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+                addTarget(surface)
+            }.build()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val outputList = buildList {
-                add(OutputConfiguration(surface))
-            }
+            val outputList =
+                buildList {
+                    add(OutputConfiguration(surface))
+                }
             device.createCaptureSession(
-                SessionConfiguration(SessionConfiguration.SESSION_REGULAR,
+                SessionConfiguration(
+                    SessionConfiguration.SESSION_REGULAR,
                     outputList,
                     executor,
                     object : CameraCaptureSession.StateCallback() {
@@ -134,12 +143,14 @@ internal class Camera2Output(
 
                         override fun onConfigureFailed(captureSession: CameraCaptureSession) {
                         }
-                    })
+                    },
+                ),
             )
         } else {
-            val surfaces = buildList {
-                add(surface)
-            }
+            val surfaces =
+                buildList {
+                    add(surface)
+                }
             @Suppress("DEPRECATION")
             device.createCaptureSession(
                 surfaces,

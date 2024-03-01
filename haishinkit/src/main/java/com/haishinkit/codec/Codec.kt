@@ -18,7 +18,8 @@ import kotlin.properties.Delegates
 @Suppress("unused")
 abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Running {
     enum class Mode {
-        ENCODE, DECODE,
+        ENCODE,
+        DECODE,
     }
 
     @Suppress("unused")
@@ -58,12 +59,6 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         ): Boolean
     }
 
-
-    /**
-     * Specifies the muted indicates whether the media muted.
-     */
-    var muted = DEFAULT_MUTED
-
     /**
      * The listener of which callback method.
      */
@@ -75,11 +70,12 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
     open var codec: MediaCodec? = null
         get() {
             if (field == null) {
-                field = if (mode == Mode.ENCODE) {
-                    MediaCodec.createEncoderByType(inputMime)
-                } else {
-                    MediaCodec.createDecoderByType(inputMime)
-                }
+                field =
+                    if (mode == Mode.ENCODE) {
+                        MediaCodec.createEncoderByType(inputMime)
+                    } else {
+                        MediaCodec.createDecoderByType(inputMime)
+                    }
             }
             return field
         }
@@ -186,7 +182,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         isRunning.set(false)
     }
 
-    fun dispose() {
+    open fun dispose() {
         codec = null
         backgroundHandler = null
         outputFormat = null
@@ -290,7 +286,6 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         const val MIME_AUDIO_G711A = "audio/g711-alaw"
         const val MIME_AUDIO_G711U = "audio/g711-mlaw"
         const val MIME_AUDIO_RAW = "audio/raw"
-        const val DEFAULT_MUTED = false
         private val TAG = Codec::class.java.simpleName
     }
 }

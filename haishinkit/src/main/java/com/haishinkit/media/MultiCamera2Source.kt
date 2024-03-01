@@ -47,12 +47,16 @@ class MultiCamera2Source(val context: Context) : VideoSource {
      * Opens the camera with camera2 api.
      */
     @SuppressLint("MissingPermission")
-    fun open(channel: Int, position: Int? = null) {
-        val cameraId = if (position == null) {
-            DEFAULT_CAMERA_ID
-        } else {
-            getCameraId(position) ?: DEFAULT_CAMERA_ID
-        }
+    fun open(
+        channel: Int,
+        position: Int? = null,
+    ) {
+        val cameraId =
+            if (position == null) {
+                DEFAULT_CAMERA_ID
+            } else {
+                getCameraId(position) ?: DEFAULT_CAMERA_ID
+            }
         val output = Camera2Output(context, this, cameraId)
         outputs[channel] = output
         output.open()

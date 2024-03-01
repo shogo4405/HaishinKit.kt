@@ -7,8 +7,10 @@ import android.util.Log
 import java.nio.ByteBuffer
 import kotlin.properties.Delegates
 
+/**
+ * The AudioCodec translate audio data to another format.
+ */
 class AudioCodec : Codec(MIME) {
-
     @Suppress("unused")
     data class Setting(private var codec: AudioCodec? = null) : Codec.Setting(codec) {
         /**
@@ -37,34 +39,37 @@ class AudioCodec : Codec(MIME) {
                 codec?.sampleRate = newValue
             }
         }
-
-        /**
-         * Specifies the muted indicates whether the media muted.
-         */
-        var muted: Boolean by Delegates.observable(DEFAULT_MUTED) { _, oldValue, newValue ->
-            if (oldValue != newValue) {
-                codec?.muted = newValue
-            }
-        }
     }
 
     var sampleRate = DEFAULT_SAMPLE_RATE
+        set(value) {
+            field = value
+            buffer.sampleRate = value
+        }
     var channelCount = DEFAULT_CHANNEL_COUNT
     var bitRate = DEFAULT_BIT_RATE
     var aacProfile = DEFAULT_AAC_PROFILE
     private var buffer = AudioCodecBuffer()
 
     fun append(byteBuffer: ByteBuffer) {
+        if (!isRunning.get()) return
         buffer.append(byteBuffer)
     }
 
-    override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
+    override fun onInputBufferAvailable(
+        codec: MediaCodec,
+        index: Int,
+    ) {
         if (mode == Mode.ENCODE) {
             try {
                 val inputBuffer = codec.getInputBuffer(index) ?: return
                 val result = buffer.render(inputBuffer)
                 codec.queueInputBuffer(
-                    index, 0, result, buffer.presentationTimestamp, 0
+                    index,
+                    0,
+                    result,
+                    buffer.presentationTimestamp,
+                    0,
                 )
             } catch (e: IllegalStateException) {
                 Log.w(TAG, e)
@@ -83,6 +88,11 @@ class AudioCodec : Codec(MIME) {
                 setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, DEFAULT_KEY_MAX_INPUT_SIZE)
             }
         }
+    }
+
+    override fun dispose() {
+        buffer.clear()
+        super.dispose()
     }
 
     companion object {

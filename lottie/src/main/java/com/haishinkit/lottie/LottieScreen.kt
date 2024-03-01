@@ -148,7 +148,7 @@ class LottieScreen(val context: Context) : Image() {
     private var failureListener: LottieListener<Throwable>? = null
     private val loadedListener: LottieListener<LottieComposition?> by lazy {
         WeakSuccessListener(
-            this
+            this,
         )
     }
     private val lottieToBitmapMatrix = Matrix()
@@ -156,7 +156,9 @@ class LottieScreen(val context: Context) : Image() {
     /**
      * Setter for animation from a file in the raw directory.
      */
-    fun setAnimation(@RawRes rawRes: Int) {
+    fun setAnimation(
+        @RawRes rawRes: Int,
+    ) {
         animationResId = rawRes
         animationName = null
         compositionTask = fromRawRes(rawRes)
@@ -168,24 +170,44 @@ class LottieScreen(val context: Context) : Image() {
         compositionTask = fromAssets(assetName)
     }
 
-    fun setAnimationFromUrl(url: String?, cacheKey: String? = null) {
-        val task = if (cacheComposition) LottieCompositionFactory.fromUrl(
-            context, url
-        ) else LottieCompositionFactory.fromUrl(
-            context, url, cacheKey
-        )
+    fun setAnimationFromUrl(
+        url: String?,
+        cacheKey: String? = null,
+    ) {
+        val task =
+            if (cacheComposition) {
+                LottieCompositionFactory.fromUrl(
+                    context,
+                    url,
+                )
+            } else {
+                LottieCompositionFactory.fromUrl(
+                    context,
+                    url,
+                    cacheKey,
+                )
+            }
         compositionTask = task
     }
 
-    fun setAnimation(stream: InputStream?, cacheKey: String? = null) {
+    fun setAnimation(
+        stream: InputStream?,
+        cacheKey: String? = null,
+    ) {
         compositionTask = LottieCompositionFactory.fromJsonInputStream(stream, cacheKey)
     }
 
-    fun setAnimation(stream: ZipInputStream?, cacheKey: String? = null) {
+    fun setAnimation(
+        stream: ZipInputStream?,
+        cacheKey: String? = null,
+    ) {
         compositionTask = LottieCompositionFactory.fromZipStream(stream, cacheKey)
     }
 
-    fun setAnimationFromJson(jsonString: String, cacheKey: String? = null) {
+    fun setAnimationFromJson(
+        jsonString: String,
+        cacheKey: String? = null,
+    ) {
         setAnimation(ByteArrayInputStream(jsonString.toByteArray()), cacheKey)
     }
 
@@ -231,39 +253,58 @@ class LottieScreen(val context: Context) : Image() {
         super.layout(renderer)
         val composition = composition ?: return
         if (bitmap?.width != bounds.width() || bitmap?.height != bounds.height()) {
-            bitmap = Bitmap.createBitmap(
-                bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888
-            ).apply {
-                canvas = Canvas(this)
-            }
+            bitmap =
+                Bitmap.createBitmap(
+                    bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888,
+                ).apply {
+                    canvas = Canvas(this)
+                }
         }
         bitmap?.eraseColor(Color.TRANSPARENT)
-        val minScale = min(
-            bounds.width().toFloat() / composition.bounds.width().toFloat(),
-            bounds.height().toFloat() / composition.bounds.height().toFloat()
-        )
+        val minScale =
+            min(
+                bounds.width().toFloat() / composition.bounds.width().toFloat(),
+                bounds.height().toFloat() / composition.bounds.height().toFloat(),
+            )
         lottieToBitmapMatrix.reset()
         lottieToBitmapMatrix.preScale(
-            minScale, minScale
+            minScale,
+            minScale,
         )
         lottieDrawable.bounds.set(0, 0, composition.bounds.width(), composition.bounds.height())
         lottieDrawable.draw(canvas, lottieToBitmapMatrix)
     }
 
-    private fun fromRawRes(@RawRes rawRes: Int): LottieTask<LottieComposition>? {
-        return if (cacheComposition) LottieCompositionFactory.fromRawRes(
-            context, rawRes
-        ) else LottieCompositionFactory.fromRawRes(
-            context, rawRes, null
-        )
+    private fun fromRawRes(
+        @RawRes rawRes: Int,
+    ): LottieTask<LottieComposition>? {
+        return if (cacheComposition) {
+            LottieCompositionFactory.fromRawRes(
+                context,
+                rawRes,
+            )
+        } else {
+            LottieCompositionFactory.fromRawRes(
+                context,
+                rawRes,
+                null,
+            )
+        }
     }
 
     private fun fromAssets(assetName: String): LottieTask<LottieComposition>? {
-        return if (cacheComposition) LottieCompositionFactory.fromAsset(
-            context, assetName
-        ) else LottieCompositionFactory.fromAsset(
-            context, assetName, null
-        )
+        return if (cacheComposition) {
+            LottieCompositionFactory.fromAsset(
+                context,
+                assetName,
+            )
+        } else {
+            LottieCompositionFactory.fromAsset(
+                context,
+                assetName,
+                null,
+            )
+        }
     }
 
     private class WeakSuccessListener(target: LottieScreen) : LottieListener<LottieComposition?> {
@@ -277,6 +318,7 @@ class LottieScreen(val context: Context) : Image() {
 
     private class WeakFailureListener(target: LottieScreen) : LottieListener<Throwable> {
         private val targetReference = WeakReference(target)
+
         override fun onResult(result: Throwable) {
             val targetScreen = targetReference.get() ?: return
             val listener =
@@ -288,8 +330,9 @@ class LottieScreen(val context: Context) : Image() {
     private companion object {
         private val TAG = LottieScreen::class.java.simpleName
 
-        private val DEFAULT_FAILURE_LISTENER = LottieListener<Throwable> { throwable: Throwable? ->
-            throw IllegalStateException("Unable to parse composition", throwable)
-        }
+        private val DEFAULT_FAILURE_LISTENER =
+            LottieListener<Throwable> { throwable: Throwable? ->
+                throw IllegalStateException("Unable to parse composition", throwable)
+            }
     }
 }
