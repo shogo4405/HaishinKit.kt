@@ -4,9 +4,7 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLES20
 import android.opengl.GLUtils
-import android.util.Log
 import android.view.Surface
-import com.haishinkit.BuildConfig
 import com.haishinkit.gles.ShaderLoader
 import com.haishinkit.gles.Utils
 import com.haishinkit.screen.Image
@@ -16,8 +14,7 @@ import com.haishinkit.screen.Video
 import javax.microedition.khronos.opengles.GL10
 
 internal class Renderer(applicationContext: Context) :
-    Renderer,
-    SurfaceTexture.OnFrameAvailableListener {
+    Renderer {
     private var textureIds = intArrayOf(0)
     private var surfaceTextures = mutableMapOf<Int, SurfaceTexture>()
     private val shaderLoader by lazy {
@@ -109,8 +106,8 @@ internal class Renderer(applicationContext: Context) :
                         screenObject.videoSize.width,
                         screenObject.videoSize.height,
                     )
+                    setOnFrameAvailableListener(screenObject)
                     screenObject.surface = Surface(this)
-                    setOnFrameAvailableListener(this@Renderer)
                 }
             }
         }
@@ -128,16 +125,6 @@ internal class Renderer(applicationContext: Context) :
         }
         GLES20.glDeleteTextures(1, textureIds, 0)
         screenObject.id = 0
-    }
-
-    override fun onFrameAvailable(surfaceTexture: SurfaceTexture?) {
-        try {
-            surfaceTexture?.updateTexImage()
-        } catch (e: RuntimeException) {
-            if (BuildConfig.DEBUG) {
-                Log.e(TAG, "", e)
-            }
-        }
     }
 
     fun release() {

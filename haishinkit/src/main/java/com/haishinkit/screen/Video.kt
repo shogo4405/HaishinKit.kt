@@ -1,9 +1,12 @@
 package com.haishinkit.screen
 
+import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
 import android.opengl.Matrix
+import android.util.Log
 import android.util.Size
 import android.view.Surface
+import com.haishinkit.BuildConfig
 import com.haishinkit.graphics.ImageOrientation
 import com.haishinkit.graphics.VideoGravity
 import com.haishinkit.util.aspectRatio
@@ -13,7 +16,8 @@ import com.haishinkit.util.swap
  * An object that manages offscreen rendering a video source.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(target) {
+class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(target),
+    SurfaceTexture.OnFrameAvailableListener {
     /**
      * Specifies the surface that is an input source.
      */
@@ -79,30 +83,36 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
             invalidateLayout()
         }
 
+    override var isVisible: Boolean
+        get() = super.isVisible && isFrameAvailable
+        set(value) {
+            super.isVisible = value
+        }
+
+    private var isFrameAvailable = false
+
     override fun layout(renderer: Renderer) {
         super.layout(renderer)
 
-        var degrees =
-            when (imageOrientation) {
-                ImageOrientation.UP -> 0
-                ImageOrientation.DOWN -> 180
-                ImageOrientation.LEFT -> 90
-                ImageOrientation.RIGHT -> 270
-                ImageOrientation.UP_MIRRORED -> 0
-                ImageOrientation.DOWN_MIRRORED -> 180
-                ImageOrientation.LEFT_MIRRORED -> 270
-                ImageOrientation.RIGHT_MIRRORED -> 90
-            }
+        var degrees = when (imageOrientation) {
+            ImageOrientation.UP -> 0
+            ImageOrientation.DOWN -> 180
+            ImageOrientation.LEFT -> 90
+            ImageOrientation.RIGHT -> 270
+            ImageOrientation.UP_MIRRORED -> 0
+            ImageOrientation.DOWN_MIRRORED -> 180
+            ImageOrientation.LEFT_MIRRORED -> 270
+            ImageOrientation.RIGHT_MIRRORED -> 90
+        }
 
         if (isRotatesWithContent) {
-            degrees +=
-                when (deviceOrientation) {
-                    0 -> 0
-                    1 -> 270
-                    2 -> 180
-                    3 -> 90
-                    else -> 0
-                }
+            degrees += when (deviceOrientation) {
+                0 -> 0
+                1 -> 270
+                2 -> 180
+                3 -> 90
+                else -> 0
+            }
         }
 
         if (degrees.rem(180) == 0 && (imageOrientation == ImageOrientation.RIGHT || imageOrientation == ImageOrientation.RIGHT_MIRRORED)) {
@@ -186,6 +196,17 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) : ScreenObject(targ
     override fun invalidateLayout() {
         super.invalidateLayout()
         parent?.invalidateLayout()
+    }
+
+    override fun onFrameAvailable(surfaceTexture: SurfaceTexture?) {
+        try {
+            surfaceTexture?.updateTexImage()
+            isFrameAvailable = true
+        } catch (e: RuntimeException) {
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "", e)
+            }
+        }
     }
 
     interface OnSurfaceChangedListener {

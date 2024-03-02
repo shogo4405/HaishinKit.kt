@@ -73,7 +73,7 @@ abstract class ScreenObject(val target: Int = GLES20.GL_TEXTURE_2D) {
     /**
      * Specifies the visibility of the object.
      */
-    var isVisible = true
+    open var isVisible = true
 
     open var shouldInvalidateLayout = false
         protected set
