@@ -22,12 +22,12 @@ import kotlin.concurrent.schedule
 /**
  * flash.net.NetConnection for Kotlin
  */
-@Suppress("unused")
+@Suppress("UNUSED")
 class RtmpConnection : EventDispatcher(null) {
     /**
      * NetStatusEvent#info.code for NetConnection
      */
-    @Suppress("unused")
+    @Suppress("UNUSED")
     enum class Code(val rawValue: String, val level: String) {
         CALL_BAD_VERSION("NetConnection.Call.BadVersion", "error"),
         CALL_FAILED("NetConnection.Call.Failed", "error"),
@@ -53,7 +53,7 @@ class RtmpConnection : EventDispatcher(null) {
         }
     }
 
-    @Suppress("unused")
+    @Suppress("UNUSED")
     enum class SupportSound(val rawValue: Short) {
         NONE(0x001),
         ADPCM(0x002),
@@ -69,7 +69,7 @@ class RtmpConnection : EventDispatcher(null) {
         ALL(0x0FFF),
     }
 
-    @Suppress("unused")
+    @Suppress("UNUSED")
     enum class SupportVideo(val rawValue: Short) {
         UNUSED(0x001),
         JPEG(0x002),

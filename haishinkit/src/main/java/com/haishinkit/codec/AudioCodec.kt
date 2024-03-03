@@ -11,7 +11,7 @@ import kotlin.properties.Delegates
  * The AudioCodec translate audio data to another format.
  */
 class AudioCodec : Codec(MIME) {
-    @Suppress("unused")
+    @Suppress("UNUSED")
     data class Setting(private var codec: AudioCodec? = null) : Codec.Setting(codec) {
         /**
          * The channel of audio output.

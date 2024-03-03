@@ -10,7 +10,7 @@ import com.haishinkit.graphics.FpsController
 import com.haishinkit.graphics.PixelTransform
 import com.haishinkit.graphics.ScheduledFpsController
 import com.haishinkit.graphics.VideoGravity
-import com.haishinkit.graphics.effect.DefaultVideoEffect
+import com.haishinkit.graphics.effect.BicubicVideoEffect
 import com.haishinkit.graphics.effect.VideoEffect
 import com.haishinkit.lang.Running
 import com.haishinkit.screen.NullRenderer
@@ -65,7 +65,7 @@ internal class PixelTransform(override val applicationContext: Context) :
             video.invalidateLayout()
         }
 
-    override var videoEffect: VideoEffect = DefaultVideoEffect.shared
+    override var videoEffect: VideoEffect = BicubicVideoEffect()
         set(value) {
             if (field == value) return
             field = value

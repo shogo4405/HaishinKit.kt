@@ -16,7 +16,7 @@ import kotlin.properties.Delegates
  * The VideoCodec class provides methods for encode or decode for video.
  */
 class VideoCodec(applicationContext: Context) : Codec(MIME) {
-    @Suppress("unused")
+    @Suppress("UNUSED")
     data class Setting(private val codec: VideoCodec? = null) : Codec.Setting(codec) {
         /**
          * Specifies the width resolution for a video output.

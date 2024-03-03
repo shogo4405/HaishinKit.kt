@@ -35,7 +35,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         LIVE("live"),
     }
 
-    @Suppress("unused")
+    @Suppress("UNUSED")
     enum class Code(val rawValue: String, private val level: String) {
         BUFFER_EMPTY("NetStream.Buffer.Empty", "status"),
         BUFFER_FLUSH("NetStream.Buffer.Flush", "status"),

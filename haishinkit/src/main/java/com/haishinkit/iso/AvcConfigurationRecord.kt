@@ -137,7 +137,7 @@ internal data class AvcConfigurationRecord(
         return result
     }
 
-    @Suppress("unused")
+    @Suppress("UNUSED")
     companion object {
         const val RESERVE_LENGTH_SIZE_MINUS_ONE = 0x3F
         const val RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS = 0xE0

@@ -16,7 +16,7 @@ import java.util.Deque
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
-@Suppress("unused")
+@Suppress("UNUSED")
 abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Running {
     object Capabilities {
         fun isCodecSupportedByType(mode: Int, type: String): Boolean {
@@ -38,7 +38,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         }
     }
 
-    @Suppress("unused")
+    @Suppress("UNUSED")
     open class Setting(private var codec: Codec?) {
         /**
          * Specifies the [MediaCodec]'s [MediaFormat] options if necessary.

@@ -90,7 +90,7 @@ class VkPixelTransform(override val applicationContext: Context) : PixelTransfor
             nativeSetFrameRate(frameRate)
         }
 
-    @Suppress("unused")
+    @Suppress("UNUSED")
     private var memory: Long = 0
 
     external fun inspectDevices(): String
