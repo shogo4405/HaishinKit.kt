@@ -71,6 +71,24 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
                 codec?.pixelTransform?.videoGravity = newValue
             }
         }
+
+        /**
+         * Specifies the profile for a video output.
+         */
+        var profile: Int by Delegates.observable(DEFAULT_PROFILE) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.profile = newValue
+            }
+        }
+
+        /**
+         * Specifies the profile-level for a video outout.
+         */
+        var level: Int by Delegates.observable(DEFAULT_LEVEL) { _, oldValue, newValue ->
+            if (oldValue != newValue) {
+                codec?.level = level
+            }
+        }
     }
 
     /**
@@ -113,12 +131,12 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
     var height = DEFAULT_HEIGHT
 
     /**
-     * Specifies the H264 profile for a video output.
+     * Specifies the profile for a video output.
      */
     var profile = DEFAULT_PROFILE
 
     /**
-     * Specifies the H264 profile-level for a video outout.
+     * Specifies the profile-level for a video outout.
      */
     var level = DEFAULT_LEVEL
 
@@ -148,7 +166,7 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createVideoFormat(MIME, width, height).apply {
-            if (mode == Mode.ENCODE) {
+            if (mode == MODE_ENCODE) {
                 setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
                 setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
                 setInteger(MediaFormat.KEY_CAPTURE_RATE, frameRate)
@@ -172,14 +190,14 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
 
     override fun configure(codec: MediaCodec) {
         super.configure(codec)
-        if (mode == Mode.ENCODE) {
+        if (mode == MODE_ENCODE) {
             pixelTransform.imageExtent = Size(width, height)
             pixelTransform.surface = codec.createInputSurface()
         }
     }
 
     companion object {
-        const val MIME = MIME_VIDEO_AVC
+        const val MIME = MediaFormat.MIMETYPE_VIDEO_AVC
 
         const val DEFAULT_BIT_RATE = 640 * 1000
         const val DEFAULT_FRAME_RATE = 30

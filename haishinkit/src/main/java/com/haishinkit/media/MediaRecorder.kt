@@ -19,6 +19,7 @@ import java.io.FileDescriptor
  * ```
  * ### Code
  * ```kotlin
+ * var recorder = MediaRecorder(context)
  * if (recorder.isRecording) {
  *   recorder.stopRecording()
  * } else {

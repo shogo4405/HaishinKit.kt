@@ -1,6 +1,7 @@
 package com.haishinkit.codec
 
 import android.media.MediaCodec
+import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Handler
@@ -17,9 +18,24 @@ import kotlin.properties.Delegates
 
 @Suppress("unused")
 abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Running {
-    enum class Mode {
-        ENCODE,
-        DECODE,
+    object Capabilities {
+        fun isCodecSupportedByType(mode: Int, type: String): Boolean {
+            return when (mode) {
+                MODE_DECODE -> {
+                    MediaCodecList(MediaCodecList.REGULAR_CODECS).codecInfos.any {
+                        !it.isEncoder && it.supportedTypes.contains(type)
+                    }
+                }
+
+                MODE_ENCODE -> {
+                    MediaCodecList(MediaCodecList.REGULAR_CODECS).codecInfos.any {
+                        it.isEncoder && it.supportedTypes.contains(type)
+                    }
+                }
+
+                else -> false
+            }
+        }
     }
 
     @Suppress("unused")
@@ -71,7 +87,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         get() {
             if (field == null) {
                 field =
-                    if (mode == Mode.ENCODE) {
+                    if (mode == MODE_ENCODE) {
                         MediaCodec.createEncoderByType(inputMime)
                     } else {
                         MediaCodec.createDecoderByType(inputMime)
@@ -89,7 +105,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
     /**
      * The mode of encoding or decoding.
      */
-    var mode = Mode.ENCODE
+    var mode = MODE_ENCODE
 
     /**
      * The external android.media.MediaCodec options.
@@ -104,16 +120,20 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
             field = value
             if (isRunning.get()) {
                 when (mode) {
-                    Mode.ENCODE -> {
+                    MODE_ENCODE -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             value?.let { codec?.setInputSurface(it) }
                         }
                     }
 
-                    Mode.DECODE -> {
+                    MODE_DECODE -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             value?.let { codec?.setOutputSurface(it) }
                         }
+                    }
+
+                    else -> {
+
                     }
                 }
             }
@@ -202,7 +222,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
             format,
             surface,
             null,
-            if (mode == Mode.ENCODE) {
+            if (mode == MODE_ENCODE) {
                 MediaCodec.CONFIGURE_FLAG_ENCODE
             } else {
                 0
@@ -271,21 +291,8 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
     protected abstract fun createOutputFormat(): MediaFormat
 
     companion object {
-        const val MIME_VIDEO_VP8 = "video/x-vnd.on2.vp8"
-        const val MIME_VIDEO_VP9 = "video/x-vnd.on2.vp9"
-        const val MIME_VIDEO_AVC = "video/avc"
-        const val MIME_VIDEO_HEVC = "video/hevc"
-        const val MIME_VIDEO_MP4V = "video/mp4v-es"
-        const val MIME_VIDEO_3GPP = "video/3gpp"
-        const val MIME_VIDEO_RAW = "video/raw"
-        const val MIME_AUDIO_3GPP = "audio/3gpp"
-        const val MIME_AUDIO_AMR = "audio/amr-wb"
-        const val MIME_AUDIO_MPEG = "audio/mpeg"
-        const val MIME_AUDIO_MP4A = "audio/mp4a-latm"
-        const val MIME_AUDIO_VORBIS = "audio/vorbis"
-        const val MIME_AUDIO_G711A = "audio/g711-alaw"
-        const val MIME_AUDIO_G711U = "audio/g711-mlaw"
-        const val MIME_AUDIO_RAW = "audio/raw"
+        const val MODE_ENCODE = 0
+        const val MODE_DECODE = 1
         private val TAG = Codec::class.java.simpleName
     }
 }

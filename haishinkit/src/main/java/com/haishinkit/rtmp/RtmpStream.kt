@@ -209,12 +209,12 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
                 }
 
                 ReadyState.PLAY -> {
-                    muxer.mode = Codec.Mode.DECODE
+                    muxer.mode = Codec.MODE_DECODE
                     muxer.startRunning()
                 }
 
                 ReadyState.PUBLISHING -> {
-                    muxer.mode = Codec.Mode.ENCODE
+                    muxer.mode = Codec.MODE_ENCODE
                     muxer.startRunning()
                     send("@setDataFrame", "onMetaData", toMetaData())
                 }

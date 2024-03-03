@@ -29,7 +29,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     Codec.Listener {
     override var isRunning = AtomicBoolean(false)
 
-    var mode = Codec.Mode.DECODE
+    var mode = Codec.MODE_DECODE
         set(value) {
             stream.audioCodec.mode = value
             stream.videoCodec.mode = value
@@ -97,7 +97,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             Log.d(TAG, "startRunning()")
         }
         when (mode) {
-            Codec.Mode.ENCODE -> {
+            Codec.MODE_ENCODE -> {
                 stream.audioSource?.let {
                     stream.audioCodec.listener = this
                     stream.audioCodec.startRunning()
@@ -109,7 +109,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 }
             }
 
-            Codec.Mode.DECODE -> {
+            Codec.MODE_DECODE -> {
                 mediaLink.startRunning()
             }
         }
@@ -123,13 +123,13 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             Log.d(TAG, "stopRunning()")
         }
         when (mode) {
-            Codec.Mode.ENCODE -> {
+            Codec.MODE_ENCODE -> {
                 stream.audioCodec.stopRunning()
                 stream.videoCodec.stopRunning()
                 stream.audioSource?.unregisterAudioCodec(stream.audioCodec)
             }
 
-            Codec.Mode.DECODE -> {
+            Codec.MODE_DECODE -> {
                 clear()
                 mediaLink.stopRunning()
             }
@@ -152,7 +152,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         index: Int,
     ) {
         when (mime) {
-            Codec.MIME_VIDEO_RAW -> {
+            MediaFormat.MIMETYPE_VIDEO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
                     val message = videoBufferController.take()
@@ -186,7 +186,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 }
             }
 
-            Codec.MIME_AUDIO_RAW -> {
+            MediaFormat.MIMETYPE_AUDIO_RAW -> {
                 try {
                     val inputBuffer = codec.getInputBuffer(index) ?: return
                     audioBufferController.stop()
@@ -220,7 +220,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         mediaFormat: MediaFormat,
     ) {
         when (mime) {
-            Codec.MIME_VIDEO_RAW -> {
+            MediaFormat.MIMETYPE_VIDEO_RAW -> {
                 stream.dispatchEventWith(
                     Event.RTMP_STATUS,
                     false,
@@ -228,7 +228,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 )
             }
 
-            Codec.MIME_VIDEO_AVC -> {
+            MediaFormat.MIMETYPE_VIDEO_AVC -> {
                 val config = AvcConfigurationRecord.create(mediaFormat)
                 val video = stream.messageFactory.createRtmpVideoMessage()
                 video.packetType = FlvAvcPacketType.SEQ
@@ -246,11 +246,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 stream.doOutput(RtmpChunk.ZERO, video)
             }
 
-            Codec.MIME_AUDIO_RAW -> {
+            MediaFormat.MIMETYPE_AUDIO_RAW -> {
                 mediaLink.audioTrack = MediaFormatUtil.createAudioTrack(mediaFormat)
             }
 
-            Codec.MIME_AUDIO_MP4A -> {
+            MediaFormat.MIMETYPE_AUDIO_AAC -> {
                 val config = mediaFormat.getByteBuffer("csd-0") ?: return
                 val audio = stream.messageFactory.createRtmpAudioMessage()
                 audio.codec = FlvAudioCodec.AAC
@@ -271,7 +271,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         buffer: ByteBuffer,
     ): Boolean {
         when (mime) {
-            Codec.MIME_VIDEO_RAW -> {
+            MediaFormat.MIMETYPE_VIDEO_RAW -> {
                 mediaLink.queueVideo(
                     index,
                     null,
@@ -281,7 +281,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 return false
             }
 
-            Codec.MIME_VIDEO_AVC -> {
+            MediaFormat.MIMETYPE_VIDEO_AVC -> {
                 if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     return true
                 }
@@ -306,12 +306,12 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 return true
             }
 
-            Codec.MIME_AUDIO_RAW -> {
+            MediaFormat.MIMETYPE_AUDIO_RAW -> {
                 mediaLink.queueAudio(index, buffer, info.presentationTimeUs, true)
                 return false
             }
 
-            Codec.MIME_AUDIO_MP4A -> {
+            MediaFormat.MIMETYPE_AUDIO_AAC -> {
                 if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     return true
                 }

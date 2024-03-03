@@ -199,7 +199,7 @@ internal class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "startRunning()")
         }
-        audio.mode = Codec.Mode.DECODE
+        audio.mode = Codec.MODE_DECODE
         keepAlive = true
         audioPlaybackJob =
             launch(coroutineContext) {

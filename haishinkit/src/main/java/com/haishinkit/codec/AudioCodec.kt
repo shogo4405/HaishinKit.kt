@@ -60,7 +60,7 @@ class AudioCodec : Codec(MIME) {
         codec: MediaCodec,
         index: Int,
     ) {
-        if (mode == Mode.ENCODE) {
+        if (mode == MODE_ENCODE) {
             try {
                 val inputBuffer = codec.getInputBuffer(index) ?: return
                 val result = buffer.render(inputBuffer)
@@ -81,7 +81,7 @@ class AudioCodec : Codec(MIME) {
 
     override fun createOutputFormat(): MediaFormat {
         return MediaFormat.createAudioFormat(MIME, sampleRate, channelCount).apply {
-            if (mode == Mode.ENCODE) {
+            if (mode == MODE_ENCODE) {
                 setInteger(MediaFormat.KEY_AAC_PROFILE, aacProfile)
                 setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
             } else {
@@ -96,7 +96,7 @@ class AudioCodec : Codec(MIME) {
     }
 
     companion object {
-        const val MIME = MIME_AUDIO_MP4A
+        const val MIME = MediaFormat.MIMETYPE_AUDIO_AAC
 
         const val DEFAULT_SAMPLE_RATE: Int = 44100
         const val DEFAULT_CHANNEL_COUNT: Int = 1
