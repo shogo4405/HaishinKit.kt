@@ -29,7 +29,7 @@ internal class AudioCodecBuffer {
         byteBuffer.put(buffer)
         pool.release(buffer)
         if (presentationTimestamp == DEFAULT_PRESENTATION_TIMESTAMP) {
-            presentationTimestamp = System.nanoTime()
+            presentationTimestamp = System.nanoTime() / 1000
         } else {
             presentationTimestamp += timestamp(byteBuffer.capacity() / 2)
         }
@@ -42,7 +42,7 @@ internal class AudioCodecBuffer {
     }
 
     private fun timestamp(sampleCount: Int): Long {
-        return (1000000.0F * (sampleCount.toFloat() / sampleRate.toFloat())).toLong()
+        return ((sampleCount.toFloat() / sampleRate.toFloat())).toLong()
     }
 
     companion object {

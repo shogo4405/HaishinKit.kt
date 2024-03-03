@@ -99,9 +99,9 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         when (mode) {
             Codec.Mode.ENCODE -> {
                 stream.audioSource?.let {
-                    it.registerAudioCodec(stream.audioCodec)
                     stream.audioCodec.listener = this
                     stream.audioCodec.startRunning()
+                    it.registerAudioCodec(stream.audioCodec)
                 }
                 stream.videoSource?.let {
                     stream.videoCodec.listener = this
@@ -287,13 +287,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 }
                 frameTracker?.track(FrameTracker.TYPE_VIDEO, SystemClock.uptimeMillis())
                 if (videoTimestamp == 0L) {
-                    val diff =
-                        if (stream.audioSource != null && 0 < audioTimestamp) {
-                            info.presentationTimeUs - audioTimestamp / 1000
-                        } else {
-                            0
-                        }
-                    videoTimestamp = info.presentationTimeUs - diff
+                    videoTimestamp = info.presentationTimeUs
                 }
                 val timestamp = (info.presentationTimeUs - videoTimestamp).toInt()
                 val keyframe = info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0

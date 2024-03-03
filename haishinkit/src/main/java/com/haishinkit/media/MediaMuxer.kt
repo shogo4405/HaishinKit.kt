@@ -15,9 +15,17 @@ internal class MediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) :
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
     private var stream = WeakReference(stream)
     private val isReady: Boolean
-        get() =
-            (stream.get()?.audioSource != null && DEFAULT_TRACK_INDEX < audioTrackIndex) &&
-                (stream.get()?.videoSource != null && DEFAULT_TRACK_INDEX < videoTrackIndex)
+        get() {
+            val audioSource = stream.get()?.audioSource
+            val videoSource = stream.get()?.videoSource
+            if (audioSource != null && videoSource != null) {
+                return DEFAULT_TRACK_INDEX < audioTrackIndex && DEFAULT_TRACK_INDEX < videoTrackIndex
+            }
+            if (audioSource == null) {
+                return videoSource != null && DEFAULT_TRACK_INDEX < videoTrackIndex
+            }
+            return DEFAULT_TRACK_INDEX < audioTrackIndex
+        }
     private var audioTrackIndex = DEFAULT_TRACK_INDEX
     private var videoTrackIndex = DEFAULT_TRACK_INDEX
 
@@ -33,6 +41,7 @@ internal class MediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) :
         isRunning.set(false)
         muxer?.stop()
         muxer?.release()
+        muxer = null
         stream.clear()
     }
 
@@ -47,11 +56,11 @@ internal class MediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) :
         mime: String,
         mediaFormat: MediaFormat,
     ) {
-        if (mime.contains("audio")) {
+        if (mime.startsWith("audio")) {
             audioTrackIndex = muxer?.addTrack(mediaFormat) ?: DEFAULT_TRACK_INDEX
             startRunning()
         }
-        if (mime.contains("video")) {
+        if (mime.startsWith("video")) {
             videoTrackIndex = muxer?.addTrack(mediaFormat) ?: DEFAULT_TRACK_INDEX
             startRunning()
         }
@@ -65,10 +74,13 @@ internal class MediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) :
     ): Boolean {
         if (!isRunning.get()) return true
         var trackIndex = -1
-        if (mime.contains("audio")) {
+        if (mime.startsWith("audio")) {
             trackIndex = audioTrackIndex
+            if (info.presentationTimeUs == 0L) {
+                return true
+            }
         }
-        if (mime.contains("video")) {
+        if (mime.startsWith("video")) {
             trackIndex = videoTrackIndex
         }
         muxer?.writeSampleData(trackIndex, buffer, info)
