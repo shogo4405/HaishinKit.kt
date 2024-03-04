@@ -1,7 +1,6 @@
 package com.haishinkit.codec
 
 import android.media.MediaCodec
-import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Handler
@@ -17,27 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
 @Suppress("UNUSED")
-abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Running {
-    object Capabilities {
-        fun isCodecSupportedByType(mode: Int, type: String): Boolean {
-            return when (mode) {
-                MODE_DECODE -> {
-                    MediaCodecList(MediaCodecList.REGULAR_CODECS).codecInfos.any {
-                        !it.isEncoder && it.supportedTypes.contains(type)
-                    }
-                }
-
-                MODE_ENCODE -> {
-                    MediaCodecList(MediaCodecList.REGULAR_CODECS).codecInfos.any {
-                        it.isEncoder && it.supportedTypes.contains(type)
-                    }
-                }
-
-                else -> false
-            }
-        }
-    }
-
+abstract class Codec : MediaCodec.Callback(), Running {
     @Suppress("UNUSED")
     open class Setting(private var codec: Codec?) {
         /**
@@ -86,12 +65,11 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
     open var codec: MediaCodec? = null
         get() {
             if (field == null) {
-                field =
-                    if (mode == MODE_ENCODE) {
-                        MediaCodec.createEncoderByType(inputMime)
-                    } else {
-                        MediaCodec.createDecoderByType(inputMime)
-                    }
+                field = if (mode == MODE_ENCODE) {
+                    MediaCodec.createEncoderByType(outputMimeType)
+                } else {
+                    MediaCodec.createDecoderByType(inputMimeType)
+                }
             }
             return field
         }
@@ -103,12 +81,12 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         }
 
     /**
-     * The mode of encoding or decoding.
+     * Specifies the mode of encoding or decoding.
      */
     var mode = MODE_ENCODE
 
     /**
-     * The external android.media.MediaCodec options.
+     * Specifies the external android.media.MediaCodec options.
      */
     var options = listOf<CodecOption>()
 
@@ -138,6 +116,17 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
                 }
             }
         }
+
+    /**
+     * Specifies the input mime type.
+     */
+    abstract var inputMimeType: String
+
+    /**
+     * Specifies the output mime type.
+     */
+    abstract var outputMimeType: String
+
     override val isRunning = AtomicBoolean(false)
     private var outputFormat: MediaFormat? = null
         private set(value) {
@@ -163,13 +152,12 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
             field?.looper?.quitSafely()
             field = value
         }
-    private var outputMime: String = ""
 
     @Synchronized
     final override fun startRunning() {
         if (isRunning.get()) return
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "startRunning($inputMime)")
+            Log.d(TAG, "startRunning($inputMimeType)")
         }
         try {
             val codec = codec ?: return
@@ -190,7 +178,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
     final override fun stopRunning() {
         if (!isRunning.get()) return
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "stopRunning($inputMime)")
+            Log.d(TAG, "stopRunning($inputMimeType)")
         }
         try {
             dispose()
@@ -214,7 +202,13 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         } else {
             codec.setCallback(this)
         }
-        val format = createOutputFormat()
+        val format = createMediaFormat(
+            if (mode == MODE_ENCODE) {
+                outputMimeType
+            } else {
+                inputMimeType
+            }
+        )
         for (option in options) {
             option.apply(format)
         }
@@ -229,7 +223,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
             },
         )
         codec.outputFormat.getString("mime")?.let { mime ->
-            outputMime = mime
+            outputMimeType = mime
         }
     }
 
@@ -238,7 +232,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         index: Int,
     ) {
         try {
-            listener?.onInputBufferAvailable(inputMime, codec, index)
+            listener?.onInputBufferAvailable(inputMimeType, codec, index)
         } catch (e: IllegalStateException) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, e)
@@ -253,7 +247,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
     ) {
         try {
             val buffer = codec.getOutputBuffer(index) ?: return
-            if (listener?.onSampleOutput(outputMime, index, info, buffer) == true) {
+            if (listener?.onSampleOutput(outputMimeType, index, info, buffer) == true) {
                 codec.releaseOutputBuffer(index, false)
             }
         } catch (e: IllegalStateException) {
@@ -288,7 +282,7 @@ abstract class Codec(private val inputMime: String) : MediaCodec.Callback(), Run
         }
     }
 
-    protected abstract fun createOutputFormat(): MediaFormat
+    protected abstract fun createMediaFormat(mime: String): MediaFormat
 
     companion object {
         const val MODE_ENCODE = 0

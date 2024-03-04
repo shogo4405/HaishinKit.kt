@@ -32,8 +32,8 @@ import com.haishinkit.graphics.effect.MonochromeVideoEffect
 import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
-import com.haishinkit.media.MediaRecorder
 import com.haishinkit.media.MultiCamera2Source
+import com.haishinkit.media.StreamRecorder
 import com.haishinkit.media.StreamView
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
@@ -64,7 +64,7 @@ class CameraTabFragment : Fragment(), IEventListener {
     private var multiCamera: MultiCamera2Source? = null
     private var cameraSource: Camera2Source? = null
     private val text: Text by lazy { Text() }
-    private val recorder: MediaRecorder by lazy { MediaRecorder(requireContext()) }
+    private val recorder: StreamRecorder by lazy { StreamRecorder(requireContext()) }
     private val lottie: LottieScreen by lazy { LottieScreen(requireContext()) }
     private val callback: Screen.Callback by lazy { Callback(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,6 +109,7 @@ class CameraTabFragment : Fragment(), IEventListener {
         image.bitmap = BitmapFactory.decodeResource(resources, R.drawable.game_jikkyou)
         image.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM
         image.frame.set(0, 0, 180, 180)
+
         stream.screen.addChild(image)
 
         stream.screen.addChild(text)

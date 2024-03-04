@@ -15,9 +15,22 @@ import kotlin.properties.Delegates
 /**
  * The VideoCodec class provides methods for encode or decode for video.
  */
-class VideoCodec(applicationContext: Context) : Codec(MIME) {
+class VideoCodec(applicationContext: Context) : Codec() {
     @Suppress("UNUSED")
     data class Setting(private val codec: VideoCodec? = null) : Codec.Setting(codec) {
+        /**
+         * Specifies the video codec profile.
+         */
+        var profileLevel: VideoCodecProfileLevel by Delegates.observable(DEFAULT_PROFILE_LEVEL) { _, oldValue, newValue ->
+            if (oldValue == newValue) return@observable
+            if (!CodecCapabilities.isCodecSupportedByType(MODE_ENCODE, newValue.mime)) {
+                throw IllegalArgumentException("Unsupported mime type for ${newValue.mime}.")
+            }
+            codec?.outputMimeType = newValue.mime
+            codec?.profile = newValue.profile
+            codec?.level = newValue.level
+        }
+
         /**
          * Specifies the width resolution for a video output.
          */
@@ -71,24 +84,6 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
                 codec?.pixelTransform?.videoGravity = newValue
             }
         }
-
-        /**
-         * Specifies the profile for a video output.
-         */
-        var profile: Int by Delegates.observable(DEFAULT_PROFILE) { _, oldValue, newValue ->
-            if (oldValue != newValue) {
-                codec?.profile = newValue
-            }
-        }
-
-        /**
-         * Specifies the profile-level for a video outout.
-         */
-        var level: Int by Delegates.observable(DEFAULT_LEVEL) { _, oldValue, newValue ->
-            if (oldValue != newValue) {
-                codec?.level = level
-            }
-        }
     }
 
     /**
@@ -133,12 +128,12 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
     /**
      * Specifies the profile for a video output.
      */
-    var profile = DEFAULT_PROFILE
+    var profile = DEFAULT_PROFILE_LEVEL.profile
 
     /**
      * Specifies the profile-level for a video outout.
      */
-    var level = DEFAULT_LEVEL
+    var level = DEFAULT_PROFILE_LEVEL.level
 
     /**
      * The pixel transform instance.
@@ -150,10 +145,8 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
         }
     }
 
-    /**
-     * Specifies the color format for a surface.
-     */
-    private var colorFormat = DEFAULT_COLOR_FORMAT
+    override var inputMimeType = MediaFormat.MIMETYPE_VIDEO_RAW
+    override var outputMimeType = DEFAULT_PROFILE_LEVEL.mime
 
     override var codec: MediaCodec?
         get() = super.codec
@@ -164,8 +157,13 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
             super.codec = value
         }
 
-    override fun createOutputFormat(): MediaFormat {
-        return MediaFormat.createVideoFormat(MIME, width, height).apply {
+    /**
+     * Specifies the color format for a surface.
+     */
+    private var colorFormat = DEFAULT_COLOR_FORMAT
+
+    override fun createMediaFormat(mime: String): MediaFormat {
+        return MediaFormat.createVideoFormat(mime, width, height).apply {
             if (mode == MODE_ENCODE) {
                 setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
                 setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
@@ -197,15 +195,12 @@ class VideoCodec(applicationContext: Context) : Codec(MIME) {
     }
 
     companion object {
-        const val MIME = MediaFormat.MIMETYPE_VIDEO_AVC
-
+        val DEFAULT_PROFILE_LEVEL = VideoCodecProfileLevel.H264_BASELINE_3_2
         const val DEFAULT_BIT_RATE = 640 * 1000
         const val DEFAULT_FRAME_RATE = 30
         const val DEFAULT_I_FRAME_INTERVAL = 2
         const val DEFAULT_WIDTH = 854
         const val DEFAULT_HEIGHT = 480
-        const val DEFAULT_PROFILE = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
-        const val DEFAULT_LEVEL = MediaCodecInfo.CodecProfileLevel.AVCLevel31
         const val DEFAULT_COLOR_FORMAT = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
         val DEFAULT_VIDEO_GRAVITY = VideoGravity.RESIZE_ASPECT
 
