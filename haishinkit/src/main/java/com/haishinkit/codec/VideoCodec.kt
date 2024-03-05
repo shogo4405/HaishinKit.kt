@@ -19,7 +19,9 @@ class VideoCodec(applicationContext: Context) : Codec() {
     @Suppress("UNUSED")
     data class Setting(private val codec: VideoCodec? = null) : Codec.Setting(codec) {
         /**
-         * Specifies the video codec profile.
+         * Specifies the video codec profile level.
+         *
+         * @throws IllegalArgumentException When system is not supported profile level.
          */
         var profileLevel: VideoCodecProfileLevel by Delegates.observable(DEFAULT_PROFILE_LEVEL) { _, oldValue, newValue ->
             if (oldValue == newValue) return@observable

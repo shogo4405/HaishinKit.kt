@@ -1,13 +1,32 @@
 package com.haishinkit.codec
 
+import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import androidx.annotation.RequiresApi
 
+/**
+ * A value that specifies how the [VideoCodec] supports an profile-level.
+ */
 @Suppress("UNUSED")
 enum class VideoCodecProfileLevel(
-    val rawValue: String, val mime: String, val profile: Int, val level: Int
+    /**
+     * The string value.
+     */
+    val rawValue: String,
+    /**
+     * The [MediaFormat] mime type.
+     */
+    val mime: String,
+    /**
+     * The [MediaCodec] profile name value.
+     */
+    val profile: Int,
+    /**
+     * The [MediaCodec] profile level value.
+     */
+    val level: Int
 ) {
     H264_BASELINE_3_1(
         "H264_Baseline_3_1",
