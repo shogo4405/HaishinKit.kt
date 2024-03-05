@@ -10,7 +10,7 @@ import kotlin.properties.Delegates
 /**
  * The AudioCodec translate audio data to another format.
  */
-class AudioCodec : Codec(MIME) {
+class AudioCodec : Codec() {
     @Suppress("UNUSED")
     data class Setting(private var codec: AudioCodec? = null) : Codec.Setting(codec) {
         /**
@@ -49,6 +49,8 @@ class AudioCodec : Codec(MIME) {
     var channelCount = DEFAULT_CHANNEL_COUNT
     var bitRate = DEFAULT_BIT_RATE
     var aacProfile = DEFAULT_AAC_PROFILE
+    override var inputMimeType = MediaFormat.MIMETYPE_AUDIO_RAW
+    override var outputMimeType = MediaFormat.MIMETYPE_AUDIO_AAC
     private var buffer = AudioCodecBuffer()
 
     fun append(byteBuffer: ByteBuffer) {
@@ -79,8 +81,8 @@ class AudioCodec : Codec(MIME) {
         }
     }
 
-    override fun createOutputFormat(): MediaFormat {
-        return MediaFormat.createAudioFormat(MIME, sampleRate, channelCount).apply {
+    override fun createMediaFormat(mime: String): MediaFormat {
+        return MediaFormat.createAudioFormat(mime, sampleRate, channelCount).apply {
             if (mode == MODE_ENCODE) {
                 setInteger(MediaFormat.KEY_AAC_PROFILE, aacProfile)
                 setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
@@ -96,8 +98,6 @@ class AudioCodec : Codec(MIME) {
     }
 
     companion object {
-        const val MIME = MediaFormat.MIMETYPE_AUDIO_AAC
-
         const val DEFAULT_SAMPLE_RATE: Int = 44100
         const val DEFAULT_CHANNEL_COUNT: Int = 1
         const val DEFAULT_BIT_RATE: Int = 64000
