@@ -232,7 +232,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
         index: Int,
     ) {
         try {
-            listener?.onInputBufferAvailable(inputMimeType, codec, index)
+            listener?.onInputBufferAvailable(outputMimeType, codec, index)
         } catch (e: IllegalStateException) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, e)

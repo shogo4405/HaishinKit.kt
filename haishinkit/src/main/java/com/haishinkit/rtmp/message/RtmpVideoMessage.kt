@@ -4,15 +4,13 @@ import android.media.MediaCodec
 import android.util.Log
 import android.util.Size
 import androidx.core.util.Pools
-import com.haishinkit.flv.FlvAvcPacketType
-import com.haishinkit.flv.FlvFlameType
-import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.iso.AvcConfigurationRecord
 import com.haishinkit.iso.AvcFormatUtils
 import com.haishinkit.iso.SequenceParameterSet
 import com.haishinkit.media.MediaCodecSource
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpMuxer
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
@@ -53,7 +51,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
             .put(compositeTime.toByte())
         data?.let {
             when (packetType) {
-                FlvAvcPacketType.NAL -> {
+                RtmpMuxer.FLV_AVC_PACKET_TYPE_NAL -> {
                     AvcFormatUtils.toNALFile(it, buffer)
                 }
 
@@ -79,11 +77,11 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
     }
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
-        if (codec != FlvVideoCodec.AVC) return this
+        if (codec != RtmpMuxer.FLV_VIDEO_CODEC_AVC) return this
         val stream = connection.streams[streamID] ?: return this
         data?.let { it ->
             when (val byte = it.get()) {
-                FlvAvcPacketType.SEQ -> {
+                RtmpMuxer.FLV_AVC_PACKET_TYPE_SEQ -> {
                     if (!it.hasRemaining()) return this
                     it.position(4)
                     val record = AvcConfigurationRecord.decode(it)
@@ -110,7 +108,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                     }
                 }
 
-                FlvAvcPacketType.NAL -> {
+                RtmpMuxer.FLV_AVC_PACKET_TYPE_NAL -> {
                     if (!it.hasRemaining()) return this
                     if (chunk == RtmpChunk.ZERO) {
                         val currentTimestamp = timestamp
@@ -123,7 +121,8 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
                     stream.muxer.enqueueVideo(this)
                 }
 
-                FlvAvcPacketType.EOS -> {
+                RtmpMuxer.FLV_AVC_PACKET_TYPE_EOS -> {
+
                 }
 
                 else -> {
@@ -141,11 +140,11 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) :
     }
 
     fun toFlags(): Int {
-        if (frame == FlvFlameType.KEY) {
+        if (frame == RtmpMuxer.FLV_FRAME_TYPE_KEY) {
             return MediaCodec.BUFFER_FLAG_KEY_FRAME
         }
         return when (data?.get(0)) {
-            FlvAvcPacketType.SEQ -> {
+            RtmpMuxer.FLV_AVC_PACKET_TYPE_SEQ -> {
                 MediaCodec.BUFFER_FLAG_CODEC_CONFIG
             }
 

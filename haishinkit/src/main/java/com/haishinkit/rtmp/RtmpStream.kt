@@ -8,8 +8,6 @@ import com.haishinkit.event.EventDispatcher
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
-import com.haishinkit.flv.FlvAudioCodec
-import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.media.Stream
 import com.haishinkit.rtmp.message.RtmpCommandMessage
 import com.haishinkit.rtmp.message.RtmpDataMessage
@@ -417,11 +415,11 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
             metadata["width"] = videoCodec.width
             metadata["height"] = videoCodec.height
             metadata["framerate"] = videoCodec.frameRate
-            metadata["videocodecid"] = FlvVideoCodec.AVC.toInt()
+            metadata["videocodecid"] = RtmpMuxer.FLV_VIDEO_CODEC_AVC.toInt()
             metadata["videodatarate"] = videoCodec.bitRate / 1000
         }
         audioSource?.let {
-            metadata["audiocodecid"] = FlvAudioCodec.AAC.toInt()
+            metadata["audiocodecid"] = RtmpMuxer.FLV_AUDIO_CODEC_AAC.toInt()
             metadata["audiodatarate"] = audioCodec.bitRate / 1000
         }
         return metadata

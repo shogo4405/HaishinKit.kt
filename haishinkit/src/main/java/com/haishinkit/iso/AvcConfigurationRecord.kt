@@ -62,6 +62,7 @@ internal data class AvcConfigurationRecord(
     }
 
     internal fun apply(codec: VideoCodec): Boolean {
+        codec.inputMimeType = MediaFormat.MIMETYPE_VIDEO_AVC
         when (avcProfileIndication.toInt()) {
             66 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
             77 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileMain

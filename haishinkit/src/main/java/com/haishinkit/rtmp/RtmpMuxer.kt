@@ -7,11 +7,6 @@ import android.util.Log
 import com.haishinkit.BuildConfig
 import com.haishinkit.codec.Codec
 import com.haishinkit.event.Event
-import com.haishinkit.flv.FlvAacPacketType
-import com.haishinkit.flv.FlvAudioCodec
-import com.haishinkit.flv.FlvAvcPacketType
-import com.haishinkit.flv.FlvFlameType
-import com.haishinkit.flv.FlvVideoCodec
 import com.haishinkit.iso.AvcConfigurationRecord
 import com.haishinkit.lang.Running
 import com.haishinkit.media.BufferController
@@ -171,7 +166,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     videoTimestamp += message.timestamp * 1000
                     if (success) {
                         // There are some devices where info.flags always become 0, so this is a workaround.
-                        keyframes[index] = message.frame == FlvFlameType.KEY
+                        keyframes[index] = message.frame == FLV_FRAME_TYPE_KEY
                         codec.queueInputBuffer(
                             index,
                             0,
@@ -231,9 +226,9 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             MediaFormat.MIMETYPE_VIDEO_AVC -> {
                 val config = AvcConfigurationRecord.create(mediaFormat)
                 val video = stream.messageFactory.createRtmpVideoMessage()
-                video.packetType = FlvAvcPacketType.SEQ
-                video.frame = FlvFlameType.KEY
-                video.codec = FlvVideoCodec.AVC
+                video.packetType = FLV_AVC_PACKET_TYPE_SEQ
+                video.frame = FLV_FRAME_TYPE_KEY
+                video.codec = FLV_VIDEO_CODEC_AVC
                 video.data =
                     config.allocate().apply {
                         config.encode(this)
@@ -253,8 +248,8 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             MediaFormat.MIMETYPE_AUDIO_AAC -> {
                 val config = mediaFormat.getByteBuffer("csd-0") ?: return
                 val audio = stream.messageFactory.createRtmpAudioMessage()
-                audio.codec = FlvAudioCodec.AAC
-                audio.aacPacketType = FlvAacPacketType.SEQ
+                audio.codec = FLV_AUDIO_CODEC_AAC
+                audio.aacPacketType = FLV_AAC_PACKET_TYPE_SEQ
                 audio.data = config
                 audio.chunkStreamID = RtmpChunk.AUDIO
                 audio.streamID = stream.id
@@ -292,9 +287,9 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 val timestamp = (info.presentationTimeUs - videoTimestamp).toInt()
                 val keyframe = info.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0
                 val video = stream.messageFactory.createRtmpVideoMessage()
-                video.packetType = FlvAvcPacketType.NAL
-                video.frame = if (keyframe) FlvFlameType.KEY else FlvFlameType.INTER
-                video.codec = FlvVideoCodec.AVC
+                video.packetType = FLV_AVC_PACKET_TYPE_NAL
+                video.frame = if (keyframe) FLV_FRAME_TYPE_KEY else FLV_FRAME_TYPE_INTER
+                video.codec = FLV_VIDEO_CODEC_AVC
                 video.data = buffer
                 video.chunkStreamID = RtmpChunk.VIDEO
                 video.timestamp = timestamp / 1000
@@ -321,8 +316,8 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 }
                 val timestamp = (info.presentationTimeUs - audioTimestamp).toInt()
                 val audio = stream.messageFactory.createRtmpAudioMessage()
-                audio.codec = FlvAudioCodec.AAC
-                audio.aacPacketType = FlvAacPacketType.RAW
+                audio.codec = FLV_AUDIO_CODEC_AAC
+                audio.aacPacketType = FLV_AAC_PACKET_TYPE_RAW
                 audio.data = buffer
                 audio.chunkStreamID = RtmpChunk.AUDIO
                 audio.timestamp = timestamp / 1000
@@ -357,7 +352,51 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         stream.dispatchEventWith(Event.RTMP_STATUS, false, RtmpStream.Code.BUFFER_EMPTY.data(""))
     }
 
+    @Suppress("UNUSED")
     companion object {
+        const val FLV_AAC_PACKET_TYPE_SEQ: Byte = 0x00
+        const val FLV_AAC_PACKET_TYPE_RAW: Byte = 0x01
+
+        const val FLV_FRAME_TYPE_KEY: Byte = 0x01
+        const val FLV_FRAME_TYPE_INTER: Byte = 0x02
+        const val FLV_FRAME_TYPE_DISPOSABLE: Byte = 0x03
+        const val FLV_FRAME_TYPE_GENERATED: Byte = 0x04
+        const val FLV_FRAME_TYPE_COMMAND: Byte = 0x05
+
+        const val FLV_AVC_PACKET_TYPE_SEQ: Byte = 0x00
+        const val FLV_AVC_PACKET_TYPE_NAL: Byte = 0x01
+        const val FLV_AVC_PACKET_TYPE_EOS: Byte = 0x02
+
+        const val FLV_VIDEO_CODEC_SORENSON_H263: Byte = 0x02
+        const val FLV_VIDEO_CODEC_SCREEN1: Byte = 0x03
+        const val FLV_VIDEO_CODEC_ON2_VP6: Byte = 0x04
+        const val FLV_VIDEO_CODEC_ON2_VP6_ALPHA: Byte = 0x05
+        const val FLV_VIDEO_CODEC_SCREEN_2: Byte = 0x06
+        const val FLV_VIDEO_CODEC_AVC: Byte = 0x07
+
+        const val FLV_AUDIO_CODEC_ADPCM: Byte = 0x01
+        const val FLV_AUDIO_CODEC_MP3: Byte = 0x02
+        const val FLV_AUDIO_CODEC_PCMLE: Byte = 0x03
+        const val FLV_AUDIO_CODEC_NELLYMOSER16K: Byte = 0x04
+        const val FLV_AUDIO_CODEC_NELLYMOSER8K: Byte = 0x05
+        const val FLV_AUDIO_CODEC_NELLYMOSER: Byte = 0x06
+        const val FLV_AUDIO_CODEC_G711A: Byte = 0x07
+        const val FLV_AUDIO_CODEC_G711MU: Byte = 0x08
+        const val FLV_AUDIO_CODEC_AAC: Byte = 0x0A
+        const val FLV_AUDIO_CODEC_SPEEX: Byte = 0x0B
+        const val FLV_AUDIO_CODEC_MP3_8K: Byte = 0x0E
+
+        const val FLV_VIDEO_FOUR_CC_AV01 = 0x61763031 // { 'a', 'v', '0', '1' }
+        const val FLV_VIDEO_FOUR_CC_VP09 = 0x76703039 // { 'v', 'p', '0', '9' }
+        const val FLV_VIDEO_FOUR_CC_HEVC = 0x68766331 // { 'h', 'v', 'c', '1' }
+
+        const val FLV_VIDEO_PACKET_TYPE_SEQUENCE_START = 0
+        const val FLV_VIDEO_PACKET_TYPE_CODES_FRAMES = 1
+        const val FLV_VIDEO_PACKET_TYPE_SEQUENCE_END = 2
+        const val FLV_VIDEO_PACKET_TYPE_CODES_FRAMES_X = 3
+        const val FLV_VIDEO_PACKET_TYPE_METADATA = 4
+        const val FLV_VIDEO_PACKET_TYPE_MPEG2TS_SEQUENCE_START = 5
+
         private const val VERBOSE = false
         private var TAG = RtmpMuxer::class.java.simpleName
     }

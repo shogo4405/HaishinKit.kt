@@ -1,12 +1,12 @@
 package com.haishinkit.rtmp.message
 
 import android.media.MediaCodec
+import android.media.MediaFormat
 import android.util.Log
 import androidx.core.util.Pools
-import com.haishinkit.flv.FlvAacPacketType
-import com.haishinkit.flv.FlvAudioCodec
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
+import com.haishinkit.rtmp.RtmpMuxer
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
@@ -30,7 +30,7 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
         }
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
-        if (codec == FlvAudioCodec.AAC) {
+        if (codec == RtmpMuxer.FLV_AUDIO_CODEC_AAC) {
             buffer.put(AAC)
             buffer.put(aacPacketType)
         }
@@ -56,17 +56,18 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
     }
 
     override fun execute(connection: RtmpConnection): RtmpMessage {
-        if (codec != FlvAudioCodec.AAC) return this
+        if (codec != RtmpMuxer.FLV_AUDIO_CODEC_AAC) return this
         val stream = connection.streams[streamID] ?: return this
         data?.let {
             when (val byte = it.get()) {
-                FlvAacPacketType.SEQ -> {
+                RtmpMuxer.FLV_AAC_PACKET_TYPE_SEQ -> {
                     timestamp = 0
+                    stream.audioCodec.inputMimeType = MediaFormat.MIMETYPE_AUDIO_AAC
                     stream.muxer.hasAudio = true
                     stream.muxer.enqueueAudio(this)
                 }
 
-                FlvAacPacketType.RAW -> {
+                RtmpMuxer.FLV_AAC_PACKET_TYPE_RAW -> {
                     if (chunk == RtmpChunk.ZERO) {
                         val currentTimestamp = timestamp
                         timestamp -= stream.audioTimestamp
@@ -91,7 +92,7 @@ internal class RtmpAudioMessage(pool: Pools.Pool<RtmpMessage>? = null) :
 
     fun toFlags(): Int {
         return when (data?.get(0)) {
-            FlvAacPacketType.SEQ -> {
+            RtmpMuxer.FLV_AAC_PACKET_TYPE_SEQ -> {
                 MediaCodec.BUFFER_FLAG_CODEC_CONFIG
             }
 
