@@ -2,13 +2,12 @@ package com.haishinkit.iso
 
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
-import android.util.Log
 import com.haishinkit.codec.CodecOption
 import com.haishinkit.codec.VideoCodec
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
-internal data class AvcConfigurationRecord(
+internal data class AvcDecoderConfigurationRecord(
     val configurationVersion: Byte = 0x01,
     val avcProfileIndication: Byte = 0,
     val profileCompatibility: Byte = 0,
@@ -17,11 +16,27 @@ internal data class AvcConfigurationRecord(
     val numOfSequenceParameterSetsWithReserved: Byte = 0,
     val sequenceParameterSets: List<ByteArray>? = null,
     val pictureParameterSets: List<ByteArray>? = null,
-) {
+) : DecoderConfigurationRecord {
     val naluLength: Byte
         get() = ((lengthSizeMinusOneWithReserved.toInt() shr 6) + 1).toByte()
 
-    fun encode(buffer: ByteBuffer): AvcConfigurationRecord {
+    override val capacity: Int
+        get() {
+            var capacity = 5
+            sequenceParameterSets?.let {
+                for (sps in it) {
+                    capacity += 3 + sps.size
+                }
+            }
+            pictureParameterSets?.let {
+                for (psp in it) {
+                    capacity += 3 + psp.size
+                }
+            }
+            return capacity
+        }
+
+    override fun encode(buffer: ByteBuffer): AvcDecoderConfigurationRecord {
         buffer.put(configurationVersion)
         buffer.put(avcProfileIndication)
         buffer.put(profileCompatibility)
@@ -46,22 +61,7 @@ internal data class AvcConfigurationRecord(
         return this
     }
 
-    internal fun allocate(): ByteBuffer {
-        var capacity = 5
-        sequenceParameterSets?.let {
-            for (sps in it) {
-                capacity += 3 + sps.size
-            }
-        }
-        pictureParameterSets?.let {
-            for (psp in it) {
-                capacity += 3 + psp.size
-            }
-        }
-        return ByteBuffer.allocate(capacity)
-    }
-
-    internal fun apply(codec: VideoCodec): Boolean {
+    override fun configure(codec: VideoCodec): Boolean {
         codec.inputMimeType = MediaFormat.MIMETYPE_VIDEO_AVC
         when (avcProfileIndication.toInt()) {
             66 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
@@ -78,11 +78,17 @@ internal data class AvcConfigurationRecord(
             51 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel51
             52 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel52
         }
-        val options = mutableListOf<CodecOption>()
+        return super.configure(codec)
+    }
+
+    override fun toCodecSpecificData(options: List<CodecOption>): List<CodecOption> {
+        val mutableOptions = mutableListOf<CodecOption>()
+        mutableOptions.addAll(options.filter { it.key != CSD0 && it.key != CSD1 })
+
         val spsBuffer = ByteBuffer.allocate(128)
         sequenceParameterSets?.let {
             for (sps in it) {
-                spsBuffer.put(AvcFormatUtils.START_CODE)
+                spsBuffer.put(IsoTypeBufferUtils.START_CODE)
                 spsBuffer.put(sps)
             }
         }
@@ -91,55 +97,20 @@ internal data class AvcConfigurationRecord(
         val ppsBuffer = ByteBuffer.allocate(128)
         pictureParameterSets?.let {
             for (pps in it) {
-                ppsBuffer.put(AvcFormatUtils.START_CODE)
+                ppsBuffer.put(IsoTypeBufferUtils.START_CODE)
                 ppsBuffer.put((pps))
             }
         }
         ppsBuffer.flip()
 
-        if (codec.options.isEmpty()) {
-            options.add(CodecOption(CSD0, spsBuffer))
-            options.add(CodecOption(CSD1, ppsBuffer))
-        } else {
-            for (option in codec.options) {
-                if (option.key == CSD0 && spsBuffer.compareTo(option.value as ByteBuffer) != 0) {
-                    options.add(CodecOption(CSD0, spsBuffer))
-                }
-                if (option.key == CSD1 && ppsBuffer.compareTo(option.value as ByteBuffer) != 0) {
-                    options.add(CodecOption(CSD1, ppsBuffer))
-                }
-            }
-            if (options.isEmpty()) {
-                return false
-            }
-        }
+        mutableOptions.add(CodecOption(CSD0, spsBuffer))
+        mutableOptions.add(CodecOption(CSD1, ppsBuffer))
 
-        codec.options = options
-        Log.i(TAG, "apply value=$this for a videoCodec")
-
-        return true
-    }
-
-    internal fun toByteBuffer(): ByteBuffer {
-        val result = ByteBuffer.allocate(128)
-        result.put(0x00).put(0x00).put(0x00).put(0x00)
-        sequenceParameterSets?.let {
-            for (sps in it) {
-                result.put(AvcFormatUtils.START_CODE)
-                result.put(sps)
-            }
-        }
-        pictureParameterSets?.let {
-            for (pps in it) {
-                result.put(AvcFormatUtils.START_CODE)
-                result.put(pps)
-            }
-        }
-        return result
+        return mutableOptions
     }
 
     @Suppress("UNUSED")
-    companion object {
+    companion object : DecoderConfigurationRecordFactory {
         const val RESERVE_LENGTH_SIZE_MINUS_ONE = 0x3F
         const val RESERVE_NUM_OF_SEQUENCE_PARAMETER_SETS = 0xE0
         const val RESERVE_CHROME_FORMAT = 0xFC
@@ -149,9 +120,37 @@ internal data class AvcConfigurationRecord(
         private const val CSD0 = "csd-0"
         private const val CSD1 = "csd-1"
 
-        private var TAG = AvcConfigurationRecord::class.java.simpleName
+        private var TAG = AvcDecoderConfigurationRecord::class.java.simpleName
 
-        fun decode(buffer: ByteBuffer): AvcConfigurationRecord {
+        override fun create(mediaFormat: MediaFormat): AvcDecoderConfigurationRecord {
+            // SPS => 0x00,0x00,0x00,0x01,0x67,0x42,0x00,0x29,0x8d,0x8d,0x40,0xa0,0xfd,0x00,0xf0,0x88,0x45,0x38
+            val spsBuffer = mediaFormat.getByteBuffer(CSD0)
+            // PPS => 0x00,0x00,0x00,0x01,0x68,0xca,0x43,0xc8
+            val ppsBuffer = mediaFormat.getByteBuffer(CSD1)
+            if (spsBuffer == null || ppsBuffer == null) {
+                throw IllegalStateException()
+            }
+            return AvcDecoderConfigurationRecord(
+                configurationVersion = 0x01,
+                avcProfileIndication = spsBuffer[5],
+                profileCompatibility = spsBuffer[6],
+                avcLevelIndication = spsBuffer[7],
+                lengthSizeMinusOneWithReserved = 0xFF.toByte(),
+                numOfSequenceParameterSetsWithReserved = 0xE1.toByte(),
+                sequenceParameterSets =
+                ArrayList<ByteArray>(1).apply {
+                    val length = spsBuffer.remaining()
+                    add(spsBuffer.array().slice(4 until length).toByteArray())
+                },
+                pictureParameterSets =
+                ArrayList<ByteArray>(1).apply {
+                    val length = ppsBuffer.remaining()
+                    add(ppsBuffer.array().slice(4 until length).toByteArray())
+                },
+            )
+        }
+
+        override fun decode(buffer: ByteBuffer): AvcDecoderConfigurationRecord {
             val configurationVersion = buffer.get()
             val avcProfileIndication = buffer.get()
             val profileCompatibility = buffer.get()
@@ -176,7 +175,7 @@ internal data class AvcConfigurationRecord(
                 pictureParameterSets.add(bytes)
             }
 
-            return AvcConfigurationRecord(
+            return AvcDecoderConfigurationRecord(
                 configurationVersion = configurationVersion,
                 avcProfileIndication = avcProfileIndication,
                 profileCompatibility = profileCompatibility,
@@ -185,34 +184,6 @@ internal data class AvcConfigurationRecord(
                 numOfSequenceParameterSetsWithReserved = numOfSequenceParameterSetsWithReserved,
                 sequenceParameterSets = sequenceParameterSets,
                 pictureParameterSets = pictureParameterSets,
-            )
-        }
-
-        internal fun create(mediaFormat: MediaFormat): AvcConfigurationRecord {
-            // SPS => 0x00,0x00,0x00,0x01,0x67,0x42,0x00,0x29,0x8d,0x8d,0x40,0xa0,0xfd,0x00,0xf0,0x88,0x45,0x38
-            val spsBuffer = mediaFormat.getByteBuffer(CSD0)
-            // PPS => 0x00,0x00,0x00,0x01,0x68,0xca,0x43,0xc8
-            val ppsBuffer = mediaFormat.getByteBuffer(CSD1)
-            if (spsBuffer == null || ppsBuffer == null) {
-                throw IllegalStateException()
-            }
-            return AvcConfigurationRecord(
-                configurationVersion = 0x01,
-                avcProfileIndication = spsBuffer[5],
-                profileCompatibility = spsBuffer[6],
-                avcLevelIndication = spsBuffer[7],
-                lengthSizeMinusOneWithReserved = 0xFF.toByte(),
-                numOfSequenceParameterSetsWithReserved = 0xE1.toByte(),
-                sequenceParameterSets =
-                ArrayList<ByteArray>(1).apply {
-                    val length = spsBuffer.remaining()
-                    add(spsBuffer.array().slice(4 until length).toByteArray())
-                },
-                pictureParameterSets =
-                ArrayList<ByteArray>(1).apply {
-                    val length = ppsBuffer.remaining()
-                    add(ppsBuffer.array().slice(4 until length).toByteArray())
-                },
             )
         }
     }

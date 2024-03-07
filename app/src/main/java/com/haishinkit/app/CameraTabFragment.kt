@@ -24,6 +24,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.haishinkit.codec.VideoCodecProfileLevel
 import com.haishinkit.event.Event
 import com.haishinkit.event.EventUtils
 import com.haishinkit.event.IEventListener
@@ -84,6 +85,9 @@ class CameraTabFragment : Fragment(), IEventListener {
         }
         connection = RtmpConnection()
         stream = RtmpStream(requireContext(), connection)
+
+        stream.videoSetting.profileLevel = VideoCodecProfileLevel.HEVC_MAIN_3_1
+
         stream.attachAudio(AudioRecordSource(requireContext()))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

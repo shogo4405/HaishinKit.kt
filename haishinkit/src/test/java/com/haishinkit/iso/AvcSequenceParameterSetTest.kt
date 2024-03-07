@@ -4,15 +4,15 @@ import com.haishinkit.lang.decodeHex
 import junit.framework.TestCase
 import java.nio.ByteBuffer
 
-class SequenceParameterSetTest : TestCase() {
+class AvcSequenceParameterSetTest : TestCase() {
     fun testDecode() {
         val byteBuffer =
             ByteBuffer.wrap("6742000af841a2".decodeHex())
-        val result = SequenceParameterSet.decode(byteBuffer)
+        val result = AvcSequenceParameterSet.decode(byteBuffer)
         assertEquals(128, result.videoWidth)
         assertEquals(96, result.videoHeight)
         assertEquals(
-            SequenceParameterSet(
+            AvcSequenceParameterSet(
                 profileIdc = 0x42u,
                 levelIdc = 0x0au,
                 seqParameterSetId = 0u,
@@ -45,7 +45,7 @@ class SequenceParameterSetTest : TestCase() {
     fun testBaseline1920x1080() {
         val byteBuffer =
             ByteBuffer.wrap("6742c028db01e0089f97016a02020280000003008000001e478c1970".decodeHex())
-        val result = SequenceParameterSet.decode(byteBuffer)
+        val result = AvcSequenceParameterSet.decode(byteBuffer)
         assertEquals(1920, result.videoWidth)
         assertEquals(1080, result.videoHeight)
     }
@@ -54,7 +54,7 @@ class SequenceParameterSetTest : TestCase() {
     fun testMain1920x1080() {
         val byteBuffer =
             ByteBuffer.wrap("674d4028eca03c0113f2e02d40404050000003001000000303c8f1831960".decodeHex())
-        val result = SequenceParameterSet.decode(byteBuffer)
+        val result = AvcSequenceParameterSet.decode(byteBuffer)
         assertEquals(1920, result.videoWidth)
         assertEquals(1080, result.videoHeight)
     }
@@ -63,7 +63,7 @@ class SequenceParameterSetTest : TestCase() {
     fun testHigh1920x1080() {
         val byteBuffer =
             ByteBuffer.wrap("67640028acd940780227e5c05a808080a0000003002000000791e30632c0".decodeHex())
-        val result = SequenceParameterSet.decode(byteBuffer)
+        val result = AvcSequenceParameterSet.decode(byteBuffer)
         assertEquals(1920, result.videoWidth)
         assertEquals(1080, result.videoHeight)
     }

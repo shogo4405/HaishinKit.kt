@@ -18,7 +18,7 @@ internal class RtmpDataMessage(objectEncoding: RtmpObjectEncoding) :
     override fun encode(buffer: ByteBuffer): RtmpMessage {
         val serializer = Amf0Serializer(buffer)
         serializer.putString(handlerName)
-        if (!arguments.isEmpty()) {
+        if (arguments.isNotEmpty()) {
             for (argument in arguments) {
                 serializer.putObject(argument)
             }

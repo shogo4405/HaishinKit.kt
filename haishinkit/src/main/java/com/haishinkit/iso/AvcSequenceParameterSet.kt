@@ -3,11 +3,11 @@ package com.haishinkit.iso
 import java.nio.ByteBuffer
 
 /**
- * This SequenceParameterSet class represents the H.264 Sequence Parameter Set.
+ * This [AvcSequenceParameterSet] class represents the H.264 Sequence Parameter Set.
  * @see
  *  https://www.cardinalpeak.com/blog/the-h-264-sequence-parameter-set
  */
-internal data class SequenceParameterSet(
+internal data class AvcSequenceParameterSet(
     val profileIdc: UByte,
     val levelIdc: UByte,
     val seqParameterSetId: UByte,
@@ -62,7 +62,7 @@ internal data class SequenceParameterSet(
         }
 
     companion object {
-        fun decode(buffer: ByteBuffer): SequenceParameterSet {
+        fun decode(buffer: ByteBuffer): AvcSequenceParameterSet {
             buffer.get()
             val profileIdc = buffer.get().toUByte()
             buffer.get()
@@ -132,7 +132,7 @@ internal data class SequenceParameterSet(
                 frameCropBottomOffset = null
             }
 
-            return SequenceParameterSet(
+            return AvcSequenceParameterSet(
                 profileIdc = profileIdc,
                 levelIdc = levelIdc.toUByte(),
                 seqParameterSetId = seqParameterSetId.toUByte(),

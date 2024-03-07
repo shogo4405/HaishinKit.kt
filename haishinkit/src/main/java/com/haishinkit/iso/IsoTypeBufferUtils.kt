@@ -2,12 +2,13 @@ package com.haishinkit.iso
 
 import java.nio.ByteBuffer
 
-internal object AvcFormatUtils {
+internal object IsoTypeBufferUtils {
     val START_CODE = byteArrayOf(0, 0, 0, 1)
 
     private const val ZERO: Byte = 0
     private const val ONE: Byte = 1
-    private val TAG = AvcFormatUtils::class.java.simpleName
+    private const val THREE: Byte = 3
+    private val TAG = IsoTypeBufferUtils::class.java.simpleName
 
     fun toNALFile(
         input: ByteBuffer,
@@ -53,5 +54,19 @@ internal object AvcFormatUtils {
             buffer.position(buffer.position() + length)
         }
         buffer.position(position)
+    }
+
+    fun ebsp2rbsp(buffer: ByteBuffer): ByteBuffer {
+        val result = ByteBuffer.allocate(buffer.remaining())
+        for (i in buffer.position() until buffer.remaining()) {
+            if (2 <= i) {
+                if (buffer[i] == THREE && buffer[i - 1] == ZERO && buffer[i - 2] == ZERO) {
+                    continue
+                }
+            }
+            result.put(buffer[i])
+        }
+        result.flip()
+        return result
     }
 }
