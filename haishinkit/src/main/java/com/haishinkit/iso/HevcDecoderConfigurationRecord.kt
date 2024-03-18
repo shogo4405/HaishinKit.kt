@@ -1,9 +1,8 @@
 package com.haishinkit.iso
 
-import android.media.MediaCodecInfo
 import android.media.MediaFormat
+import android.util.Size
 import com.haishinkit.codec.CodecOption
-import com.haishinkit.codec.VideoCodec
 import java.nio.ByteBuffer
 
 /// ISO/IEC 14496-15 8.3.3.1.2
@@ -28,6 +27,8 @@ internal data class HevcDecoderConfigurationRecord(
     val numberOfArrays: UByte,
     val arrays: List<NalUnit.Hevc>
 ) : DecoderConfigurationRecord {
+    override val mime: String
+        get() = MediaFormat.MIMETYPE_VIDEO_HEVC
     override val capacity: Int
         get() {
             var capacity = 23
@@ -36,6 +37,13 @@ internal data class HevcDecoderConfigurationRecord(
                 capacity += unit.payload.remaining()
             }
             return capacity
+        }
+
+    override val videoSize: Size?
+        get() {
+            val payload = arrays.firstOrNull { it.type == NAL_UNIT_TYPE_SPS }?.payload ?: return null
+            val sequenceParameterSet = HevcSequenceParameterSet.decode(payload)
+            return Size(sequenceParameterSet.picWidthInLumaSamples, sequenceParameterSet.picHeightIntLumaSamples)
         }
 
     override fun encode(buffer: ByteBuffer): HevcDecoderConfigurationRecord {
@@ -66,39 +74,6 @@ internal data class HevcDecoderConfigurationRecord(
         )
         isoTypeBuffer.putUByte(arrays.size)
         return this
-    }
-
-
-    override fun configure(codec: VideoCodec): Boolean {
-        codec.inputMimeType = MediaFormat.MIMETYPE_VIDEO_HEVC
-
-        codec.profile = when (generalProfileIdc) {
-            PROFILE_MAIN -> MediaCodecInfo.CodecProfileLevel.HEVCProfileMain
-            else -> throw IllegalStateException()
-        }
-
-        when (generalLevelIdc) {
-            PROFILE_MAIN -> {
-                codec.level = when (generalLevelIdc) {
-                    PROFILE_LEVEL_1 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel1
-                    PROFILE_LEVEL_2 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel2
-                    PROFILE_LEVEL_21 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel21
-                    PROFILE_LEVEL_3 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel3
-                    PROFILE_LEVEL_31 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel31
-                    PROFILE_LEVEL_4 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel4
-                    PROFILE_LEVEL_41 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel41
-                    PROFILE_LEVEL_5 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel5
-                    PROFILE_LEVEL_51 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel51
-                    PROFILE_LEVEL_52 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel52
-                    PROFILE_LEVEL_6 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel6
-                    PROFILE_LEVEL_61 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel61
-                    PROFILE_LEVEL_62 -> MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel62
-                    else -> throw IllegalStateException()
-                }
-            }
-        }
-
-        return super.configure(codec)
     }
 
     override fun toCodecSpecificData(options: List<CodecOption>): List<CodecOption> {

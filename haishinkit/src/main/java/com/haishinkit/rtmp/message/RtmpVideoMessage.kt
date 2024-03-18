@@ -2,18 +2,17 @@ package com.haishinkit.rtmp.message
 
 import android.media.MediaCodec
 import android.util.Log
-import android.util.Size
 import androidx.core.util.Pools
 import com.haishinkit.codec.Codec
 import com.haishinkit.codec.CodecCapabilities
 import com.haishinkit.iso.AvcDecoderConfigurationRecord
-import com.haishinkit.iso.AvcSequenceParameterSet
 import com.haishinkit.iso.DecoderConfigurationRecord
 import com.haishinkit.iso.IsoTypeBufferUtils
 import com.haishinkit.media.MediaCodecSource
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpMuxer
+import com.haishinkit.util.toHexString
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
@@ -120,9 +119,19 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
             codec = (first and 0x0Fu).toByte()
             frame = (first shr 4).toByte()
             if (1 < length) {
-                val payload = ByteArray(length - 1)
-                buffer.get(payload)
-                data = ByteBuffer.wrap(payload)
+                data = if (codec == RtmpMuxer.FLV_VIDEO_CODEC_AVC) {
+                    packetType = buffer.get()
+                    buffer.get()
+                    buffer.get()
+                    buffer.get()
+                    val payload = ByteArray(length - 5)
+                    buffer.get(payload)
+                    ByteBuffer.wrap(payload)
+                } else {
+                    val payload = ByteArray(length - 1)
+                    buffer.get(payload)
+                    ByteBuffer.wrap(payload)
+                }
             }
         }
         return this
@@ -142,6 +151,12 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
             when (packetType) {
                 RtmpMuxer.FLV_VIDEO_PACKET_TYPE_SEQUENCE_START -> {
                     val record = DecoderConfigurationRecord.decode(mime, payload) ?: return this
+                    record.videoSize?.let {
+                        Log.i(TAG, it.toString())
+                        stream.attachVideo(
+                            MediaCodecSource(it)
+                        )
+                    }
                     if (record.configure(stream.videoCodec)) {
                         timestamp = 0
                         stream.muxer.hasVideo = true
@@ -168,25 +183,16 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
         } else {
             if (codec != RtmpMuxer.FLV_VIDEO_CODEC_AVC) return this
 
-            when (val byte = payload.get()) {
+            when (packetType) {
                 RtmpMuxer.FLV_AVC_PACKET_TYPE_SEQ -> {
-                    payload.position(4)
+                    payload.position(0)
+                    Log.i(TAG, payload.toHexString())
                     val record = AvcDecoderConfigurationRecord.decode(payload)
-
-                    record.sequenceParameterSets?.let {
-                        val byteArray = it.firstOrNull() ?: return@let
-                        val byteBuffer = ByteBuffer.wrap(byteArray)
-                        val sequenceParameterSet = AvcSequenceParameterSet.decode(byteBuffer)
+                    record.videoSize?.let {
                         stream.attachVideo(
-                            MediaCodecSource(
-                                Size(
-                                    sequenceParameterSet.videoWidth,
-                                    sequenceParameterSet.videoHeight,
-                                ),
-                            ),
+                            MediaCodecSource(it),
                         )
                     }
-
                     if (record.configure(stream.videoCodec)) {
                         data = record.toByteBuffer()
                         timestamp = 0
@@ -202,8 +208,8 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                         stream.videoTimestamp = currentTimestamp
                     }
                     payload.position(0)
-                    IsoTypeBufferUtils.toByteStream(payload, 4)
-                    payload.position(payload.position() + 4)
+                    IsoTypeBufferUtils.toByteStream(payload, 0)
+                    payload.position(payload.position())
                     stream.muxer.enqueueVideo(this)
                 }
 
@@ -212,7 +218,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                 }
 
                 else -> {
-                    if (VERBOSE) Log.d(TAG, "code=$byte")
+                    if (VERBOSE) Log.d(TAG, "code=$packetType")
                 }
             }
         }

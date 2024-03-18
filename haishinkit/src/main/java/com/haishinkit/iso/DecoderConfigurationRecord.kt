@@ -1,14 +1,18 @@
 package com.haishinkit.iso
 
 import android.media.MediaFormat
+import android.util.Size
 import com.haishinkit.codec.CodecOption
 import com.haishinkit.codec.VideoCodec
 import java.nio.ByteBuffer
 
 internal interface DecoderConfigurationRecord {
+    val mime: String
     val capacity: Int
+    val videoSize: Size?
     fun encode(buffer: ByteBuffer): DecoderConfigurationRecord
     fun configure(codec: VideoCodec): Boolean {
+        codec.inputMimeType = mime
         codec.options = toCodecSpecificData(codec.options)
         return true
     }

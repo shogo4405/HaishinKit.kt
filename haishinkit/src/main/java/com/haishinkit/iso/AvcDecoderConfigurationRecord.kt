@@ -1,9 +1,8 @@
 package com.haishinkit.iso
 
-import android.media.MediaCodecInfo
 import android.media.MediaFormat
+import android.util.Size
 import com.haishinkit.codec.CodecOption
-import com.haishinkit.codec.VideoCodec
 import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
@@ -19,6 +18,17 @@ internal data class AvcDecoderConfigurationRecord(
 ) : DecoderConfigurationRecord {
     val naluLength: Byte
         get() = ((lengthSizeMinusOneWithReserved.toInt() shr 6) + 1).toByte()
+    override val mime: String
+        get() = MediaFormat.MIMETYPE_VIDEO_AVC
+
+    override val videoSize: Size?
+        get() {
+            val sequenceParameterSets = sequenceParameterSets ?: return null
+            val byteArray = sequenceParameterSets.firstOrNull() ?: return null
+            val byteBuffer = ByteBuffer.wrap(byteArray)
+            val sequenceParameterSet = AvcSequenceParameterSet.decode(byteBuffer)
+            return Size(sequenceParameterSet.videoWidth, sequenceParameterSet.videoHeight)
+        }
 
     override val capacity: Int
         get() {
@@ -59,26 +69,6 @@ internal data class AvcDecoderConfigurationRecord(
             }
         }
         return this
-    }
-
-    override fun configure(codec: VideoCodec): Boolean {
-        codec.inputMimeType = MediaFormat.MIMETYPE_VIDEO_AVC
-        when (avcProfileIndication.toInt()) {
-            66 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline
-            77 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileMain
-            88 -> codec.profile = MediaCodecInfo.CodecProfileLevel.AVCProfileHigh
-        }
-        when (avcLevelIndication.toInt()) {
-            31 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel31
-            32 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel32
-            40 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel4
-            41 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel41
-            42 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel42
-            50 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel5
-            51 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel51
-            52 -> codec.level = MediaCodecInfo.CodecProfileLevel.AVCLevel52
-        }
-        return super.configure(codec)
     }
 
     override fun toCodecSpecificData(options: List<CodecOption>): List<CodecOption> {

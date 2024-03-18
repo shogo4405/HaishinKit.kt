@@ -156,7 +156,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     videoBufferController.consume(message.timestamp)
                     val success =
                         message.data?.let {
-                            it.position(4)
+                            it.position(0)
                             if (it.remaining() <= inputBuffer.remaining()) {
                                 inputBuffer.put(it)
                                 true
@@ -172,7 +172,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                         codec.queueInputBuffer(
                             index,
                             0,
-                            message.length - 5,
+                            message.length,
                             videoTimestamp,
                             message.toFlags(),
                         )
@@ -337,7 +337,11 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                 stream.doOutput(RtmpChunk.ONE, video.apply {
                     isExHeader = true
                     frame = if (keyframe) FLV_FRAME_TYPE_KEY else FLV_FRAME_TYPE_INTER
-                    packetType = FLV_VIDEO_PACKET_TYPE_CODED_FRAMES
+                    packetType = if (mime == MediaFormat.MIMETYPE_VIDEO_HEVC) {
+                        FLV_VIDEO_PACKET_TYPE_CODED_FRAMES_X
+                    } else {
+                        FLV_VIDEO_PACKET_TYPE_CODED_FRAMES
+                    }
                     fourCC = getVideoFourCCByType(mime)
                     data = buffer
                     chunkStreamID = RtmpChunk.VIDEO

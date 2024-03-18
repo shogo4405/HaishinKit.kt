@@ -174,16 +174,16 @@ class VideoCodec(applicationContext: Context) : Codec() {
                 setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
                 setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFrameInterval)
                 setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
+                setInteger(MediaFormat.KEY_PROFILE, profile)
+                if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
+                    setInteger(MediaFormat.KEY_LEVEL, level)
+                } else {
+                    setInteger("level", level)
+                }
             } else {
                 if (Build.VERSION_CODES.R <= Build.VERSION.SDK_INT) {
                     setInteger(MediaFormat.KEY_LOW_LATENCY, 1)
                 }
-            }
-            setInteger(MediaFormat.KEY_PROFILE, profile)
-            if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                setInteger(MediaFormat.KEY_LEVEL, level)
-            } else {
-                setInteger("level", level)
             }
         }
     }
