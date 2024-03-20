@@ -1,6 +1,7 @@
 # HaishinKit for Android, [iOS, macOS and tvOS](https://github.com/shogo4405/HaishinKit.swift).
 [![GitHub license](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://raw.githubusercontent.com/shogo4405/HaishinKit.kt/master/LICENSE.md)
 [![](https://jitpack.io/v/shogo4405/HaishinKit~kt.svg)](https://jitpack.io/#shogo4405/HaishinKit~kt)
+[![GitHub Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=ff69b4)](https://github.com/sponsors/shogo4405)
 
 * Camera and Microphone streaming library via RTMP for Android.
 * [API Documentation](https://shogo4405.github.io/HaishinKit.kt/)
@@ -16,11 +17,21 @@
 * [Discord chatroom](https://discord.com/invite/8nkshPnanr).
 * 日本語が分かる方は日本語でお願いします！
 
+## 💖 Sponsors
+<p align="center">
+  <br />
+  <br />
+  <a href="https://github.com/sponsors/shogo4405">Sponsorship</a>
+  <br />
+  <br />
+</p>
+
 ## 🌏 Related projects
 Project name    |Notes       |License
 ----------------|------------|--------------
 [HaishinKit for iOS, macOS and tvOS.](https://github.com/shogo4405/HaishinKit.swift)|Camera and Microphone streaming library via RTMP for Android.|[BSD 3-Clause "New" or "Revised" License](https://github.com/shogo4405/HaishinKit.swift/blob/master/LICENSE.md)
 [HaishinKit for Flutter.](https://github.com/shogo4405/HaishinKit.dart)|Camera and Microphone streaming library via RTMP for Flutter.|[BSD 3-Clause "New" or "Revised" License](https://github.com/shogo4405/HaishinKit.dart/blob/master/LICENSE.md)
+
 
 ## 🎨 Features
 ### RTMP
@@ -287,27 +298,6 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 ### Related Project
 * HaishinKit.swift - Camera and Microphone streaming library via RTMP, HLS for iOS, macOS and tvOS.
   * https://github.com/shogo4405/HaishinKit.swift
-
-## 💠 Sponsorship
-Looking for sponsors. Sponsoring I will enable us to:
-- Purchase smartphones or peripheral devices for testing purposes.
-- Pay for testing on a specific streaming service or for testing on mobile lines.
-- Potentially private use to continue the OSS development
-
- If you use any of our libraries for work, see if your employers would be interested in sponsorship. I have some special offers.　I would greatly appreciate. Thank you.
- - If you request I will note your name product our README.
- - If you mention on a discussion, an issue or pull request that you are sponsoring us I will prioritise helping you even higher.
-
-スポンサーを募集しています。利用用途としては、
-- テスト目的で、スマートフォンの購入や周辺機器の購入を行います。
-- 特定のストリーミングサービスへのテストの支払いや、モバイル回線でのテストの支払いに利用します。
-- 著書のOSS開発を継続的に行う為に私的に利用する可能性もあります。
-
-このライブラリーを仕事で継続的に利用している場合は、ぜひ。雇用主に、スポンサーに興味がないか確認いただけると幸いです。いくつか特典を用意しています。
-- README.mdへの企業ロゴの掲載
-- IssueやPull Requestの優先的な対応
-
-[Sponsorship](https://github.com/sponsors/shogo4405)
 
 ## 📜 License
 BSD-3-Clause
