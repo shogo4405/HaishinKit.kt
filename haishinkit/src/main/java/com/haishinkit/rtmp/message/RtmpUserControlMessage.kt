@@ -38,7 +38,7 @@ internal class RtmpUserControlMessage(pool: Pools.Pool<RtmpMessage>? = null) :
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
         val e = buffer.short
-        event = Event.values().first { n -> n.rawValue == e }
+        event = Event.entries.first { n -> n.rawValue == e }
         value = buffer.int
         return this
     }

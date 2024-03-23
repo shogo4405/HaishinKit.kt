@@ -156,7 +156,6 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                     videoBufferController.consume(message.timestamp)
                     val success =
                         message.data?.let {
-                            it.position(0)
                             if (it.remaining() <= inputBuffer.remaining()) {
                                 inputBuffer.put(it)
                                 true

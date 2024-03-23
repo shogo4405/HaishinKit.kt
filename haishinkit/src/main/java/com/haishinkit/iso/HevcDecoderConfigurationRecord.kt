@@ -25,23 +25,26 @@ internal data class HevcDecoderConfigurationRecord(
     val temporalIdNested: Boolean,
     val lengthSizeMinusOne: UByte,
     val numberOfArrays: UByte,
-    val arrays: List<NalUnit.Hevc>
+    val arrays: Map<UByte, List<NalUnit.Hevc>>,
 ) : DecoderConfigurationRecord {
     override val mime: String
         get() = MediaFormat.MIMETYPE_VIDEO_HEVC
     override val capacity: Int
         get() {
             var capacity = 23
-            for (unit in arrays) {
-                capacity += 3 + 2
-                capacity += unit.payload.remaining()
+            for (units in arrays) {
+                capacity += 3
+                for (unit in units.value) {
+                    capacity += 2
+                    capacity += unit.length
+                }
             }
             return capacity
         }
 
     override val videoSize: Size?
         get() {
-            val payload = arrays.firstOrNull { it.type == NAL_UNIT_TYPE_SPS }?.payload ?: return null
+            val payload = arrays[NAL_UNIT_TYPE_SPS]?.firstOrNull()?.payload ?: return null
             val sequenceParameterSet = HevcSequenceParameterSet.decode(payload)
             return Size(sequenceParameterSet.picWidthInLumaSamples, sequenceParameterSet.picHeightIntLumaSamples)
         }
@@ -59,20 +62,28 @@ internal data class HevcDecoderConfigurationRecord(
         isoTypeBuffer.putUInt(generalProfileCompatibilityFlags)
         isoTypeBuffer.putUInt48(generalConstraintIndicatorFlags)
         isoTypeBuffer.putUByte(generalLevelIdc)
-        isoTypeBuffer.putUShort((RESERVED1 shr 12).toUShort() or minSpatialSegmentationIdc)
-        isoTypeBuffer.putUByte((RESERVED2 shr 2).toUByte() or parallelismType)
-        isoTypeBuffer.putUByte((RESERVED3 shr 2).toUByte() or chromaFormat)
-        isoTypeBuffer.putUByte((RESERVED4 shr 3).toUByte() or bitDepthLumaMinus8)
-        isoTypeBuffer.putUByte((RESERVED5 shr 3).toUByte() or bitDepthChromaMinus8)
+        isoTypeBuffer.putUShort((RESERVED1 shl 12).toUShort() or minSpatialSegmentationIdc)
+        isoTypeBuffer.putUByte((RESERVED2 shl 2).toUByte() or parallelismType)
+        isoTypeBuffer.putUByte((RESERVED3 shl 2).toUByte() or chromaFormat)
+        isoTypeBuffer.putUByte((RESERVED4 shl 3).toUByte() or bitDepthLumaMinus8)
+        isoTypeBuffer.putUByte((RESERVED5 shl 3).toUByte() or bitDepthChromaMinus8)
         isoTypeBuffer.putUShort(avgFrameRate)
         isoTypeBuffer.putUByte(
-            (constantFrameRate.toUInt() shr 6) or (numTemporalLayers.toUInt() shr 3) or (if (temporalIdNested) {
+            (constantFrameRate.toUInt() shl 6) or (numTemporalLayers.toUInt() shl 3) or (if (temporalIdNested) {
                 0x4
             } else {
                 0
             }).toUInt() + lengthSizeMinusOne.toUInt()
         )
         isoTypeBuffer.putUByte(arrays.size)
+        for (units in arrays.toSortedMap()) {
+            isoTypeBuffer.putUByte(units.key)
+            isoTypeBuffer.putUShort(units.value.size)
+            for (unit in units.value) {
+                isoTypeBuffer.putUShort(unit.length)
+                unit.encode(isoTypeBuffer)
+            }
+        }
         return this
     }
 
@@ -80,15 +91,19 @@ internal data class HevcDecoderConfigurationRecord(
         val mutableOptions = mutableListOf<CodecOption>()
         mutableOptions.addAll(options.filter { it.key != CSD0 })
         var capacity = 0
-        for (unit in arrays) {
-            capacity += 6 + unit.payload.remaining()
+        for (units in arrays) {
+            for (unit in units.value) {
+                capacity += 6 + unit.payload.remaining()
+            }
         }
         val buffer = ByteBuffer.allocate(capacity)
-        for (unit in arrays) {
-            buffer.put(IsoTypeBufferUtils.START_CODE)
-            buffer.put((unit.type.toUInt() shl 1).toByte())
-            buffer.put(unit.temporalIdPlusOne.toByte())
-            buffer.put(unit.payload)
+        for (units in arrays) {
+            for (unit in units.value) {
+                buffer.put(IsoTypeBufferUtils.START_CODE)
+                buffer.put((unit.type.toUInt() shl 1).toByte())
+                buffer.put(unit.temporalIdPlusOne.toByte())
+                buffer.put(unit.payload)
+            }
         }
         buffer.flip()
         mutableOptions.add(CodecOption(CSD0, buffer))
@@ -101,24 +116,7 @@ internal data class HevcDecoderConfigurationRecord(
         const val NAL_UNIT_TYPE_PPS: UByte = 34u
         const val CSD0 = "csd-0"
 
-        const val PROFILE_LEVEL_1: UByte = 30u
-        const val PROFILE_LEVEL_2: UByte = 60u
-        const val PROFILE_LEVEL_21: UByte = 63u
-        const val PROFILE_LEVEL_3: UByte = 90u
-        const val PROFILE_LEVEL_31: UByte = 93u
-        const val PROFILE_LEVEL_4: UByte = 120u
-        const val PROFILE_LEVEL_41: UByte = 123u
-        const val PROFILE_LEVEL_5: UByte = 150u
-        const val PROFILE_LEVEL_51: UByte = 153u
-        const val PROFILE_LEVEL_52: UByte = 156u
-        const val PROFILE_LEVEL_6: UByte = 180u
-        const val PROFILE_LEVEL_61: UByte = 183u
-        const val PROFILE_LEVEL_62: UByte = 186u
-
-        const val PROFILE_MAIN: UByte = 1u
-        const val PROFILE_MAIN10: UByte = 10u
-
-        private const val RESERVED1 = 0xF
+        private const val RESERVED1 = 0xFF
         private const val RESERVED2 = 0x3F
         private const val RESERVED3 = 0x3F
         private const val RESERVED4 = 0x1F
@@ -127,28 +125,14 @@ internal data class HevcDecoderConfigurationRecord(
 
         fun create(buffer: ByteBuffer): HevcDecoderConfigurationRecord {
             val units: List<NalUnit.Hevc> = NalUnitReader.readHevc(buffer)
+            val arrays = mutableMapOf<UByte, List<NalUnit.Hevc>>()
+            arrays[NAL_UNIT_TYPE_VPS] = units.filter { it.type == NAL_UNIT_TYPE_VPS }
+            arrays[NAL_UNIT_TYPE_SPS] = units.filter { it.type == NAL_UNIT_TYPE_SPS }
+            arrays[NAL_UNIT_TYPE_PPS] = units.filter { it.type == NAL_UNIT_TYPE_PPS }
             val spsUnit = units.firstOrNull { it.type == NAL_UNIT_TYPE_SPS } ?: throw IllegalArgumentException()
             val sps = HevcSequenceParameterSet.decode(spsUnit.payload)
             return HevcDecoderConfigurationRecord(
-                configurationVersion = 1u,
-                generalProfileSpace = sps.profileTierLevel.generalProfileSpace,
-                generalTierFlag = sps.profileTierLevel.generalTierFlag,
-                generalProfileIdc = sps.profileTierLevel.generalProfileIdc,
-                generalProfileCompatibilityFlags = sps.profileTierLevel.generalProfileCompatFlags,
-                generalConstraintIndicatorFlags = sps.profileTierLevel.generalConstraintIndicatorFlags,
-                generalLevelIdc = sps.profileTierLevel.generalLevelIdc,
-                minSpatialSegmentationIdc = 0u,
-                parallelismType = 0u,
-                chromaFormat = sps.chromaFormatIdc,
-                bitDepthLumaMinus8 = sps.bitDepthLumaMinus8,
-                bitDepthChromaMinus8 = sps.bitDepthChromaMinus8,
-                avgFrameRate = 0u,
-                constantFrameRate = 0u,
-                numTemporalLayers = 0u,
-                temporalIdNested = false,
-                lengthSizeMinusOne = 3u,
-                numberOfArrays = units.size.toUByte(),
-                arrays = units
+                configurationVersion = 1u, generalProfileSpace = sps.profileTierLevel.generalProfileSpace, generalTierFlag = sps.profileTierLevel.generalTierFlag, generalProfileIdc = sps.profileTierLevel.generalProfileIdc, generalProfileCompatibilityFlags = sps.profileTierLevel.generalProfileCompatFlags, generalConstraintIndicatorFlags = sps.profileTierLevel.generalConstraintIndicatorFlags, generalLevelIdc = sps.profileTierLevel.generalLevelIdc, minSpatialSegmentationIdc = 0u, parallelismType = 0u, chromaFormat = sps.chromaFormatIdc, bitDepthLumaMinus8 = sps.bitDepthLumaMinus8, bitDepthChromaMinus8 = sps.bitDepthChromaMinus8, avgFrameRate = 0u, constantFrameRate = 0u, numTemporalLayers = 0u, temporalIdNested = false, lengthSizeMinusOne = 3u, numberOfArrays = units.size.toUByte(), arrays = arrays
             )
         }
 
@@ -176,14 +160,16 @@ internal data class HevcDecoderConfigurationRecord(
             val temporalIdNested = isoTypeBuffer.boolean
             val lengthSizeMinusOne = isoTypeBuffer.get(2)
             val numberOfArrays = isoTypeBuffer.getUByte()
-            val arrays = mutableListOf<NalUnit.Hevc>()
+            val arrays = mutableMapOf<UByte, List<NalUnit.Hevc>>()
             for (i in 0 until numberOfArrays.toInt()) {
                 val type = isoTypeBuffer.getUByte()
                 val numNalus = isoTypeBuffer.getUShort().toInt()
+                val units = mutableListOf<NalUnit.Hevc>()
                 for (j in 0 until numNalus) {
                     val length = isoTypeBuffer.getUShort().toInt()
-                    arrays.add(NalUnit.Hevc.create(isoTypeBuffer.getBytes(length)))
+                    units.add(NalUnit.Hevc.create(isoTypeBuffer.getBytes(length)))
                 }
+                arrays[type] = units
             }
             return HevcDecoderConfigurationRecord(
                 configurationVersion = configurationVersion,
@@ -195,8 +181,7 @@ internal data class HevcDecoderConfigurationRecord(
                 generalLevelIdc = generalLevelIdc,
                 minSpatialSegmentationIdc = minSpatialSegmentationIdc,
                 parallelismType = parallelismType,
-                chromaFormat = chromaFormat,
-                bitDepthLumaMinus8 = bitDepthLumaMinus8,
+                chromaFormat = chromaFormat, bitDepthLumaMinus8 = bitDepthLumaMinus8,
                 bitDepthChromaMinus8 = bitDepthChromaMinus8,
                 avgFrameRate = avgFrameRate,
                 constantFrameRate = constantFrameRate,

@@ -13,7 +13,6 @@ import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpMuxer
 import com.haishinkit.util.toHexString
-import com.haishinkit.util.toPositiveInt
 import java.nio.ByteBuffer
 
 internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMessage(TYPE_VIDEO, pool) {
@@ -23,18 +22,9 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
     var data: ByteBuffer? = null
     var packetType: Byte = 0x00
     var fourCC: Int = 0
-    var compositeTime: Int = -1
-        get() {
-            if (field == -1) {
-                val data = data ?: return 0
-                data.position(1)
-                val first = data.get().toInt()
-                val second = data.get().toPositiveInt()
-                val third = data.get().toPositiveInt()
-                return (((first shl 24) or (second shl 16) or (third shl 8)) shr 8)
-            }
-            return field
-        }
+
+    // Not compatible with B frame
+    var compositeTime: Int = 0
 
     private val headerSize: Int
         get() = 5 + if (isExHeader && fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
@@ -62,16 +52,22 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
         if (isExHeader) {
             buffer.put((frame.toInt() shl 4 or packetType.toInt() or 0b10000000).toByte())
             buffer.putInt(fourCC)
-            if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
-                buffer.put((compositeTime shr 16).toByte()).put((compositeTime shr 8).toByte()).put(compositeTime.toByte())
-            }
-            data?.let {
-                when (fourCC) {
-                    RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC -> {
-                        IsoTypeBufferUtils.toNALFile(it, buffer)
+            when (fourCC) {
+                RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC -> {
+                    if (packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
+                        buffer.put((compositeTime shr 16).toByte()).put((compositeTime shr 8).toByte()).put(compositeTime.toByte())
                     }
+                    data?.let {
+                        if (packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES || packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES_X) {
+                            IsoTypeBufferUtils.toNALFile(it, buffer)
+                        } else {
+                            buffer.put(it)
+                        }
+                    }
+                }
 
-                    else -> {
+                else -> {
+                    data?.let {
                         buffer.put(it)
                     }
                 }

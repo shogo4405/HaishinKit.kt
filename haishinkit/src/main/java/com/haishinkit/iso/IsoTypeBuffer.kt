@@ -63,7 +63,7 @@ internal class IsoTypeBuffer(val buffer: ByteBuffer) {
         require(bit % 8 == 0)
         var result: ULong = 0u
         for (i in ((bit / 8) - 1) downTo 0) {
-            result += buffer.get().toULong() shr (i * 8)
+            result += (buffer.get().toUByte().toULong() shl (i * 8))
         }
         position = buffer.position()
         bitPosition = 8
@@ -110,13 +110,23 @@ internal class IsoTypeBuffer(val buffer: ByteBuffer) {
     }
 
     fun putUInt48(value: ULong): IsoTypeBuffer {
-        buffer.putShort((value shl 32).toShort())
+        buffer.putShort((value shr 32).toShort())
         buffer.putInt(value.toInt())
         return this
     }
 
     fun putUShort(value: UShort): IsoTypeBuffer {
         buffer.putShort(value.toShort())
+        return this
+    }
+
+    fun putUShort(value: Int): IsoTypeBuffer {
+        buffer.putShort(value.toShort())
+        return this
+    }
+
+    fun putBytes(buffer: ByteBuffer): IsoTypeBuffer {
+        this.buffer.put(buffer)
         return this
     }
 

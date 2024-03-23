@@ -8,6 +8,15 @@ internal sealed class NalUnit(open val type: UByte, open val payload: ByteBuffer
         val temporalIdPlusOne: UByte,
         override val payload: ByteBuffer
     ) : NalUnit(type, payload) {
+        val length: Int
+            get() = payload.remaining() + 2
+
+        fun encode(buffer: IsoTypeBuffer) {
+            buffer.putUByte(type.toUInt() shl 1)
+            buffer.putUByte(temporalIdPlusOne)
+            buffer.putBytes(payload)
+        }
+
         companion object {
             fun create(array: ByteArray): Hevc {
                 val first = array[0].toUInt()
