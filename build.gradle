@@ -2,7 +2,7 @@
 buildscript {
     ext.kotlin_version = '1.9.23'
     ext.library_group = 'com.haishinkit'
-    ext.version_name = "0.13.3"
+    ext.version_name = "0.13.4"
 
     repositories {
         mavenCentral()
