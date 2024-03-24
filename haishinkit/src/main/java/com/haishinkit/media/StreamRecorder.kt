@@ -53,7 +53,7 @@ class StreamRecorder(applicationContext: Context) {
         AudioCodec.Setting(audioCodec)
     }
 
-    private var muxer: StreamRecorderMediaMuxer? = null
+    private var muxer: StreamMediaMuxer? = null
     private var stream: Stream? = null
     private val audioCodec by lazy { AudioCodec() }
     private val videoCodec by lazy { VideoCodec(applicationContext) }
@@ -77,7 +77,7 @@ class StreamRecorder(applicationContext: Context) {
             throw IllegalStateException()
         }
         Log.i(TAG, "Start recordings to $path.")
-        muxer = StreamRecorderMediaMuxer(stream, MediaMuxer(path, format))
+        muxer = StreamMediaMuxer(stream, MediaMuxer(path, format))
         startRunning()
     }
 
@@ -92,7 +92,7 @@ class StreamRecorder(applicationContext: Context) {
         if (muxer != null || stream == null) {
             throw IllegalStateException()
         }
-        muxer = StreamRecorderMediaMuxer(stream, MediaMuxer(fd, format))
+        muxer = StreamMediaMuxer(stream, MediaMuxer(fd, format))
         startRunning()
     }
 

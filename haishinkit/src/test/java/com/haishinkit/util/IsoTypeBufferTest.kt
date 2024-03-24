@@ -1,7 +1,6 @@
 package com.haishinkit.util
 
 import com.haishinkit.iso.IsoTypeBuffer
-import com.haishinkit.lang.decodeHex
 import junit.framework.TestCase
 import java.nio.ByteBuffer
 

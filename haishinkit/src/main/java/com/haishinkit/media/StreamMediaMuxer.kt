@@ -9,7 +9,7 @@ import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class StreamRecorderMediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) :
+internal class StreamMediaMuxer(stream: Stream?, private var muxer: MediaMuxer?) :
     Running,
     Codec.Listener {
     override val isRunning: AtomicBoolean = AtomicBoolean(false)
@@ -89,6 +89,6 @@ internal class StreamRecorderMediaMuxer(stream: Stream?, private var muxer: Medi
 
     private companion object {
         private const val DEFAULT_TRACK_INDEX = -1
-        private val TAG = MediaMuxer::class.java.simpleName
+        private val TAG = StreamMediaMuxer::class.java.simpleName
     }
 }
