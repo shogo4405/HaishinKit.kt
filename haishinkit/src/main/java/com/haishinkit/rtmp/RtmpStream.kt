@@ -1,6 +1,7 @@
 package com.haishinkit.rtmp
 
 import android.content.Context
+import android.media.MediaFormat
 import android.util.Log
 import com.haishinkit.codec.Codec
 import com.haishinkit.event.Event
@@ -415,7 +416,18 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
             metadata["width"] = videoCodec.width
             metadata["height"] = videoCodec.height
             metadata["framerate"] = videoCodec.frameRate
-            metadata["videocodecid"] = RtmpMuxer.FLV_VIDEO_CODEC_AVC.toInt()
+            when (videoCodec.profileLevel.mime) {
+                MediaFormat.MIMETYPE_VIDEO_HEVC ->
+                    metadata["videocodecid"] = RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC
+
+                MediaFormat.MIMETYPE_VIDEO_AVC -> {
+                    metadata["videocodecid"] = RtmpMuxer.FLV_VIDEO_CODEC_AVC.toInt()
+                }
+
+                else -> {
+                    Log.w(TAG, "not set a videocodecid for ${videoCodec.profileLevel.mime}")
+                }
+            }
             metadata["videodatarate"] = videoCodec.bitRate / 1000
         }
         audioSource?.let {

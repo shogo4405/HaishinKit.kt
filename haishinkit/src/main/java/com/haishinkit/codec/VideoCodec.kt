@@ -29,8 +29,7 @@ class VideoCodec(applicationContext: Context) : Codec() {
                 throw IllegalArgumentException("Unsupported mime type for ${newValue.mime}.")
             }
             codec?.outputMimeType = newValue.mime
-            codec?.profile = newValue.profile
-            codec?.level = newValue.level
+            codec?.profileLevel = newValue
         }
 
         /**
@@ -130,12 +129,7 @@ class VideoCodec(applicationContext: Context) : Codec() {
     /**
      * Specifies the profile for a video output.
      */
-    var profile = DEFAULT_PROFILE_LEVEL.profile
-
-    /**
-     * Specifies the profile-level for a video outout.
-     */
-    var level = DEFAULT_PROFILE_LEVEL.level
+    var profileLevel: VideoCodecProfileLevel = VideoCodecProfileLevel.H264_BASELINE_3_2
 
     /**
      * The pixel transform instance.
@@ -174,11 +168,11 @@ class VideoCodec(applicationContext: Context) : Codec() {
                 setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
                 setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFrameInterval)
                 setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
-                setInteger(MediaFormat.KEY_PROFILE, profile)
+                setInteger(MediaFormat.KEY_PROFILE, profileLevel.profile)
                 if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
-                    setInteger(MediaFormat.KEY_LEVEL, level)
+                    setInteger(MediaFormat.KEY_LEVEL, profileLevel.level)
                 } else {
-                    setInteger("level", level)
+                    setInteger("level", profileLevel.level)
                 }
             } else {
                 if (Build.VERSION_CODES.R <= Build.VERSION.SDK_INT) {
