@@ -36,7 +36,7 @@ Project name    |Notes       |License
 ## 🎨 Features
 ### RTMP
 - [x] Authentication
-- [x] Publish (H264/AAC) 
+- [x] Publish
 - [x] Playback
 - [ ] Action Message Format
   - [x] AMF0
@@ -44,12 +44,32 @@ Project name    |Notes       |License
 - [ ] ~~SharedObject~~
 - [x] RTMPS
   - [x] Native (RTMP over SSL/TSL)
+- [ ] [Enhanced RTMP (Working in progress)](https://github.com/shogo4405/HaishinKit.kt/wiki/Supports-Enhanced-RTMP-Status)
+  - [ ] v1
+  - [ ] v2
+- [x] Audio Codecs
+  - [x] AAC
+- [x] Video Codecs
+  - [x] H264, HEVC
+
+### Recording
+Now support local recording. Additionally, you can specify separate videoSettings and audioSettings from the live stream.
+```kt
+val recorder: StreamRecorder by lazy { StreamRecorder(requireContext()) }
+recorder.videoSettings.profileLevel = VideoCodecProfileLevel.HEVC_MAIN_3_1
+recorder.attachStream(stream)
+recorder.startRecording(
+  File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "output.mp4").toString(),
+  MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
+)
+```
 
 ### Filter
 - [Table Of Filters](https://shogo4405.github.io/HaishinKit.kt/haishinkit/com.haishinkit.graphics.effect/index.html)
 
 ### Sources
-- [x] Camera with Camera2 api
+- [x] Single camera with Camera2 api
+- [x] Multi camera with Camera2 api
 - [x] MediaProjection
 - [x] Microphone with AudioRecord api.
 
@@ -66,10 +86,10 @@ Project name    |Notes       |License
   - [x] Asynchronously processing.
 - [x] Graphics api
   - [x] ✅ OpenGL
-  - [x] 🐛 Vulkan (beta)
+  - [ ] 🐛 Vulkan
 
 ### Settings
-```
+```kt
 stream.audioSettings.bitrate = 32 * 1000
 
 stream.videoSettings.width = 640 // The width resoulution of video output.
@@ -85,7 +105,7 @@ Through off-screen rendering capabilities, it is possible to display any text or
   <img width="732" alt="" src="https://github.com/shogo4405/HaishinKit.kt/assets/810189/f2e189eb-d98a-41b4-9b4c-0b7d70637675">
 </p>
 
-```
+```kt
 stream.attachVideo(cameraSource)
 
 val text = Text()

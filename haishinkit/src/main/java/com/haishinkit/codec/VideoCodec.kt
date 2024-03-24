@@ -129,7 +129,7 @@ class VideoCodec(applicationContext: Context) : Codec() {
     /**
      * Specifies the profile for a video output.
      */
-    var profileLevel: VideoCodecProfileLevel = VideoCodecProfileLevel.H264_BASELINE_3_2
+    var profileLevel: VideoCodecProfileLevel = DEFAULT_PROFILE_LEVEL
 
     /**
      * The pixel transform instance.
