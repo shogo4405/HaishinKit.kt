@@ -20,12 +20,12 @@ import kotlin.collections.set
 import kotlin.concurrent.schedule
 
 /**
- * flash.net.NetConnection for Kotlin
+ * The [RtmpConnection] class create a two-way RTMP connection.
  */
-@Suppress("UNUSED")
+@Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class RtmpConnection : EventDispatcher(null) {
     /**
-     * NetStatusEvent#info.code for NetConnection
+     * NetStatusEvent#info.code for [RtmpConnection]
      */
     @Suppress("UNUSED")
     enum class Code(val rawValue: String, val level: String) {
@@ -203,7 +203,7 @@ class RtmpConnection : EventDispatcher(null) {
         if (!isConnected) {
             return
         }
-        val listArguments = ArrayList<Any>(arguments.size)
+        val listArguments = mutableListOf<Any?>(arguments.size)
         for (`object` in arguments) {
             listArguments.add(`object`)
         }
@@ -390,7 +390,7 @@ class RtmpConnection : EventDispatcher(null) {
     internal fun createConnectionMessage(uri: URI): RtmpMessage {
         val paths = uri.path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val message = RtmpCommandMessage(RtmpObjectEncoding.AMF0)
-        val commandObject = HashMap<String, Any?>()
+        val commandObject = mutableMapOf<String, Any?>()
         var app = paths[1]
         if (uri.query != null) {
             app += "?" + uri.query
@@ -406,6 +406,8 @@ class RtmpConnection : EventDispatcher(null) {
         commandObject["videoFunction"] = VideoFunction.CLIENT_SEEK.rawValue
         commandObject["pageUrl"] = pageUrl
         commandObject["objectEncoding"] = objectEncoding.rawValue
+        // Extending NetConnection connect Command fourCcList
+        // commandObject["fourCcList"] = SUPPORTED_FOURCC_LIST
         message.chunkStreamID = RtmpChunk.COMMAND
         message.streamID = 0
         message.commandName = "connect"
@@ -422,6 +424,7 @@ class RtmpConnection : EventDispatcher(null) {
         const val DEFAULT_PORT = 1935
         const val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
         val SUPPORTED_PROTOCOLS = mapOf("rtmp" to 1935, "rtmps" to 443)
+        val SUPPORTED_FOURCC_LIST = listOf("hvc1")
         private val TAG = RtmpConnection::class.java.simpleName
         private const val DEFAULT_CHUNK_SIZE_S = 1024 * 8
         private const val DEFAULT_CAPABILITIES = 239
