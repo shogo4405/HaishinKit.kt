@@ -20,7 +20,7 @@ import kotlin.collections.set
 import kotlin.concurrent.schedule
 
 /**
- * The [RtmpConnection] class create a two-way RTMP connection.
+ * An object that creates a two-way RTMP connection.
  */
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class RtmpConnection : EventDispatcher(null) {

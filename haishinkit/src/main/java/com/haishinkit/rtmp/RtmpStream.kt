@@ -17,7 +17,7 @@ import com.haishinkit.rtmp.message.RtmpMessageFactory
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * An object that provides the interface to control a one-way channel over a RtmpConnection.
+ * An object that provides the interface to control a one-way channel over a [RtmpConnection].
  */
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class RtmpStream(context: Context, internal var connection: RtmpConnection) :
