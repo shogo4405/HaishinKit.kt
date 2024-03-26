@@ -166,6 +166,11 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
             connection.doOutput(RtmpChunk.ZERO, message)
         }
 
+    /**
+     * Specifies the stream name used for FMLE-compatible sequences.
+     */
+    var fcPublishName: String? = null
+
     @Volatile
     var currentFPS: Int = 0
         private set
