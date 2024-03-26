@@ -344,6 +344,11 @@ class RtmpConnection : EventDispatcher(null) {
     }
 
     internal fun createStream(stream: RtmpStream) {
+        stream.fcPublishName?.let {
+            // FMLE-compatible sequences
+            call("releaseStream", Responder.NULL, it)
+            call("FCPublish", Responder.NULL, it)
+        }
         call(
             "createStream",
             object : Responder {
