@@ -2,6 +2,7 @@ package com.haishinkit.amf
 
 /**
  * An object that represents the AMF0 ECMA Array type.
+ *
  * 2.10 ECMA Array Type.
  */
 class Amf0EcmaArray(list: List<Any?>? = null) : Iterable<String> {
