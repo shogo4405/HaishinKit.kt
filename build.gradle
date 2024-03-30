@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.kotlin_version = '1.9.23'
@@ -42,6 +44,19 @@ allprojects {
     }
 }
 
+subprojects {
+    tasks.withType(DokkaTaskPartial).configureEach {
+        dokkaSourceSets {
+            configureEach {
+                def module_docs_file = 'module-docs.md'
+                if (file(module_docs_file).exists()) {
+                    includes.from(module_docs_file)
+                }
+            }
+        }
+    }
+}
+
 configurations {
     ktlint
 }
@@ -66,7 +81,7 @@ ktlint {
 }
 
 tasks.dokkaHtmlMultiModule.configure {
-  outputDirectory.set(file("docs"))
-  includes.from("README.md")
+    outputDirectory.set(file("docs"))
+    includes.from("README.md")
 }
 

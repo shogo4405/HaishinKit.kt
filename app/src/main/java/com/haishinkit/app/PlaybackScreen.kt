@@ -1,6 +1,5 @@
 package com.haishinkit.app
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -33,6 +33,14 @@ fun PlaybackScreen(
             }
         }
     )
+
+    DisposableEffect(Unit) {
+        onDispose {
+            streamState.dispose()
+            connectionState.dispose()
+        }
+    }
+
     Box(modifier = modifier) {
         HaishinKitView(
             streamState = streamState,
@@ -43,10 +51,17 @@ fun PlaybackScreen(
                 .width(100.dp)
                 .height(50.dp),
             onClick = {
-                Log.w(TAG, "GO LIVE!!")
-                connectionState.connect(command)
+                if (connectionState.isConnected) {
+                    connectionState.close()
+                } else {
+                    connectionState.connect(command)
+                }
             }) {
-            Text("GO LIVE")
+            if (connectionState.isConnected) {
+                Text("STOP")
+            } else {
+                Text("PLAY")
+            }
         }
     }
 }

@@ -74,8 +74,8 @@ abstract class Codec : MediaCodec.Callback(), Running {
             return field
         }
         set(value) {
-            field?.setCallback(null)
             field?.stop()
+            field?.setCallback(null)
             field?.release()
             field = value
         }

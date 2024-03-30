@@ -1,8 +1,10 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 
+module:compose
+com.haishinkit.compose
 module:haishinkit
-com.haishinkit.amf.data
+com.haishinkit.amf
 com.haishinkit.codec
 com.haishinkit.event
 com.haishinkit.graphics

@@ -154,6 +154,7 @@ allprojects {
 
 dependencies {
   implementation 'com.github.shogo4405.HaishinKit~kt:haishinkit:x.x.x'
+  implementation 'com.github.shogo4405.HaishinKit~kt:compose:x.x.x'
   implementation 'com.github.shogo4405.HaishinKit~kt:lottie:x.x.x'
   implementation 'com.github.shogo4405.HaishinKit~kt:vulkan:x.x.x'
 }
@@ -163,6 +164,7 @@ dependencies {
 |-|minSdk|Android|Requirements|Status|Description|
 |:----|:----|:----|:-----|:----|:----|
 |haishinkit|21+|5|Require|Stable|It's the base module for HaishinKit.|
+|compose|21+|5|Optional|Beta|It's support for a composable component for HaishinKit.|
 |lottie|21+|5|Optional|Beta|It's a module for embedding Lottie animations into live streaming video.|
 |vulkan|26+|8|Optional|Technical preview|It's support for the Vulkan graphics engine.|
 

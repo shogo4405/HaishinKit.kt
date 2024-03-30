@@ -141,7 +141,7 @@
           <p class="paragraph">Authentication</p>
         </li>
         <li>
-          <p class="paragraph">Publish (H264/AAC) </p>
+          <p class="paragraph">Publish</p>
         </li>
         <li>
           <p class="paragraph">Playback</p>
@@ -172,7 +172,41 @@
             <p class="paragraph">Native (RTMP over SSL/TSL)</p>
           </li>
         </ul>
+        <li>
+          <p class="paragraph"><a href="https://github.com/shogo4405/HaishinKit.kt/wiki/Supports-Enhanced-RTMP-Status">Enhanced RTMP (Working in progress)</a></p>
+        </li>
+        <ul>
+          <li>
+            <p class="paragraph">v1</p>
+          </li>
+          <li>
+            <p class="paragraph">v2</p>
+          </li>
+        </ul>
+        <li>
+          <p class="paragraph">Audio Codecs</p>
+        </li>
+        <ul>
+          <li>
+            <p class="paragraph">AAC</p>
+          </li>
+        </ul>
+        <li>
+          <p class="paragraph">Video Codecs</p>
+        </li>
+        <ul>
+          <li>
+            <p class="paragraph">H264, HEVC</p>
+          </li>
+        </ul>
       </ul>
+      <h3 class="">Recording</h3>
+      <p class="paragraph">Now support local recording. Additionally, you can specify separate videoSettings and audioSettings from the live stream.</p>
+      <div class="sample-container">
+        <pre><code class="block lang-kt" theme="idea">val recorder: StreamRecorder by lazy { StreamRecorder(requireContext()) }<br>recorder.videoSettings.profileLevel = VideoCodecProfileLevel.HEVC_MAIN_3_1<br>recorder.attachStream(stream)<br>recorder.startRecording(<br>  File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), &quot;output.mp4&quot;).toString(),<br>  MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4<br>)</code></pre>
+<span class="top-right-position"><span class="copy-icon"></span>
+          <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
+        </span></div>
       <h3 class="">Filter</h3>
       <ul>
         <li>
@@ -182,7 +216,10 @@
       <h3 class="">Sources</h3>
       <ul>
         <li>
-          <p class="paragraph">Camera with Camera2 api</p>
+          <p class="paragraph">Single camera with Camera2 api</p>
+        </li>
+        <li>
+          <p class="paragraph">Multi camera with Camera2 api</p>
         </li>
         <li>
           <p class="paragraph">MediaProjection</p>
@@ -241,13 +278,13 @@
             <p class="paragraph">✅ OpenGL</p>
           </li>
           <li>
-            <p class="paragraph">🐛 Vulkan (beta)</p>
+            <p class="paragraph">🐛 Vulkan</p>
           </li>
         </ul>
       </ul>
       <h3 class="">Settings</h3>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">stream.audioSettings.bitrate = 32 * 1000<br><br>stream.videoSettings.width = 640 // The width resoulution of video output.<br>stream.videoSettings.height = 360 // The height resoulution of video output.<br>stream.videoSettings.bitrate = 160 * 1000 // The bitRate of video output.<br>stream.videoSettings.IFrameInterval = 2 // The key-frmae interval</code></pre>
+        <pre><code class="block lang-kt" theme="idea">stream.audioSettings.bitrate = 32 * 1000<br><br>stream.videoSettings.width = 640 // The width resoulution of video output.<br>stream.videoSettings.height = 360 // The height resoulution of video output.<br>stream.videoSettings.bitrate = 160 * 1000 // The bitRate of video output.<br>stream.videoSettings.IFrameInterval = 2 // The key-frmae interval</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
@@ -256,7 +293,7 @@
 <p align="center">
   <img width="732" alt="" src="https://github.com/shogo4405/HaishinKit.kt/assets/810189/f2e189eb-d98a-41b4-9b4c-0b7d70637675">
 </p>      <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">stream.attachVideo(cameraSource)<br><br>val text = Text()<br>text.textSize = 60f<br>text.textValue = &quot;23:44:56&quot;<br>text.layoutMargins.set(0, 0, 16, 16)<br>text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_RIGHT<br>text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM<br>stream.screen.addChild(text)<br><br>val image = Image()<br>image.bitmap = BitmapFactory.decodeResource(resources, R.drawable.game_jikkyou)<br>image.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM<br>image.frame.set(0, 0, 180, 180)<br>stream.screen.addChild(image)</code></pre>
+        <pre><code class="block lang-kt" theme="idea">stream.attachVideo(cameraSource)<br><br>val text = Text()<br>text.textSize = 60f<br>text.textValue = &quot;23:44:56&quot;<br>text.layoutMargins.set(0, 0, 16, 16)<br>text.horizontalAlignment = ScreenObject.HORIZONTAL_ALIGNMENT_RIGHT<br>text.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM<br>stream.screen.addChild(text)<br><br>val image = Image()<br>image.bitmap = BitmapFactory.decodeResource(resources, R.drawable.game_jikkyou)<br>image.verticalAlignment = ScreenObject.VERTICAL_ALIGNMENT_BOTTOM<br>image.frame.set(0, 0, 180, 180)<br>stream.screen.addChild(image)</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
@@ -283,7 +320,7 @@
       <h3 class="">Gradle dependency</h3>
       <p class="paragraph"><strong>JitPack</strong></p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">allprojects {<br>  repositories {<br>    maven { url 'https://jitpack.io' }<br>  }<br>}<br><br>dependencies {<br>  implementation 'com.github.shogo4405.HaishinKit~kt:haishinkit:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:lottie:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:vulkan:x.x.x'<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">allprojects {<br>  repositories {<br>    maven { url 'https://jitpack.io' }<br>  }<br>}<br><br>dependencies {<br>  implementation 'com.github.shogo4405.HaishinKit~kt:haishinkit:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:compose:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:lottie:x.x.x'<br>  implementation 'com.github.shogo4405.HaishinKit~kt:vulkan:x.x.x'<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
@@ -307,6 +344,14 @@
             <td>Require</td>
             <td>Stable</td>
             <td>It's the base module for HaishinKit.</td>
+          </tr>
+          <tr>
+            <td>compose</td>
+            <td>21+</td>
+            <td>5</td>
+            <td>Optional</td>
+            <td>Beta</td>
+            <td>It's support for a composable component for HaishinKit.</td>
           </tr>
           <tr>
             <td>lottie</td>
@@ -414,7 +459,20 @@
       <p class="paragraph">BSD-3-Clause</p>
     </div>
     <h2 class="">All modules:</h2>
-    <div class="table"><a data-name="1193104649%2FMain%2F0" anchor-label="haishinkit" id="1193104649%2FMain%2F0" data-filterable-set=""></a>
+    <div class="table"><a data-name="-1770459077%2FMain%2F0" anchor-label="compose" id="-1770459077%2FMain%2F0" data-filterable-set=""></a>
+      <div class="table-row">
+        <div class="main-subrow ">
+          <div class="w-100"><span class="inline-flex">
+              <div><a href="compose/index.html">compose</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1770459077%2FMain%2F0"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">It's support for a composable component for HaishinKit.</p>
+            </span></div>
+        </div>
+      </div>
+<a data-name="1193104649%2FMain%2F0" anchor-label="haishinkit" id="1193104649%2FMain%2F0" data-filterable-set=""></a>
       <div class="table-row">
         <div class="main-subrow ">
           <div class="w-100"><span class="inline-flex">
@@ -422,7 +480,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1193104649%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">It's the base module for HaishinKit.</p>
+            </span></div>
         </div>
       </div>
 <a data-name="-2025428842%2FMain%2F0" anchor-label="lottie" id="-2025428842%2FMain%2F0" data-filterable-set=""></a>
@@ -433,7 +493,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2025428842%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">It's a module for embedding Lottie animations into live streaming video.</p>
+            </span></div>
         </div>
       </div>
 <a data-name="-525516662%2FMain%2F0" anchor-label="vulkan" id="-525516662%2FMain%2F0" data-filterable-set=""></a>
@@ -444,7 +506,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-525516662%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">It's support for the Vulkan graphics engine.</p>
+            </span></div>
         </div>
       </div>
     </div>
