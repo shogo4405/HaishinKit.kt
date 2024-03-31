@@ -24,7 +24,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
     var compositeTime: Int = 0
 
     private val headerSize: Int
-        get() = 5 + if (isExHeader && fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
+        get() = 5 + if (isExHeader && fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HVC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
             3
         } else {
             0
@@ -50,7 +50,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
             buffer.put((frame.toInt() shl 4 or packetType.toInt() or 0b10000000).toByte())
             buffer.putInt(fourCC)
             when (fourCC) {
-                RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1 -> {
+                RtmpMuxer.FLV_VIDEO_FOUR_CC_HVC1 -> {
                     if (packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
                         buffer.put((compositeTime shr 16).toByte()).put((compositeTime shr 8).toByte()).put(compositeTime.toByte())
                     }
@@ -97,7 +97,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
             frame = ((first shr 4) and 0b00000111u).toByte()
             packetType = (first and 0b00001111u).toByte()
             fourCC = buffer.getInt()
-            if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
+            if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HVC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
                 head += 3
                 buffer.get()
                 buffer.get()
@@ -163,7 +163,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                         timestamp -= stream.videoTimestamp
                         stream.videoTimestamp = currentTimestamp
                     }
-                    if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1) {
+                    if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HVC1) {
                         IsoTypeBufferUtils.toByteStream(payload, 0)
                     }
                     stream.muxer.enqueueVideo(this)

@@ -167,6 +167,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                         } ?: false
                     videoTimestamp += message.timestamp * 1000
                     if (success) {
+                        // There are some devices where info.flags always become 0, so this is a workaround.
                         if (message.frame == FLV_FRAME_TYPE_KEY) {
                             keyframes[videoTimestamp] = true
                         }
@@ -448,7 +449,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
 
         const val FLV_VIDEO_FOUR_CC_AV01: Int = 0x61763031 // { 'a', 'v', '0', '1' }
         const val FLV_VIDEO_FOUR_CC_VP09: Int = 0x76703039 // { 'v', 'p', '0', '9' }
-        const val FLV_VIDEO_FOUR_CC_HEC1: Int = 0x68766331 // { 'h', 'v', 'c', '1' }
+        const val FLV_VIDEO_FOUR_CC_HVC1: Int = 0x68766331 // { 'h', 'v', 'c', '1' }
 
         const val FLV_VIDEO_PACKET_TYPE_SEQUENCE_START: Byte = 0
         const val FLV_VIDEO_PACKET_TYPE_CODED_FRAMES: Byte = 1
@@ -459,13 +460,13 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
 
         fun getVideoFourCCByType(type: String): Int = when (type) {
             MediaFormat.MIMETYPE_VIDEO_AV1 -> FLV_VIDEO_FOUR_CC_AV01
-            MediaFormat.MIMETYPE_VIDEO_HEVC -> FLV_VIDEO_FOUR_CC_HEC1
+            MediaFormat.MIMETYPE_VIDEO_HEVC -> FLV_VIDEO_FOUR_CC_HVC1
             MediaFormat.MIMETYPE_VIDEO_VP9 -> FLV_VIDEO_FOUR_CC_VP09
             else -> 0
         }
 
         fun getTypeByVideoFourCC(fourCC: Int): String? = when (fourCC) {
-            FLV_VIDEO_FOUR_CC_HEC1 -> MediaFormat.MIMETYPE_VIDEO_HEVC
+            FLV_VIDEO_FOUR_CC_HVC1 -> MediaFormat.MIMETYPE_VIDEO_HEVC
             FLV_VIDEO_FOUR_CC_VP09 -> MediaFormat.MIMETYPE_VIDEO_VP9
             FLV_VIDEO_FOUR_CC_AV01 -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 MediaFormat.MIMETYPE_VIDEO_AV1
@@ -477,7 +478,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         }
 
         fun isSupportedVideoFourCC(fourCC: Int): Boolean = when (fourCC) {
-            FLV_VIDEO_FOUR_CC_HEC1 -> {
+            FLV_VIDEO_FOUR_CC_HVC1 -> {
                 true
             }
 
