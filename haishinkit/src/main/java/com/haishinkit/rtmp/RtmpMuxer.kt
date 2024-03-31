@@ -61,7 +61,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             }
             return field
         }
-    private val keyframes = mutableMapOf<Int, Boolean>()
+    private val keyframes = mutableMapOf<Long, Boolean>()
     private val mediaLink: MediaLink by lazy {
         MediaLink(stream.audioCodec, stream.videoCodec)
     }
@@ -107,6 +107,7 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
             }
 
             Codec.MODE_DECODE -> {
+                keyframes.clear()
                 mediaLink.startRunning()
             }
         }
@@ -166,8 +167,9 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
                         } ?: false
                     videoTimestamp += message.timestamp * 1000
                     if (success) {
-                        // There are some devices where info.flags always become 0, so this is a workaround.
-                        keyframes[index] = message.frame == FLV_FRAME_TYPE_KEY
+                        if (message.frame == FLV_FRAME_TYPE_KEY) {
+                            keyframes[videoTimestamp] = true
+                        }
                         codec.queueInputBuffer(
                             index,
                             0,
@@ -283,11 +285,15 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
     ): Boolean {
         when (mime) {
             MediaFormat.MIMETYPE_VIDEO_RAW -> {
+                val isKeyframe = info.flags == 1 || keyframes[info.presentationTimeUs] == true
+                if (isKeyframe) {
+                    keyframes.remove(info.presentationTimeUs)
+                }
                 mediaLink.queueVideo(
                     index,
                     null,
                     info.presentationTimeUs,
-                    keyframes[index] ?: false,
+                    isKeyframe,
                 )
                 return false
             }

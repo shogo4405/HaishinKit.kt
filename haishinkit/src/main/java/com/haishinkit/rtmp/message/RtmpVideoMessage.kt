@@ -236,12 +236,12 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                 }
             }
         } else {
-            if (frame == RtmpMuxer.FLV_FRAME_TYPE_KEY) {
-                return MediaCodec.BUFFER_FLAG_KEY_FRAME
+            if (packetType == RtmpMuxer.FLV_AVC_PACKET_TYPE_SEQ) {
+                return MediaCodec.BUFFER_FLAG_CODEC_CONFIG
             }
-            return when (data?.get(0)) {
-                RtmpMuxer.FLV_AVC_PACKET_TYPE_SEQ -> {
-                    MediaCodec.BUFFER_FLAG_CODEC_CONFIG
+            return when (frame) {
+                RtmpMuxer.FLV_FRAME_TYPE_KEY -> {
+                    MediaCodec.BUFFER_FLAG_KEY_FRAME
                 }
 
                 else -> {
@@ -252,7 +252,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
     }
 
     companion object {
-        private val TAG = RtmpVideoMessage::class.java.simpleName
+        private const val TAG = "RtmpVideoMessage"
         private const val VERBOSE = false
     }
 }

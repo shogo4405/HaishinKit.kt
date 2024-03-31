@@ -94,7 +94,7 @@ class RtmpConnection : EventDispatcher(null) {
     /**
      * Specifies the name of application.
      */
-    var flashVer = DEFAULT_FLASH_VER
+    var flashVer = DEFAULT_FLASH_VER_SWF
 
     /**
      * Specifies the outgoing RTMPChunkSize.
@@ -372,9 +372,9 @@ class RtmpConnection : EventDispatcher(null) {
         commandObject["tcUrl"] = UriUtil.withoutUserInfo(uri)
         commandObject["fpad"] = false
         commandObject["capabilities"] = DEFAULT_CAPABILITIES
-        commandObject["audioCodecs"] = SUPPORTED_AUDIO_AAC
-        commandObject["videoCodecs"] = SUPPORTED_VIDEO_H264
-        commandObject["videoFunction"] = VIDEO_FUNCTION_CLIENT_SEEK
+        commandObject["audioCodecs"] = SUPPORT_SND_AAC
+        commandObject["videoCodecs"] = SUPPORT_VID_H264
+        commandObject["videoFunction"] = SUPPORT_VID_CLIENT_SEEK
         commandObject["pageUrl"] = pageUrl
         commandObject["objectEncoding"] = objectEncoding.rawValue
         // Extending NetConnection connect Command fourCcList
@@ -392,39 +392,43 @@ class RtmpConnection : EventDispatcher(null) {
     }
 
     companion object {
-        const val DEFAULT_PORT = 1935
-        const val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
         val SUPPORTED_PROTOCOLS = mapOf("rtmp" to 1935, "rtmps" to 443)
         val SUPPORTED_FOURCC_LIST = listOf("hvc1")
+        const val DEFAULT_PORT = 1935
+        const val DEFAULT_FLASH_VER_SWF = "LNX 9,0,124,2"
+        const val DEFAULT_FLASH_VER_FMLE = "FMLE/3.0 (compatible; FMSc/1.0)"
 
         private const val TAG = "RtmpConnection"
         private const val DEFAULT_CHUNK_SIZE_S = 1024 * 8
         private const val DEFAULT_CAPABILITIES = 239
         private const val VERBOSE = false
 
-        private const val SUPPORTED_AUDIO_NONE: Short = 0x001
-        private const val SUPPORTED_AUDIO_ADPCM: Short = 0x002
-        private const val SUPPORTED_AUDIO_MP3: Short = 0x004
-        private const val SUPPORTED_AUDIO_INTEL: Short = 0x008
-        private const val SUPPORTED_AUDIO_UNUSED: Short = 0x0010
-        private const val SUPPORTED_AUDIO_NELLY8: Short = 0x0020
-        private const val SUPPORTED_AUDIO_NELLY: Short = 0x0040
-        private const val SUPPORTED_AUDIO_G711A: Short = 0x0080
-        private const val SUPPORTED_AUDIO_G711U: Short = 0x0100
-        private const val SUPPORTED_AUDIO_AAC: Short = 0x0200
-        private const val SUPPORTED_AUDIO_SPEEX: Short = 0x0800
-        private const val SUPPORTED_AUDIO_ALL: Short = 0x0FFF
+        private const val SUPPORT_SND_NONE: Short = 0x001
+        private const val SUPPORT_SND_ADPCM: Short = 0x002
+        private const val SUPPORT_SND_MP3: Short = 0x004
+        private const val SUPPORT_SND_INTEL: Short = 0x008
+        private const val SUPPORT_SND_UNUSED: Short = 0x0010
+        private const val SUPPORT_SND_NELLY8: Short = 0x0020
+        private const val SUPPORT_SND_NELLY: Short = 0x0040
+        private const val SUPPORT_SND_G711A: Short = 0x0080
+        private const val SUPPORT_SND_G711U: Short = 0x0100
+        private const val SUPPORT_SND_AAC: Short = 0x0200
+        private const val SUPPORT_SND_SPEEX: Short = 0x0800
+        private const val SUPPORT_SND_ALL: Short = 0x0FFF
 
-        private const val SUPPORTED_VIDEO_UNUSED: Short = 0x001
-        private const val SUPPORTED_VIDEO_JPEG: Short = 0x001
-        private const val SUPPORTED_VIDEO_SORENSON: Short = 0x004
-        private const val SUPPORTED_VIDEO_HOMEBREW: Short = 0x008
-        private const val SUPPORTED_VIDEO_VP6: Short = 0x0010
-        private const val SUPPORTED_VIDEO_VP6_ALPHA: Short = 0x0020
-        private const val SUPPORTED_VIDEO_HOMEBREWV: Short = 0x0040
-        private const val SUPPORTED_VIDEO_H264: Short = 0x0080
-        private const val SUPPORTED_VIDEO_ALL: Short = 0x00FF
+        private const val SUPPORT_VID_UNUSED: Short = 0x001
+        private const val SUPPORT_VID_JPEG: Short = 0x001
+        private const val SUPPORT_VID_SORENSON: Short = 0x004
+        private const val SUPPORT_VID_HOMEBREW: Short = 0x008
+        private const val SUPPORT_VID_VP6: Short = 0x0010
+        private const val SUPPORT_VID_VP6_ALPHA: Short = 0x0020
+        private const val SUPPORT_VID_HOMEBREWV: Short = 0x0040
+        private const val SUPPORT_VID_H264: Short = 0x0080
+        private const val SUPPORT_VID_ALL: Short = 0x00FF
 
-        private const val VIDEO_FUNCTION_CLIENT_SEEK: Short = 1
+        private const val SUPPORT_VID_CLIENT_SEEK: Short = 0x0001
+        private const val SUPPORT_VID_CLIENT_HDR: Short = 0x0002
+        private const val SUPPORT_VID_CLIENT_PACKET_TYPE_METADATA: Short = 0x0004
+        private const val SUPPORT_VID_CLIENT_LARGE_SCALE_TILE: Short = 0x0008
     }
 }

@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 /**
  *  7.1.1. Command Message (20, 17)
  */
-internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding) :
+internal class RtmpCommandMessage(objectEncoding: RtmpObjectEncoding) :
     RtmpMessage(objectEncoding.commandType) {
     var commandName: String? = null
     var transactionID = 0
@@ -18,9 +18,6 @@ internal class RtmpCommandMessage(private val objectEncoding: RtmpObjectEncoding
     override var length: Int = CAPACITY
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
-        if (type == TYPE_AMF3_COMMAND) {
-            buffer.put(0x00.toByte())
-        }
         val serializer = Amf0TypeBuffer(buffer)
         serializer.putString(commandName)
         serializer.putNumber(transactionID.toDouble())
