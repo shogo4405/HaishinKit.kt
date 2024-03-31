@@ -1,13 +1,16 @@
 package com.haishinkit.app
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ fun PlaybackScreen(
         connectionState = connectionState,
         connectionStateChange = { stream, data ->
             val code = data["code"].toString()
+            Log.i(TAG, code)
             if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
                 stream.play(streamName)
             }
@@ -41,13 +45,17 @@ fun PlaybackScreen(
         }
     }
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.BottomEnd
+    ) {
         HaishinKitView(
             streamState = streamState,
             modifier = Modifier.fillMaxSize()
         )
         Button(
             modifier = Modifier
+                .padding(16.dp)
                 .width(100.dp)
                 .height(50.dp),
             onClick = {

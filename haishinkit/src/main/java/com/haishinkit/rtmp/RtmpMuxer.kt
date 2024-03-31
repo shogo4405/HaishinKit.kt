@@ -440,9 +440,9 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         const val FLV_AUDIO_CODEC_SPEEX: Byte = 0x0B
         const val FLV_AUDIO_CODEC_MP3_8K: Byte = 0x0E
 
-        const val FLV_VIDEO_FOUR_CC_AV1: Int = 0x61763031 // { 'a', 'v', '0', '1' }
-        const val FLV_VIDEO_FOUR_CC_VP9: Int = 0x76703039 // { 'v', 'p', '0', '9' }
-        const val FLV_VIDEO_FOUR_CC_HEVC: Int = 0x68766331 // { 'h', 'v', 'c', '1' }
+        const val FLV_VIDEO_FOUR_CC_AV01: Int = 0x61763031 // { 'a', 'v', '0', '1' }
+        const val FLV_VIDEO_FOUR_CC_VP09: Int = 0x76703039 // { 'v', 'p', '0', '9' }
+        const val FLV_VIDEO_FOUR_CC_HEC1: Int = 0x68766331 // { 'h', 'v', 'c', '1' }
 
         const val FLV_VIDEO_PACKET_TYPE_SEQUENCE_START: Byte = 0
         const val FLV_VIDEO_PACKET_TYPE_CODED_FRAMES: Byte = 1
@@ -452,16 +452,16 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         const val FLV_VIDEO_PACKET_TYPE_MPEG2TS_SEQUENCE_START: Byte = 5
 
         fun getVideoFourCCByType(type: String): Int = when (type) {
-            MediaFormat.MIMETYPE_VIDEO_AV1 -> FLV_VIDEO_FOUR_CC_AV1
-            MediaFormat.MIMETYPE_VIDEO_HEVC -> FLV_VIDEO_FOUR_CC_HEVC
-            MediaFormat.MIMETYPE_VIDEO_VP9 -> FLV_VIDEO_FOUR_CC_VP9
+            MediaFormat.MIMETYPE_VIDEO_AV1 -> FLV_VIDEO_FOUR_CC_AV01
+            MediaFormat.MIMETYPE_VIDEO_HEVC -> FLV_VIDEO_FOUR_CC_HEC1
+            MediaFormat.MIMETYPE_VIDEO_VP9 -> FLV_VIDEO_FOUR_CC_VP09
             else -> 0
         }
 
         fun getTypeByVideoFourCC(fourCC: Int): String? = when (fourCC) {
-            FLV_VIDEO_FOUR_CC_HEVC -> MediaFormat.MIMETYPE_VIDEO_HEVC
-            FLV_VIDEO_FOUR_CC_VP9 -> MediaFormat.MIMETYPE_VIDEO_VP9
-            FLV_VIDEO_FOUR_CC_AV1 -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            FLV_VIDEO_FOUR_CC_HEC1 -> MediaFormat.MIMETYPE_VIDEO_HEVC
+            FLV_VIDEO_FOUR_CC_VP09 -> MediaFormat.MIMETYPE_VIDEO_VP9
+            FLV_VIDEO_FOUR_CC_AV01 -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 MediaFormat.MIMETYPE_VIDEO_AV1
             } else {
                 null
@@ -471,15 +471,15 @@ internal class RtmpMuxer(private val stream: RtmpStream) :
         }
 
         fun isSupportedVideoFourCC(fourCC: Int): Boolean = when (fourCC) {
-            FLV_VIDEO_FOUR_CC_HEVC -> {
+            FLV_VIDEO_FOUR_CC_HEC1 -> {
                 true
             }
 
-            FLV_VIDEO_FOUR_CC_VP9 -> {
+            FLV_VIDEO_FOUR_CC_VP09 -> {
                 false
             }
 
-            FLV_VIDEO_FOUR_CC_AV1 -> {
+            FLV_VIDEO_FOUR_CC_AV01 -> {
                 false
             }
 

@@ -12,7 +12,6 @@ import com.haishinkit.media.MediaCodecSource
 import com.haishinkit.rtmp.RtmpChunk
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpMuxer
-import com.haishinkit.util.toHexString
 import java.nio.ByteBuffer
 
 internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMessage(TYPE_VIDEO, pool) {
@@ -22,12 +21,10 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
     var data: ByteBuffer? = null
     var packetType: Byte = 0x00
     var fourCC: Int = 0
-
-    // Not compatible with B frame
     var compositeTime: Int = 0
 
     private val headerSize: Int
-        get() = 5 + if (isExHeader && fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
+        get() = 5 + if (isExHeader && fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
             3
         } else {
             0
@@ -53,7 +50,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
             buffer.put((frame.toInt() shl 4 or packetType.toInt() or 0b10000000).toByte())
             buffer.putInt(fourCC)
             when (fourCC) {
-                RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC -> {
+                RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1 -> {
                     if (packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
                         buffer.put((compositeTime shr 16).toByte()).put((compositeTime shr 8).toByte()).put(compositeTime.toByte())
                     }
@@ -100,7 +97,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
             frame = ((first shr 4) and 0b00000111u).toByte()
             packetType = (first and 0b00001111u).toByte()
             fourCC = buffer.getInt()
-            if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
+            if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
                 head += 3
                 buffer.get()
                 buffer.get()
@@ -166,7 +163,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                         timestamp -= stream.videoTimestamp
                         stream.videoTimestamp = currentTimestamp
                     }
-                    if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC) {
+                    if (fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1) {
                         IsoTypeBufferUtils.toByteStream(payload, 0)
                     }
                     stream.muxer.enqueueVideo(this)
@@ -181,8 +178,6 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
 
             when (packetType) {
                 RtmpMuxer.FLV_AVC_PACKET_TYPE_SEQ -> {
-                    payload.position(0)
-                    Log.i(TAG, payload.toHexString())
                     val record = AvcDecoderConfigurationRecord.decode(payload)
                     record.videoSize?.let {
                         stream.attachVideo(
@@ -203,7 +198,6 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                         timestamp -= stream.videoTimestamp
                         stream.videoTimestamp = currentTimestamp
                     }
-                    payload.position(0)
                     IsoTypeBufferUtils.toByteStream(payload, 0)
                     payload.position(payload.position())
                     stream.muxer.enqueueVideo(this)

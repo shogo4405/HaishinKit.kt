@@ -423,7 +423,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
             metadata["framerate"] = videoCodec.frameRate
             when (videoCodec.profileLevel.mime) {
                 MediaFormat.MIMETYPE_VIDEO_HEVC ->
-                    metadata["videocodecid"] = RtmpMuxer.FLV_VIDEO_FOUR_CC_HEVC
+                    metadata["videocodecid"] = RtmpMuxer.FLV_VIDEO_FOUR_CC_HEC1
 
                 MediaFormat.MIMETYPE_VIDEO_AVC -> {
                     metadata["videocodecid"] = RtmpMuxer.FLV_VIDEO_CODEC_AVC.toInt()
