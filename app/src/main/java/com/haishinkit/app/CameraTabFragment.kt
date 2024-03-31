@@ -87,16 +87,18 @@ class CameraTabFragment : Fragment(), IEventListener {
         stream.attachAudio(AudioRecordSource(requireContext()))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            multiCamera = MultiCamera2Source(requireContext())
+            // multiCamera = MultiCamera2Source(requireContext())
             stream.attachVideo(multiCamera)
         } else {
-            cameraSource = Camera2Source(requireContext())
+            // cameraSource = Camera2Source(requireContext())
             stream.attachVideo(cameraSource)
         }
 
         stream.screen.frame = Rect(
-            0, 0,
-            Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH
+            0,
+            0,
+            Screen.DEFAULT_HEIGHT,
+            Screen.DEFAULT_WIDTH
         )
 
         text.size = 60f
@@ -126,7 +128,9 @@ class CameraTabFragment : Fragment(), IEventListener {
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.fragment_camera, container, false)
         val button = v.findViewById<Button>(R.id.button)
@@ -153,7 +157,9 @@ class CameraTabFragment : Fragment(), IEventListener {
 
                 val fileUri: Uri? = try {
                     FileProvider.getUriForFile(
-                        requireContext(), requireContext().packageName + ".fileprovider", file
+                        requireContext(),
+                        requireContext().packageName + ".fileprovider",
+                        file
                     )
                 } catch (e: IllegalArgumentException) {
                     null
@@ -227,15 +233,19 @@ class CameraTabFragment : Fragment(), IEventListener {
         when (newConfig.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
                 stream.screen.frame = Rect(
-                    0, 0,
-                    Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH
+                    0,
+                    0,
+                    Screen.DEFAULT_HEIGHT,
+                    Screen.DEFAULT_WIDTH
                 )
             }
 
             Configuration.ORIENTATION_LANDSCAPE -> {
                 stream.screen.frame = Rect(
-                    0, 0,
-                    Screen.DEFAULT_WIDTH, Screen.DEFAULT_HEIGHT
+                    0,
+                    0,
+                    Screen.DEFAULT_WIDTH,
+                    Screen.DEFAULT_HEIGHT
                 )
             }
 

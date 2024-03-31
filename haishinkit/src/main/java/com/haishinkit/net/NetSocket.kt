@@ -51,7 +51,7 @@ interface NetSocket {
     fun connect(
         dstName: String,
         dstPort: Int,
-        isSecure: Boolean,
+        isSecure: Boolean
     )
 
     /**

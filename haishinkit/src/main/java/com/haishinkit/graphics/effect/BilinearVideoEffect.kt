@@ -8,5 +8,5 @@ import com.haishinkit.graphics.glsl.VersionCode
  */
 @RequirementsDirective(VersionCode.ES300)
 class BilinearVideoEffect(
-    override val name: String = "bilinear",
+    override val name: String = "bilinear"
 ) : VideoEffect

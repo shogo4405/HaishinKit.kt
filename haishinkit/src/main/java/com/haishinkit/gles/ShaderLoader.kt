@@ -17,7 +17,7 @@ internal class ShaderLoader(private val applicationContext: Context) {
 
     fun getProgram(
         target: Int,
-        videoEffect: VideoEffect,
+        videoEffect: VideoEffect
     ): Program? {
         return if (target == GLES11Ext.GL_TEXTURE_EXTERNAL_OES) {
             if (!textureOesPrograms.containsKey(videoEffect)) {
@@ -49,7 +49,7 @@ internal class ShaderLoader(private val applicationContext: Context) {
 
     private fun createProgram(
         target: Int,
-        videoEffect: VideoEffect,
+        videoEffect: VideoEffect
     ): Program? {
         val vertexShader = loadShader(target, GLES20.GL_VERTEX_SHADER, videoEffect)
         if (vertexShader == 0) {
@@ -85,13 +85,13 @@ internal class ShaderLoader(private val applicationContext: Context) {
             GLES20.glGetAttribLocation(program, "aTexcoord"),
             GLES20.glGetAttribLocation(program, "uTexture"),
             GLES20.glGetUniformLocation(program, "uMVPMatrix"),
-            handlers(program, videoEffect),
+            handlers(program, videoEffect)
         )
     }
 
     private fun handlers(
         program: Int,
-        videoEffect: VideoEffect,
+        videoEffect: VideoEffect
     ): Map<Int, Method> {
         val handlers = mutableMapOf<Int, Method>()
         val clazz = videoEffect::class.java
@@ -109,13 +109,13 @@ internal class ShaderLoader(private val applicationContext: Context) {
     private fun loadShader(
         target: Int,
         shaderType: Int,
-        videoEffect: VideoEffect,
+        videoEffect: VideoEffect
     ): Int {
         var suffix = ""
         var shader = GLES20.glCreateShader(shaderType)
         Utils.checkGlError("glCreateShader type=$shaderType")
         if (shaderType == GLES20.GL_VERTEX_SHADER && videoEffect::class.java.getAnnotation(
-                RequirementsDirective::class.java,
+                RequirementsDirective::class.java
             ) != null
         ) {
             suffix = "-300"
@@ -137,7 +137,7 @@ internal class ShaderLoader(private val applicationContext: Context) {
         target: Int,
         shaderType: Int,
         source: String,
-        suffix: String = "",
+        suffix: String = ""
     ): String {
         var fileName = "shaders/$source$suffix"
         fileName +=
@@ -155,7 +155,7 @@ internal class ShaderLoader(private val applicationContext: Context) {
                 return EXTENSION_OES +
                     String(buffer).replace(
                         "uniform sampler2D uTexture",
-                        "uniform samplerExternalOES uTexture",
+                        "uniform samplerExternalOES uTexture"
                     )
             }
             return String(buffer)

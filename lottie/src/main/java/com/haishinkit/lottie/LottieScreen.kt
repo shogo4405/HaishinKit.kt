@@ -148,7 +148,7 @@ class LottieScreen(val context: Context) : Image() {
     private var failureListener: LottieListener<Throwable>? = null
     private val loadedListener: LottieListener<LottieComposition?> by lazy {
         WeakSuccessListener(
-            this,
+            this
         )
     }
     private val lottieToBitmapMatrix = Matrix()
@@ -157,7 +157,7 @@ class LottieScreen(val context: Context) : Image() {
      * Setter for animation from a file in the raw directory.
      */
     fun setAnimation(
-        @RawRes rawRes: Int,
+        @RawRes rawRes: Int
     ) {
         animationResId = rawRes
         animationName = null
@@ -172,19 +172,19 @@ class LottieScreen(val context: Context) : Image() {
 
     fun setAnimationFromUrl(
         url: String?,
-        cacheKey: String? = null,
+        cacheKey: String? = null
     ) {
         val task =
             if (cacheComposition) {
                 LottieCompositionFactory.fromUrl(
                     context,
-                    url,
+                    url
                 )
             } else {
                 LottieCompositionFactory.fromUrl(
                     context,
                     url,
-                    cacheKey,
+                    cacheKey
                 )
             }
         compositionTask = task
@@ -192,21 +192,21 @@ class LottieScreen(val context: Context) : Image() {
 
     fun setAnimation(
         stream: InputStream?,
-        cacheKey: String? = null,
+        cacheKey: String? = null
     ) {
         compositionTask = LottieCompositionFactory.fromJsonInputStream(stream, cacheKey)
     }
 
     fun setAnimation(
         stream: ZipInputStream?,
-        cacheKey: String? = null,
+        cacheKey: String? = null
     ) {
         compositionTask = LottieCompositionFactory.fromZipStream(stream, cacheKey)
     }
 
     fun setAnimationFromJson(
         jsonString: String,
-        cacheKey: String? = null,
+        cacheKey: String? = null
     ) {
         setAnimation(ByteArrayInputStream(jsonString.toByteArray()), cacheKey)
     }
@@ -255,7 +255,9 @@ class LottieScreen(val context: Context) : Image() {
         if (bitmap?.width != bounds.width() || bitmap?.height != bounds.height()) {
             bitmap =
                 Bitmap.createBitmap(
-                    bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888,
+                    bounds.width(),
+                    bounds.height(),
+                    Bitmap.Config.ARGB_8888
                 ).apply {
                     canvas = Canvas(this)
                 }
@@ -264,30 +266,30 @@ class LottieScreen(val context: Context) : Image() {
         val minScale =
             min(
                 bounds.width().toFloat() / composition.bounds.width().toFloat(),
-                bounds.height().toFloat() / composition.bounds.height().toFloat(),
+                bounds.height().toFloat() / composition.bounds.height().toFloat()
             )
         lottieToBitmapMatrix.reset()
         lottieToBitmapMatrix.preScale(
             minScale,
-            minScale,
+            minScale
         )
         lottieDrawable.bounds.set(0, 0, composition.bounds.width(), composition.bounds.height())
         lottieDrawable.draw(canvas, lottieToBitmapMatrix)
     }
 
     private fun fromRawRes(
-        @RawRes rawRes: Int,
+        @RawRes rawRes: Int
     ): LottieTask<LottieComposition>? {
         return if (cacheComposition) {
             LottieCompositionFactory.fromRawRes(
                 context,
-                rawRes,
+                rawRes
             )
         } else {
             LottieCompositionFactory.fromRawRes(
                 context,
                 rawRes,
-                null,
+                null
             )
         }
     }
@@ -296,13 +298,13 @@ class LottieScreen(val context: Context) : Image() {
         return if (cacheComposition) {
             LottieCompositionFactory.fromAsset(
                 context,
-                assetName,
+                assetName
             )
         } else {
             LottieCompositionFactory.fromAsset(
                 context,
                 assetName,
-                null,
+                null
             )
         }
     }

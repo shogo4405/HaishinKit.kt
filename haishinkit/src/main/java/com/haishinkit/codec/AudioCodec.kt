@@ -60,7 +60,7 @@ class AudioCodec : Codec() {
 
     override fun onInputBufferAvailable(
         codec: MediaCodec,
-        index: Int,
+        index: Int
     ) {
         if (mode == MODE_ENCODE) {
             try {
@@ -71,7 +71,7 @@ class AudioCodec : Codec() {
                     0,
                     result,
                     buffer.presentationTimestamp,
-                    0,
+                    0
                 )
             } catch (e: IllegalStateException) {
                 Log.w(TAG, e)

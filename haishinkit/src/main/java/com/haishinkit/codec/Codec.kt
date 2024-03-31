@@ -38,19 +38,19 @@ abstract class Codec : MediaCodec.Callback(), Running {
         fun onInputBufferAvailable(
             mime: String,
             codec: MediaCodec,
-            index: Int,
+            index: Int
         )
 
         fun onFormatChanged(
             mime: String,
-            mediaFormat: MediaFormat,
+            mediaFormat: MediaFormat
         )
 
         fun onSampleOutput(
             mime: String,
             index: Int,
             info: MediaCodec.BufferInfo,
-            buffer: ByteBuffer,
+            buffer: ByteBuffer
         ): Boolean
     }
 
@@ -111,7 +111,6 @@ abstract class Codec : MediaCodec.Callback(), Running {
                     }
 
                     else -> {
-
                     }
                 }
             }
@@ -220,7 +219,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
                 MediaCodec.CONFIGURE_FLAG_ENCODE
             } else {
                 0
-            },
+            }
         )
         codec.outputFormat.getString("mime")?.let { mime ->
             outputMimeType = mime
@@ -229,7 +228,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
 
     override fun onInputBufferAvailable(
         codec: MediaCodec,
-        index: Int,
+        index: Int
     ) {
         try {
             listener?.onInputBufferAvailable(outputMimeType, codec, index)
@@ -243,7 +242,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
     override fun onOutputBufferAvailable(
         codec: MediaCodec,
         index: Int,
-        info: MediaCodec.BufferInfo,
+        info: MediaCodec.BufferInfo
     ) {
         try {
             val buffer = codec.getOutputBuffer(index) ?: return
@@ -259,7 +258,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
 
     override fun onError(
         codec: MediaCodec,
-        e: MediaCodec.CodecException,
+        e: MediaCodec.CodecException
     ) {
         if (BuildConfig.DEBUG) {
             Log.w(TAG, e.toString())
@@ -268,7 +267,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
 
     override fun onOutputFormatChanged(
         codec: MediaCodec,
-        format: MediaFormat,
+        format: MediaFormat
     ) {
         outputFormat = format
     }

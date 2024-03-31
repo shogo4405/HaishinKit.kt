@@ -48,13 +48,13 @@ internal class StreamMediaMuxer(stream: Stream?, private var muxer: MediaMuxer?)
     override fun onInputBufferAvailable(
         mime: String,
         codec: MediaCodec,
-        index: Int,
+        index: Int
     ) {
     }
 
     override fun onFormatChanged(
         mime: String,
-        mediaFormat: MediaFormat,
+        mediaFormat: MediaFormat
     ) {
         if (mime.startsWith("audio")) {
             audioTrackIndex = muxer?.addTrack(mediaFormat) ?: DEFAULT_TRACK_INDEX
@@ -70,7 +70,7 @@ internal class StreamMediaMuxer(stream: Stream?, private var muxer: MediaMuxer?)
         mime: String,
         index: Int,
         info: MediaCodec.BufferInfo,
-        buffer: ByteBuffer,
+        buffer: ByteBuffer
     ): Boolean {
         if (!isRunning.get()) return true
         var trackIndex = -1

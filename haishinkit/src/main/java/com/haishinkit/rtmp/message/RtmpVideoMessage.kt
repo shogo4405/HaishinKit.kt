@@ -181,7 +181,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                     val record = AvcDecoderConfigurationRecord.decode(payload)
                     record.videoSize?.let {
                         stream.attachVideo(
-                            MediaCodecSource(it),
+                            MediaCodecSource(it)
                         )
                     }
                     if (record.configure(stream.videoCodec)) {
@@ -204,7 +204,6 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                 }
 
                 RtmpMuxer.FLV_AVC_PACKET_TYPE_EOS -> {
-
                 }
 
                 else -> {

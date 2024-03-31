@@ -8,5 +8,5 @@ import com.haishinkit.graphics.glsl.VersionCode
  */
 @RequirementsDirective(VersionCode.ES300)
 class BicubicVideoEffect(
-    override val name: String = "bicubic",
+    override val name: String = "bicubic"
 ) : VideoEffect

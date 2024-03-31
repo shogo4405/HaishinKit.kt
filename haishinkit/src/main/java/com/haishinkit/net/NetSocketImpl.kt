@@ -51,7 +51,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
     override fun connect(
         dstName: String,
         dstPort: Int,
-        isSecure: Boolean,
+        isSecure: Boolean
     ) {
         if (socket?.isConnected == true) {
             return
@@ -158,7 +158,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
     private fun doConnection(
         dstName: String,
         dstPort: Int,
-        isSecure: Boolean,
+        isSecure: Boolean
     ) {
         try {
             outputQueue.clear()
@@ -193,7 +193,7 @@ internal class NetSocketImpl : NetSocket, CoroutineScope {
     private fun createSocket(
         dstName: String,
         dstPort: Int,
-        isSecure: Boolean,
+        isSecure: Boolean
     ): Socket {
         if (isSecure) {
             val socket = SSLSocketFactory.getDefault().createSocket(dstName, dstPort) as SSLSocket

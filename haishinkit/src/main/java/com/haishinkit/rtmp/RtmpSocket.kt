@@ -14,7 +14,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
         AckSent,
         HandshakeDone,
         Closing,
-        Closed,
+        Closed
     }
 
     var bandWidth = 0
@@ -45,7 +45,7 @@ internal class RtmpSocket(val connection: RtmpConnection) : NetSocket.Listener {
     fun connect(
         dstName: String,
         dstPort: Int,
-        isSecure: Boolean,
+        isSecure: Boolean
     ) {
         socket?.listener = null
         socket = NetSocketImpl()

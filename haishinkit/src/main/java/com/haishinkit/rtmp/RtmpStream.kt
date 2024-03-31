@@ -24,14 +24,14 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     Stream(context),
     IEventDispatcher {
     data class Info(
-        var resourceName: String? = null,
+        var resourceName: String? = null
     )
 
     enum class HowToPublish(val rawValue: String) {
         RECORD("record"),
         APPEND("append"),
         APPEND_WITH_GAP("appendWithGap"),
-        LIVE("live"),
+        LIVE("live")
     }
 
     @Suppress("UNUSED")
@@ -74,7 +74,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         STEP_NOTIFY("NetStream.Step.Notify", "status"),
         UNPAUSE_NOTIFY("NetStream.Unpause.Notify", "status"),
         UNPUBLISH_SUCCESS("NetStream.Unpublish.Success", "status"),
-        VIDEO_DIMENSION_CHANGE("NetStream.Video.DimensionChange", "status"),
+        VIDEO_DIMENSION_CHANGE("NetStream.Video.DimensionChange", "status")
         ;
 
         fun data(description: String): Map<String, Any> {
@@ -91,7 +91,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     interface Listener {
         fun onStatics(
             stream: RtmpStream,
-            connection: RtmpConnection,
+            connection: RtmpConnection
         )
     }
 
@@ -128,7 +128,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
         PLAYING(0x03),
         PUBLISH(0x04),
         PUBLISHING(0x05),
-        CLOSED(0x06),
+        CLOSED(0x06)
     }
 
     var info: Info = Info()
@@ -260,7 +260,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
      */
     fun publish(
         name: String?,
-        howToPublish: HowToPublish = HowToPublish.LIVE,
+        howToPublish: HowToPublish = HowToPublish.LIVE
     ) {
         val message = RtmpCommandMessage(connection.objectEncoding)
         message.transactionID = 0
@@ -340,7 +340,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
      */
     fun send(
         handlerName: String,
-        vararg arguments: Any,
+        vararg arguments: Any
     ) {
         if (readyState == ReadyState.INITIALIZED || readyState == ReadyState.CLOSED) {
             return
@@ -377,7 +377,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     override fun addEventListener(
         type: String,
         listener: IEventListener,
-        useCapture: Boolean,
+        useCapture: Boolean
     ) {
         dispatcher.addEventListener(type, listener, useCapture)
     }
@@ -389,7 +389,7 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     override fun dispatchEventWith(
         type: String,
         bubbles: Boolean,
-        data: Any?,
+        data: Any?
     ) {
         dispatcher.dispatchEventWith(type, bubbles, data)
     }
@@ -397,14 +397,14 @@ class RtmpStream(context: Context, internal var connection: RtmpConnection) :
     override fun removeEventListener(
         type: String,
         listener: IEventListener,
-        useCapture: Boolean,
+        useCapture: Boolean
     ) {
         dispatcher.removeEventListener(type, listener, useCapture)
     }
 
     internal fun doOutput(
         chunk: RtmpChunk,
-        message: RtmpMessage,
+        message: RtmpMessage
     ) {
         chunk.encode(connection.socket, message)
     }

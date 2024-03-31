@@ -16,7 +16,7 @@ import com.haishinkit.rtmp.RtmpStream
 fun rememberStreamState(
     connectionState: ConnectionState,
     connectionStateChange: (stream: RtmpStream, data: Map<String, Any>) -> Unit,
-    context: Context,
+    context: Context
 ): StreamState = remember {
     StreamState(
         connectionState.createStream(context),

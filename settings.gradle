@@ -1,5 +1,0 @@
-include ':app' 
-include ':haishinkit'
-include ':lottie'
-include ':vulkan'
-include ':compose'

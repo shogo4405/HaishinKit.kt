@@ -21,7 +21,7 @@ internal class RtmpUserControlMessage(pool: Pools.Pool<RtmpMessage>? = null) :
         PONG(0x07),
         BUFFER_EMPTY(0x1F),
         BUFFER_FULL(0x20),
-        UNKNOWN(Short.MAX_VALUE),
+        UNKNOWN(Short.MAX_VALUE)
     }
 
     var event: Event = Event.UNKNOWN
@@ -53,7 +53,7 @@ internal class RtmpUserControlMessage(pool: Pools.Pool<RtmpMessage>? = null) :
             }
 
             Event.BUFFER_FULL,
-            Event.BUFFER_EMPTY,
+            Event.BUFFER_EMPTY
             -> {
                 val stream = connection.streams[value] ?: return this
                 val data =

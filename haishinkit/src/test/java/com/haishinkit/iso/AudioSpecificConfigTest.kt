@@ -9,7 +9,7 @@ class AudioSpecificConfigTest : TestCase() {
             AudioSpecificConfig(
                 type = AudioSpecificConfig.AudioObjectType.AAC_MAIN,
                 frequency = AudioSpecificConfig.SamplingFrequency.HZ44100,
-                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_CENTER_AND_FRONT_LEFT_AND_FRONT_RIGHT,
+                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_CENTER_AND_FRONT_LEFT_AND_FRONT_RIGHT
             )
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
@@ -23,7 +23,7 @@ class AudioSpecificConfigTest : TestCase() {
             AudioSpecificConfig(
                 type = AudioSpecificConfig.AudioObjectType.AAC_LC,
                 frequency = AudioSpecificConfig.SamplingFrequency.HZ48000,
-                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_OF_CENTER,
+                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_OF_CENTER
             )
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)
@@ -37,7 +37,7 @@ class AudioSpecificConfigTest : TestCase() {
             AudioSpecificConfig(
                 type = AudioSpecificConfig.AudioObjectType.AAC_LC,
                 frequency = AudioSpecificConfig.SamplingFrequency.HZ48000,
-                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_LEFT_AND_FRONT_RIGHT,
+                channel = AudioSpecificConfig.ChannelConfiguration.FRONT_LEFT_AND_FRONT_RIGHT
             )
         val buffer = ByteBuffer.allocate(2)
         config.encode(buffer)

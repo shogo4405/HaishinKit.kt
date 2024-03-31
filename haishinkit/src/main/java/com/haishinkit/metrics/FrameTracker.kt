@@ -26,8 +26,8 @@ internal class FrameTracker {
                     Log.d(
                         TAG,
                         "$type stats: frames=$count, average=${average(timestamps)}, sd=${
-                            sd(timestamps)
-                        }",
+                        sd(timestamps)
+                        }"
                     )
                 }
                 timestamps.clear()
@@ -54,8 +54,8 @@ internal class FrameTracker {
             return sqrt(
                 timestamps.fold(
                     0.0,
-                    { accumulator, next -> accumulator + (next - mean).pow(2.0) },
-                ) / timestamps.size,
+                    { accumulator, next -> accumulator + (next - mean).pow(2.0) }
+                ) / timestamps.size
             )
         }
     }
@@ -65,7 +65,7 @@ internal class FrameTracker {
 
     fun track(
         type: Int,
-        timestamp: Long,
+        timestamp: Long
     ) {
         when (type) {
             TYPE_AUDIO -> {

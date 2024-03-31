@@ -19,10 +19,14 @@ internal object NalUnitReader {
                     3
                 }
                 val length = lastIndexOf - i
-                units.add(NalUnit.Hevc.create(ByteBuffer.allocate(length).apply {
-                    put(byteArray, i + 1, length)
-                    flip()
-                }))
+                units.add(
+                    NalUnit.Hevc.create(
+                        ByteBuffer.allocate(length).apply {
+                            put(byteArray, i + 1, length)
+                            flip()
+                        }
+                    )
+                )
                 lastIndexOf = i - startCodeLength
             }
         }
@@ -42,10 +46,14 @@ internal object NalUnitReader {
                     3
                 }
                 val length = lastIndexOf - i
-                units.add(NalUnit.Avc.create(ByteBuffer.allocate(length).apply {
-                    put(byteArray, i + 1, length)
-                    flip()
-                }))
+                units.add(
+                    NalUnit.Avc.create(
+                        ByteBuffer.allocate(length).apply {
+                            put(byteArray, i + 1, length)
+                            flip()
+                        }
+                    )
+                )
                 lastIndexOf = i - startCodeLength
             }
         }

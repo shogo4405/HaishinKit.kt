@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class MediaProjectionSource(
     private val context: Context,
-    private var mediaProjection: MediaProjection,
+    private var mediaProjection: MediaProjection
 ) : VideoSource, Video.OnSurfaceChangedListener {
     private class Callback(val source: MediaProjectionSource) : MediaProjection.Callback() {
         override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
@@ -39,7 +39,7 @@ class MediaProjectionSource(
 
         override fun onCapturedContentResize(
             width: Int,
-            height: Int,
+            height: Int
         ) {
             super.onCapturedContentResize(width, height)
             if (source.isRotatesWithContent) {
@@ -102,7 +102,7 @@ class MediaProjectionSource(
      */
     fun registerCallback(
         callback: MediaProjection.Callback,
-        handler: Handler?,
+        handler: Handler?
     ) {
         mediaProjection.registerCallback(callback, handler)
     }
@@ -150,7 +150,7 @@ class MediaProjectionSource(
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     surface,
                     null,
-                    handler,
+                    handler
                 )
         }
     }
@@ -166,7 +166,7 @@ class MediaProjectionSource(
                     context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 Size(
                     windowManager.currentWindowMetrics.bounds.width(),
-                    windowManager.currentWindowMetrics.bounds.height(),
+                    windowManager.currentWindowMetrics.bounds.height()
                 )
             } else {
                 val point = Point()
