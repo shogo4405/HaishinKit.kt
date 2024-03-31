@@ -53,39 +53,6 @@ class RtmpConnection : EventDispatcher(null) {
         }
     }
 
-    @Suppress("UNUSED")
-    enum class SupportSound(val rawValue: Short) {
-        NONE(0x001),
-        ADPCM(0x002),
-        MP3(0x004),
-        INTEL(0x008),
-        UNUSED(0x0010),
-        NELLY8(0x0020),
-        NELLY(0x0040),
-        G711A(0x0080),
-        G711U(0x0100),
-        AAC(0x0200),
-        SPEEX(0x0800),
-        ALL(0x0FFF),
-    }
-
-    @Suppress("UNUSED")
-    enum class SupportVideo(val rawValue: Short) {
-        UNUSED(0x001),
-        JPEG(0x002),
-        SORENSON(0x004),
-        HOMEBREW(0x008),
-        VP6(0x0010),
-        VP6_ALPHA(0x0020),
-        HOMEBREWV(0x0040),
-        H264(0x0080),
-        ALL(0x00FF),
-    }
-
-    enum class VideoFunction(val rawValue: Short) {
-        CLIENT_SEEK(1),
-    }
-
     private inner class EventListener(private val connection: RtmpConnection) : IEventListener {
         override fun handleEvent(event: Event) {
             val data = EventUtils.toMap(event)
@@ -115,22 +82,22 @@ class RtmpConnection : EventDispatcher(null) {
         private set
 
     /**
-     * The URL of .swf.
+     * Specifies the URL of .swf.
      */
     var swfUrl: String? = null
 
     /**
-     * The URL of an HTTP referer.
+     * Specifies the URL of an HTTP referer.
      */
     var pageUrl: String? = null
 
     /**
-     * The name of application.
+     * Specifies the name of application.
      */
     var flashVer = DEFAULT_FLASH_VER
 
     /**
-     * The outgoing RTMPChunkSize.
+     * Specifies the outgoing RTMPChunkSize.
      */
     var chunkSize: Int
         get() = socket.chunkSizeS
@@ -139,18 +106,13 @@ class RtmpConnection : EventDispatcher(null) {
         }
 
     /**
-     * The object encoding for this RTMPConnection instance.
-     */
-    internal val objectEncoding = RtmpObjectEncoding.AMF0
-
-    /**
      * This instance connected to server(true) or not(false).
      */
     val isConnected: Boolean
         get() = socket.isConnected
 
     /**
-     * The time to wait for TCP/IP Handshake done.
+     * Specifies the time to wait for TCP/IP Handshake done.
      */
     var timeout: Int
         get() = socket.timeout
@@ -170,6 +132,10 @@ class RtmpConnection : EventDispatcher(null) {
     val totalBytesOut: Long
         get() = socket.totalBytesOut
 
+    /**
+     * The object encoding for this RTMPConnection instance.
+     */
+    internal val objectEncoding = RtmpObjectEncoding.AMF0
     internal val messages = ConcurrentHashMap<Short, RtmpMessage>()
     internal val streams = ConcurrentHashMap<Int, RtmpStream>()
     internal val streamsmap = ConcurrentHashMap<Short, Int>()
@@ -406,9 +372,9 @@ class RtmpConnection : EventDispatcher(null) {
         commandObject["tcUrl"] = UriUtil.withoutUserInfo(uri)
         commandObject["fpad"] = false
         commandObject["capabilities"] = DEFAULT_CAPABILITIES
-        commandObject["audioCodecs"] = SupportSound.AAC.rawValue
-        commandObject["videoCodecs"] = SupportVideo.H264.rawValue
-        commandObject["videoFunction"] = VideoFunction.CLIENT_SEEK.rawValue
+        commandObject["audioCodecs"] = SUPPORTED_AUDIO_AAC
+        commandObject["videoCodecs"] = SUPPORTED_VIDEO_H264
+        commandObject["videoFunction"] = VIDEO_FUNCTION_CLIENT_SEEK
         commandObject["pageUrl"] = pageUrl
         commandObject["objectEncoding"] = objectEncoding.rawValue
         // Extending NetConnection connect Command fourCcList
@@ -430,9 +396,35 @@ class RtmpConnection : EventDispatcher(null) {
         const val DEFAULT_FLASH_VER = "FMLE/3.0 (compatible; FMSc/1.0)"
         val SUPPORTED_PROTOCOLS = mapOf("rtmp" to 1935, "rtmps" to 443)
         val SUPPORTED_FOURCC_LIST = listOf("hvc1")
-        private val TAG = RtmpConnection::class.java.simpleName
+
+        private const val TAG = "RtmpConnection"
         private const val DEFAULT_CHUNK_SIZE_S = 1024 * 8
         private const val DEFAULT_CAPABILITIES = 239
         private const val VERBOSE = false
+
+        private const val SUPPORTED_AUDIO_NONE: Short = 0x001
+        private const val SUPPORTED_AUDIO_ADPCM: Short = 0x002
+        private const val SUPPORTED_AUDIO_MP3: Short = 0x004
+        private const val SUPPORTED_AUDIO_INTEL: Short = 0x008
+        private const val SUPPORTED_AUDIO_UNUSED: Short = 0x0010
+        private const val SUPPORTED_AUDIO_NELLY8: Short = 0x0020
+        private const val SUPPORTED_AUDIO_NELLY: Short = 0x0040
+        private const val SUPPORTED_AUDIO_G711A: Short = 0x0080
+        private const val SUPPORTED_AUDIO_G711U: Short = 0x0100
+        private const val SUPPORTED_AUDIO_AAC: Short = 0x0200
+        private const val SUPPORTED_AUDIO_SPEEX: Short = 0x0800
+        private const val SUPPORTED_AUDIO_ALL: Short = 0x0FFF
+
+        private const val SUPPORTED_VIDEO_UNUSED: Short = 0x001
+        private const val SUPPORTED_VIDEO_JPEG: Short = 0x001
+        private const val SUPPORTED_VIDEO_SORENSON: Short = 0x004
+        private const val SUPPORTED_VIDEO_HOMEBREW: Short = 0x008
+        private const val SUPPORTED_VIDEO_VP6: Short = 0x0010
+        private const val SUPPORTED_VIDEO_VP6_ALPHA: Short = 0x0020
+        private const val SUPPORTED_VIDEO_HOMEBREWV: Short = 0x0040
+        private const val SUPPORTED_VIDEO_H264: Short = 0x0080
+        private const val SUPPORTED_VIDEO_ALL: Short = 0x00FF
+
+        private const val VIDEO_FUNCTION_CLIENT_SEEK: Short = 1
     }
 }
