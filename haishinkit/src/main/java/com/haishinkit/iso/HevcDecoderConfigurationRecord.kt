@@ -5,7 +5,7 @@ import android.util.Size
 import com.haishinkit.codec.CodecOption
 import java.nio.ByteBuffer
 
-/// ISO/IEC 14496-15 8.3.3.1.2
+// / ISO/IEC 14496-15 8.3.3.1.2
 internal data class HevcDecoderConfigurationRecord(
     val configurationVersion: UByte,
     val generalProfileSpace: UByte,
@@ -25,7 +25,7 @@ internal data class HevcDecoderConfigurationRecord(
     val temporalIdNested: Boolean,
     val lengthSizeMinusOne: UByte,
     val numberOfArrays: UByte,
-    val arrays: Map<UByte, List<NalUnit.Hevc>>,
+    val arrays: Map<UByte, List<NalUnit.Hevc>>
 ) : DecoderConfigurationRecord {
     override val mime: String
         get() = MediaFormat.MIMETYPE_VIDEO_HEVC
@@ -53,11 +53,13 @@ internal data class HevcDecoderConfigurationRecord(
         val isoTypeBuffer = IsoTypeBuffer(buffer)
         isoTypeBuffer.putUByte(configurationVersion)
         isoTypeBuffer.putUByte(
-            (generalProfileSpace.toUInt() shr 6).toUByte() or (if (generalTierFlag) {
-                0x20
-            } else {
-                0
-            }).toUByte() or (generalProfileIdc)
+            (generalProfileSpace.toUInt() shr 6).toUByte() or (
+                if (generalTierFlag) {
+                    0x20
+                } else {
+                    0
+                }
+                ).toUByte() or (generalProfileIdc)
         )
         isoTypeBuffer.putUInt(generalProfileCompatibilityFlags)
         isoTypeBuffer.putUInt48(generalConstraintIndicatorFlags)
@@ -69,11 +71,13 @@ internal data class HevcDecoderConfigurationRecord(
         isoTypeBuffer.putUByte((RESERVED5 shl 3).toUByte() or bitDepthChromaMinus8)
         isoTypeBuffer.putUShort(avgFrameRate)
         isoTypeBuffer.putUByte(
-            (constantFrameRate.toUInt() shl 6) or (numTemporalLayers.toUInt() shl 3) or (if (temporalIdNested) {
-                0x4
-            } else {
-                0
-            }).toUInt() + lengthSizeMinusOne.toUInt()
+            (constantFrameRate.toUInt() shl 6) or (numTemporalLayers.toUInt() shl 3) or (
+                if (temporalIdNested) {
+                    0x4
+                } else {
+                    0
+                }
+                ).toUInt() + lengthSizeMinusOne.toUInt()
         )
         isoTypeBuffer.putUByte(arrays.size)
         for (units in arrays.toSortedMap()) {

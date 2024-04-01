@@ -21,7 +21,7 @@ constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
+    defStyleRes: Int = 0
 ) :
     TextureView(context, attrs, defStyleAttr, defStyleRes),
     StreamView,
@@ -65,7 +65,7 @@ constructor(
     override fun onSurfaceTextureAvailable(
         surface: SurfaceTexture,
         width: Int,
-        height: Int,
+        height: Int
     ) {
         pixelTransform.imageExtent = Size(width, height)
         pixelTransform.surface = Surface(surface)
@@ -74,7 +74,7 @@ constructor(
     override fun onSurfaceTextureSizeChanged(
         surface: SurfaceTexture,
         width: Int,
-        height: Int,
+        height: Int
     ) {
         pixelTransform.imageExtent = Size(width, height)
     }

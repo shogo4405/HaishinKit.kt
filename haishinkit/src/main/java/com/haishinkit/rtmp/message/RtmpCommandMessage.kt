@@ -72,7 +72,7 @@ internal class RtmpCommandMessage(objectEncoding: RtmpObjectEncoding) :
                 stream?.dispatchEventWith(
                     Event.RTMP_STATUS,
                     false,
-                    if (arguments.isEmpty()) null else arguments[0],
+                    if (arguments.isEmpty()) null else arguments[0]
                 )
             }
 
@@ -80,7 +80,7 @@ internal class RtmpCommandMessage(objectEncoding: RtmpObjectEncoding) :
                 connection.dispatchEventWith(
                     Event.RTMP_STATUS,
                     false,
-                    if (arguments.isEmpty()) null else arguments[0],
+                    if (arguments.isEmpty()) null else arguments[0]
                 )
             }
         }

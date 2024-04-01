@@ -2,7 +2,7 @@ package com.haishinkit.media
 
 internal data class Timestamp(
     val scale: Long = 1L,
-    private var start: Long = DEFAULT_TIMESTAMP,
+    private var start: Long = DEFAULT_TIMESTAMP
 ) {
     val duration: Long
         get() = (nanoTime - start) / scale

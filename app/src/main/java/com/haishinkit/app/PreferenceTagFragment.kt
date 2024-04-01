@@ -20,17 +20,10 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
     private lateinit var holderB: SurfaceHolder
     private lateinit var surfaceHolderA: SurfaceHolder
     private lateinit var surfaceHolderB: SurfaceHolder
-    private val renderer: com.haishinkit.vulkan.VkPixelTransform? by lazy {
-        com.haishinkit.vulkan.VkPixelTransform(requireContext())
-    }
     private val choreographer = Choreographer.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(
-            TAG,
-            "VkPixelTransform::isSupported() = ${com.haishinkit.vulkan.VkPixelTransform.isSupported()}"
-        )
     }
 
     override fun onDestroy() {
@@ -47,81 +40,80 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
         val v = inflater.inflate(R.layout.fragment_preference, container, false)
 
         val surfaceViewA = v.findViewById<SurfaceView>(R.id.surface_view_a)
-        surfaceViewA.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                Log.d(TAG, "surfaceCreated")
-                surfaceHolderA = holder
-                renderer?.surface = holder.surface
-            }
+        surfaceViewA.holder.addCallback(
+            object : SurfaceHolder.Callback {
+                override fun surfaceCreated(holder: SurfaceHolder) {
+                    Log.d(TAG, "surfaceCreated")
+                    surfaceHolderA = holder
+                }
 
-            override fun surfaceChanged(
-                holder: SurfaceHolder,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-            }
+                override fun surfaceChanged(
+                    holder: SurfaceHolder,
+                    format: Int,
+                    width: Int,
+                    height: Int
+                ) {}
 
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                override fun surfaceDestroyed(holder: SurfaceHolder) {}
             }
-        })
+        )
 
         val surfaceViewB = v.findViewById<SurfaceView>(R.id.surface_view_b)
-        surfaceViewB.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                Log.d(TAG, "surfaceCreated")
-                surfaceHolderB = holder
-            }
+        surfaceViewB.holder.addCallback(
+            object : SurfaceHolder.Callback {
+                override fun surfaceCreated(holder: SurfaceHolder) {
+                    Log.d(TAG, "surfaceCreated")
+                    surfaceHolderB = holder
+                }
 
-            override fun surfaceChanged(
-                holder: SurfaceHolder,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-            }
+                override fun surfaceChanged(
+                    holder: SurfaceHolder,
+                    format: Int,
+                    width: Int,
+                    height: Int
+                ) {}
 
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                override fun surfaceDestroyed(holder: SurfaceHolder) {}
             }
-        })
+        )
 
         val inputSurfaceViewA = v.findViewById<SurfaceView>(R.id.input_surface_view_a)
-        inputSurfaceViewA.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                this@PreferenceTagFragment.holderA = holder
-                this@PreferenceTagFragment.choreographer.postFrameCallback(this@PreferenceTagFragment)
-            }
+        inputSurfaceViewA.holder.addCallback(
+            object : SurfaceHolder.Callback {
+                override fun surfaceCreated(holder: SurfaceHolder) {
+                    this@PreferenceTagFragment.holderA = holder
+                    this@PreferenceTagFragment.choreographer.postFrameCallback(this@PreferenceTagFragment)
+                }
 
-            override fun surfaceChanged(
-                holder: SurfaceHolder,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-            }
+                override fun surfaceChanged(
+                    holder: SurfaceHolder,
+                    format: Int,
+                    width: Int,
+                    height: Int
+                ) {}
 
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                override fun surfaceDestroyed(holder: SurfaceHolder) {}
             }
-        })
+        )
 
         val inputSurfaceViewB = v.findViewById<SurfaceView>(R.id.input_surface_view_b)
-        inputSurfaceViewB.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                Log.d(TAG, "inputSurfaceCreated")
-                this@PreferenceTagFragment.holderB = holder
-            }
+        inputSurfaceViewB.holder.addCallback(
+            object : SurfaceHolder.Callback {
+                override fun surfaceCreated(holder: SurfaceHolder) {
+                    Log.d(TAG, "inputSurfaceCreated")
+                    this@PreferenceTagFragment.holderB = holder
+                }
 
-            override fun surfaceChanged(
-                holder: SurfaceHolder,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-            }
+                override fun surfaceChanged(
+                    holder: SurfaceHolder,
+                    format: Int,
+                    width: Int,
+                    height: Int
+                ) {}
 
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                override fun surfaceDestroyed(holder: SurfaceHolder) {}
             }
-        })
+        )
 
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener { _ ->
@@ -129,11 +121,9 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
                 "RED" -> {
                     button.text = "BLUE"
                 }
-
                 "BLUE" -> {
                     button.text = "NULL"
                 }
-
                 "NULL" -> {
                     button.text = "RED"
                 }
@@ -145,17 +135,12 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             when (button2.text) {
                 "LEFT" -> {
                     button2.text = "RIGHT"
-                    renderer?.surface = surfaceViewB.holder.surface
                 }
-
                 "RIGHT" -> {
                     button2.text = "NULL"
-                    renderer?.surface = null
                 }
-
                 "NULL" -> {
                     button2.text = "LEFT"
-                    renderer?.surface = surfaceViewA.holder.surface
                 }
             }
         }
@@ -168,8 +153,7 @@ class PreferenceTagFragment : Fragment(), Choreographer.FrameCallback {
             drawFrame(holderA, Color.RED)
             drawFrame(holderB, Color.BLUE)
             // renderer?.frameAvailable(null)
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) {}
         choreographer.postFrameCallback(this)
     }
 

@@ -8,5 +8,5 @@ enum class ImageOrientation(val rawValue: Int) {
     UP_MIRRORED(5),
     DOWN_MIRRORED(6),
     LEFT_MIRRORED(7),
-    RIGHT_MIRRORED(8),
+    RIGHT_MIRRORED(8)
 }

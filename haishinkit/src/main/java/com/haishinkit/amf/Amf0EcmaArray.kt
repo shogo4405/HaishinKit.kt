@@ -39,6 +39,6 @@ class Amf0EcmaArray(list: List<Any?>? = null) : Iterable<String> {
     }
 
     override fun toString(): String {
-        return "Amf0EcmaArray{${properties}}"
+        return "Amf0EcmaArray{$properties}"
     }
 }

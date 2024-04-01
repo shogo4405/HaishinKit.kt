@@ -2,7 +2,7 @@ package com.haishinkit.iso
 
 import java.nio.ByteBuffer
 
-/// 7.3.3 Profile, tier and level syntax
+// / 7.3.3 Profile, tier and level syntax
 internal data class HevcProfileTierLevel(
     val generalProfileSpace: UByte,
     val generalTierFlag: Boolean,

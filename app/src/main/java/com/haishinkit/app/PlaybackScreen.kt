@@ -64,7 +64,8 @@ fun PlaybackScreen(
                 } else {
                     connectionState.connect(command)
                 }
-            }) {
+            }
+        ) {
             if (connectionState.isConnected) {
                 Text("STOP")
             } else {

@@ -51,14 +51,14 @@ object MediaFormatUtil {
                         AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_MEDIA)
                             .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-                            .build(),
+                            .build()
                     )
                     .setAudioFormat(
                         AudioFormat.Builder()
                             .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
                             .setSampleRate(sampleRate)
                             .setChannelMask(channelMask)
-                            .build(),
+                            .build()
                     )
                     .setBufferSizeInBytes(bufferSize)
                     .setTransferMode(AudioTrack.MODE_STREAM)
@@ -75,7 +75,7 @@ object MediaFormatUtil {
                     channelMask,
                     AudioFormat.ENCODING_PCM_16BIT,
                     bufferSize,
-                    AudioTrack.MODE_STREAM,
+                    AudioTrack.MODE_STREAM
                 )
             }
         } catch (e: Exception) {
@@ -86,7 +86,7 @@ object MediaFormatUtil {
                 channelMask,
                 AudioFormat.ENCODING_PCM_16BIT,
                 bufferSize,
-                AudioTrack.MODE_STREAM,
+                AudioTrack.MODE_STREAM
             )
         }
     }

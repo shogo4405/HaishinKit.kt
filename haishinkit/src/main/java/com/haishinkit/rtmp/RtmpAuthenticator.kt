@@ -14,7 +14,7 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
         val password: String,
         val salt: String,
         val challenge: String?,
-        val opaque: String?,
+        val opaque: String?
     ) {
         override fun toString(): String {
             var result = ""
@@ -75,7 +75,7 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
 
     private fun createAuthCommand(
         uri: URI,
-        description: String,
+        description: String
     ): String {
         if (!description.contains("?")) return uri.toString()
         if (uri.rawUserInfo == null) return uri.toString()
@@ -88,7 +88,7 @@ internal class RtmpAuthenticator(val connection: RtmpConnection) : IEventListene
                 password = uri.userInfo.split(":")[1],
                 salt = descriptionUri.getQueryParameter("salt") ?: "",
                 challenge = descriptionUri.getQueryParameter("challenge"),
-                opaque = descriptionUri.getQueryParameter("opaque"),
+                opaque = descriptionUri.getQueryParameter("opaque")
             )
         return "$command$info"
     }

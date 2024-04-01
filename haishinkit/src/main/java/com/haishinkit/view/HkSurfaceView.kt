@@ -20,7 +20,7 @@ constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    defStyleRes: Int = 0,
+    defStyleRes: Int = 0
 ) : SurfaceView(context, attrs, defStyleAttr, defStyleRes), StreamView {
     override var videoGravity: VideoGravity
         get() = pixelTransform.videoGravity
@@ -62,7 +62,7 @@ constructor(
                     holder: SurfaceHolder,
                     format: Int,
                     width: Int,
-                    height: Int,
+                    height: Int
                 ) {
                     pixelTransform.imageExtent = Size(width, height)
                 }
@@ -70,7 +70,7 @@ constructor(
                 override fun surfaceDestroyed(holder: SurfaceHolder) {
                     pixelTransform.surface = null
                 }
-            },
+            }
         )
     }
 

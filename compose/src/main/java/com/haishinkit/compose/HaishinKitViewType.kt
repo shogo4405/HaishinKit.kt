@@ -4,4 +4,3 @@ enum class HaishinKitViewType {
     SurfaceView,
     TextureView
 }
-

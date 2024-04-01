@@ -24,7 +24,7 @@ import kotlin.coroutines.CoroutineContext
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class AudioRecordSource(
-    private val context: Context,
+    private val context: Context
 ) : CoroutineScope, AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
@@ -47,7 +47,7 @@ class AudioRecordSource(
         get() {
             if (ActivityCompat.checkSelfPermission(
                     context,
-                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.RECORD_AUDIO
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 return null
@@ -147,13 +147,13 @@ class AudioRecordSource(
             sampleRate: Int,
             channel: Int,
             encoding: Int,
-            minBufferSize: Int,
+            minBufferSize: Int
         ): AudioRecord {
             if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
                 return try {
                     AudioRecord.Builder().setAudioSource(audioSource).setAudioFormat(
                         AudioFormat.Builder().setEncoding(encoding).setSampleRate(sampleRate)
-                            .setChannelMask(channel).build(),
+                            .setChannelMask(channel).build()
                     ).setBufferSizeInBytes(minBufferSize).build()
                 } catch (e: Exception) {
                     AudioRecord(
@@ -161,7 +161,7 @@ class AudioRecordSource(
                         sampleRate,
                         channel,
                         encoding,
-                        minBufferSize,
+                        minBufferSize
                     )
                 }
             } else {
@@ -170,7 +170,7 @@ class AudioRecordSource(
                     sampleRate,
                     channel,
                     encoding,
-                    minBufferSize,
+                    minBufferSize
                 )
             }
         }

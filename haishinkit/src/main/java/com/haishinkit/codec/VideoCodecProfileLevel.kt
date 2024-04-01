@@ -802,5 +802,5 @@ enum class VideoCodecProfileLevel(
         MediaFormat.MIMETYPE_VIDEO_AV1,
         MediaCodecInfo.CodecProfileLevel.AV1ProfileMain8,
         MediaCodecInfo.CodecProfileLevel.AV1Level53
-    ),
+    )
 }

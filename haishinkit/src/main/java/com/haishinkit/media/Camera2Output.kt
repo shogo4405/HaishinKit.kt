@@ -22,7 +22,7 @@ import java.util.concurrent.Executors
 internal class Camera2Output(
     val context: Context,
     val source: VideoSource,
-    private val cameraId: String,
+    private val cameraId: String
 ) : CameraDevice.StateCallback(), Video.OnSurfaceChangedListener {
     val facing: Int?
         get() = characteristics?.get(CameraCharacteristics.LENS_FACING)
@@ -98,13 +98,13 @@ internal class Camera2Output(
 
     override fun onError(
         camera: CameraDevice,
-        error: Int,
+        error: Int
     ) {
     }
 
     private fun getCameraSize(
         width: Int?,
-        height: Int?,
+        height: Int?
     ): Size? {
         val scm = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         val sizes = scm?.getOutputSizes(SurfaceTexture::class.java)
@@ -143,8 +143,8 @@ internal class Camera2Output(
 
                         override fun onConfigureFailed(captureSession: CameraCaptureSession) {
                         }
-                    },
-                ),
+                    }
+                )
             )
         } else {
             val surfaces =
@@ -166,7 +166,7 @@ internal class Camera2Output(
                     override fun onConfigureFailed(session: CameraCaptureSession) {
                     }
                 },
-                handler,
+                handler
             )
         }
     }

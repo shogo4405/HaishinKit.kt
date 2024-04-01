@@ -71,7 +71,7 @@ class StreamRecorder(applicationContext: Context) {
      */
     fun startRecording(
         path: String,
-        format: Int,
+        format: Int
     ) {
         if (muxer != null || stream == null) {
             throw IllegalStateException()
@@ -87,7 +87,7 @@ class StreamRecorder(applicationContext: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun startRecording(
         fd: FileDescriptor,
-        format: Int,
+        format: Int
     ) {
         if (muxer != null || stream == null) {
             throw IllegalStateException()

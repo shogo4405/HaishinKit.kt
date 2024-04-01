@@ -307,7 +307,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
 
     private fun putString(
         value: String,
-        asShort: Boolean,
+        asShort: Boolean
     ): Amf0TypeBuffer {
         val length = value.length
         if (asShort) {

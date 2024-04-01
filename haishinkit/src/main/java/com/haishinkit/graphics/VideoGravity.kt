@@ -7,5 +7,5 @@ package com.haishinkit.graphics
 enum class VideoGravity(val rawValue: Int) {
     RESIZE(0),
     RESIZE_ASPECT(1),
-    RESIZE_ASPECT_FILL(2),
+    RESIZE_ASPECT_FILL(2)
 }

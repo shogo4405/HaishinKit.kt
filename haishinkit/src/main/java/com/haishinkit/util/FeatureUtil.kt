@@ -12,8 +12,8 @@ object FeatureUtil {
     private var flags =
         ConcurrentHashMap(
             mutableMapOf(
-                FEATURE_BITRATE_CHANGE to true,
-            ),
+                FEATURE_BITRATE_CHANGE to true
+            )
         )
 
     /**
@@ -28,7 +28,7 @@ object FeatureUtil {
      */
     fun setEnabled(
         feature: String,
-        isEnabled: Boolean,
+        isEnabled: Boolean
     ) {
         flags[feature] = isEnabled
     }

@@ -11,7 +11,7 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
     override fun addEventListener(
         type: String,
         listener: IEventListener,
-        useCapture: Boolean,
+        useCapture: Boolean
     ) {
         val key = "$type/$useCapture"
         listeners.putIfAbsent(key, Collections.synchronizedList(mutableListOf<IEventListener>()))
@@ -59,7 +59,7 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
     override fun dispatchEventWith(
         type: String,
         bubbles: Boolean,
-        data: Any?,
+        data: Any?
     ) {
         val event = pool.acquire() ?: Event(type, bubbles, data)
         event.type = type
@@ -72,7 +72,7 @@ open class EventDispatcher(private val target: IEventDispatcher?) : IEventDispat
     override fun removeEventListener(
         type: String,
         listener: IEventListener,
-        useCapture: Boolean,
+        useCapture: Boolean
     ) {
         val key = "$type/$useCapture"
         if (!listeners.containsKey(key)) {

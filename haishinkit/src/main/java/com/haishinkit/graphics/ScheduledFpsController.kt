@@ -120,7 +120,7 @@ internal class ScheduledFpsController : FpsController {
                 "2", // 30 fps
                 "2111", // 48 fps
                 "1", // 60 fps
-                "15", // erratic, useful for examination with systrace
+                "15" // erratic, useful for examination with systrace
             )
         private const val ONE_MILLISECOND_NS: Long = 1000000
         private val FRAME_AHEAD =
@@ -129,7 +129,7 @@ internal class ScheduledFpsController : FpsController {
                 0,
                 1,
                 2,
-                3,
+                3
             )
         private val TAG = ScheduledFpsController::class.java.simpleName
     }

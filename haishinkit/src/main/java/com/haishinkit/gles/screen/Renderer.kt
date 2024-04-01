@@ -26,27 +26,27 @@ internal class Renderer(applicationContext: Context) :
             is Video -> {
                 surfaceTextures[screenObject.id]?.setDefaultBufferSize(
                     screenObject.videoSize.width,
-                    screenObject.videoSize.height,
+                    screenObject.videoSize.height
                 )
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GL10.GL_TEXTURE_MIN_FILTER,
-                    GLES20.GL_NEAREST,
+                    GLES20.GL_NEAREST
                 )
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GL10.GL_TEXTURE_MAG_FILTER,
-                    GLES20.GL_LINEAR,
+                    GLES20.GL_LINEAR
                 )
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GL10.GL_TEXTURE_WRAP_S,
-                    GL10.GL_CLAMP_TO_EDGE,
+                    GL10.GL_CLAMP_TO_EDGE
                 )
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GL10.GL_TEXTURE_WRAP_T,
-                    GL10.GL_CLAMP_TO_EDGE,
+                    GL10.GL_CLAMP_TO_EDGE
                 )
             }
 
@@ -60,22 +60,22 @@ internal class Renderer(applicationContext: Context) :
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GLES20.GL_TEXTURE_MIN_FILTER,
-                    GLES20.GL_NEAREST,
+                    GLES20.GL_NEAREST
                 )
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GLES20.GL_TEXTURE_MAG_FILTER,
-                    GLES20.GL_LINEAR,
+                    GLES20.GL_LINEAR
                 )
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GLES20.GL_TEXTURE_WRAP_S,
-                    GLES20.GL_CLAMP_TO_EDGE,
+                    GLES20.GL_CLAMP_TO_EDGE
                 )
                 GLES20.glTexParameteri(
                     screenObject.target,
                     GLES20.GL_TEXTURE_WRAP_T,
-                    GLES20.GL_CLAMP_TO_EDGE,
+                    GLES20.GL_CLAMP_TO_EDGE
                 )
             }
         }
@@ -88,7 +88,7 @@ internal class Renderer(applicationContext: Context) :
             screenObject.bounds.left,
             screenObject.bounds.top,
             screenObject.bounds.width(),
-            screenObject.bounds.height(),
+            screenObject.bounds.height()
         )
         program.use()
         program.bind(screenObject.videoEffect)
@@ -104,7 +104,7 @@ internal class Renderer(applicationContext: Context) :
                     surfaceTextures[screenObject.id] = this
                     setDefaultBufferSize(
                         screenObject.videoSize.width,
-                        screenObject.videoSize.height,
+                        screenObject.videoSize.height
                     )
                     setOnFrameAvailableListener(screenObject)
                     screenObject.surface = Surface(this)

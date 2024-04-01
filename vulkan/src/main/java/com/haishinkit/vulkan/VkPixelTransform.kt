@@ -109,7 +109,7 @@ class VkPixelTransform(override val applicationContext: Context) : PixelTransfor
 
     private external fun nativeSetImageExtent(
         width: Int,
-        height: Int,
+        height: Int
     )
 
     private external fun nativeSetAssetManager(assetManager: AssetManager?)
@@ -117,7 +117,7 @@ class VkPixelTransform(override val applicationContext: Context) : PixelTransfor
     private external fun nativeCreateInputSurface(
         width: Int,
         height: Int,
-        format: Int,
+        format: Int
     ): Surface?
 
     private external fun nativeSetRotatesWithContent(expectedOrientationSynchronize: Boolean)

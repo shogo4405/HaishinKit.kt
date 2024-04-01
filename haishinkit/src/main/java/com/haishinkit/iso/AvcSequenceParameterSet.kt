@@ -30,7 +30,7 @@ internal data class AvcSequenceParameterSet(
     val frameCropLeftOffset: UByte?,
     val frameCropRightOffset: UByte?,
     val frameCropTopOffset: UByte?,
-    val frameCropBottomOffset: UByte?,
+    val frameCropBottomOffset: UByte?
 ) {
     val videoWidth: Int
         get() {
@@ -155,7 +155,7 @@ internal data class AvcSequenceParameterSet(
                 frameCropLeftOffset = frameCropLeftOffset?.toUByte(),
                 frameCropRightOffset = frameCropRightOffset?.toUByte(),
                 frameCropTopOffset = frameCropTopOffset?.toUByte(),
-                frameCropBottomOffset = frameCropBottomOffset?.toUByte(),
+                frameCropBottomOffset = frameCropBottomOffset?.toUByte()
             )
         }
     }
