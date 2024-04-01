@@ -1,7 +1,8 @@
 plugins {
+    id("maven-publish")
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.jetbrainsDokka)
 }
 
 android {
@@ -37,6 +38,9 @@ android {
             version = "3.22.1"
         }
     }
+    publishing {
+        singleVariant("release")
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -46,12 +50,20 @@ android {
     }
 }
 
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = rootProject.ext["PUBLISH_GROUP_ID"] as? String
+                artifactId = "vulkan"
+                version = rootProject.ext["PUBLISH_VERSION"] as? String
+            }
+        }
+    }
+}
+
 dependencies {
     api(project(":haishinkit"))
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
