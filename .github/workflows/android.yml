@@ -30,5 +30,6 @@ jobs:
       run: bundle install --path=vendor/bundle --jobs 4 --retry 3
     - name: fastlane
       env:
-        DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
+        DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: bundle exec fastlane review
+
