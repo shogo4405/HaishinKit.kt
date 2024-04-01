@@ -1,7 +1,8 @@
 plugins {
+    id("maven-publish")
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.jetbrainsDokka)
 }
 
 android {
@@ -28,6 +29,19 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = rootProject.ext["PUBLISH_GROUP_ID"] as? String
+                artifactId = "compose"
+                version = rootProject.ext["PUBLISH_VERSION"] as? String
+            }
+        }
+    }
 }
 
 dependencies {

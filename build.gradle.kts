@@ -5,9 +5,13 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
     alias(libs.plugins.androidLibrary) apply false
-    id("org.jetbrains.dokka") version "1.9.20" apply true
+    alias(libs.plugins.jetbrainsDokka)
+    id("maven-publish")
     id("org.jlleitschuh.gradle.ktlint") version "11.6.1" apply true
 }
+
+rootProject.ext["PUBLISH_GROUP_ID"] = "com.github.shogo4405"
+rootProject.ext["PUBLISH_VERSION"] = "0.15.6"
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

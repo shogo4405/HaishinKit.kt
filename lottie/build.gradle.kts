@@ -1,7 +1,8 @@
 plugins {
+    id("maven-publish")
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.jetbrainsDokka)
 }
 
 android {
@@ -21,12 +22,31 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    publishing {
+        singleVariant("release")
+    }
+
     kotlinOptions {
         jvmTarget = "17"
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = rootProject.ext["PUBLISH_GROUP_ID"] as? String
+                artifactId = "lottie"
+                version = rootProject.ext["PUBLISH_VERSION"] as? String
+            }
+        }
     }
 }
 

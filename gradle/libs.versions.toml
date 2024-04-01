@@ -16,6 +16,7 @@ appcompat = "1.6.1"
 lottie = "6.4.0"
 material = "1.11.0"
 robolectric = "4.12"
+dokkaPlugin = "1.9.20"
 
 [libraries]
 androidx-annotation-jvm = { module = "androidx.annotation:annotation-jvm", version.ref = "annotationJvm" }
@@ -45,4 +46,4 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-
+jetbrainsDokka = { id = "org.jetbrains.dokka", version.ref = "dokkaPlugin" }
