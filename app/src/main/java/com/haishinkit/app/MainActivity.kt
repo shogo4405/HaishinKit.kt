@@ -36,10 +36,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 fragment = PlaybackTabFragment.newInstance()
             }
 
-            R.id.navigation_dashboard -> {
-                fragment = PreferenceTagFragment.newInstance()
-            }
-
             else -> {
             }
         }

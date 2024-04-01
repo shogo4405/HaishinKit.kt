@@ -69,28 +69,28 @@ class CameraTabFragment : Fragment(), IEventListener {
     private val callback: Screen.Callback by lazy { Callback(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activity?.let {
-            val permissionCheck = ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA)
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.CAMERA), 1)
-            }
-            if (ContextCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.RECORD_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
-            }
+
+        val permissionCheck = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 1)
         }
+        if (ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 1)
+        }
+
         connection = RtmpConnection()
         stream = RtmpStream(requireContext(), connection)
         stream.attachAudio(AudioRecordSource(requireContext()))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // multiCamera = MultiCamera2Source(requireContext())
+            multiCamera = MultiCamera2Source(requireContext())
             stream.attachVideo(multiCamera)
         } else {
-            // cameraSource = Camera2Source(requireContext())
+            cameraSource = Camera2Source(requireContext())
             stream.attachVideo(cameraSource)
         }
 

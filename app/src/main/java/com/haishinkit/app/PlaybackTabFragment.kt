@@ -31,6 +31,6 @@ class PlaybackTabFragment : Fragment() {
             return PlaybackTabFragment()
         }
 
-        private val TAG = PlaybackTabFragment::class.java.simpleName
+        private const val TAG = "PlaybackTabFragment"
     }
 }
