@@ -2,6 +2,7 @@ package com.haishinkit.rtmp
 
 import com.haishinkit.rtmp.message.RtmpMessage
 import java.nio.ByteBuffer
+import kotlin.math.min
 
 internal enum class RtmpChunk(val rawValue: Byte) {
     ZERO(0x00),
@@ -47,26 +48,18 @@ internal enum class RtmpChunk(val rawValue: Byte) {
             else -> {
             }
         }
-
-        if (length < chunkSize) {
-            buffer.put(payload.array(), 0, length)
+        var offset = 0
+        var remaining = min(chunkSize, length)
+        do {
+            if (0 < offset) {
+                buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
+                THREE.putHeader(buffer, message.chunkStreamID)
+            }
+            buffer.put(payload.array(), offset, remaining)
             socket.doOutput(buffer)
-            return
-        }
-
-        val mod = length % chunkSize
-        buffer.put(payload.array(), 0, chunkSize)
-        socket.doOutput(buffer)
-        for (i in 1 until (length - mod) / chunkSize) {
-            buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
-            THREE.putHeader(buffer, message.chunkStreamID)
-            buffer.put(payload.array(), chunkSize * i, chunkSize)
-            socket.doOutput(buffer)
-        }
-        buffer = socket.createByteBuffer(length(message.chunkStreamID) + chunkSize)
-        THREE.putHeader(buffer, message.chunkStreamID)
-        buffer.put(payload.array(), length - mod, mod)
-        socket.doOutput(buffer)
+            offset += remaining
+            remaining = min(chunkSize, length - offset)
+        } while (0 < remaining)
     }
 
     fun decode(
