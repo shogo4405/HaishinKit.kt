@@ -15,7 +15,7 @@ composeBom = "2024.03.00"
 appcompat = "1.6.1"
 lottie = "6.4.0"
 material = "1.11.0"
-robolectric = "4.11.1"
+robolectric = "4.12"
 
 [libraries]
 androidx-annotation-jvm = { module = "androidx.annotation:annotation-jvm", version.ref = "annotationJvm" }
