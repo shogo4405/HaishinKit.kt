@@ -16,14 +16,14 @@ import com.haishinkit.view.HkTextureView
  */
 @Composable
 fun HaishinKitView(
-    streamState: StreamState,
+    stream: Stream,
     modifier: Modifier = Modifier,
     videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT,
     viewType: HaishinKitViewType = HaishinKitViewType.SurfaceView
 ) {
     val context = LocalContext.current
 
-    val videoView = remember {
+    val videoView = remember(context) {
         when (viewType) {
             HaishinKitViewType.SurfaceView -> HkSurfaceView(context)
             HaishinKitViewType.TextureView -> HkTextureView(context)
@@ -40,7 +40,7 @@ fun HaishinKitView(
         factory = {
             videoView.apply {
                 this.videoGravity = videoGravity
-                attachStream(streamState.stream)
+                attachStream(stream)
             }
         },
         modifier = modifier
