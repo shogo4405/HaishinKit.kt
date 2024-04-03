@@ -43,7 +43,7 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                     activity?.bindService(
                         intent,
                         this@MediaProjectionTabFragment,
-                        Context.BIND_AUTO_CREATE
+                        Context.BIND_AUTO_CREATE,
                     )
                 }
                 Log.i(toString(), "mediaProjectionManager success")
@@ -54,17 +54,21 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val v = inflater.inflate(R.layout.fragment_mediaprojection, container, false)
         val button = v.findViewById<Button>(R.id.button)
-        MediaProjectionService.listener = object : RtmpStream.Listener {
-            override fun onStatics(stream: RtmpStream, connection: RtmpConnection) {
-                activity?.runOnUiThread {
-                    v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
+        MediaProjectionService.listener =
+            object : RtmpStream.Listener {
+                override fun onStatics(
+                    stream: RtmpStream,
+                    connection: RtmpConnection,
+                ) {
+                    activity?.runOnUiThread {
+                        v.findViewById<TextView>(R.id.fps).text = "${stream.currentFPS}FPS"
+                    }
                 }
             }
-        }
         val filter = v.findViewById<Button>(R.id.filter_button)
         filter.setOnClickListener {
             when (filter.text) {
@@ -73,8 +77,8 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                         Message.obtain(
                             null,
                             MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                            BicubicVideoEffect()
-                        )
+                            BicubicVideoEffect(),
+                        ),
                     )
                     filter.text = "Bicubic"
                 }
@@ -84,8 +88,8 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                         Message.obtain(
                             null,
                             MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                            BilinearVideoEffect()
-                        )
+                            BilinearVideoEffect(),
+                        ),
                     )
                     filter.text = "Bilinear"
                 }
@@ -95,8 +99,8 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                         Message.obtain(
                             null,
                             MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                            LanczosVideoEffect()
-                        )
+                            LanczosVideoEffect(),
+                        ),
                     )
                     filter.text = "Lanczos"
                 }
@@ -106,8 +110,8 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
                         Message.obtain(
                             null,
                             MediaProjectionService.MSG_SET_VIDEO_EFFECT,
-                            DefaultVideoEffect.shared
-                        )
+                            DefaultVideoEffect.shared,
+                        ),
                     )
                     filter.text = "Normal"
                 }
@@ -136,7 +140,10 @@ class MediaProjectionTabFragment : Fragment(), ServiceConnection {
         return v
     }
 
-    override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
+    override fun onServiceConnected(
+        name: ComponentName?,
+        binder: IBinder?,
+    ) {
         messenger = Messenger(binder)
     }
 

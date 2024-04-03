@@ -4,7 +4,11 @@ import android.media.MediaCodecList
 
 object CodecCapabilities {
     private val mediaCodecList: MediaCodecList by lazy { MediaCodecList(MediaCodecList.REGULAR_CODECS) }
-    fun isCodecSupportedByType(mode: Int, type: String): Boolean {
+
+    fun isCodecSupportedByType(
+        mode: Int,
+        type: String,
+    ): Boolean {
         return when (mode) {
             Codec.MODE_ENCODE -> {
                 mediaCodecList.codecInfos.any {

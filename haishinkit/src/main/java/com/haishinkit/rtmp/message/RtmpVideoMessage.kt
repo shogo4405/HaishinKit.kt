@@ -24,11 +24,13 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
     var compositeTime: Int = 0
 
     private val headerSize: Int
-        get() = 5 + if (isExHeader && fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HVC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
-            3
-        } else {
-            0
-        }
+        get() =
+            5 +
+                if (isExHeader && fourCC == RtmpMuxer.FLV_VIDEO_FOUR_CC_HVC1 && packetType == RtmpMuxer.FLV_VIDEO_PACKET_TYPE_CODED_FRAMES) {
+                    3
+                } else {
+                    0
+                }
 
     override var length: Int
         get() {
@@ -112,19 +114,20 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
             codec = (first and 0x0Fu).toByte()
             frame = (first shr 4).toByte()
             if (1 < length) {
-                data = if (codec == RtmpMuxer.FLV_VIDEO_CODEC_AVC) {
-                    packetType = buffer.get()
-                    buffer.get()
-                    buffer.get()
-                    buffer.get()
-                    val payload = ByteArray(length - 5)
-                    buffer.get(payload)
-                    ByteBuffer.wrap(payload)
-                } else {
-                    val payload = ByteArray(length - 1)
-                    buffer.get(payload)
-                    ByteBuffer.wrap(payload)
-                }
+                data =
+                    if (codec == RtmpMuxer.FLV_VIDEO_CODEC_AVC) {
+                        packetType = buffer.get()
+                        buffer.get()
+                        buffer.get()
+                        buffer.get()
+                        val payload = ByteArray(length - 5)
+                        buffer.get(payload)
+                        ByteBuffer.wrap(payload)
+                    } else {
+                        val payload = ByteArray(length - 1)
+                        buffer.get(payload)
+                        ByteBuffer.wrap(payload)
+                    }
             }
         }
         return this
@@ -147,7 +150,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                     record.videoSize?.let {
                         Log.i(TAG, it.toString())
                         stream.attachVideo(
-                            MediaCodecSource(it)
+                            MediaCodecSource(it),
                         )
                     }
                     if (record.configure(stream.videoCodec)) {
@@ -181,7 +184,7 @@ internal class RtmpVideoMessage(pool: Pools.Pool<RtmpMessage>? = null) : RtmpMes
                     val record = AvcDecoderConfigurationRecord.decode(payload)
                     record.videoSize?.let {
                         stream.attachVideo(
-                            MediaCodecSource(it)
+                            MediaCodecSource(it),
                         )
                     }
                     if (record.configure(stream.videoCodec)) {

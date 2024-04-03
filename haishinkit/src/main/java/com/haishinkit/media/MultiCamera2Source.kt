@@ -49,7 +49,7 @@ class MultiCamera2Source(val context: Context) : VideoSource {
     @SuppressLint("MissingPermission")
     fun open(
         channel: Int,
-        position: Int? = null
+        position: Int? = null,
     ) {
         val cameraId =
             if (position == null) {

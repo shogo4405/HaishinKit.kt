@@ -23,13 +23,14 @@ fun rememberHaishinKitState(
     context: Context,
     onConnectionState: OnConnectionState,
     factory: () -> RtmpConnection,
-): HaishinKitState = remember(context) {
-    HaishinKitState(
-        onConnectionState,
-        factory(),
-        context,
-    )
-}
+): HaishinKitState =
+    remember(context) {
+        HaishinKitState(
+            onConnectionState,
+            factory(),
+            context,
+        )
+    }
 
 @Suppress("UNUSED")
 @Stable
@@ -43,13 +44,14 @@ class HaishinKitState(
 
     private val streams = mutableMapOf<String, RtmpStream>()
 
-    private val listener = object : IEventListener {
-        override fun handleEvent(event: Event) {
-            val data = EventUtils.toMap(event)
-            isConnected = connection.isConnected
-            onConnectionState.invoke(this@HaishinKitState, data)
+    private val listener =
+        object : IEventListener {
+            override fun handleEvent(event: Event) {
+                val data = EventUtils.toMap(event)
+                isConnected = connection.isConnected
+                onConnectionState.invoke(this@HaishinKitState, data)
+            }
         }
-    }
 
     init {
         connection.addEventListener(Event.RTMP_STATUS, listener)
@@ -65,7 +67,10 @@ class HaishinKitState(
         return stream
     }
 
-    fun connect(command: String, vararg arguments: Any?) {
+    fun connect(
+        command: String,
+        vararg arguments: Any?,
+    ) {
         connection.connect(command = command, arguments = arguments)
     }
 

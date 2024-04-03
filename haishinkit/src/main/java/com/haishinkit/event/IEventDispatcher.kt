@@ -10,12 +10,12 @@ interface IEventDispatcher {
     fun addEventListener(
         type: String,
         listener: IEventListener,
-        useCapture: Boolean
+        useCapture: Boolean,
     )
 
     fun addEventListener(
         type: String,
-        listener: IEventListener
+        listener: IEventListener,
     ) {
         addEventListener(type, listener, false)
     }
@@ -28,12 +28,12 @@ interface IEventDispatcher {
     fun dispatchEventWith(
         type: String,
         bubbles: Boolean,
-        data: Any?
+        data: Any?,
     )
 
     fun dispatchEventWith(
         type: String,
-        bubbles: Boolean
+        bubbles: Boolean,
     ) {
         dispatchEventWith(type, bubbles, null)
     }
@@ -51,12 +51,12 @@ interface IEventDispatcher {
     fun removeEventListener(
         type: String,
         listener: IEventListener,
-        useCapture: Boolean
+        useCapture: Boolean,
     )
 
     fun removeEventListener(
         type: String,
-        listener: IEventListener
+        listener: IEventListener,
     ) {
         removeEventListener(type, listener, false)
     }

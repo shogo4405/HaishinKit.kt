@@ -24,7 +24,7 @@ import kotlin.coroutines.CoroutineContext
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class AudioRecordSource(
-    private val context: Context
+    private val context: Context,
 ) : CoroutineScope, AudioSource {
     var channel = DEFAULT_CHANNEL
     var audioSource = DEFAULT_AUDIO_SOURCE
@@ -47,7 +47,7 @@ class AudioRecordSource(
         get() {
             if (ActivityCompat.checkSelfPermission(
                     context,
-                    Manifest.permission.RECORD_AUDIO
+                    Manifest.permission.RECORD_AUDIO,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 return null
@@ -97,42 +97,43 @@ class AudioRecordSource(
         codecs.remove(codec)
     }
 
-    private fun doAudio() = launch {
-        keepAlive = true
-        try {
-            audioRecord?.startRecording()
-        } catch (e: IllegalStateException) {
-            Log.w(TAG, e)
-        }
-        while (keepAlive) {
-            byteBuffer.rewind()
-            val result = audioRecord?.read(byteBuffer, sampleCount * 2) ?: -1
-            if (isMuted) {
-                if (noSignalBuffer.capacity() < result) {
-                    noSignalBuffer = ByteBuffer.allocateDirect(result)
-                }
-                noSignalBuffer.clear()
-                byteBuffer.clear()
-                byteBuffer.put(noSignalBuffer)
+    private fun doAudio() =
+        launch {
+            keepAlive = true
+            try {
+                audioRecord?.startRecording()
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, e)
             }
-            if (0 <= result) {
-                codecs.forEach {
-                    it.append(byteBuffer)
+            while (keepAlive) {
+                byteBuffer.rewind()
+                val result = audioRecord?.read(byteBuffer, sampleCount * 2) ?: -1
+                if (isMuted) {
+                    if (noSignalBuffer.capacity() < result) {
+                        noSignalBuffer = ByteBuffer.allocateDirect(result)
+                    }
+                    noSignalBuffer.clear()
+                    byteBuffer.clear()
+                    byteBuffer.put(noSignalBuffer)
                 }
-            } else {
-                if (BuildConfig.DEBUG) {
-                    Log.w(TAG, error(result))
+                if (0 <= result) {
+                    codecs.forEach {
+                        it.append(byteBuffer)
+                    }
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Log.w(TAG, error(result))
+                    }
                 }
             }
+            try {
+                audioRecord?.stop()
+                audioRecord?.release()
+            } catch (e: java.lang.IllegalStateException) {
+                Log.w(TAG, e)
+            }
+            audioRecord = null
         }
-        try {
-            audioRecord?.stop()
-            audioRecord?.release()
-        } catch (e: java.lang.IllegalStateException) {
-            Log.w(TAG, e)
-        }
-        audioRecord = null
-    }
 
     companion object {
         const val DEFAULT_CHANNEL = AudioFormat.CHANNEL_IN_MONO
@@ -147,13 +148,13 @@ class AudioRecordSource(
             sampleRate: Int,
             channel: Int,
             encoding: Int,
-            minBufferSize: Int
+            minBufferSize: Int,
         ): AudioRecord {
             if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
                 return try {
                     AudioRecord.Builder().setAudioSource(audioSource).setAudioFormat(
                         AudioFormat.Builder().setEncoding(encoding).setSampleRate(sampleRate)
-                            .setChannelMask(channel).build()
+                            .setChannelMask(channel).build(),
                     ).setBufferSizeInBytes(minBufferSize).build()
                 } catch (e: Exception) {
                     AudioRecord(
@@ -161,7 +162,7 @@ class AudioRecordSource(
                         sampleRate,
                         channel,
                         encoding,
-                        minBufferSize
+                        minBufferSize,
                     )
                 }
             } else {
@@ -170,7 +171,7 @@ class AudioRecordSource(
                     sampleRate,
                     channel,
                     encoding,
-                    minBufferSize
+                    minBufferSize,
                 )
             }
         }

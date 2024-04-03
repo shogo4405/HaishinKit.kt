@@ -19,16 +19,17 @@ fun HaishinKitView(
     stream: Stream,
     modifier: Modifier = Modifier,
     videoGravity: VideoGravity = VideoGravity.RESIZE_ASPECT,
-    viewType: HaishinKitViewType = HaishinKitViewType.SurfaceView
+    viewType: HaishinKitViewType = HaishinKitViewType.SurfaceView,
 ) {
     val context = LocalContext.current
 
-    val videoView = remember(context) {
-        when (viewType) {
-            HaishinKitViewType.SurfaceView -> HkSurfaceView(context)
-            HaishinKitViewType.TextureView -> HkTextureView(context)
+    val videoView =
+        remember(context) {
+            when (viewType) {
+                HaishinKitViewType.SurfaceView -> HkSurfaceView(context)
+                HaishinKitViewType.TextureView -> HkTextureView(context)
+            }
         }
-    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -43,6 +44,6 @@ fun HaishinKitView(
                 attachStream(stream)
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }

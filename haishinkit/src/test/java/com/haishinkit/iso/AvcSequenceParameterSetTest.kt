@@ -35,9 +35,9 @@ class AvcSequenceParameterSetTest : TestCase() {
                 frameCropLeftOffset = null,
                 frameCropRightOffset = null,
                 frameCropTopOffset = null,
-                frameCropBottomOffset = null
+                frameCropBottomOffset = null,
             ),
-            result
+            result,
         )
     }
 

@@ -11,10 +11,13 @@ internal data class HevcProfileTierLevel(
     val generalConstraintIndicatorFlags: ULong,
     val generalLevelIdc: UByte,
     val subLayerProfilePresentFlags: List<Boolean>,
-    val subLayerLevelPresentFlags: List<Boolean>
+    val subLayerLevelPresentFlags: List<Boolean>,
 ) {
     companion object {
-        fun decode(buffer: ByteBuffer, maxNumberSubLayersMinus1: Int): HevcProfileTierLevel {
+        fun decode(
+            buffer: ByteBuffer,
+            maxNumberSubLayersMinus1: Int,
+        ): HevcProfileTierLevel {
             val isoTypeBuffer = IsoTypeBuffer(buffer)
 
             val generalProfileSpace = isoTypeBuffer.get(2)
@@ -59,7 +62,7 @@ internal data class HevcProfileTierLevel(
                 generalConstraintIndicatorFlags = generalConstraintIndicatorFlags,
                 generalLevelIdc = generalLevelIdc.toUByte(),
                 subLayerLevelPresentFlags = subLayerLevelPresentFlags,
-                subLayerProfilePresentFlags = subLayerProfilePresentFlags
+                subLayerProfilePresentFlags = subLayerProfilePresentFlags,
             )
         }
     }

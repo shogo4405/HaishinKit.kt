@@ -17,7 +17,7 @@ class PlaybackTabFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
@@ -28,7 +28,7 @@ class PlaybackTabFragment : Fragment() {
                         PlaybackScreen(
                             command = Preference.shared.rtmpURL,
                             streamName = Preference.shared.streamName,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
                         )
                     }
                 }

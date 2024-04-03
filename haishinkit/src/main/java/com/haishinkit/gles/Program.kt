@@ -16,7 +16,7 @@ internal class Program(
     private val texCoordHandle: Int = INVALID_VALUE,
     private val textureHandle: Int = INVALID_VALUE,
     private val mvpMatrixHandle: Int = INVALID_VALUE,
-    private val handlers: Map<Int, Method>
+    private val handlers: Map<Int, Method>,
 ) {
     private var texCoordBuffer = Utils.createFloatBuffer(TEX_COORDS_ROTATION_0)
     private val vertexBuffer = Utils.createFloatBuffer(VERTECES)
@@ -65,7 +65,7 @@ internal class Program(
             GLES20.GL_FLOAT,
             false,
             0,
-            texCoordBuffer
+            texCoordBuffer,
         )
         Utils.checkGlError("glVertexAttribPointer")
 
@@ -77,7 +77,7 @@ internal class Program(
             GLES20.GL_FLOAT,
             false,
             0,
-            vertexBuffer
+            vertexBuffer,
         )
         Utils.checkGlError("glVertexAttribPointer")
 
@@ -123,7 +123,7 @@ internal class Program(
                 -1.0f, 1.0f, 0.0f, // top-left
                 -1.0f, -1.0f, 0.0f, // bottom-left
                 1.0f, 1.0f, 0.0f, // bottom-right
-                1.0f, -1.0f, 0.0f // top-right
+                1.0f, -1.0f, 0.0f, // top-right
             )
 
         private val TEX_COORDS_ROTATION_0 =
@@ -135,7 +135,7 @@ internal class Program(
                 1.0f,
                 0.0f,
                 1.0f,
-                1.0f
+                1.0f,
             )
     }
 }

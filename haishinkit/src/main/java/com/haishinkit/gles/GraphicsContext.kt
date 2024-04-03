@@ -39,7 +39,7 @@ internal class GraphicsContext {
                     config,
                     shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
                     intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE),
-                    0
+                    0,
                 )
             if (EGL14.eglGetError() == EGL14.EGL_SUCCESS) {
                 this.context = context
@@ -59,7 +59,7 @@ internal class GraphicsContext {
                     config,
                     shareGraphicsContext?.context ?: EGL14.EGL_NO_CONTEXT,
                     intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE),
-                    0
+                    0,
                 )
             this.version = 2
         }
@@ -97,14 +97,14 @@ internal class GraphicsContext {
             config,
             surface,
             SURFACE_ATTRIBUTES,
-            0
+            0,
         )
     }
 
     fun readPixels(
         width: Int,
         height: Int,
-        buffer: ByteBuffer
+        buffer: ByteBuffer,
     ) {
         buffer.clear()
         GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer)
@@ -135,7 +135,7 @@ internal class GraphicsContext {
                 display,
                 EGL14.EGL_NO_SURFACE,
                 EGL14.EGL_NO_SURFACE,
-                EGL14.EGL_NO_CONTEXT
+                EGL14.EGL_NO_CONTEXT,
             )
             EGL14.eglDestroyContext(display, context)
             EGL14.eglReleaseThread()
@@ -166,7 +166,7 @@ internal class GraphicsContext {
                 0,
                 configs.size,
                 numConfigs,
-                0
+                0,
             )
         ) {
             return null
@@ -187,7 +187,7 @@ internal class GraphicsContext {
                 EGL14.EGL_ALPHA_SIZE, 8, // A
                 EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT, // TYPE
                 EGL_RECORDABLE_ANDROID, 1, // RECORDABLE
-                EGL14.EGL_NONE
+                EGL14.EGL_NONE,
             )
     }
 }

@@ -38,19 +38,19 @@ abstract class Codec : MediaCodec.Callback(), Running {
         fun onInputBufferAvailable(
             mime: String,
             codec: MediaCodec,
-            index: Int
+            index: Int,
         )
 
         fun onFormatChanged(
             mime: String,
-            mediaFormat: MediaFormat
+            mediaFormat: MediaFormat,
         )
 
         fun onSampleOutput(
             mime: String,
             index: Int,
             info: MediaCodec.BufferInfo,
-            buffer: ByteBuffer
+            buffer: ByteBuffer,
         ): Boolean
     }
 
@@ -65,11 +65,12 @@ abstract class Codec : MediaCodec.Callback(), Running {
     open var codec: MediaCodec? = null
         get() {
             if (field == null) {
-                field = if (mode == MODE_ENCODE) {
-                    MediaCodec.createEncoderByType(outputMimeType)
-                } else {
-                    MediaCodec.createDecoderByType(inputMimeType)
-                }
+                field =
+                    if (mode == MODE_ENCODE) {
+                        MediaCodec.createEncoderByType(outputMimeType)
+                    } else {
+                        MediaCodec.createDecoderByType(inputMimeType)
+                    }
             }
             return field
         }
@@ -201,13 +202,14 @@ abstract class Codec : MediaCodec.Callback(), Running {
         } else {
             codec.setCallback(this)
         }
-        val format = createMediaFormat(
-            if (mode == MODE_ENCODE) {
-                outputMimeType
-            } else {
-                inputMimeType
-            }
-        )
+        val format =
+            createMediaFormat(
+                if (mode == MODE_ENCODE) {
+                    outputMimeType
+                } else {
+                    inputMimeType
+                },
+            )
         for (option in options) {
             option.apply(format)
         }
@@ -219,7 +221,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
                 MediaCodec.CONFIGURE_FLAG_ENCODE
             } else {
                 0
-            }
+            },
         )
         codec.outputFormat.getString("mime")?.let { mime ->
             outputMimeType = mime
@@ -228,7 +230,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
 
     override fun onInputBufferAvailable(
         codec: MediaCodec,
-        index: Int
+        index: Int,
     ) {
         try {
             listener?.onInputBufferAvailable(outputMimeType, codec, index)
@@ -242,7 +244,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
     override fun onOutputBufferAvailable(
         codec: MediaCodec,
         index: Int,
-        info: MediaCodec.BufferInfo
+        info: MediaCodec.BufferInfo,
     ) {
         try {
             val buffer = codec.getOutputBuffer(index) ?: return
@@ -258,7 +260,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
 
     override fun onError(
         codec: MediaCodec,
-        e: MediaCodec.CodecException
+        e: MediaCodec.CodecException,
     ) {
         if (BuildConfig.DEBUG) {
             Log.w(TAG, e.toString())
@@ -267,7 +269,7 @@ abstract class Codec : MediaCodec.Callback(), Running {
 
     override fun onOutputFormatChanged(
         codec: MediaCodec,
-        format: MediaFormat
+        format: MediaFormat,
     ) {
         outputFormat = format
     }

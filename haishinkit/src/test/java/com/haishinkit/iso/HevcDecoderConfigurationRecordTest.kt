@@ -48,7 +48,7 @@ class HevcDecoderConfigurationRecordTest : TestCase() {
         val csd0 = decode.toCodecSpecificData(emptyList()).firstOrNull { it.key == "csd-0" } ?: return
         assertEquals(
             "0000000140010c01ffff016000000300b0000003000003005d15c09000000001420101016000000300b0000003000003005da00280802d162057b91655350101010080000000014401c02cbc14c9",
-            (csd0.value as ByteBuffer).toHexString()
+            (csd0.value as ByteBuffer).toHexString(),
         )
     }
 

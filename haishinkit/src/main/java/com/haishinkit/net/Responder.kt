@@ -11,12 +11,13 @@ interface Responder {
     fun onStatus(arguments: List<Any?>)
 
     companion object {
-        val NULL = object : Responder {
-            override fun onResult(arguments: List<Any?>) {
-            }
+        val NULL =
+            object : Responder {
+                override fun onResult(arguments: List<Any?>) {
+                }
 
-            override fun onStatus(arguments: List<Any?>) {
+                override fun onStatus(arguments: List<Any?>) {
+                }
             }
-        }
     }
 }

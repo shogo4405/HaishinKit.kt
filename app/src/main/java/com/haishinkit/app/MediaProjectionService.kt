@@ -32,38 +32,43 @@ class MediaProjectionService : Service(), IEventListener {
     private lateinit var videoSource: MediaProjectionSource
 
     private var messenger: Messenger? = null
-    private var handler = object : Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                MSG_CONNECT -> {
-                    connection.connect(Preference.shared.rtmpURL)
-                }
-
-                MSG_CLOSE -> {
-                    connection.close()
-                }
-
-                MSG_SET_VIDEO_EFFECT -> {
-                    if (msg.obj is LanczosVideoEffect) {
-                        val lanczosVideoEffect = msg.obj as LanczosVideoEffect
-                        lanczosVideoEffect.texelWidth = videoSource.video.videoSize.width.toFloat()
-                        lanczosVideoEffect.texelHeight =
-                            videoSource.video.videoSize.height.toFloat()
-                        stream.videoEffect = lanczosVideoEffect
-                        return
+    private var handler =
+        object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    MSG_CONNECT -> {
+                        connection.connect(Preference.shared.rtmpURL)
                     }
-                    stream.videoEffect = msg.obj as VideoEffect
+
+                    MSG_CLOSE -> {
+                        connection.close()
+                    }
+
+                    MSG_SET_VIDEO_EFFECT -> {
+                        if (msg.obj is LanczosVideoEffect) {
+                            val lanczosVideoEffect = msg.obj as LanczosVideoEffect
+                            lanczosVideoEffect.texelWidth = videoSource.video.videoSize.width.toFloat()
+                            lanczosVideoEffect.texelHeight =
+                                videoSource.video.videoSize.height.toFloat()
+                            stream.videoEffect = lanczosVideoEffect
+                            return
+                        }
+                        stream.videoEffect = msg.obj as VideoEffect
+                    }
                 }
             }
         }
-    }
 
     override fun onBind(intent: Intent?): IBinder? {
         return messenger?.binder
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         Log.i(TAG, "onStartCommand")
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
@@ -73,12 +78,13 @@ class MediaProjectionService : Service(), IEventListener {
             channel.setSound(null, null)
             manager.createNotificationChannel(channel)
         }
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID).apply {
-            setColorized(true)
-            setSmallIcon(R.mipmap.ic_launcher)
-            setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            setContentTitle(NOTIFY_TITLE)
-        }.build()
+        val notification =
+            NotificationCompat.Builder(this, CHANNEL_ID).apply {
+                setColorized(true)
+                setSmallIcon(R.mipmap.ic_launcher)
+                setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                setContentTitle(NOTIFY_TITLE)
+            }.build()
         if (Build.VERSION_CODES.Q <= Build.VERSION.SDK_INT) {
             startForeground(ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
         } else {
@@ -89,10 +95,11 @@ class MediaProjectionService : Service(), IEventListener {
         stream.attachAudio(AudioRecordSource(this))
         stream.listener = listener
         data?.let {
-            val source = MediaProjectionSource(
-                this,
-                mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it)
-            )
+            val source =
+                MediaProjectionSource(
+                    this,
+                    mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, it),
+                )
             stream.attachVideo(source)
             stream.videoSetting.width = source.video.videoSize.width shr 2
             stream.videoSetting.height = source.video.videoSize.height shr 2

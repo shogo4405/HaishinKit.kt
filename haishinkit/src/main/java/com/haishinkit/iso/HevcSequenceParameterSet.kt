@@ -22,7 +22,7 @@ internal data class HevcSequenceParameterSet(
     val confWinTopOffset: Int?,
     val confWinBottomOffset: Int?,
     val bitDepthLumaMinus8: UByte,
-    val bitDepthChromaMinus8: UByte
+    val bitDepthChromaMinus8: UByte,
     // There is other data, but it is unnecessary so I will omit it.
 ) {
     companion object {
@@ -38,11 +38,12 @@ internal data class HevcSequenceParameterSet(
             val expGolombBuffer = ExpGolombBuffer.wrap(rbsp)
             val spsSeqParmeterSetId = expGolombBuffer.int
             val chromaFormatIdc = expGolombBuffer.int
-            val separateColourPlanFlag = if (chromaFormatIdc == 3) {
-                expGolombBuffer.boolean
-            } else {
-                false
-            }
+            val separateColourPlanFlag =
+                if (chromaFormatIdc == 3) {
+                    expGolombBuffer.boolean
+                } else {
+                    false
+                }
             val picWidthInLumaSamples = expGolombBuffer.int
             val picHeightIntLumaSamples = expGolombBuffer.int
 
@@ -77,7 +78,7 @@ internal data class HevcSequenceParameterSet(
                 confWinTopOffset = confWinTopOffset,
                 confWinBottomOffset = confWinBottomOffset,
                 bitDepthLumaMinus8 = bitDepthLumaMinus8.toUByte(),
-                bitDepthChromaMinus8 = bitDepthChromaMinus8.toUByte()
+                bitDepthChromaMinus8 = bitDepthChromaMinus8.toUByte(),
             )
         }
     }

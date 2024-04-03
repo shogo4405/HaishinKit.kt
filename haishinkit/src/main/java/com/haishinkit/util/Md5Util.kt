@@ -7,7 +7,7 @@ import kotlin.text.Charsets.UTF_8
 internal object Md5Util {
     fun base64(
         str: String,
-        flags: Int
+        flags: Int,
     ): String {
         return Base64.encodeToString(md5(str), flags)
     }

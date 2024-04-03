@@ -23,7 +23,7 @@ internal class BufferController<T>(suffix: String) : Object() {
 
     fun enqueue(
         message: T,
-        timestamp: Int
+        timestamp: Int,
     ) {
         messages.add(message)
         this.timestamp.addAndGet(timestamp)
@@ -72,7 +72,7 @@ internal class BufferController<T>(suffix: String) : Object() {
 
         fun doFrame(
             timestamp: Int,
-            frameTimeNanos: Long
+            frameTimeNanos: Long,
         ) {
             if (rotated == DEFAULT_TIMESTAMP) {
                 rotated = frameTimeNanos

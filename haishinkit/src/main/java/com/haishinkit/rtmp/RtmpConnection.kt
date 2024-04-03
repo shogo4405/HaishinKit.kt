@@ -39,7 +39,7 @@ class RtmpConnection : EventDispatcher(null) {
         CONNECT_INVALID_APP("NetConnection.Connect.InvalidApp", "error"),
         CONNECT_NETWORK_CHANGE("NetConnection.Connect.NetworkChange", "status"),
         CONNECT_REJECTED("NetConnection.Connect.Rejected", "status"),
-        CONNECT_SUCCESS("NetConnection.Connect.Success", "status")
+        CONNECT_SUCCESS("NetConnection.Connect.Success", "status"),
         ;
 
         fun data(description: String): Map<String, Any> {
@@ -164,7 +164,7 @@ class RtmpConnection : EventDispatcher(null) {
     fun call(
         commandName: String,
         responder: Responder?,
-        vararg arguments: Any
+        vararg arguments: Any,
     ) {
         if (!isConnected) {
             return
@@ -190,7 +190,7 @@ class RtmpConnection : EventDispatcher(null) {
      */
     fun connect(
         command: String,
-        vararg arguments: Any?
+        vararg arguments: Any?,
     ) {
         uri = URI.create(command)
         val uri = this.uri ?: return
@@ -204,7 +204,7 @@ class RtmpConnection : EventDispatcher(null) {
         socket.connect(
             uri.host,
             if (port == -1) SUPPORTED_PROTOCOLS[uri.scheme] ?: DEFAULT_PORT else port,
-            isSecure
+            isSecure,
         )
     }
 
@@ -236,7 +236,7 @@ class RtmpConnection : EventDispatcher(null) {
 
     internal fun doOutput(
         chunk: RtmpChunk,
-        message: RtmpMessage
+        message: RtmpMessage,
     ) {
         chunk.encode(socket, message)
         message.release()
@@ -334,13 +334,13 @@ class RtmpConnection : EventDispatcher(null) {
                 override fun onStatus(arguments: List<Any?>) {
                     Log.w("$TAG#onStatus", arguments.toString())
                 }
-            }
+            },
         )
     }
 
     internal fun onSocketReadyStateChange(
         socket: RtmpSocket,
-        readyState: RtmpSocket.ReadyState
+        readyState: RtmpSocket.ReadyState,
     ) {
         if (VERBOSE) {
             Log.d(TAG, readyState.toString())

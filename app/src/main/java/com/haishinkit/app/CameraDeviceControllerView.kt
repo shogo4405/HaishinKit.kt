@@ -25,9 +25,10 @@ fun CameraDeviceControllerView(
     onVideoPermissionStatus: (state: PermissionState) -> Unit,
 ) {
     // Audio permission settings.
-    val audioPermissionState = rememberPermissionState(
-        Manifest.permission.RECORD_AUDIO
-    )
+    val audioPermissionState =
+        rememberPermissionState(
+            Manifest.permission.RECORD_AUDIO,
+        )
     LaunchedEffect(audioPermissionState) {
         snapshotFlow { audioPermissionState.status }.collect {
             onAudioPermissionStatus.invoke(audioPermissionState)
@@ -35,9 +36,10 @@ fun CameraDeviceControllerView(
     }
 
     // Camera permission settings.
-    val cameraPermissionState = rememberPermissionState(
-        Manifest.permission.CAMERA
-    )
+    val cameraPermissionState =
+        rememberPermissionState(
+            Manifest.permission.CAMERA,
+        )
     LaunchedEffect(cameraPermissionState) {
         snapshotFlow { cameraPermissionState.status }.collect {
             onVideoPermissionStatus.invoke(cameraPermissionState)
@@ -46,7 +48,7 @@ fun CameraDeviceControllerView(
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
     ) {
         IconButton(onClick = {
             when (cameraPermissionState.status) {
@@ -61,13 +63,17 @@ fun CameraDeviceControllerView(
             when (cameraPermissionState.status) {
                 PermissionStatus.Granted -> {
                     Icon(
-                        painter = painterResource(id = R.drawable.videocam_24dp), tint = Color.White, contentDescription = ""
+                        painter = painterResource(id = R.drawable.videocam_24dp),
+                        tint = Color.White,
+                        contentDescription = "",
                     )
                 }
 
                 is PermissionStatus.Denied -> {
                     Icon(
-                        painter = painterResource(id = R.drawable.videocam_off24dp), tint = Color.White, contentDescription = ""
+                        painter = painterResource(id = R.drawable.videocam_off24dp),
+                        tint = Color.White,
+                        contentDescription = "",
                     )
                 }
             }
@@ -86,13 +92,17 @@ fun CameraDeviceControllerView(
             when (audioPermissionState.status) {
                 PermissionStatus.Granted -> {
                     Icon(
-                        painter = painterResource(id = R.drawable.mic_24dp), tint = Color.White, contentDescription = ""
+                        painter = painterResource(id = R.drawable.mic_24dp),
+                        tint = Color.White,
+                        contentDescription = "",
                     )
                 }
 
                 is PermissionStatus.Denied -> {
                     Icon(
-                        painter = painterResource(id = R.drawable.mic_off24dp), tint = Color.White, contentDescription = ""
+                        painter = painterResource(id = R.drawable.mic_off24dp),
+                        tint = Color.White,
+                        contentDescription = "",
                     )
                 }
             }
@@ -106,6 +116,6 @@ fun CameraDeviceControllerView(
 private fun PreviewCameraScreenDeviceControllerView() {
     CameraDeviceControllerView(
         onAudioPermissionStatus = {},
-        onVideoPermissionStatus = {}
+        onVideoPermissionStatus = {},
     )
 }

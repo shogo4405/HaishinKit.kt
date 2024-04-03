@@ -59,7 +59,7 @@ internal class PixelTransform(override val applicationContext: Context) :
                 0,
                 0,
                 value.width,
-                value.height
+                value.height,
             )
             video.frame.set(0, 0, value.width, value.height)
             video.invalidateLayout()

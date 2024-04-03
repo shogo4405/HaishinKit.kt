@@ -25,7 +25,7 @@ internal data class HevcDecoderConfigurationRecord(
     val temporalIdNested: Boolean,
     val lengthSizeMinusOne: UByte,
     val numberOfArrays: UByte,
-    val arrays: Map<UByte, List<NalUnit.Hevc>>
+    val arrays: Map<UByte, List<NalUnit.Hevc>>,
 ) : DecoderConfigurationRecord {
     override val mime: String
         get() = MediaFormat.MIMETYPE_VIDEO_HEVC
@@ -53,13 +53,14 @@ internal data class HevcDecoderConfigurationRecord(
         val isoTypeBuffer = IsoTypeBuffer(buffer)
         isoTypeBuffer.putUByte(configurationVersion)
         isoTypeBuffer.putUByte(
-            (generalProfileSpace.toUInt() shr 6).toUByte() or (
-                if (generalTierFlag) {
-                    0x20
-                } else {
-                    0
-                }
-                ).toUByte() or (generalProfileIdc)
+            (generalProfileSpace.toUInt() shr 6).toUByte() or
+                (
+                    if (generalTierFlag) {
+                        0x20
+                    } else {
+                        0
+                    }
+                ).toUByte() or (generalProfileIdc),
         )
         isoTypeBuffer.putUInt(generalProfileCompatibilityFlags)
         isoTypeBuffer.putUInt48(generalConstraintIndicatorFlags)
@@ -77,7 +78,7 @@ internal data class HevcDecoderConfigurationRecord(
                 } else {
                     0
                 }
-                ).toUInt() + lengthSizeMinusOne.toUInt()
+            ).toUInt() + lengthSizeMinusOne.toUInt(),
         )
         isoTypeBuffer.putUByte(arrays.size)
         for (units in arrays.toSortedMap()) {
@@ -136,7 +137,7 @@ internal data class HevcDecoderConfigurationRecord(
             val spsUnit = units.firstOrNull { it.type == NAL_UNIT_TYPE_SPS } ?: throw IllegalArgumentException()
             val sps = HevcSequenceParameterSet.decode(spsUnit.payload)
             return HevcDecoderConfigurationRecord(
-                configurationVersion = 1u, generalProfileSpace = sps.profileTierLevel.generalProfileSpace, generalTierFlag = sps.profileTierLevel.generalTierFlag, generalProfileIdc = sps.profileTierLevel.generalProfileIdc, generalProfileCompatibilityFlags = sps.profileTierLevel.generalProfileCompatFlags, generalConstraintIndicatorFlags = sps.profileTierLevel.generalConstraintIndicatorFlags, generalLevelIdc = sps.profileTierLevel.generalLevelIdc, minSpatialSegmentationIdc = 0u, parallelismType = 0u, chromaFormat = sps.chromaFormatIdc, bitDepthLumaMinus8 = sps.bitDepthLumaMinus8, bitDepthChromaMinus8 = sps.bitDepthChromaMinus8, avgFrameRate = 0u, constantFrameRate = 0u, numTemporalLayers = 0u, temporalIdNested = false, lengthSizeMinusOne = 3u, numberOfArrays = units.size.toUByte(), arrays = arrays
+                configurationVersion = 1u, generalProfileSpace = sps.profileTierLevel.generalProfileSpace, generalTierFlag = sps.profileTierLevel.generalTierFlag, generalProfileIdc = sps.profileTierLevel.generalProfileIdc, generalProfileCompatibilityFlags = sps.profileTierLevel.generalProfileCompatFlags, generalConstraintIndicatorFlags = sps.profileTierLevel.generalConstraintIndicatorFlags, generalLevelIdc = sps.profileTierLevel.generalLevelIdc, minSpatialSegmentationIdc = 0u, parallelismType = 0u, chromaFormat = sps.chromaFormatIdc, bitDepthLumaMinus8 = sps.bitDepthLumaMinus8, bitDepthChromaMinus8 = sps.bitDepthChromaMinus8, avgFrameRate = 0u, constantFrameRate = 0u, numTemporalLayers = 0u, temporalIdNested = false, lengthSizeMinusOne = 3u, numberOfArrays = units.size.toUByte(), arrays = arrays,
             )
         }
 
@@ -193,7 +194,7 @@ internal data class HevcDecoderConfigurationRecord(
                 temporalIdNested = temporalIdNested,
                 lengthSizeMinusOne = lengthSizeMinusOne,
                 numberOfArrays = numberOfArrays,
-                arrays = arrays
+                arrays = arrays,
             )
         }
     }

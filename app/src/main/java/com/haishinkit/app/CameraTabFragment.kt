@@ -20,14 +20,13 @@ import com.haishinkit.graphics.effect.SepiaVideoEffect
 import com.haishinkit.screen.Screen
 import java.io.ByteArrayOutputStream
 
-
 interface CameraController {
     val videoEffectItems: List<VideoEffectItem>
+
     fun onScreenShot(screen: Screen)
 }
 
 class CameraTabFragment : Fragment(), CameraController {
-
     override val videoEffectItems: List<VideoEffectItem> by lazy {
         val items = mutableListOf<VideoEffectItem>()
         items.add(VideoEffectItem("Normal", null))
@@ -38,7 +37,9 @@ class CameraTabFragment : Fragment(), CameraController {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -49,7 +50,7 @@ class CameraTabFragment : Fragment(), CameraController {
                         CameraScreen(
                             command = Preference.shared.rtmpURL,
                             streamName = Preference.shared.streamName,
-                            controller = this@CameraTabFragment
+                            controller = this@CameraTabFragment,
                         )
                     }
                 }

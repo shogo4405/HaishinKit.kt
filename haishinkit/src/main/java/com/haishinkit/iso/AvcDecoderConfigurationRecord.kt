@@ -14,7 +14,7 @@ internal data class AvcDecoderConfigurationRecord(
     val lengthSizeMinusOneWithReserved: Byte = 0,
     val numOfSequenceParameterSetsWithReserved: Byte = 0,
     val sequenceParameterSets: List<ByteArray>? = null,
-    val pictureParameterSets: List<ByteArray>? = null
+    val pictureParameterSets: List<ByteArray>? = null,
 ) : DecoderConfigurationRecord {
     val naluLength: Byte
         get() = ((lengthSizeMinusOneWithReserved.toInt() shr 6) + 1).toByte()
@@ -128,15 +128,15 @@ internal data class AvcDecoderConfigurationRecord(
                 lengthSizeMinusOneWithReserved = 0xFF.toByte(),
                 numOfSequenceParameterSetsWithReserved = 0xE1.toByte(),
                 sequenceParameterSets =
-                ArrayList<ByteArray>(1).apply {
-                    val length = spsBuffer.remaining()
-                    add(spsBuffer.array().slice(4 until length).toByteArray())
-                },
+                    ArrayList<ByteArray>(1).apply {
+                        val length = spsBuffer.remaining()
+                        add(spsBuffer.array().slice(4 until length).toByteArray())
+                    },
                 pictureParameterSets =
-                ArrayList<ByteArray>(1).apply {
-                    val length = ppsBuffer.remaining()
-                    add(ppsBuffer.array().slice(4 until length).toByteArray())
-                }
+                    ArrayList<ByteArray>(1).apply {
+                        val length = ppsBuffer.remaining()
+                        add(ppsBuffer.array().slice(4 until length).toByteArray())
+                    },
             )
         }
 
@@ -173,7 +173,7 @@ internal data class AvcDecoderConfigurationRecord(
                 lengthSizeMinusOneWithReserved = lengthSizeMinusOneWithReserved,
                 numOfSequenceParameterSetsWithReserved = numOfSequenceParameterSetsWithReserved,
                 sequenceParameterSets = sequenceParameterSets,
-                pictureParameterSets = pictureParameterSets
+                pictureParameterSets = pictureParameterSets,
             )
         }
     }

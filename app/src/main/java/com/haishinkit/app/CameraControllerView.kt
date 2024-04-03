@@ -58,6 +58,6 @@ private fun PreviewCameraControllerView() {
         isConnected = false,
         onClickConnect = {},
         onClickRecording = {},
-        onClickScreenShot = {}
+        onClickScreenShot = {},
     )
 }

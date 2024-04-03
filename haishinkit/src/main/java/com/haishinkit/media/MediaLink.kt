@@ -32,7 +32,7 @@ internal class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         val index: Int,
         val payload: ByteBuffer? = null,
         val timestamp: Long = 0L,
-        val sync: Boolean = false
+        val sync: Boolean = false,
     )
 
     /**
@@ -158,7 +158,7 @@ internal class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         index: Int,
         payload: ByteBuffer?,
         timestamp: Long,
-        sync: Boolean
+        sync: Boolean,
     ) {
         audioBuffers.add(Buffer(index, payload, timestamp, sync))
         if (!hasVideo) {
@@ -179,7 +179,7 @@ internal class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
         index: Int,
         payload: ByteBuffer?,
         timestamp: Long,
-        sync: Boolean
+        sync: Boolean,
     ) {
         if (videoTimestampZero == -1L) {
             videoTimestampZero = timestamp
@@ -298,7 +298,7 @@ internal class MediaLink(val audio: AudioCodec, val video: VideoCodec) :
                         audioTrack?.write(
                             payload,
                             payload.remaining(),
-                            AudioTrack.WRITE_NON_BLOCKING
+                            AudioTrack.WRITE_NON_BLOCKING,
                         )
                     } else {
                         break

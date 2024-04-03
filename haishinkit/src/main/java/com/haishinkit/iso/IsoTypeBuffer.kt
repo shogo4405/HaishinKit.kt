@@ -10,17 +10,18 @@ internal class IsoTypeBuffer(val buffer: ByteBuffer) {
     val boolean: Boolean
         get() {
             condition()
-            val result = when (bitPosition) {
-                8 -> (currentUByte and BIT8) == BIT8
-                7 -> (currentUByte and BIT7) == BIT7
-                6 -> (currentUByte and BIT6) == BIT6
-                5 -> (currentUByte and BIT5) == BIT5
-                4 -> (currentUByte and BIT4) == BIT4
-                3 -> (currentUByte and BIT3) == BIT3
-                2 -> (currentUByte and BIT2) == BIT2
-                1 -> (currentUByte and BIT1) == BIT1
-                else -> false
-            }
+            val result =
+                when (bitPosition) {
+                    8 -> (currentUByte and BIT8) == BIT8
+                    7 -> (currentUByte and BIT7) == BIT7
+                    6 -> (currentUByte and BIT6) == BIT6
+                    5 -> (currentUByte and BIT5) == BIT5
+                    4 -> (currentUByte and BIT4) == BIT4
+                    3 -> (currentUByte and BIT3) == BIT3
+                    2 -> (currentUByte and BIT2) == BIT2
+                    1 -> (currentUByte and BIT1) == BIT1
+                    else -> false
+                }
             bitPosition--
             next()
             return result
@@ -30,17 +31,18 @@ internal class IsoTypeBuffer(val buffer: ByteBuffer) {
         condition()
         require(bit <= bitPosition)
         var result = (currentUByte.toUInt() shr (bitPosition - bit)).toUByte()
-        result = when (bit) {
-            8 -> result and MASK8
-            7 -> result and MASK7
-            6 -> result and MASK6
-            5 -> result and MASK5
-            4 -> result and MASK4
-            3 -> result and MASK3
-            2 -> result and MASK2
-            1 -> result and MASK1
-            else -> result
-        }
+        result =
+            when (bit) {
+                8 -> result and MASK8
+                7 -> result and MASK7
+                6 -> result and MASK6
+                5 -> result and MASK5
+                4 -> result and MASK4
+                3 -> result and MASK3
+                2 -> result and MASK2
+                1 -> result and MASK1
+                else -> result
+            }
         bitPosition -= bit
         next()
         return result

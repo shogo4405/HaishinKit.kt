@@ -30,7 +30,10 @@ class Amf0EcmaArray(list: List<Any?>? = null) : Iterable<String> {
         return properties[k]
     }
 
-    operator fun set(k: String, v: Any?) {
+    operator fun set(
+        k: String,
+        v: Any?,
+    ) {
         properties[k] = v
     }
 

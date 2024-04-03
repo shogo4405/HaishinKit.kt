@@ -95,25 +95,27 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) :
     override fun layout(renderer: Renderer) {
         super.layout(renderer)
 
-        var degrees = when (imageOrientation) {
-            ImageOrientation.UP -> 0
-            ImageOrientation.DOWN -> 180
-            ImageOrientation.LEFT -> 90
-            ImageOrientation.RIGHT -> 270
-            ImageOrientation.UP_MIRRORED -> 0
-            ImageOrientation.DOWN_MIRRORED -> 180
-            ImageOrientation.LEFT_MIRRORED -> 270
-            ImageOrientation.RIGHT_MIRRORED -> 90
-        }
+        var degrees =
+            when (imageOrientation) {
+                ImageOrientation.UP -> 0
+                ImageOrientation.DOWN -> 180
+                ImageOrientation.LEFT -> 90
+                ImageOrientation.RIGHT -> 270
+                ImageOrientation.UP_MIRRORED -> 0
+                ImageOrientation.DOWN_MIRRORED -> 180
+                ImageOrientation.LEFT_MIRRORED -> 270
+                ImageOrientation.RIGHT_MIRRORED -> 90
+            }
 
         if (isRotatesWithContent) {
-            degrees += when (deviceOrientation) {
-                0 -> 0
-                1 -> 270
-                2 -> 180
-                3 -> 90
-                else -> 0
-            }
+            degrees +=
+                when (deviceOrientation) {
+                    0 -> 0
+                    1 -> 270
+                    2 -> 180
+                    3 -> 90
+                    else -> 0
+                }
         }
 
         if (degrees.rem(180) == 0 && (imageOrientation == ImageOrientation.RIGHT || imageOrientation == ImageOrientation.RIGHT_MIRRORED)) {
@@ -159,7 +161,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) :
                     0,
                     x,
                     y,
-                    1f
+                    1f,
                 )
             }
 
@@ -188,7 +190,7 @@ class Video(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES) :
                     0,
                     x,
                     y,
-                    1f
+                    1f,
                 )
             }
         }

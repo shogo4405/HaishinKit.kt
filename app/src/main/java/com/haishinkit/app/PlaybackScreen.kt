@@ -25,20 +25,22 @@ private const val TAG = "PlaybackScreen"
 fun PlaybackScreen(
     command: String,
     streamName: String,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val context = LocalContext.current
-    val haishinKitState = rememberHaishinKitState(
-        context,
-        onConnectionState = { state, data ->
-            val code = data["code"].toString()
-            Log.i(TAG, code)
-            if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
-                state.getStreamByName(streamName).play(streamName)
-            }
-        }) {
-        RtmpConnection()
-    }
+    val haishinKitState =
+        rememberHaishinKitState(
+            context,
+            onConnectionState = { state, data ->
+                val code = data["code"].toString()
+                Log.i(TAG, code)
+                if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
+                    state.getStreamByName(streamName).play(streamName)
+                }
+            },
+        ) {
+            RtmpConnection()
+        }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -48,24 +50,25 @@ fun PlaybackScreen(
 
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.BottomEnd
+        contentAlignment = Alignment.BottomEnd,
     ) {
         HaishinKitView(
             stream = haishinKitState.getStreamByName(streamName),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         )
         Button(
-            modifier = Modifier
-                .padding(16.dp)
-                .width(100.dp)
-                .height(50.dp),
+            modifier =
+                Modifier
+                    .padding(16.dp)
+                    .width(100.dp)
+                    .height(50.dp),
             onClick = {
                 if (haishinKitState.isConnected) {
                     haishinKitState.close()
                 } else {
                     haishinKitState.connect(command)
                 }
-            }
+            },
         ) {
             if (haishinKitState.isConnected) {
                 Text("STOP")

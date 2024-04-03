@@ -63,20 +63,21 @@ private const val TAG = "CameraScreen"
 fun CameraScreen(
     command: String,
     streamName: String,
-    controller: CameraController
+    controller: CameraController,
 ) {
     val context = LocalContext.current
 
     // HaishinKit
-    val haishinKitState = rememberHaishinKitState(context, onConnectionState = { state, data ->
-        val code = data["code"].toString()
-        Log.i(TAG, code)
-        if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
-            state.getStreamByName(streamName).publish(streamName)
+    val haishinKitState =
+        rememberHaishinKitState(context, onConnectionState = { state, data ->
+            val code = data["code"].toString()
+            Log.i(TAG, code)
+            if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
+                state.getStreamByName(streamName).publish(streamName)
+            }
+        }) {
+            RtmpConnection()
         }
-    }) {
-        RtmpConnection()
-    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -90,25 +91,27 @@ fun CameraScreen(
     val configuration = LocalConfiguration.current
     when (configuration.orientation) {
         Configuration.ORIENTATION_PORTRAIT -> {
-            stream.screen.frame = Rect(
-                0, 0, Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH
-            )
+            stream.screen.frame =
+                Rect(
+                    0, 0, Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH,
+                )
         }
 
         Configuration.ORIENTATION_LANDSCAPE -> {
-            stream.screen.frame = Rect(
-                0, 0, Screen.DEFAULT_WIDTH, Screen.DEFAULT_HEIGHT
-            )
+            stream.screen.frame =
+                Rect(
+                    0, 0, Screen.DEFAULT_WIDTH, Screen.DEFAULT_HEIGHT,
+                )
         }
 
         else -> {
-
         }
     }
 
-    val pagerState = rememberPagerState(pageCount = {
-        controller.videoEffectItems.size
-    })
+    val pagerState =
+        rememberPagerState(pageCount = {
+            controller.videoEffectItems.size
+        })
 
     LaunchedEffect(pagerState, 0) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -118,14 +121,17 @@ fun CameraScreen(
     }
 
     HaishinKitView(
-        stream = stream, modifier = Modifier.fillMaxSize()
+        stream = stream,
+        modifier = Modifier.fillMaxSize(),
     )
 
     Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxSize()
-            .alpha(0.8F), verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier =
+            Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+                .alpha(0.8F),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         CameraDeviceControllerView(onAudioPermissionStatus = { state ->
             when (state.status) {
@@ -162,22 +168,29 @@ fun CameraScreen(
             }
         })
         Spacer(modifier = Modifier.weight(1f))
-        
+
         HorizontalPager(
-            state = pagerState, contentPadding = PaddingValues(end = 0.dp), modifier = Modifier.fillMaxWidth()
+            state = pagerState,
+            contentPadding = PaddingValues(end = 0.dp),
+            modifier = Modifier.fillMaxWidth(),
         ) { page ->
             val item = controller.videoEffectItems[page]
             Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = item.name, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier
-                        .align(alignment = Alignment.Center)
-                        .background(
-                            color = Color.Black, shape = RoundedCornerShape(20.dp)
-                        )
-                        .padding(8.dp, 0.dp)
+                    text = item.name,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier
+                            .align(alignment = Alignment.Center)
+                            .background(
+                                color = Color.Black,
+                                shape = RoundedCornerShape(20.dp),
+                            )
+                            .padding(8.dp, 0.dp),
                 )
             }
         }
@@ -185,15 +198,17 @@ fun CameraScreen(
         HorizontalPagerIndicator(
             pagerState = pagerState,
             pageCount = controller.videoEffectItems.size,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(32.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(32.dp),
         )
 
         var isRecording by remember { mutableStateOf(false) }
-        val recorder = remember(context) {
-            StreamRecorder(context)
-        }
+        val recorder =
+            remember(context) {
+                StreamRecorder(context)
+            }
 
         CameraControllerView(
             isRecording = isRecording,
@@ -209,17 +224,18 @@ fun CameraScreen(
                 }
             },
             onClickRecording = {
-                isRecording = if (isRecording) {
-                    recorder.stopRecording()
-                    false
-                } else {
-                    recorder.attachStream(stream)
-                    recorder.startRecording(
-                        File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "output.mp4").toString(),
-                        MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
-                    )
-                    true
-                }
+                isRecording =
+                    if (isRecording) {
+                        recorder.stopRecording()
+                        false
+                    } else {
+                        recorder.attachStream(stream)
+                        recorder.startRecording(
+                            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "output.mp4").toString(),
+                            MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4,
+                        )
+                        true
+                    }
             },
         )
     }
@@ -248,4 +264,3 @@ fun CameraScreen(
         stream.screen.addChild(lottie)
     }
 }
-
