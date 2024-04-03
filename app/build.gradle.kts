@@ -39,6 +39,8 @@ dependencies {
     implementation(project(":lottie"))
     implementation(project(":compose"))
     implementation(project(":vulkan"))
+    implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.pager.indicators)
     implementation(libs.material)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)

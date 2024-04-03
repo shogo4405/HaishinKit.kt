@@ -13,11 +13,13 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.haishinkit.compose.HaishinKitView
-import com.haishinkit.compose.rememberConnectionState
-import com.haishinkit.compose.rememberStreamState
+import com.haishinkit.compose.rememberHaishinKitState
 import com.haishinkit.rtmp.RtmpConnection
+
+private const val TAG = "PlaybackScreen"
 
 @Composable
 fun PlaybackScreen(
@@ -25,23 +27,22 @@ fun PlaybackScreen(
     streamName: String,
     modifier: Modifier
 ) {
-    val connectionState = rememberConnectionState()
-    val streamState = rememberStreamState(
-        context = LocalContext.current,
-        connectionState = connectionState,
-        connectionStateChange = { stream, data ->
+    val context = LocalContext.current
+    val haishinKitState = rememberHaishinKitState(
+        context,
+        onConnectionState = { state, data ->
             val code = data["code"].toString()
             Log.i(TAG, code)
             if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
-                stream.play(streamName)
+                state.getStreamByName(streamName).play(streamName)
             }
-        }
-    )
+        }) {
+        RtmpConnection()
+    }
 
     DisposableEffect(Unit) {
         onDispose {
-            streamState.dispose()
-            connectionState.dispose()
+            haishinKitState.dispose()
         }
     }
 
@@ -50,7 +51,7 @@ fun PlaybackScreen(
         contentAlignment = Alignment.BottomEnd
     ) {
         HaishinKitView(
-            streamState = streamState,
+            stream = haishinKitState.getStreamByName(streamName),
             modifier = Modifier.fillMaxSize()
         )
         Button(
@@ -59,14 +60,14 @@ fun PlaybackScreen(
                 .width(100.dp)
                 .height(50.dp),
             onClick = {
-                if (connectionState.isConnected) {
-                    connectionState.close()
+                if (haishinKitState.isConnected) {
+                    haishinKitState.close()
                 } else {
-                    connectionState.connect(command)
+                    haishinKitState.connect(command)
                 }
             }
         ) {
-            if (connectionState.isConnected) {
+            if (haishinKitState.isConnected) {
                 Text("STOP")
             } else {
                 Text("PLAY")
@@ -75,4 +76,8 @@ fun PlaybackScreen(
     }
 }
 
-private const val TAG = "PlaybackScreen"
+@Preview
+@Composable
+private fun PreviewPlaybackScreen() {
+    PlaybackScreen(command = "", streamName = "", modifier = Modifier.fillMaxSize())
+}
