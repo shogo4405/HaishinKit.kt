@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.haishinkit.compose
 
 import android.content.Context
@@ -13,58 +15,40 @@ import com.haishinkit.event.IEventListener
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
 
-typealias OnConnectionState = (state: HaishinKitState, data: Map<String, Any>) -> Unit
-
 /*
-* Create and [remember] a [HaishinKitState] instance.
+* Create and [remember] a [ConnectionState] instance.
 */
 @Composable
-fun rememberHaishinKitState(
-    context: Context,
-    onConnectionState: OnConnectionState,
+fun rememberConnectionState(
     factory: () -> RtmpConnection,
-): HaishinKitState =
-    remember(context) {
-        HaishinKitState(
-            onConnectionState,
+): ConnectionState =
+    remember {
+        ConnectionState(
             factory(),
-            context,
         )
     }
 
 @Suppress("UNUSED")
 @Stable
-class HaishinKitState(
-    onConnectionState: OnConnectionState,
+class ConnectionState(
     private val connection: RtmpConnection,
-    private val context: Context,
 ) {
+    var code: String by mutableStateOf(RtmpConnection.Code.CONNECT_CLOSED.rawValue)
+        private set
     var isConnected by mutableStateOf(connection.isConnected)
         private set
-
-    private val streams = mutableMapOf<String, RtmpStream>()
 
     private val listener =
         object : IEventListener {
             override fun handleEvent(event: Event) {
                 val data = EventUtils.toMap(event)
+                code = data["code"].toString()
                 isConnected = connection.isConnected
-                onConnectionState.invoke(this@HaishinKitState, data)
             }
         }
 
     init {
         connection.addEventListener(Event.RTMP_STATUS, listener)
-    }
-
-    fun getStreamByName(name: String): RtmpStream {
-        var stream = streams[name]
-        if (stream != null) {
-            return stream
-        }
-        stream = RtmpStream(context, connection)
-        streams[name] = stream
-        return stream
     }
 
     fun connect(
@@ -77,6 +61,10 @@ class HaishinKitState(
     fun close() {
         connection.close()
         isConnected = false
+    }
+
+    fun createStream(context: Context): RtmpStream {
+        return RtmpStream(context, connection)
     }
 
     fun dispose() {

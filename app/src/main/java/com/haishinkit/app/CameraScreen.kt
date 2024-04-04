@@ -25,10 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,13 +39,13 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.haishinkit.compose.HaishinKitView
-import com.haishinkit.compose.rememberHaishinKitState
+import com.haishinkit.compose.rememberConnectionState
+import com.haishinkit.compose.rememberRecorderState
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.media.AudioRecordSource
 import com.haishinkit.media.Camera2Source
 import com.haishinkit.media.MultiCamera2Source
-import com.haishinkit.media.StreamRecorder
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.screen.Image
 import com.haishinkit.screen.Screen
@@ -68,50 +65,56 @@ fun CameraScreen(
     val context = LocalContext.current
 
     // HaishinKit
-    val haishinKitState =
-        rememberHaishinKitState(context, onConnectionState = { state, data ->
-            val code = data["code"].toString()
-            Log.i(TAG, code)
-            if (code == RtmpConnection.Code.CONNECT_SUCCESS.rawValue) {
-                state.getStreamByName(streamName).publish(streamName)
-            }
-        }) {
-            RtmpConnection()
-        }
+    val connectionState = rememberConnectionState {
+        RtmpConnection()
+    }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            haishinKitState.dispose()
+    val stream = remember(connectionState) {
+        connectionState.createStream(context)
+    }
+    Log.i(TAG, "$stream")
+
+    LaunchedEffect(connectionState) {
+        snapshotFlow { connectionState.code }.collect {
+            when (it) {
+                RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
+                    stream.publish(streamName)
+                }
+
+                else -> {
+
+                }
+            }
         }
     }
 
-    val stream = haishinKitState.getStreamByName(streamName)
-    Log.i(TAG, "$stream")
+    DisposableEffect(Unit) {
+        onDispose {
+            connectionState.dispose()
+        }
+    }
 
     val configuration = LocalConfiguration.current
     when (configuration.orientation) {
         Configuration.ORIENTATION_PORTRAIT -> {
-            stream.screen.frame =
-                Rect(
-                    0, 0, Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH,
-                )
+            stream.screen.frame = Rect(
+                0, 0, Screen.DEFAULT_HEIGHT, Screen.DEFAULT_WIDTH,
+            )
         }
 
         Configuration.ORIENTATION_LANDSCAPE -> {
-            stream.screen.frame =
-                Rect(
-                    0, 0, Screen.DEFAULT_WIDTH, Screen.DEFAULT_HEIGHT,
-                )
+            stream.screen.frame = Rect(
+                0, 0, Screen.DEFAULT_WIDTH, Screen.DEFAULT_HEIGHT,
+            )
         }
 
         else -> {
         }
     }
 
-    val pagerState =
-        rememberPagerState(pageCount = {
-            controller.videoEffectItems.size
-        })
+    val pagerState = rememberPagerState(pageCount = {
+        controller.videoEffectItems.size
+    })
 
     LaunchedEffect(pagerState, 0) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -126,11 +129,10 @@ fun CameraScreen(
     )
 
     Column(
-        modifier =
-            Modifier
-                .padding(8.dp)
-                .fillMaxSize()
-                .alpha(0.8F),
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxSize()
+            .alpha(0.8F),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         CameraDeviceControllerView(onAudioPermissionStatus = { state ->
@@ -183,14 +185,13 @@ fun CameraScreen(
                     text = item.name,
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    modifier =
-                        Modifier
-                            .align(alignment = Alignment.Center)
-                            .background(
-                                color = Color.Black,
-                                shape = RoundedCornerShape(20.dp),
-                            )
-                            .padding(8.dp, 0.dp),
+                    modifier = Modifier
+                        .align(alignment = Alignment.Center)
+                        .background(
+                            color = Color.Black,
+                            shape = RoundedCornerShape(20.dp),
+                        )
+                        .padding(8.dp, 0.dp),
                 )
             }
         }
@@ -198,44 +199,38 @@ fun CameraScreen(
         HorizontalPagerIndicator(
             pagerState = pagerState,
             pageCount = controller.videoEffectItems.size,
-            modifier =
-                Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(32.dp),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(32.dp),
         )
 
-        var isRecording by remember { mutableStateOf(false) }
-        val recorder =
-            remember(context) {
-                StreamRecorder(context)
-            }
+        val recorderState = rememberRecorderState(context, stream)
 
         CameraControllerView(
-            isRecording = isRecording,
-            isConnected = haishinKitState.isConnected,
+            isRecording = recorderState.isRecording,
+            isConnected = connectionState.isConnected,
             onClickScreenShot = {
                 controller.onScreenShot(stream.screen)
             },
             onClickConnect = {
-                if (haishinKitState.isConnected) {
-                    haishinKitState.close()
+                if (connectionState.isConnected) {
+                    connectionState.close()
                 } else {
-                    haishinKitState.connect(command)
+                    connectionState.connect(command)
                 }
             },
             onClickRecording = {
-                isRecording =
-                    if (isRecording) {
-                        recorder.stopRecording()
-                        false
-                    } else {
-                        recorder.attachStream(stream)
-                        recorder.startRecording(
-                            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "output.mp4").toString(),
-                            MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4,
-                        )
-                        true
-                    }
+                if (recorderState.isRecording) {
+                    recorderState.stopRecording()
+                } else {
+                    recorderState.startRecording(
+                        File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            "output.mp4"
+                        ).toString(),
+                        MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4,
+                    )
+                }
             },
         )
     }

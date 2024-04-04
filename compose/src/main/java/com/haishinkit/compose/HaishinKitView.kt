@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.haishinkit.compose
 
 import androidx.compose.runtime.Composable
