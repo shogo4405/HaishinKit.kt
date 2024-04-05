@@ -41,6 +41,9 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.haishinkit.compose.HaishinKitView
 import com.haishinkit.compose.rememberConnectionState
 import com.haishinkit.compose.rememberRecorderState
+import com.haishinkit.event.Event
+import com.haishinkit.event.EventUtils
+import com.haishinkit.event.IEventListener
 import com.haishinkit.graphics.effect.DefaultVideoEffect
 import com.haishinkit.lottie.LottieScreen
 import com.haishinkit.media.AudioRecordSource
@@ -71,21 +74,6 @@ fun CameraScreen(
 
     val stream = remember(connectionState) {
         connectionState.createStream(context)
-    }
-    Log.i(TAG, "$stream")
-
-    LaunchedEffect(connectionState) {
-        snapshotFlow { connectionState.code }.collect {
-            when (it) {
-                RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
-                    stream.publish(streamName)
-                }
-
-                else -> {
-
-                }
-            }
-        }
     }
 
     DisposableEffect(Unit) {
@@ -236,6 +224,22 @@ fun CameraScreen(
     }
 
     LaunchedEffect(Unit) {
+        connectionState.addEventListener(Event.RTMP_STATUS, object : IEventListener {
+            override fun handleEvent(event: Event) {
+                val data = EventUtils.toMap(event)
+                Log.i(TAG, data.toString())
+                when (data["code"]) {
+                    RtmpConnection.Code.CONNECT_SUCCESS.rawValue -> {
+                        stream.publish(streamName)
+                    }
+
+                    else -> {
+
+                    }
+                }
+            }
+        })
+
         val text = Text()
         text.size = 60f
         text.value = "Hello World!!"

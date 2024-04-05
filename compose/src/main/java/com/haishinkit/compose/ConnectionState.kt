@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.haishinkit.event.Event
-import com.haishinkit.event.EventUtils
+import com.haishinkit.event.IEventDispatcher
 import com.haishinkit.event.IEventListener
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpStream
@@ -32,17 +32,13 @@ fun rememberConnectionState(
 @Stable
 class ConnectionState(
     private val connection: RtmpConnection,
-) {
-    var code: String by mutableStateOf(RtmpConnection.Code.CONNECT_CLOSED.rawValue)
-        private set
+) : IEventDispatcher {
     var isConnected by mutableStateOf(connection.isConnected)
         private set
 
     private val listener =
         object : IEventListener {
             override fun handleEvent(event: Event) {
-                val data = EventUtils.toMap(event)
-                code = data["code"].toString()
                 isConnected = connection.isConnected
             }
         }
@@ -70,5 +66,25 @@ class ConnectionState(
     fun dispose() {
         connection.removeEventListener(Event.RTMP_STATUS, listener)
         connection.dispose()
+    }
+
+    override fun addEventListener(
+        type: String,
+        listener: IEventListener,
+        useCapture: Boolean,
+    ) {
+        connection.addEventListener(type, listener, useCapture)
+    }
+
+    override fun dispatchEvent(event: Event) {
+        connection.dispatchEvent(event)
+    }
+
+    override fun dispatchEventWith(type: String, bubbles: Boolean, data: Any?) {
+        connection.dispatchEventWith(type, bubbles, data)
+    }
+
+    override fun removeEventListener(type: String, listener: IEventListener, useCapture: Boolean) {
+        connection.removeEventListener(type, listener, useCapture)
     }
 }
