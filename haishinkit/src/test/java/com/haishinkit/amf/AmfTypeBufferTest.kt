@@ -4,11 +4,11 @@ import com.haishinkit.util.toHexString
 import junit.framework.TestCase
 import java.nio.ByteBuffer
 
-class Amf0TypeBufferTest : TestCase() {
+class AmfTypeBufferTest : TestCase() {
     fun testString() {
         val expected = "Hello World!!"
         val buffer = ByteBuffer.allocate(128)
-        val amf0TypeBuffer = Amf0TypeBuffer(buffer)
+        val amf0TypeBuffer = AmfTypeBuffer(buffer)
         amf0TypeBuffer.putString(expected)
         buffer.flip()
         assertEquals(expected, amf0TypeBuffer.string)
@@ -18,7 +18,7 @@ class Amf0TypeBufferTest : TestCase() {
         val expected = "Hello World!!"
         val expected2 = "Hello World!!Hello World!!"
         val buffer = ByteBuffer.allocate(128)
-        val amf0TypeBuffer = Amf0TypeBuffer(buffer)
+        val amf0TypeBuffer = AmfTypeBuffer(buffer)
         amf0TypeBuffer.putString(expected)
         amf0TypeBuffer.putString(expected2)
         buffer.flip()
@@ -28,7 +28,7 @@ class Amf0TypeBufferTest : TestCase() {
 
     fun testObject() {
         val buffer = ByteBuffer.allocate(128)
-        val amf0TypeBuffer = Amf0TypeBuffer(buffer)
+        val amf0TypeBuffer = AmfTypeBuffer(buffer)
         val map = mutableMapOf<String, Any?>()
         map["name"] = "shogo4405"
         map["age"] = 20.0
@@ -39,7 +39,7 @@ class Amf0TypeBufferTest : TestCase() {
 
     fun testEmptyObject() {
         val buffer = ByteBuffer.allocate(128)
-        val amf0TypeBuffer = Amf0TypeBuffer(buffer)
+        val amf0TypeBuffer = AmfTypeBuffer(buffer)
         val map = emptyMap<String, Any?>()
         amf0TypeBuffer.putMap(map)
         buffer.flip()
@@ -49,8 +49,8 @@ class Amf0TypeBufferTest : TestCase() {
 
     fun testEcmaArray() {
         val buffer = ByteBuffer.allocate(128)
-        val amf0TypeBuffer = Amf0TypeBuffer(buffer)
-        val array = Amf0EcmaArray(listOf("av01", "hevc"))
+        val amf0TypeBuffer = AmfTypeBuffer(buffer)
+        val array = AmfEcmaArray(listOf("av01", "hevc"))
         amf0TypeBuffer.putEcmaArray(array)
         buffer.flip()
         assertEquals(array.toString(), amf0TypeBuffer.array.toString())
@@ -58,7 +58,7 @@ class Amf0TypeBufferTest : TestCase() {
 
     fun testStrictArray() {
         val buffer = ByteBuffer.allocate(128)
-        val amf0TypeBuffer = Amf0TypeBuffer(buffer)
+        val amf0TypeBuffer = AmfTypeBuffer(buffer)
         val strings = listOf("av01", "hevc")
         amf0TypeBuffer.putList(strings)
         buffer.flip()

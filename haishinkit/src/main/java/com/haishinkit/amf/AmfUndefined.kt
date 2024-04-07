@@ -5,4 +5,4 @@ package com.haishinkit.amf
  *
  * 2.8 undefined Type
  */
-object Amf0Undefined
+object AmfUndefined

@@ -6,7 +6,7 @@ import java.nio.ByteBuffer
 import java.util.Date
 import java.util.IllegalFormatFlagsException
 
-internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
+internal class AmfTypeBuffer(private val buffer: ByteBuffer) {
     val data: Any?
         get() {
             val marker = buffer.get()
@@ -34,7 +34,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
 
                 MOVIECLIP -> throw UnsupportedOperationException()
                 NULL -> return null
-                UNDEFINED -> return Amf0Undefined
+                UNDEFINED -> return AmfUndefined
                 REFERENCE -> throw UnsupportedOperationException()
                 ECMA_ARRAY -> {
                     buffer.position(buffer.position() - 1)
@@ -140,7 +140,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
             return result
         }
 
-    val array: Amf0EcmaArray?
+    val array: AmfEcmaArray?
         get() {
             val marker = buffer.get()
             if (marker == NULL) {
@@ -150,7 +150,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
             buffer.int
-            val array = Amf0EcmaArray()
+            val array = AmfEcmaArray()
             while (true) {
                 val key = getString(true)
                 if (key == "") {
@@ -176,28 +176,28 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
             return date
         }
 
-    val xmlDocument: Amf0XmlDocument
+    val xmlDocument: AmfXmlDocument
         get() {
             val marker = buffer.get()
             if (marker != XML_DOCUMENT) {
                 throw IllegalFormatFlagsException(marker.toString())
             }
-            return Amf0XmlDocument(getString(false))
+            return AmfXmlDocument(getString(false))
         }
 
-    fun putBoolean(value: Boolean): Amf0TypeBuffer {
+    fun putBoolean(value: Boolean): AmfTypeBuffer {
         buffer.put(BOOL)
         buffer.put((if (value) 1 else 0).toByte())
         return this
     }
 
-    fun putNumber(value: Double): Amf0TypeBuffer {
+    fun putNumber(value: Double): AmfTypeBuffer {
         buffer.put(NUMBER)
         buffer.putDouble(value)
         return this
     }
 
-    fun putString(value: String?): Amf0TypeBuffer {
+    fun putString(value: String?): AmfTypeBuffer {
         if (value == null) {
             buffer.put(NULL)
             return this
@@ -208,7 +208,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
         return putString(value, isShort)
     }
 
-    fun putMap(value: Map<String, Any?>?): Amf0TypeBuffer {
+    fun putMap(value: Map<String, Any?>?): AmfTypeBuffer {
         if (value == null) {
             buffer.put(NULL)
             return this
@@ -222,7 +222,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
         return this
     }
 
-    fun putDate(value: Date?): Amf0TypeBuffer {
+    fun putDate(value: Date?): AmfTypeBuffer {
         if (value == null) {
             buffer.put(NULL)
             return this
@@ -233,7 +233,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
         return this
     }
 
-    fun putList(value: List<Any>?): Amf0TypeBuffer {
+    fun putList(value: List<Any>?): AmfTypeBuffer {
         if (value == null) {
             buffer.put(NULL)
             return this
@@ -246,7 +246,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
         return this
     }
 
-    fun putEcmaArray(value: Amf0EcmaArray?): Amf0TypeBuffer {
+    fun putEcmaArray(value: AmfEcmaArray?): AmfTypeBuffer {
         if (value == null) {
             buffer.put(NULL)
             return this
@@ -262,7 +262,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
         return this
     }
 
-    fun putData(value: Any?): Amf0TypeBuffer {
+    fun putData(value: Any?): AmfTypeBuffer {
         if (value == null) {
             buffer.put(NULL)
             return this
@@ -291,10 +291,10 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
         if (value is List<*>) {
             return putList(value as List<Any>?)
         }
-        if (value is Amf0EcmaArray) {
+        if (value is AmfEcmaArray) {
             return putEcmaArray(value)
         }
-        if (value is Amf0Undefined) {
+        if (value is AmfUndefined) {
             buffer.put(UNDEFINED)
             return this
         }
@@ -308,7 +308,7 @@ internal class Amf0TypeBuffer(private val buffer: ByteBuffer) {
     private fun putString(
         value: String,
         asShort: Boolean,
-    ): Amf0TypeBuffer {
+    ): AmfTypeBuffer {
         val length = value.length
         if (asShort) {
             buffer.putShort(length.toShort())

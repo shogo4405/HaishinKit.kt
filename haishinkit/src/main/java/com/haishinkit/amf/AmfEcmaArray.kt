@@ -5,7 +5,7 @@ package com.haishinkit.amf
  *
  * 2.10 ECMA Array Type.
  */
-class Amf0EcmaArray(list: List<Any?>? = null) : Iterable<String> {
+class AmfEcmaArray(list: List<Any?>? = null) : Iterable<String> {
     val size: Int
         get() {
             return properties.keys.filter {

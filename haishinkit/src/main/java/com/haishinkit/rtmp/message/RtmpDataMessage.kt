@@ -1,6 +1,6 @@
 package com.haishinkit.rtmp.message
 
-import com.haishinkit.amf.Amf0TypeBuffer
+import com.haishinkit.amf.AmfTypeBuffer
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpObjectEncoding
 import java.nio.ByteBuffer
@@ -15,7 +15,7 @@ internal class RtmpDataMessage(objectEncoding: RtmpObjectEncoding) :
     override var length: Int = CAPACITY
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
-        val serializer = Amf0TypeBuffer(buffer)
+        val serializer = AmfTypeBuffer(buffer)
         serializer.putString(handlerName)
         if (arguments.isNotEmpty()) {
             for (argument in arguments) {
@@ -27,7 +27,7 @@ internal class RtmpDataMessage(objectEncoding: RtmpObjectEncoding) :
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
         val eom = buffer.position() + length
-        val deserializer = Amf0TypeBuffer(buffer)
+        val deserializer = AmfTypeBuffer(buffer)
         handlerName = deserializer.string
         val arguments = arguments
         while (buffer.position() < eom) {

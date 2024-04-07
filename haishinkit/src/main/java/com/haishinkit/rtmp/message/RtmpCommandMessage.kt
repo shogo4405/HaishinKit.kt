@@ -1,6 +1,6 @@
 package com.haishinkit.rtmp.message
 
-import com.haishinkit.amf.Amf0TypeBuffer
+import com.haishinkit.amf.AmfTypeBuffer
 import com.haishinkit.event.Event
 import com.haishinkit.rtmp.RtmpConnection
 import com.haishinkit.rtmp.RtmpObjectEncoding
@@ -18,7 +18,7 @@ internal class RtmpCommandMessage(objectEncoding: RtmpObjectEncoding) :
     override var length: Int = CAPACITY
 
     override fun encode(buffer: ByteBuffer): RtmpMessage {
-        val serializer = Amf0TypeBuffer(buffer)
+        val serializer = AmfTypeBuffer(buffer)
         serializer.putString(commandName)
         serializer.putNumber(transactionID.toDouble())
         serializer.putMap(commandObject)
@@ -30,7 +30,7 @@ internal class RtmpCommandMessage(objectEncoding: RtmpObjectEncoding) :
 
     override fun decode(buffer: ByteBuffer): RtmpMessage {
         val position = buffer.position()
-        val deserializer = Amf0TypeBuffer(buffer)
+        val deserializer = AmfTypeBuffer(buffer)
         commandName = deserializer.string
         transactionID = deserializer.number.toInt()
         commandObject = deserializer.map
