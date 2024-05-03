@@ -16,7 +16,7 @@ activityCompose = "1.9.0"
 composeBom = "2024.05.00"
 appcompat = "1.6.1"
 lottie = "6.4.0"
-material = "1.11.0"
+material = "1.12.0"
 robolectric = "4.12.1"
 dokkaPlugin = "1.9.20"
 
