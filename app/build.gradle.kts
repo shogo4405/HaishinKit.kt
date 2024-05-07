@@ -30,7 +30,7 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
-    composeOptions { kotlinCompilerExtensionVersion = "1.5.11" }
+    composeOptions { kotlinCompilerExtensionVersion = "1.5.13" }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 }
 
