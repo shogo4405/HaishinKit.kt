@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.jetbrainsDokka)
     id("maven-publish")
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0" apply true
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1" apply true
 }
 
 rootProject.ext["PUBLISH_GROUP_ID"] = "com.github.shogo4405"
