@@ -145,6 +145,8 @@ git submodule update --init
 
 ### Gradle dependency
 **JitPack**
+- A common mistake is trying to use implementation 'com.github.shogo4405.**HaishinKit.kt**:haishinkit:x.x.x', which does not work. The correct form is implementation 'com.github.shogo4405.**HaishinKit~kt**:haishinkit:x.x.x'.
+- In older versions, there may be cases where Jetpack is not supported. If it's not available, please give up and use the latest version.
 ```
 allprojects {
   repositories {
