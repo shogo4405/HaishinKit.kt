@@ -1,6 +1,6 @@
 [versions]
 accompanistPermissions = "0.34.0"
-accompanistPagerIndicators = "0.35.1-alpha"
+accompanistPagerIndicators = "0.36.0"
 agp = "8.4.2"
 annotationJvm = "1.8.1"
 foundation = "1.6.8"
