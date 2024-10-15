@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.haishinkit.vulkan"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
