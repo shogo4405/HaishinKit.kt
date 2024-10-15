@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.haishinkit.lottie"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
