@@ -11,7 +11,7 @@ plugins {
 }
 
 rootProject.ext["PUBLISH_GROUP_ID"] = "com.github.shogo4405"
-rootProject.ext["PUBLISH_VERSION"] = "0.15.6"
+rootProject.ext["PUBLISH_VERSION"] = "0.14.0"
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

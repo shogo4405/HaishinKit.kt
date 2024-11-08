@@ -4,7 +4,7 @@
 [![GitHub Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=ff69b4)](https://github.com/sponsors/shogo4405)
 
 * Camera and Microphone streaming library via RTMP for Android.
-* [API Documentation](https://docs.haishinkit.com/kt/0.13.6/)
+* [API Documentation](https://docs.haishinkit.com/kt/latest/)
 
 ## 💬 Communication
 * If you need help with making LiveStreaming requests using HaishinKit, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.kt/discussions) with **Q&A**.
