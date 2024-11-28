@@ -42,8 +42,8 @@ object MediaFormatUtil {
                 AudioFormat.CHANNEL_OUT_MONO
             }
         val bufferSize =
-            AudioTrack.getMinBufferSize(sampleRate, channelCount, AudioFormat.ENCODING_PCM_16BIT)
-        Log.d(TAG, "sampleRate=$sampleRate, channelCount=$channelCount, bufferSize=$bufferSize")
+            AudioTrack.getMinBufferSize(sampleRate, channelMask, AudioFormat.ENCODING_PCM_16BIT)
+        Log.d(TAG, "sampleRate=$sampleRate, channelCount=$channelCount, channelMask:$channelMask, bufferSize=$bufferSize")
         try {
             return if (Build.VERSION_CODES.M <= Build.VERSION.SDK_INT) {
                 AudioTrack.Builder()
