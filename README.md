@@ -6,32 +6,22 @@
 * Camera and Microphone streaming library via RTMP for Android.
 * [API Documentation](https://docs.haishinkit.com/kt/latest/)
 
-## 💬 Communication
-* If you need help with making LiveStreaming requests using HaishinKit, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.kt/discussions) with **Q&A**.
-* If you'd like to discuss a feature request, use a [GitHub Discussions](https://github.com/shogo4405/HaishinKit.kt/discussions) with **Idea**
-* If you met a HaishinKit's bug🐛, use a [GitHub Issue](https://github.com/shogo4405/HaishinKit.kt/issues) with **Bug report template**
-  - If you don't use an issue template. I will immediately close the your issue without a comment.
-* If you **want to contribute**, submit a pull request!
-* If you want to support e-mail based communication without GitHub.
-  - Consulting fee is [$50](https://www.paypal.me/shogo4405/50USD)/1 incident. I'm able to response a few days.
-* [Discord chatroom](https://discord.com/invite/8nkshPnanr).
-* 日本語が分かる方は日本語でお願いします！
-
 ## 💖 Sponsors
-<p align="center">
-  <br />
-  <br />
-  <a href="https://github.com/sponsors/shogo4405">Sponsorship</a>
-  <br />
-  <br />
-</p>
+Do you need additional support? Technical support on Issues and Discussions is provided only to contributors and academic researchers of HaishinKit. By becoming a sponsor, we can provide the support you need.
+
+Sponsor: [$50 per month](https://github.com/sponsors/shogo4405): Technical support via GitHub Issues/Discussions with priority response.
+
+## 💬 Communication
+* GitHub Issues and Discussions are open spaces for communication among users and are available to everyone as long as [the code of conduct](https://github.com/shogo4405/HaishinKit.swift?tab=coc-ov-file) is followed.
+* Whether someone is a contributor to HaishinKit is mainly determined by their GitHub profile icon. If you are using the default icon, there is a chance your input might be overlooked, so please consider setting a custom one. It could be a picture of your pet, for example. Personally, I like cats.
+* If you want to support e-mail based communication without GitHub.
+  * Consulting fee is [$50](https://www.paypal.me/shogo4405/50USD)/1 incident. I'm able to response a few days.
 
 ## 🌏 Related projects
 Project name    |Notes       |License
 ----------------|------------|--------------
 [HaishinKit for iOS, macOS and tvOS.](https://github.com/shogo4405/HaishinKit.swift)|Camera and Microphone streaming library via RTMP for Android.|[BSD 3-Clause "New" or "Revised" License](https://github.com/shogo4405/HaishinKit.swift/blob/master/LICENSE.md)
 [HaishinKit for Flutter.](https://github.com/shogo4405/HaishinKit.dart)|Camera and Microphone streaming library via RTMP for Flutter.|[BSD 3-Clause "New" or "Revised" License](https://github.com/shogo4405/HaishinKit.dart/blob/master/LICENSE.md)
-
 
 ## 🎨 Features
 ### RTMP
